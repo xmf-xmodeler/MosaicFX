@@ -30,7 +30,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton trueButton = new RadioButton("true");
 	private RadioButton falseButton = new RadioButton("false");
-	private RadioButton selectedRadioButton = new RadioButton();
 	private String trueOrFalse="false";
 	private DatePicker datePicker = new DatePicker();
 	
@@ -148,9 +147,10 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 					       } else if (newToggle == falseButton) {
 					    	   trueOrFalse = "false";
 					       }});
+			("true".equals(currentSlot.getValue())?trueButton:falseButton).setSelected(true);
 			grid.add(trueButton, 1, 3);
 			grid.add(falseButton, 1, 3);
-			grid.setHalignment(falseButton, HPos.RIGHT);
+			GridPane.setHalignment(falseButton, HPos.RIGHT);
 		} else if (mode==Mode.MONEY) {
 			currency.setEditable(true);
 			currency.getItems().addAll("USD","EUR","GBP","AUD","NZD");

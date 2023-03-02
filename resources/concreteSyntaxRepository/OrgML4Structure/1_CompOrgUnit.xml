@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::OrgStructure::CompOrgUnit" level="1">
+	<Import path="abstract_OrgUnitBox.xml" id="abstractImport"/>
+	<SVG path="Department.svg" id="Department" tx="120" ty="0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+	<SVG path="Department_Low.svg" id="Department_Low" tx="120" ty="0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+	<Modification>
+		<Condition type="ReadFromSlot" slotName="maxNumEmp" />
+		<Affected id="maxNumEmpLabel" localId="maxNumEmpLabel" />
+		<Consequence type="READ_FROM_SLOT" />
+	</Modification>
+	<Modification>
+		<Condition type="SlotNumCompareCondition" slotName="maxNumEmp" highBound="450"/>
+		<Affected id="Department_Low" localId="Department_Low"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>
+	<Modification>
+		<Condition type="SlotNumCompareCondition" slotName="maxNumEmp" lowBound="1000"/>
+		<Affected id="Department" localId="Department"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification> 
+</ConcreteSyntax>

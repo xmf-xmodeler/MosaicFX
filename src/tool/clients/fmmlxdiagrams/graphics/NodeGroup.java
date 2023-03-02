@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.io.File;
 import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
@@ -13,7 +14,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -21,15 +21,10 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
-	
-	/*
-	 * This should be on a higher level, as only the whole group can be dragged
-	 */
-	private transient Affine dragAffine;
-	
+		
 	public NodeGroup(Affine myTransform) {
+		super();
 		this.myTransform = myTransform;
-		dragAffine = new Affine();
 		updateBounds();
 	}
 	
@@ -114,7 +109,7 @@ public class NodeGroup extends NodeElement {
 		return a;
 	}
 
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeGroup owner) {
 		this.owner = owner;
 		updateBounds();
 	}
@@ -142,20 +137,6 @@ public class NodeGroup extends NodeElement {
 		this.bounds = bounds;
 	}
 
-	public void dragTo(Affine dragAffine) {
-		this.dragAffine = dragAffine;		
-	}
-
-	public void drop() {
-		myTransform.append(dragAffine);
-		dragAffine = new Affine();		
-	}
-
-	public Transform getDragAffine() {
-		if(dragAffine == null) return new Affine(); // HACK
-		return dragAffine;
-	}
-
 	@Override
 	public Bounds getBounds() {
 		if(bounds == null) 
@@ -164,7 +145,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	protected Vector<NodeElement> getChildren() {
+	public Vector<NodeElement> getChildren() {
 		return nodeElements;
 	}
 	
@@ -173,10 +154,10 @@ public class NodeGroup extends NodeElement {
 		return "G"+ (id==null?"":("("+id+")"));
 	}
 
-	public Node save(Document document) {
+	public Node save(Document document, File baseFile) {
 		Element myElement = document.createElement("Group");
 		saveTransformation(myElement);
-		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement);
+		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement, baseFile);
 		return myElement;
 	}
 
@@ -257,9 +238,14 @@ public class NodeGroup extends NodeElement {
 		}
 		return that;
 	}	
-
+	
+	public NodeGroup getRoot() {
+		NodeGroup owner = getOwner();
+		return owner == null?this:owner.getRoot();
+	}	
 
 	public void setAction(Action action) {
 		this.action=action;
 	}
+
 }

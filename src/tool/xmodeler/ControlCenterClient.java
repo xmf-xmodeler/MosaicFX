@@ -44,7 +44,6 @@ public class ControlCenterClient {
 			vec.add(message.args[0].values[i].strValue());
 		}
 		Collections.sort(vec);
-		controlCenter.setAllCategories(vec);
 	}
 	
 	public void getAllProjects() {

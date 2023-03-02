@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.graphics;
+package tool.clients.fmmlxdiagrams.graphics.wizard;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -52,13 +52,13 @@ public class AffineController {
 		for(int i = 0; i < 6; i++) {
 			TextField f = new TextField();
 			f.setEditable(false);
-			f.setMaxWidth(60);
+			f.setMaxWidth(65);
 			matrixPane.add(f, i%3, i/3);
 			textfields.add(f);
 		}
-		matrixPane.setHgap(6);
-		matrixPane.setHgap(6);
-		matrixPane.setPadding(new Insets(6,6,6,6));
+		matrixPane.setHgap(5.);
+		matrixPane.setVgap(5.);
+//		matrixPane.setPadding(new Insets(5.));
 		
 		Button moveHButton = new Button("Move Horizontally"); buttons.add(moveHButton);
 		Button moveVButton = new Button("Move Vertically");   buttons.add(moveVButton);
@@ -75,7 +75,7 @@ public class AffineController {
 			if(result.isPresent()) {
 				try{
 					Double d = Double.parseDouble(result.get());
-					affine.appendTranslation(d, 0.);
+					affine.prependTranslation(d, 0.);
 					updateGUI();
 					action();
 				} catch (Exception ex) {}
@@ -92,7 +92,7 @@ public class AffineController {
 			if(result.isPresent()) {
 				try{
 					Double d = Double.parseDouble(result.get());
-					affine.appendTranslation(0., d);
+					affine.prependTranslation(0., d);
 					updateGUI();
 					action();
 				} catch (Exception ex) {}
@@ -134,6 +134,8 @@ public class AffineController {
 		});		
 		
 		editPane.getChildren().addAll(buttons);		
+		editPane.setSpacing(5.);
+//		editPane.setPadding(new Insets(5.));
 		
 		for(Button b : buttons) {
 			b.setMaxWidth(Double.POSITIVE_INFINITY);
@@ -174,6 +176,7 @@ public class AffineController {
 		textfields.get(TY).setText(df.format(affine.getTy()));
 		textfields.get(TX).setText(df.format(affine.getTx()));		
 	}
+	
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 		for(Button b : buttons) b.setDisable(!editable);		

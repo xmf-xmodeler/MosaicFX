@@ -1,7 +1,7 @@
 package tool.clients.serializer;
 
 public class SerializerConstant {
-    public static final int SERIALIZER_VERSION = 2;
+    public static final int SERIALIZER_VERSION = 3;
 
     public static final String TAG_NAME_ROOT = "XModeler";
     public static final String TAG_NAME_VERSION = "Version";
@@ -10,6 +10,7 @@ public class SerializerConstant {
     public static final String TAG_NAME_PROJECT = "Project";
     public static final String TAG_NAME_DIAGRAMS = "Diagrams";
     public static final String TAG_NAME_DIAGRAM = "Diagram";
+    public static final String TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES = "DiagramDisplayProperties";
     public static final String TAG_NAME_OBJECTS = "Objects";
     public static final String TAG_NAME_OBJECT = "Object";
     public static final String TAG_NAME_LOGS = "Logs";

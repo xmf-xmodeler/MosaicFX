@@ -43,6 +43,11 @@ public abstract class Condition<ReturnType>{
 			 conditionElement.setAttribute("type", "BooleanSlotCondition");
 			 conditionElement.setAttribute("slotName", slotName);		
 		}
+		
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " is true";
+		}
 	}
 	
 	public static class StringMatchSlotCondition extends Condition<Boolean>{
@@ -72,6 +77,11 @@ public abstract class Condition<ReturnType>{
 			conditionElement.setAttribute("slotName", slotName);
 			conditionElement.setAttribute("match", match);			
 		}
+
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " equals " + match;
+		}
 	}
 
 	public static class SlotNumCompareCondition extends Condition<Boolean> {
@@ -94,7 +104,7 @@ public abstract class Condition<ReturnType>{
 			}
 			try{
 				double value = Double.parseDouble(slot.getValue());
-				return this.low < value && value < this.high;
+				return this.low <= value && value <= this.high;
 			} catch(Exception e) {}
 			return false;
 		}
@@ -104,12 +114,16 @@ public abstract class Condition<ReturnType>{
 			 conditionElement.setAttribute("type", "BooleanSlotCondition");
 			 conditionElement.setAttribute("slotName", slotName);		
 		}
+
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " is between " + low + " and " + high;
+		}
 	}
 	
 	public static class BooleanOpValCondition extends Condition<Boolean>{
 		
-		private String opName;
-		private boolean value;		
+		private String opName;	
 		
 		@Override
 		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
@@ -117,14 +131,53 @@ public abstract class Condition<ReturnType>{
 			if (opVal == null) {
 				throw new SlotNotFoundException();
 			}
-			return value=="true".equals(opVal.getValue());
+			return "true".equals(opVal.getValue());
 		}
 
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "BooleanOpValCondition");
 			conditionElement.setAttribute("opName", opName);			
-		}		
+		}
+
+		public BooleanOpValCondition(String opName) {
+			super();
+			this.opName = opName;
+		}
+		
+		@Override 
+		public String toString() {
+			return "if operation " + opName + " returns true";
+		}	
+	}
+	
+	public static class BooleanConstraintCondition extends Condition<Boolean>{
+		
+		private String constraintName;
+		
+		@Override
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
+//			Vector<Issue> issues = object.getIssues();
+//			issues.get(0).getConstraintName();
+			throw new RuntimeException("Not yet implemented!");
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "BooleanConstraintCondition");
+			conditionElement.setAttribute("opName", constraintName);
+			
+		}
+
+		public BooleanConstraintCondition(String constraintName) {
+			super();
+			this.constraintName = constraintName;
+		}
+		
+		@Override 
+		public String toString() {
+			return "if constraint " + constraintName + " stands";
+		}	
 	}
 	
 	public static class StringMatchOpValCondition extends Condition<Boolean>{
@@ -152,6 +205,11 @@ public abstract class Condition<ReturnType>{
 			conditionElement.setAttribute("opName", opName);
 			conditionElement.setAttribute("match", match );			
 		}
+		
+		@Override 
+		public String toString() {
+			return "if operation " + opName + " returns " + match;
+		}
 	}
 	
 	public static class ReadFromSlotCondition extends Condition<String>{
@@ -175,7 +233,12 @@ public abstract class Condition<ReturnType>{
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "ReadFromSlot");
 			conditionElement.setAttribute("slotName", slotName);
-		}	
+		}
+
+		@Override 
+		public String toString() {
+			return "from slot " + slotName;
+		}
 	}
 	
 public static class ReadFromOpValCondition extends Condition<String>{
@@ -200,6 +263,11 @@ public static class ReadFromOpValCondition extends Condition<String>{
 			conditionElement.setAttribute("type", "ReadFromOpValCondition");
 			conditionElement.setAttribute("opName", opName);			
 		}	
+		
+		@Override 
+		public String toString() {
+			return "from operation " + opName;
+		}
 	}
 
 	

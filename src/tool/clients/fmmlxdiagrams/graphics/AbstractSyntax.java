@@ -64,8 +64,6 @@ public class AbstractSyntax extends NodeGroup{
 				Affine transform = readTransform((Element) n);
 				metaSyntax.myTransform = transform;
 				vec.add(metaSyntax);
-			} else {
-//				System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 		
@@ -96,6 +94,7 @@ public class AbstractSyntax extends NodeGroup{
 			if("RIGHT".equals(s)) alignment = Pos.BASELINE_RIGHT;
 		}
 		Color c = Color.BLACK;
+		Color bgC = Color.TRANSPARENT;
 		if(e.hasAttribute("color")) {
 			String s = e.getAttribute("color");
 			try{
@@ -104,10 +103,18 @@ public class AbstractSyntax extends NodeGroup{
 				System.err.println("Color not found: " + s);
 			}
 		}
+		if(e.hasAttribute("bgColor")) {
+			String s = e.getAttribute("bgColor");
+			try{
+				bgC = Color.web(s);
+			} catch(Exception ex) {
+				System.err.println("Color not found: " + s);
+			}
+		}
 		NodeLabel label = new NodeLabel(
 				alignment, 
 				transform, 
-				c, Color.TRANSPARENT,//new Color(.9,1.,1.,1.), 
+				c, bgC,
 				null, null, 
 				"label test", 
 				false, -1);
@@ -169,5 +176,9 @@ public class AbstractSyntax extends NodeGroup{
 		return metaImport;
 	}
 
+	public void setFile(File file) {
+		this.file = file;
+	}
 	
+	public File getFile() {return file;}
 }

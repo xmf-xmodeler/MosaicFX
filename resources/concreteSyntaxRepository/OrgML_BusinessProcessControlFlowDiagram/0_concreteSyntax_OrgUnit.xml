@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="OrgStructure::OrgUnit" level="1">
-	<Import path="0_abstractSyntax_orgUnit.xml" id="test"/>
-	<Modification>
-		<Condition type="ReadFromSlot" slotName="prettyName" />
-		<Affected id="OrgUnitName" localId="OrgUnitName" />
-		<Consequence type="READ_FROM_SLOT" />
-	</Modification>
-</ConcreteSyntax>

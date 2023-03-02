@@ -29,6 +29,7 @@ import javafx.stage.FileChooser;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -37,6 +38,7 @@ import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.xmodeler.XModeler;
@@ -494,8 +496,10 @@ public class DiagramActions {
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
-
-//		Platform.runLater(() -> {
+		if(hitProperty != null && "Boolean".equals(hitProperty.getType(diagram))){
+			diagram.getComm().changeSlotValue(diagram.getID(), hitObject.getName(), hitProperty.getName(), "true".equals(hitProperty.getValue())?"false":"true");
+			diagram.updateDiagram();			
+		} else {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
 			Optional<ChangeSlotValueDialog.Result> result = dlg.showAndWait();
 
@@ -504,7 +508,7 @@ public class DiagramActions {
 				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.object.getName(), slotValueDialogResult.slot.getName(), slotValueDialogResult.newValue);
 				diagram.updateDiagram();
 			}
-//		});
+		}
 	}
 
 	public void updateDiagram() {
@@ -1211,5 +1215,11 @@ public class DiagramActions {
 	}
 	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
 		new UnhideElementsDialog(dialog).showDialog();
+	}
+
+	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
+		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel()-1);
+		System.err.println("showing Wizard...");
+		wizard.showAndWait();
 	}
 }

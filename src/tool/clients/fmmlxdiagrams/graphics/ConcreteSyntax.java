@@ -28,7 +28,6 @@ public class ConcreteSyntax extends AbstractSyntax{
 	public Vector<ActionInfo> getActions() {return new Vector<>(actions);}
 	public String classPath;
 	public int level;
-
 	
 	public static ConcreteSyntax load2(File arg, Element root) {
 		ConcreteSyntax syntaxGroup = new ConcreteSyntax();
@@ -79,7 +78,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        root.setAttribute("classPath", classPath);
 	        root.setAttribute("level",  "" + level);
 	        
-	        saveChildren(document, nodeElements, modifications, root);
+	        saveChildren(document, nodeElements, modifications, root, file.getParentFile());
 	               
 	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	        Transformer transformer = transformerFactory.newTransformer();
@@ -95,15 +94,14 @@ public class ConcreteSyntax extends AbstractSyntax{
 		}
 	}
 	
-	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Vector<Modification> modifications, Element parent) {
+	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Vector<Modification> modifications, Element parent, File dir) {
 		 for (NodeElement element : nodeElements) {
 	        	if (element instanceof SVGGroup) {
-	        		parent.appendChild(((SVGGroup)element).save(document));
-	        		
+	        		parent.appendChild(((SVGGroup)element).save(document, dir));	        		
 	        	} else if (element instanceof NodeLabel) {
 	        		parent.appendChild(((NodeLabel)element).save(document));
 	        	} else if (element instanceof NodeGroup){
-	        		parent.appendChild(((NodeGroup)element).save(document));
+	        		parent.appendChild(((NodeGroup)element).save(document, dir));
 	        	}
 	        }
 		 for (Modification modification: modifications) {
@@ -123,5 +121,19 @@ public class ConcreteSyntax extends AbstractSyntax{
 		return instance;
 	}
 
+	public void addModification(Modification mod) {
+		modifications.add(mod);		
+	}
 	
+	public void removeModification(Modification mod) {
+		modifications.remove(mod);		
+	}
+
+	public void addAction(ActionInfo a) {
+		actions.add(a);		
+	}
+	
+	public void removeAction(ActionInfo a) {
+		actions.remove(a);		
+	}
 }

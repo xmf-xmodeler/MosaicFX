@@ -11,8 +11,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -35,6 +35,10 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
+
+		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
+		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
+		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(instanceWizardItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
@@ -100,7 +104,6 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem slotMenu = new MenuItem("Change Slot Value");
 		slotMenu.setOnAction(e -> diagram.getActions().changeSlotValue(object, null));
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
-		Menu showMenu = createShowSubMenu();
 		Menu delegationMenu = createDelegationSubMenu();
 		
 		/*
@@ -161,7 +164,6 @@ public class ObjectContextMenu extends ContextMenu {
 				delegationMenu, 
 				slotMenu, 
 				associationInstanceMenu, 
-				showMenu, 
 				assignItem,
 				editConcreteSyntaxItem);
 		
@@ -366,19 +368,6 @@ public class ObjectContextMenu extends ContextMenu {
 
 		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
-	}
-
-	private Menu createShowSubMenu() {
-		Menu showSubMenu = new Menu("Show");
-
-		MenuItem operationsItem = new MenuItem("Operations");
-		operationsItem.setOnAction(e -> {
-			object.setShowOperations(true);
-			diagram.redraw();
-		});
-
-		showSubMenu.getItems().addAll(operationsItem);
-		return showSubMenu;
 	}
 	
 	private Menu createDelegationSubMenu() {

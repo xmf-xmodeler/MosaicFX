@@ -147,7 +147,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeGroup owner) {
 		super.setOwner(owner);
 		updateBounds();
 	}
@@ -204,17 +204,21 @@ public class NodePath extends NodeBaseElement{
 	}
 	
 	public static NodePath rectangle(SVGOMRectElement n, SVGOMSVGElement rootNode) {
-		double x, y, rx = 0, ry = 0, width, height;
+		Double x, y, rx = null, ry = null, width, height;
 		x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
 		y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
 		if (n.getAttributes().getNamedItem("rx")!=null) {
 			rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
 		} 
-		if (n.getAttributes().getNamedItem("rx")!=null) {
+		if (n.getAttributes().getNamedItem("ry")!=null) {
 			ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
 		}
 		width = Double.parseDouble(n.getAttributes().getNamedItem("width").getNodeValue());
 		height = Double.parseDouble(n.getAttributes().getNamedItem("height").getNodeValue());		
+
+		if(rx == null && ry != null) rx = ry;
+		if(ry == null && rx != null) ry = rx;
+		if(ry == null && rx == null) {ry = 0.0; rx = 0.0;}
 		
 		String path="M " + x + " " + y;
 		path=path + " m " + rx + " " + 0;
@@ -241,7 +245,7 @@ public class NodePath extends NodeBaseElement{
 
 	public void setColor(String colorString) {
 		try{overrideFillColor = Color.web(colorString);}
-		catch(Exception e) {e.printStackTrace();}
+		catch(Exception e) {System.err.println("Could not set color \"" + colorString + "\"");}
 	}
 	
 	

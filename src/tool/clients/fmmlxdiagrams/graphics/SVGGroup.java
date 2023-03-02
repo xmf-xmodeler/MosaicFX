@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 
 public class SVGGroup extends NodeGroup {
 	
@@ -21,9 +22,10 @@ public class SVGGroup extends NodeGroup {
 		return "SVG(" + file.toString() + ")";
 	}
 
-	public Node save(Document document) {
+	public Node save(Document document, File dir) {
 		Element myElement = document.createElement("SVG");
-		myElement.setAttribute("path", new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toURI().relativize(file.toURI()).getPath());
+		String path = ConcreteSyntaxWizard.getRelativePath(dir, file);
+		myElement.setAttribute("path", path);
 		myElement.setAttribute("xx", myTransform.getMxx()+"");
 		myElement.setAttribute("yy", myTransform.getMyy()+"");
 		myElement.setAttribute("xy", myTransform.getMxy()+"");

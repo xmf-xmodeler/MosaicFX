@@ -1,0 +1,33 @@
+Bugs:
+-If you try to use svgs, which path can´t be found no svg will be presented
+-Performance Problems -> See Performance Problem XML
+-Consequence SHOW_NEVER only works with id´s in SVG 
+
+
+Possible Features:
+Make Constraints as a Condition for a Modification
+
+The Update Diagram-Button at the tool should be updated
+Concrete Syntax Editor -> revert actions function
+
+
+It should be implemented, that you can turn of the concrete syntax
+Would be nice to have the chance to define modifications in an abstract syntax 
+OpValueCompareFunction ?? 
+
+
+Questions:
+Can i just add labels with text in XML
+What is the meaning of the second id by read from slot
+What means the id in the import meta tag?
+Wo kommen dnen die groups her bei den optical consequences?
+By the SlotNumCompareCondition are the bounds exclusive?  -> jetzt inclusive asl <= und >=
+
+
+Which Syntax will be choosen if there are two files for one Class?
+
+
+
+Possible Values of Aligment of Labels = CENTER, LEFT, RIGHT
+ 
+

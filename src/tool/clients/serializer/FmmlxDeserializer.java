@@ -46,6 +46,7 @@ public class FmmlxDeserializer {
             	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
             	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlManager.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	sendDiagramViewStatus(diagramId, diagramNode, fmmlxDiagramCommunicator);
+            	sendDiagramDisplayProperties(diagramId, fmmlxDiagramCommunicator);
             	if(!projectPopulated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
             		populateDiagram(diagramId);
@@ -55,7 +56,8 @@ public class FmmlxDeserializer {
         }
     }
 
-    private void sendDiagramViewStatus(Integer diagramID, 
+    
+	private void sendDiagramViewStatus(Integer diagramID, 
     								   Node diagramNode,
     								   FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
 		Vector<String> names = new Vector<>();
@@ -75,16 +77,30 @@ public class FmmlxDeserializer {
 			} catch (Exception e) {} // Ignore the stuff we don't need to worry about
 		}    	
     	fmmlxDiagramCommunicator.sendViewStatus(diagramID, names, transformations);
-    	NamedNodeMap attributes = diagramNode.getAttributes();
-    	HashMap<String, Boolean> map = new HashMap<>();
-    	for(int i = 0; i < attributes.getLength(); i++) { 
-    		// this adds all attributes to the options list.
-    		// However those we don't care about will be dropped later on anyway
-    		Node attribute = attributes.item(i);
-    		map.put(attribute.getNodeName(), "true".equals(attribute.getNodeValue()));
-    	}
-    	fmmlxDiagramCommunicator.sendViewOptions(diagramID, map);
 	}
+ 
+    private void sendDiagramDisplayProperties(Integer diagramID, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+   		/*
+			2022-12-13 TS
+			In Version 2 of the XML-Exports all ViewOption related values were stored in the <Diagram>-Tag. In later Version there was created a new Tag <DiagramViewDisplayProperties>.
+			Right now all properties are stored in this Tag.
+		*/
+    	NamedNodeMap attributes;
+    	// Is there a earlier Version then 2 ? latest Models i found was challenge Models, these already have version 2
+    	if (xmlManager.getVersionTextContent().equals("2")) {
+    		attributes = xmlManager.getChildWithTag(getDiagramsElement(), SerializerConstant.TAG_NAME_DIAGRAM).getAttributes();
+    	}else {
+    		attributes = xmlManager.getDiagramDisplayPropertiesElement().getAttributes();
+		}	
+       	HashMap<String, Boolean> map = new HashMap<>();
+    	for(int i = 0; i < attributes.getLength(); i++) { 
+			Node attribute = attributes.item(i);
+			map.put(attribute.getNodeName(), Boolean.valueOf(attribute.getNodeValue()));
+			fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
+    	}
+    	
+	}
+ 
 	//This methode works to recreate all the existing components on a diagram-data in the xml file.
     //The sequence of its reproduction corresponds to the log order stored in XML.
     public void populateDiagram(Integer diagramID) {

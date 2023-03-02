@@ -86,6 +86,7 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign - BOX_GAP,  - BOX_GAP - textHeight));
+		total.append(getDragAffine());
 		return total;
 	}
 	
@@ -96,6 +97,7 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign, - Y_BASELINE_DIFF));
+		total.append(getDragAffine());
 		return total;
 	}
 
@@ -233,7 +235,9 @@ public class NodeLabel extends NodeBaseElement {
 		Element myElement = document.createElement("Label");
 		myElement.setAttribute("align", alignment==Pos.BASELINE_CENTER?"CENTER":alignment==Pos.BASELINE_RIGHT?"RIGHT":"LEFT");
 		saveTransformation(myElement);
-		myElement.setAttribute("id", id );
+		myElement.setAttribute("id", id);
+		myElement.setAttribute("color", NodeElement.color2Web(fgColor));
+		myElement.setAttribute("bgColor", NodeElement.color2Web(bgColor));
 		return myElement;
 	}
 
@@ -247,4 +251,30 @@ public class NodeLabel extends NodeBaseElement {
 		this.text = newText;
 		textWidth = FmmlxDiagram.calculateTextWidth(text);
 	}
+
+	public Pos getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Pos alignment) {
+		this.alignment = alignment;
+	}
+
+	public Color getFgColor() {
+		return fgColor;
+	}
+
+	public void setFgColor(Color fgColor) {
+		this.fgColor = fgColor;
+	}
+
+	public Color getBgColor() {
+		return bgColor;
+	}
+
+	public void setBgColor(Color bgColor) {
+		this.bgColor = bgColor;
+	}
+
+
 }

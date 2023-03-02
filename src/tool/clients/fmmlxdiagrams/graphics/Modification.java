@@ -25,6 +25,13 @@ public class Modification{
 		READ_FROM_SLOT,
 		SET_COLOR}		
 	
+	public Modification(Condition<?> condition, Consequence consequence, String affectedId, String affectedParentId) {
+		this.condition = condition;
+		this.consequence = consequence;
+		this.affectedId = affectedId;
+		this.affectedParentId = affectedParentId;
+	}
+	
 	public Modification(Element modElement) {
 		Element conditionElement = null;
 		Element consequenceElement = null;
@@ -65,6 +72,9 @@ public class Modification{
 			} else if("BooleanSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				condition = new Condition.BooleanSlotCondition(slotName);
+			} else if("BooleanOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				condition = new Condition.BooleanOpValCondition(opName);
 			} else if("ReadFromOpValCondition".equals(conditionType)) {
 				String opName = conditionElement.getAttribute("opName");
 				condition = new Condition.ReadFromOpValCondition(opName);
@@ -100,6 +110,11 @@ public class Modification{
 			throw new IllegalArgumentException("<Affected...>  IDs not readable (" + e.getMessage() + ")", e);
 		}
 		
+	}
+
+	@Override 
+	public String toString() {
+		return affectedId + " " + consequence + " " + condition + ".";
 	}
 	
 	public Node save(Document document) { Element modificationElement = document.createElement("Modification");

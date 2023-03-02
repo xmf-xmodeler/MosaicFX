@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 /*This Class is an abstract layer over XML to allow saving the FmmlxDiagram data into XML file
@@ -51,7 +52,6 @@ public class FmmlxSerializer  {
             Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
             Collections.sort(diagramIds);
             for(Integer id :diagramIds){
-//                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
                 saveProject(packagePath);                
                 saveDiagram(FmmlxDiagramCommunicator.getDiagram(id).getDiagramLabel(), packagePath, id);
             }
@@ -102,33 +102,31 @@ public class FmmlxSerializer  {
     //This methode save the Diagram-Data.
     //This method makes the main XML-node containing Diagram-data and then add the node into xml-document
     public void saveDiagram(String label, String diagramPath, Integer id) throws TransformerException, TimeOutException {
-        if(checkFileExist(xmlManager.getSourcePath())) {
-            Element diagramsElement = xmlManager.getDiagramsElement();
-            Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);
+    	Element diagramsElement = xmlManager.getDiagramsElement();
+    	Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);	
+    	if(checkFileExist(xmlManager.getSourcePath())) {
             if (xmlManager.diagramIsExist(label)) {
                 xmlManager.removeDiagram(label);
             }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
+            diagramElement.appendChild(xmlManager.createXmlElement(SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES));
+            serilizeDiagramDisplayProperties(id);
         }
     }
 
     //Part of saveDiagram-process
     //this method contains the steps of saving process in more detail
     //All steps create the XML-Element and add this element as a child into its parent (Diagram Node)
-    private void saveComponentsIntoDiagramElement(Element ParentElement, String diagramPath, Integer id) {
-        saveObjectsIntoDiagramElement(id, ParentElement);
-        saveEdgesIntoDiagramElement(id, diagramPath, ParentElement);
-        saveLabelsIntoDiagramElement(id, ParentElement);
-        saveViewsIntoDiagramElement(id, ParentElement);
+    private void saveComponentsIntoDiagramElement(Element diagramElement, String diagramPath, Integer id) {
+        saveObjectsIntoDiagramElement(id, diagramElement);
+        saveEdgesIntoDiagramElement(id, diagramPath, diagramElement);
+        saveLabelsIntoDiagramElement(id, diagramElement);
+        serilizeViews(id, diagramElement);
     }
 
-    private void saveViewsIntoDiagramElement(Integer id, Element diagramElement) {
-    	HashMap<String,Boolean> optionsResult = FmmlxDiagramCommunicator.getCommunicator().getViewOptions(id);
+    private void serilizeViews(Integer id, Element diagramElement) {
     	Vector<Vector<Object>> viewsResult = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
-    	for(String key : optionsResult.keySet()) {
-    		diagramElement.setAttribute(key, optionsResult.get(key)?"true":"false");
-    	}	
     	for(Vector<Object> viewVec : viewsResult) {    		
     		Element viewElement = xmlManager.createXmlElement("View");
     		viewElement.setAttribute("name", ""+viewVec.get(0));
@@ -138,6 +136,14 @@ public class FmmlxSerializer  {
     		diagramElement.appendChild(viewElement);
     	}
 	}
+    
+    private void serilizeDiagramDisplayProperties(Integer id) {
+    	Element diagramDisplayProperties = xmlManager.getDiagramDisplayPropertiesElement();
+    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
+    	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
+    		diagramDisplayProperties.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
+		}
+    }
 
 	private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {
         HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllLabelPositions(id);

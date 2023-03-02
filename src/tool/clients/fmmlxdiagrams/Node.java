@@ -7,6 +7,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
+import java.util.Map;
+
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;

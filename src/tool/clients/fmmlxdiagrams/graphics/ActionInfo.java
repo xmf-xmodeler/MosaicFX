@@ -27,5 +27,9 @@ public class ActionInfo {
 		return null;//()->{};
 	}
 	
+	@Override 
+	public String toString() {
+		return localId + ": " + actionType + ".";
+	}
 	
 }

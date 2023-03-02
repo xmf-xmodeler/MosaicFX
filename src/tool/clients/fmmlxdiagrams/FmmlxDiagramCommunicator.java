@@ -85,7 +85,7 @@ public class FmmlxDiagramCommunicator {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfViews);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -94,6 +94,12 @@ public class FmmlxDiagramCommunicator {
 			createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			diagrams.add(diagram);
 			l.countDown();
+			diagram.getDiagramViewToolBarModell().recieveDisplayPropertiesFromXMF();
+			/*
+			If you create a new diagram the backend has no TollBarProperties. If you would save it this way the properties can´t be exported to XML.
+			To avoid this we will send the properties right at the initialization of the model to the backend.
+			*/
+			diagram.getDiagramViewToolBarModell().sendDisplayPropertiesToXMF();
 		});
 		try {
 			l.await();
@@ -262,7 +268,6 @@ public class FmmlxDiagramCommunicator {
 		int sleep = 2;
 		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
-			//if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -272,7 +277,6 @@ public class FmmlxDiagramCommunicator {
 			}
 			if (results.containsKey(requestID)) {
 				waiting = false;
-				//if (DEBUG) System.err.println("  received after " + (System.currentTimeMillis() - START) + "ms.");
 			}
 		}
 
@@ -293,7 +297,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 
-	private void sendMessage(String command, Value[] message) {
+	void sendMessage(String command, Value[] message) {
 		if (DEBUG) {
 			
 			try{int n = message[0].values[1].intValue;
@@ -843,23 +847,19 @@ public class FmmlxDiagramCommunicator {
 		};
 		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
 	}
-    
-    
-//	@SuppressWarnings("unchecked")
-//	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
-//		Value[] slotNameArray = createValueArray(slotNames);
-//		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
-//		Vector<Object> slotList = (Vector<Object>) (response.get(0));
-//		Vector<FmmlxSlot> result = new Vector<>();
-//		for (Object slotO : slotList) {
-//			Vector<Object> slot = (Vector<Object>) (slotO);
-//			String name = (String) (slot.get(0));
-//			String value = (String) (slot.get(1));
-//			result.add(new FmmlxSlot(name, value, owner));
-//			Collections.sort(result);
-//		}
-//		return result;
-//	}
+	
+	public void evalString(AbstractPackageViewer diagram, String text, ReturnCall<Vector<Object>> result) {
+		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
+			Object response = syntaxCheckResponse.get(0);
+			if(response == null) {
+				result.run(null);
+			} else {
+				Vector<Object> responseV = (Vector<Object>) response;
+				result.run(responseV);
+			}
+		};
+		xmfRequestAsync(handler, diagram.getID(), "evalString", returnCall, new Value(text));
+	}
 
     @SuppressWarnings("unchecked")
     public void fetchAllOperationValues(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> monOpNames, ReturnCall<?> opValReceivedReturn) {
@@ -895,23 +895,6 @@ public class FmmlxDiagramCommunicator {
     	};
     	xmfRequestAsync(handler, diagram.getID(), "getAllOperationValues", returnCall, new Value(objectOpValList));
     }
-    
-//    @SuppressWarnings("unchecked")
-//	public Vector<FmmlxOperationValue> fetchOperationValues(AbstractPackageViewer diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
-//		Value[] monitoredOperationsNameArray = createValueArray(monitoredOperationsNames);
-//		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
-//		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
-//		Vector<FmmlxOperationValue> result = new Vector<>();
-//		for (Object returnValueO : returnValuesList) {
-//			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
-//			String name = (String) (returnValue.get(0));
-//			String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
-//			Boolean hasRange = (Boolean) returnValue.get(2);
-//			Boolean isInRange = (Boolean) returnValue.get(3);
-//			result.add(new FmmlxOperationValue(name, value, hasRange, isInRange));
-//		}
-//		return result;
-//	}
 
 	@SuppressWarnings("unchecked")
 	public void fetchAllEnums(AbstractPackageViewer diagram, ReturnCall<Vector<FmmlxEnum>> enumsReceivedReturn) {
@@ -1082,6 +1065,46 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addInstance", message);
 	}
 	
+	public void addGeneratedInstance(
+			AbstractPackageViewer diagram,
+			FmmlxObject theClass,
+			int level,
+			String namePrefix, 
+			Vector<Vector<String>> slotValues,
+			Vector<String> mandatoryConstraints, 
+			ReturnCall<Boolean> wizardReturn) {
+
+		int i = 0;
+		Value[] slotList = new Value[slotValues.size()];
+		for(Vector<String> slotItem : slotValues) {
+			Value name = new Value(slotItem.get(0));
+			Value value = new Value(slotItem.get(1));
+			Value pair = new Value(new Value[] {name, value});
+			slotList[i] = pair;
+			i++;
+		}
+		
+		i = 0;
+		Value[] constraintList = new Value[mandatoryConstraints.size()];
+		for(String c : mandatoryConstraints) {
+			constraintList[i] = new Value(c);
+			i++;
+		}
+		
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			System.err.println("Instance Generator response from XMF: "+ response);
+			Boolean success = (Boolean) response.get(0);
+			wizardReturn.run(success);
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "addGeneratedInstance", localReturn, 
+			new Value(theClass.name),
+			new Value(level),
+			new Value(namePrefix),
+			new Value(slotList),
+			new Value(constraintList));		
+	}
+	
 	public void classify(int diagramID, Vector<FmmlxObject> objects, String className) {
 		Value[] objectNames = new Value[objects.size()];
 		for(int i = 0; i < objectNames.length; i++) {
@@ -1189,18 +1212,6 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAttribute", message);
 	}
 
-//	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
-//		Value[] message = new Value[]{
-//				new Value(-1),
-//				new Value(objectId),
-//				new Value(operationName),
-//				new Value(level),
-//				new Value(operationType),
-//				new Value(body)
-//		};
-//		sendMessage("addOperation", message);
-//	}
-
     public void addOperation2(int diagramID, String objectName, int level, String body) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -1244,7 +1255,6 @@ public class FmmlxDiagramCommunicator {
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(objectName),
                 new Value(operationName),
-//				new Value(oldType),
                 new Value(newType)};
         sendMessage("changeOperationType", message);
 
@@ -1295,16 +1305,6 @@ public class FmmlxDiagramCommunicator {
                 new Value(aParsableText)};
         sendMessage("changeSlotValue", message);
     }
-
-//	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
-//		Value[] message = new Value[]{
-//				new Value(-1),
-//				new Value(objectId),
-//				new Value(oldLevel),
-//				new Value(newLevel)};
-//		sendMessage("changeAssociationLevel", message);
-//	}
-
 
     public void changeOf(int diagramID, String objectName, String oldOfName, String newOfName) {
         Value[] message = new Value[]{
@@ -1373,14 +1373,6 @@ public class FmmlxDiagramCommunicator {
                 new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive)};
         sendMessage("addAssociation", message);
     }
-
-//	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
-//		Value[] message = new Value[]{new Value(-1),
-//				new Value(objectId),
-//				new Value(attributeName),
-//				new Value(multi.toValue())};
-//		sendMessage("changeMultiplicity", message);
-//	}
 
     public void changeOperationBody(int diagramID, String objectName, String operationName, String body) {
         Value[] message = new Value[]{
@@ -2087,6 +2079,8 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
+	// this map stored the positions of the nodes and edges of freshly loaded xml-files
+	// until the diagram is opened for the first time
 	private HashMap<Integer, org.w3c.dom.Node> positionInfos = new HashMap<>();
 	
 	public void preparePositionInfo(Integer diagramId, org.w3c.dom.Node diagramNode) {
@@ -2096,6 +2090,10 @@ public class FmmlxDiagramCommunicator {
 	public org.w3c.dom.Node getPositionInfo(Integer id) {
 		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
 		return positionInfos;
+	}
+	
+	public void removePositionInfo(Integer id) {
+		this.positionInfos.remove(id);
 	}
 
 	public void setSilent(boolean silent) {
@@ -2283,32 +2281,7 @@ public class FmmlxDiagramCommunicator {
 			return V;
 		}
 	}
-	
-	public void sendViewOptions(int diagramID) {
-		Vector<Value> items = new Vector<>();
-		FmmlxDiagram diagram = getDiagram(diagramID);
-		items.add(new Value(new Value[] {new Value("showDerivedAttributes"), 	new Value( diagram.isShowDerivedAttributes())}));
-		items.add(new Value(new Value[] {new Value("showDerivedOperations"), 	new Value( diagram.isShowDerivedOperations())}));
-		items.add(new Value(new Value[] {new Value("showGettersAndSetters"), 	new Value( diagram.isShowGetterAndSetter())}));
-		items.add(new Value(new Value[] {new Value("showOperations"), 			new Value( diagram.isShowOperations())}));
-		items.add(new Value(new Value[] {new Value("showOperationValues"), 		new Value( diagram.isShowOperationValues())}));
-		items.add(new Value(new Value[] {new Value("showSlots"), 				new Value( diagram.isShowSlots())}));
-		items.add(new Value(new Value[] {new Value("showMetaClassName"),		new Value( diagram.isMetaClassNameInPalette())}));
-		items.add(new Value(new Value[] {new Value("showConstraints"),		    new Value( diagram.isConstraintsInDiagram())}));
-		items.add(new Value(new Value[] {new Value("showConstraintReports"),    new Value( diagram.isConstraintReportsInDiagram())}));
-		Value[] itemArray = new Value[items.size()];
-		for(int i = 0; i < itemArray.length; i++) {
-			itemArray[i] = items.get(i);
-		}
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(itemArray)
-		};
-		sendMessage("sendViewOptions", message);
-	}
-
-
-	public void sendViewOptions(Integer diagramID, HashMap<String, Boolean> map) {
+		public void sendDiagramDisplayOptions(Integer diagramID, HashMap<String, Boolean> map) {
 		Vector<Value> items = new Vector<>();
 		for(String key : map.keySet()) {
 			items.add(new Value(new Value[] {new Value(key), new Value(map.get(key))}));
@@ -2323,9 +2296,9 @@ public class FmmlxDiagramCommunicator {
 		};
 		sendMessage("sendViewOptions", message);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Boolean> getViewOptions(Integer diagramID) {
+	public HashMap<String, Boolean> getDiagramDisplayProperties(Integer diagramID) {
 		try {
 			Vector<Object> response = xmfRequest(handler, diagramID, "getViewOptions");
 			HashMap<String, Boolean> result = new HashMap<String, Boolean>();
@@ -2345,8 +2318,5 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
-
-
-
 
 }

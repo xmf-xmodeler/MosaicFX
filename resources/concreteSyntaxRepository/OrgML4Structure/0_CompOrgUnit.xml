@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::OrgStructure::CompOrgUnit" level="0">
+  <SVG path="Textkasten_blau_3.svg" tx="0.0" ty="-2.0" xx="1.1880000000000004" xy="0.0" yx="0.0" yy="1.1880000000000004"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" id="nameLable" tx="96.0" ty="76.0" xx="1.1520000000000001" xy="0.0" yx="0.0" yy="1.1520000000000001"/>
+  <SVG id="svg0" path="Department_Low.svg" tx="134.0" ty="6.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG id="svg1" path="MaxNumEmpException_true.svg" tx="-26.0" ty="2.0" xx="1.6" xy="0.0" yx="0.0" yy="1.6"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x00ffffff" id="labelFilled" tx="8.0" ty="52.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG id="svg2" path="MaxNumEmpException_false.svg" tx="-26.0" ty="30.0" xx="1.6" xy="0.0" yx="0.0" yy="1.6"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x000000ff" id="labelOpen" tx="8.0" ty="80.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG id="svg3" path="Performance_high.svg" tx="0.0" ty="-12.0" xx="1.6" xy="0.0" yx="0.0" yy="1.6"/>
+  <SVG id="svg4" path="Performance_med.svg" tx="0.0" ty="-12.0" xx="1.6" xy="0.0" yx="0.0" yy="1.6"/>
+  <SVG id="svg5" path="Performance_low.svg" tx="0.0" ty="-12.0" xx="1.6" xy="0.0" yx="0.0" yy="1.6"/>
+  <Modification>
+    <Condition opName="getName" type="ReadFromOpValCondition"/>
+    <Affected id="nameLable" localId="nameLable"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="ignore" type="BooleanSlotCondition"/>
+    <Affected id="basicBlue" localId="test"/>
+    <Consequence type="SHOW_NEVER"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="ignore" type="BooleanSlotCondition"/>
+    <Affected id="basicHuman" localId="test"/>
+    <Consequence type="SHOW_NEVER"/>
+  </Modification>
+  <Modification>
+    <Condition opName="filledPos" type="ReadFromOpValCondition"/>
+    <Affected id="labelFilled" localId="labelFilled"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition opName="openPos" type="ReadFromOpValCondition"/>
+    <Affected id="labelOpen" localId="labelOpen"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition opName="isExcellent" type="BooleanOpValCondition"/>
+    <Affected id="svg3" localId="svg3"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition opName="isMediocre" type="BooleanOpValCondition"/>
+    <Affected id="svg4" localId="svg4"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition opName="isPoor" type="BooleanOpValCondition"/>
+    <Affected id="svg5" localId="svg5"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+</ConcreteSyntax>

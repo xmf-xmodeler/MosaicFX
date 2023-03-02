@@ -23,11 +23,6 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public Vector<String> getEnumItems(String type) {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
