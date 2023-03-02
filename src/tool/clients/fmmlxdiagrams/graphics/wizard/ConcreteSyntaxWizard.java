@@ -724,7 +724,9 @@ public class ConcreteSyntaxWizard extends Application {
 
 	public void updateUI(NodeElement item) {
 		concreteSyntaxTreeView.setTree(item.getRoot());
+		TreeItem<NodeElement> oldItem = getTreeViewItem(concreteSyntaxTreeView.getRoot(), item);
 		setCurrentGraphicElement(item.getRoot());
+		concreteSyntaxTreeView.getSelectionModel().select(oldItem);
 		syntaxGrid.updateContent();
 
 		if(selectedSyntax != null) {
@@ -733,6 +735,19 @@ public class ConcreteSyntaxWizard extends Application {
 			actionList.getItems().clear();
 			actionList.getItems().addAll(selectedSyntax.getActions());
 		}
+	}
+	
+	private static TreeItem<NodeElement> getTreeViewItem(TreeItem<NodeElement> item, NodeElement value) {
+	    if (item != null) {
+	        if (item.getValue().equals(value)) return item;
+	        for (TreeItem<NodeElement> child : item.getChildren()) {
+	            TreeItem<NodeElement> s = getTreeViewItem(child, value);
+	            if (s != null) {
+	                return s;
+	            }
+	        }
+	    }
+	    return null;
 	}
 
 	public FmmlxObject getSelectedClass() {
