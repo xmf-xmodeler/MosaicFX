@@ -4,168 +4,174 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Vector;
+
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
+import tool.helper.FXAuxilary.JavaFxButtonAuxilary;
+import tool.helper.FXAuxilary.JavaFxTooltipAuxilary;
 
 public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 	private AbstractPackageViewer diagram;
-	private ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
-	private Vector<FmmlxObject> hiddenElements = new Vector<>();
-	private Vector<FmmlxObject> shownElements = new Vector<>();
+	private Vector<FmmlxObject> hiddenObjects = new Vector<>();
+	private Vector<FmmlxObject> shownObjects = new Vector<>();
 	private Vector<FmmlxObject> objects;
-	private ListView<FmmlxObject> hiddenElementsListView = new ListView<>();
-	private ListView<FmmlxObject> shownElementsListView = new ListView<>();
-	private GridPane gridPane = new GridPane();
-	private Button toShow = new Button("<<");
-	private Button allToShow = new Button("<<<");
-	private Button toHide = new Button(">>");
-	private Button allToHide = new Button(">>>");
-	private Label shownElementsLabel = new Label("Shown Elements");
-	private Label hiddenElementsLabel = new Label("Hidden Elements");
+	private ListView<FmmlxObject> hiddenObjectsListView = new ListView<>();
+	private ListView<FmmlxObject> shownObjectsListView = new ListView<>();
+	private FixedBlueLevelColorScheme levelColorScheme = new FixedBlueLevelColorScheme();
 
 	public UnhideElementsDialog(AbstractPackageViewer diagram) {
-		super();
 		this.diagram = diagram;
-		this.setTitle("Hide/ Unhide Elements");
-		this.getDialogPane().getButtonTypes().add(okButtonType);
-		objects = diagram.getObjects();
+		setTitle("Hide/ Unhide Elements");
+		ButtonType okButtonType = ButtonType.OK;
+		setResultConverter(dialogButton -> {
+			return new Vector<FmmlxObject>(shownObjectsListView.getItems());
+		});
+		getDialogPane().getButtonTypes().add(okButtonType);
+		objects = diagram.getObjectsReadOnly();
 		distributeObjects();
 		buildListViews();
-		customizeButtons();
-		buildGridPane();
-		setTableDoubleclickAction();
-		addOKButtonListener();
+		buildButtonVBox();
+		GridPane selectionView = buildGridPane();
+		getDialogPane().setContent(selectionView);
 	}
 
 	private void distributeObjects() {
-		// Collections.sort(objects);
 		for (FmmlxObject o : objects) {
 			if (o.isHidden()) {
-				hiddenElements.add(o);
+				hiddenObjects.add(o);
 			} else if (o.isHidden() == false) {
-				shownElements.add(o);
+				shownObjects.add(o);
 			}
 		}
 	}
 
 	private void buildListViews() {
-		hiddenElementsListView.getItems().addAll(hiddenElements);
-		sortListView(hiddenElementsListView);
-		hiddenElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		shownElementsListView.getItems().addAll(shownElements);
-		sortListView(shownElementsListView);
-		shownElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		addCellFactory(shownElementsListView);
-		addCellFactory(hiddenElementsListView);
+		hiddenObjectsListView.getItems().addAll(hiddenObjects);
+		shownObjectsListView.getItems().addAll(shownObjects);
+		sortBothListViews();
+		addCellFactory(shownObjectsListView);
+		addCellFactory(hiddenObjectsListView);
+		hiddenObjectsListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+				addSelectedObjectsToShownObjectsList();
+				sortListView(shownObjectsListView);
+			}
+		});
+		shownObjectsListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+				addSelectedObjectsToHiddenObjectsList();
+				sortListView(hiddenObjectsListView);
+			}
+		});
 	}
 
-	private void customizeButtons() {
-		toShow.setOnAction(e -> {
-			shownElementsListView.getItems().addAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
-			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
-			sortListView(shownElementsListView);
+	private VBox buildButtonVBox() {
+		VBox buttonVBox = new VBox();
+		buttonVBox.setAlignment(Pos.CENTER);
+		buttonVBox.setPrefWidth(60);
+
+		Button toShow = JavaFxButtonAuxilary.createButton("<<", e -> {
+			addSelectedObjectsToShownObjectsList();
 		});
-		toShow.setMinWidth(75);
-		addTooltip("Unhide single Elements or a list of selected Elements", toShow);
-		allToShow.setOnAction(e -> {
-			shownElementsListView.getItems().addAll(hiddenElementsListView.getItems());
-			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getItems());
-			sortListView(shownElementsListView);
+		toShow.setMinWidth(buttonVBox.getPrefWidth());
+		JavaFxTooltipAuxilary.addTooltip(toShow, "Unhide single Object or a list of selected Objects");
+
+		Button allToShow = JavaFxButtonAuxilary.createButton("<<<", e -> {
+			addAllObjectsToShownObjectsList();
 		});
-		addTooltip("Unhide all Elements", allToShow);
-		allToShow.setMinWidth(75);
-		toHide.setOnAction(e -> {
-			hiddenElementsListView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
-			shownElementsListView.getItems().removeAll(shownElementsListView.getSelectionModel().getSelectedItems());
-			sortListView(hiddenElementsListView);
+		allToShow.setMinWidth(buttonVBox.getPrefWidth());
+		JavaFxTooltipAuxilary.addTooltip(allToShow, "Unhide all Objects");
+
+		// Only used for smoother UI
+		Button dummy = new Button();
+		dummy.setVisible(false);
+
+		Button toHide = JavaFxButtonAuxilary.createButton(">>", e -> {
+			addSelectedObjectsToHiddenObjectsList();
 		});
-		addTooltip("Hide single Elements or a list of selected Elements", allToShow);
-		toHide.setMinWidth(75);
-		allToHide.setOnMouseClicked(e -> {
-			hiddenElementsListView.getItems().addAll(shownElementsListView.getItems());
-			shownElementsListView.getItems().removeAll(shownElementsListView.getItems());
-			sortListView(hiddenElementsListView);
+		toHide.setMinWidth(buttonVBox.getPrefWidth());
+		JavaFxTooltipAuxilary.addTooltip(toHide, "Hide single Object or a list of selected Objects");
+
+		Button allToHide = JavaFxButtonAuxilary.createButton(">>>", e -> {
+			addAllObjectsToHiddenObjectsList();
 		});
-		addTooltip("Hide all Elements", allToHide);
-		allToHide.setMinWidth(75);
+		allToHide.setMinWidth(buttonVBox.getPrefWidth());
+		JavaFxTooltipAuxilary.addTooltip(allToHide, "Hide all Objects");
+
+		buttonVBox.getChildren().addAll(toHide, allToHide, dummy, toShow, allToShow);
+		return buttonVBox;
 	}
 
-	private void addTooltip(String text, Button button) {
-		Tooltip tooltip = new Tooltip();
-		tooltip.setText(text);
-		button.setTooltip(tooltip);
+	private void addAllObjectsToHiddenObjectsList() {
+		hiddenObjectsListView.getItems().addAll(shownObjectsListView.getItems());
+		shownObjectsListView.getItems().removeAll(shownObjectsListView.getItems());
+		sortListView(hiddenObjectsListView);
 	}
 
-	private void buildGridPane() {
-		gridPane.add(shownElementsLabel, 0, 0, 1, 1);
-		gridPane.add(shownElementsListView, 0, 1, 1, 1);
-		GridPane buttonGridPane = new GridPane();
-		buttonGridPane.setAlignment(javafx.geometry.Pos.CENTER);
-		gridPane.add(buttonGridPane, 1, 1, 1, 1);
-		buttonGridPane.add(toHide, 0, 0, 1, 1);
-		buttonGridPane.add(toShow, 0, 1, 1, 1);
-		buttonGridPane.add(allToHide, 0, 2, 1, 1);
-		buttonGridPane.add(allToShow, 0, 3, 1, 1);
-		gridPane.add(hiddenElementsLabel, 2, 0, 1, 1);
-		gridPane.add(hiddenElementsListView, 2, 1, 1, 1);
+	private void addSelectedObjectsToHiddenObjectsList() {
+		hiddenObjectsListView.getItems().addAll(shownObjectsListView.getSelectionModel().getSelectedItems());
+		shownObjectsListView.getItems().removeAll(shownObjectsListView.getSelectionModel().getSelectedItems());
+		sortListView(hiddenObjectsListView);
+	}
+
+	private void addAllObjectsToShownObjectsList() {
+		shownObjectsListView.getItems().addAll(hiddenObjectsListView.getItems());
+		hiddenObjectsListView.getItems().removeAll(hiddenObjectsListView.getItems());
+		sortListView(shownObjectsListView);
+	}
+
+	private void addSelectedObjectsToShownObjectsList() {
+		shownObjectsListView.getItems().addAll(hiddenObjectsListView.getSelectionModel().getSelectedItems());
+		hiddenObjectsListView.getItems().removeAll(hiddenObjectsListView.getSelectionModel().getSelectedItems());
+		sortListView(shownObjectsListView);
+	}
+
+	private GridPane buildGridPane() {
+		GridPane gridPane = new GridPane();
+		gridPane.setHgap(7);
+		gridPane.add(new Label("Shown Elements"), 0, 0, 1, 1);
+		gridPane.add(shownObjectsListView, 0, 1, 1, 1);
+		VBox toolBar = buildButtonVBox();
+		gridPane.add(toolBar, 1, 1, 1, 1);
+		gridPane.add(new Label("Hidden Elements"), 2, 0, 1, 1);
+		gridPane.add(hiddenObjectsListView, 2, 1, 1, 1);
 		gridPane.setPadding(new Insets(15, 15, 15, 15));
-		getDialogPane().setContent(gridPane);
+		return gridPane;
 	};
 
-	private void setTableDoubleclickAction() {
-		hiddenElementsListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2) {
-				FmmlxObject selectedItem = hiddenElementsListView.getSelectionModel().getSelectedItem();
-				shownElementsListView.getItems().add(selectedItem);
-				hiddenElementsListView.getItems().remove(selectedItem);
-			}
-		});
-		shownElementsListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2) {
-				FmmlxObject selectedItem = shownElementsListView.getSelectionModel().getSelectedItem();
-				hiddenElementsListView.getItems().add(selectedItem);
-				shownElementsListView.getItems().remove(selectedItem);
-			}
-		});
-	}
-
-	private void addOKButtonListener() {
-		setResultConverter(dialogButton -> {
-			if (dialogButton == okButtonType) {
-				Vector<FmmlxObject> result = new Vector<>();
-				result.addAll(shownElementsListView.getItems());
-				return result;
-			}
-			return null;
-		});
-
-	}
-	
 	public void showDialog() {
 		Optional<Vector<FmmlxObject>> result = showAndWait();
 		if (result.isPresent()) {
 			new DiagramActions(diagram).hide(result.get(), false);
 		}
-
 		Vector<FmmlxObject> resultHide = new Vector<>();
-		resultHide.addAll(hiddenElementsListView.getItems());
+		resultHide.addAll(hiddenObjectsListView.getItems());
 		new DiagramActions(diagram).hide(resultHide, true);
 	}
 
@@ -190,8 +196,6 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 	}
 
 	private Node getClassLevelGraphic(int level) {
-//		if(level == -1) return null;
-		FixedBlueLevelColorScheme levelColorScheme = new FixedBlueLevelColorScheme();
 		double SIZE = 16;
 		Canvas canvas = new Canvas(SIZE, SIZE);
 		String text = level == -1 ? "?" : (level + "");
@@ -220,5 +224,10 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 		});
 		listView.getItems().clear();
 		listView.getItems().addAll(v);
+	}
+	
+	public void sortBothListViews() {
+		sortListView(hiddenObjectsListView);
+		sortListView(shownObjectsListView);
 	}
 }
