@@ -2,13 +2,23 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Arrays;
 import java.util.Vector;
-
 import javafx.scene.paint.Color;
 
 public abstract class LevelColorScheme {
 	
 	public abstract Color getLevelFgColor(int level, double opacity);
 	public abstract Color getLevelBgColor(int level); 
+	
+	public String getLevelFgColorHex(int level, double opacity) {
+		Color color = getLevelFgColor(level, opacity);
+		return toHexString(color);
+	}
+	
+	public String getLevelBgColorHex(int level) {
+		Color color = getLevelBgColor(level);
+		return toHexString(color);
+	}
+
 	
 	public static final class DefaultLevelColorScheme extends LevelColorScheme {
 		
@@ -172,6 +182,14 @@ public abstract class LevelColorScheme {
 		}
 	
 	}
+	
+	private static String format(double val) {
+	    String in = Integer.toHexString((int) Math.round(val * 255));
+	    return in.length() == 1 ? "0" + in : in;
+	}
 
-
+	public static String toHexString(Color value) {
+	    return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()) + format(value.getOpacity()))
+	            .toUpperCase();
+	}
 }

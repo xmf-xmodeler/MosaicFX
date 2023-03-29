@@ -29,7 +29,7 @@ public class PaletteGroupClass extends PaletteGroup {
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		
-		Vector<FmmlxObject> objects = new Vector<>(fmmlxDiagram.getObjects());
+		Vector<FmmlxObject> objects = new Vector<>(fmmlxDiagram.getObjectsReadOnly());
 		Collections.sort(objects);
 		Collections.reverse(objects);
 		
