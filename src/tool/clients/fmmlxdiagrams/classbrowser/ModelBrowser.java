@@ -772,7 +772,7 @@ public final class ModelBrowser extends CustomStage {
 
 	public void notifyModelHasLoaded() {
 		Platform.runLater(() -> {
-			Vector<FmmlxObject> objects = activePackage.getObjects();
+			Vector<FmmlxObject> objects = activePackage.getObjectsReadOnly();
 			levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 			
 			Collections.sort(objects, new Comparator<FmmlxObject>() {

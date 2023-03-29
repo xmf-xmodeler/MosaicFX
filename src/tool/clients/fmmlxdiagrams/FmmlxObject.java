@@ -187,7 +187,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
-		for (FmmlxObject object : diagram.getObjects()) {
+		for (FmmlxObject object : diagram.getObjectsReadOnly()) {
 			if (object.getOfPath().equals(this.ownPath)) {
 				result.add(object);
 			}
@@ -337,7 +337,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public HashSet<FmmlxObject> getAllSubclasses() {
 		HashSet<FmmlxObject> subclasses = new HashSet<FmmlxObject>();
 		subclasses.add(this);
-		for (FmmlxObject o : diagram.getObjects()) {
+		for (FmmlxObject o : diagram.getObjectsReadOnly()) {
 			if(o.parentsPaths.contains(this.ownPath)) {
 				subclasses.addAll(o.getAllSubclasses());
 			}
@@ -514,8 +514,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperties, Boolean> diagramToolBarProperties) {
-		if (!diagramToolBarProperties.get(DiagramDisplayProperties.SHOWCONCRETESYNTAX)){
+	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
 			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
 			return;
 		}

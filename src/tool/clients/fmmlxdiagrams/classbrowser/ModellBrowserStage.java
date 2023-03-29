@@ -235,7 +235,7 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
 		
-		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjects());
+		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjectsReadOnly());
 		Collections.sort(objects);
 		Collections.reverse(objects);
 		
@@ -340,7 +340,7 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.MODEL);
 		this.diagram=diagram;
 		
-		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjects());
+		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjectsReadOnly());
 		Collections.sort(objects);
 		Collections.reverse(objects);
 		
