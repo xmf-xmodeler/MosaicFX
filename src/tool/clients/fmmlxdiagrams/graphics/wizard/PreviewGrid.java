@@ -119,7 +119,6 @@ public class PreviewGrid<NodeElementType extends NodeGroup> extends GridPane {
 		
 		@Override public Canvas getCanvas() { return canvas; }
 		@Override public Affine getCanvasTransform() { return affine; }
-		@Override public void centerObject() {}
 		@Override public void centerObject(FmmlxObject affectedObject) {}
 	}
 
