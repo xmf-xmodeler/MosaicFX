@@ -255,12 +255,7 @@ public class ControlCenter extends Stage {
 
 	private void callConcreteSyntaxWizard() {
 		ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
-		try {
-			wizard.start(new Stage());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		wizard.start(new Stage());
 	}
 
 	private void callNewDiagramDialog() {

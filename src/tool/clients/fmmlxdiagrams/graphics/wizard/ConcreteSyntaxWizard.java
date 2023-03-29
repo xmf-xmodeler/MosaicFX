@@ -118,7 +118,7 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 	
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage){
 		
 		loadConcreteSyntax();
 		splitPane = new SplitPane();
@@ -152,7 +152,7 @@ public class ConcreteSyntaxWizard extends Application {
 			selectedLevelNode = levelSelectionField;
 		} else {
 			classSelectionBox = new ComboBox<FmmlxObject>();
-			classSelectionBox.getItems().addAll(model.getObjects());
+			classSelectionBox.getItems().addAll(model.getObjectsReadOnly());
 			levelSelectionBox = new ComboBox<Integer>();
 			selectedClassNode = classSelectionBox;
 			selectedLevelNode = levelSelectionBox;
@@ -691,7 +691,6 @@ public class ConcreteSyntaxWizard extends Application {
 			}
 		}
 
-		@Override public void centerObject() {}
 		@Override public void centerObject(FmmlxObject affectedObject) {}
 	}
 		
