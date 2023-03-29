@@ -192,6 +192,7 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
 		
+		if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
 		comm.getAllObjects(this, allObjectsReturn);
 
 	}

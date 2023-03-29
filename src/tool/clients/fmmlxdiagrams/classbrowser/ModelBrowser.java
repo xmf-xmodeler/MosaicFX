@@ -904,7 +904,10 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
 				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
-				addNewMenuItem(this, "Instance Generator", e -> actions.runInstanceGenerator(object), NEVER);
+				
+				addNewMenuItem(this, "Instance Wizard...", e -> actions.openInstanceWizard(object, null), () -> {
+					return (object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract();
+				});		
 	
 				getItems().add(new SeparatorMenuItem());
 	

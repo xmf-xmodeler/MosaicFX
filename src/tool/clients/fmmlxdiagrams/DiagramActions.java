@@ -36,8 +36,6 @@ import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
@@ -412,26 +410,6 @@ public class DiagramActions {
 		});
 	}
 	
-	public void runInstanceGenerator(FmmlxObject object) {
-		Platform.runLater(() -> {
-
-			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
-			instanceGenerator.openDialog(diagram);
-
-			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
-				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator.getValue().entrySet()) {
-					System.out.println(instanceGenerator.getSelectedParent());
-					System.out.println(fmmlxAttributeIValueGeneratorEntry.getKey().getName() + " : " + ((IValueGenerator) fmmlxAttributeIValueGeneratorEntry.getValue()).getGeneratedValue().get(i));
-				}
-				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
-			}
-			if(instanceGenerator.getNumberOfInstance()>0){
-				diagram.updateDiagram();
-			}
-		});
-	}
-
 	public void changeOfDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
