@@ -447,8 +447,6 @@ public abstract class AbstractPackageViewer {
 		} catch (PathNotFoundException pnfe) {throw new RuntimeException("Something went wrong",pnfe);}
 	}
 
-	public Canvas getCanvas() {return null;}
-
 	public Vector<Integer> getAllObjectLevel() {
 		Vector<Integer> result = new Vector<>();
 		for(FmmlxObject obj : objects){
