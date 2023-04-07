@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.classbrowser;
+package tool.clients.customui;
 
 import java.awt.Button;
 import java.awt.TextField;
@@ -102,21 +102,21 @@ public class FXMLExporter {
 	            //if (Parent.class.isAssignableFrom(aClass)) {
 	            //	res.add(new Property(aClass.getMethod("getChildrenUnmodifiable"), "children"));
 	            //    found = true;
-	            // Klassenproperties für den Object Browser
+	            // Klassenproperties fï¿½r den Object Browser
 	            //} 
 	            if(Label.class.isAssignableFrom(aClass)) {
-	                // zusätzlich GridPane Ids ermitteln
+	                // zusï¿½tzlich GridPane Ids ermitteln
 	            	found = true;
 	            } if(Labeled.class.isAssignableFrom(aClass)) {
 	            	// every Subclass of Labeled is affected
 	            	res.add(new Property(aClass.getMethod("getText"), "text")); 
 	            }      
 	            if(Button.class.isAssignableFrom(aClass)) { // does not work..?
-	            	// zusätzlich Default on Action ermitteln 
-	            	// zusätzlich GridPane Ids ermitteln
+	            	// zusï¿½tzlich Default on Action ermitteln 
+	            	// zusï¿½tzlich GridPane Ids ermitteln
 	            	found = true;
 	            } if(TextField.class.isAssignableFrom(aClass)) { // does not work..?
-	            	// zusätzlich GridPane Ids ermitteln
+	            	// zusï¿½tzlich GridPane Ids ermitteln
 	            	found = true;
 	            } if(GridPane.class.isAssignableFrom(aClass)) {
 	            	//res.add(new Property(aClass.getMethod("getChildren"), "children")); 
@@ -179,7 +179,7 @@ public class FXMLExporter {
 	            propertiesCache.put(object.getClass(), properties);
 	        }
 	        
-	        // Additionally try to set property für Row and ColumnIndex of GridPane
+	        // Additionally try to set property fï¿½r Row and ColumnIndex of GridPane
 	        // if object is label, button or textfield
 	        try {
 	        	Object value;

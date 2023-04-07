@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.classbrowser;
+package tool.clients.customui;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.ArrayList;
@@ -96,10 +96,10 @@ public class ControllerLanguageInterpreter2 {
 	private ListView<String> determineReference() {
 		// TBD: Das funktioniert niemals..
 		// 1) Klasse ist im Gegensatz zur Assoziation nicht eindeutig
-		// 2) Das Vorwärtslaufen klappt, aber das Rückwärts laufen nicht
+		// 2) Das Vorwï¿½rtslaufen klappt, aber das Rï¿½ckwï¿½rts laufen nicht
 		// 3) Wie erkennt man Zirkel bei den Assoziationen => keine Assoziation mehr als einmal durchlaufen!
 		// 4) Mehrfache Assoziationen zwischen zwei Klassen?
-		// Funktioniert das aber für den Prototyp?
+		// Funktioniert das aber fï¿½r den Prototyp?
 		
 		Stack<String> path = new Stack<>();
 		Stack<String> realPath = new Stack<>();

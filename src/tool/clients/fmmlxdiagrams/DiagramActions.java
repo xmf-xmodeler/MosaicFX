@@ -26,6 +26,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -1083,8 +1084,13 @@ public class DiagramActions {
 		new Thread(task).start();
 	}
 
-	
-	
+	// LM, 07.04.2023, New Action for execution of custom UI
+	public void executeUI(FmmlxObject object) {
+		
+		Platform.runLater(() -> new CustomUI(diagram, object));
+			
+	}
+	// End customUI
 	
 		
 	public void showObjectBrowser(FmmlxObject object) {
