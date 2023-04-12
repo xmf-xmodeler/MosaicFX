@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,6 +26,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -60,17 +62,10 @@ public class CustomGUIController {
 		// Handle different kinds of custom GUIs recursively
 		fillChildren(customGUI);
 				   
-		// Link listviews to associations and add action listeners to all list views
+		// Add events on list views for updates of selections
 		for( Node currEl : objToID.values() ) {
 			if( currEl instanceof ListView ) {
-				// Why not refreshGUI? 
-				// When to update? e.g. only after execution of actions / selection in listview?
-			   ((ListView) currEl).getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> injectGUI());
-			    // Update Reference with selected ListView
-			    // Wenn ListView neu angelegt wird / aktualisiert wird, prüfe, ob Selektion gesetzt ist ansonsten setze immer eine!
-			    //if( mainListView.getSelectionModel().isEmpty() ) {
-				//   mainListView.getSelectionModel().select(0);
-			    //} 
+				((ListView) currEl).setOnMouseClicked(this::selectNewInstance); // event also covers update of UI / Model
 			}
 		}
 		   
@@ -78,7 +73,7 @@ public class CustomGUIController {
 		injectGUI();
 		   		   
 		// Output information
-		System.err.println("Load finished!");
+		System.err.println("Load of View from file finished!");
 	}
 	   
 	private void fillChildren(Parent content) {
@@ -101,7 +96,7 @@ public class CustomGUIController {
 			   fillChildren(recall);
 			   return; // exit condition on recursive call
 		   } else {
-			   System.err.println("Cannot handle the following GUI-Element during loading of CustomGUI: " + cls.getName());
+			   System.err.println("Cannot handle the following UI-Element during loading of CustomUI: " + cls.getName());
 			   return; // error situation
 		   }
 		   
@@ -143,6 +138,30 @@ public class CustomGUIController {
 				   }
 			   }
 		   }
+	   }
+	
+	   public void selectNewInstance(MouseEvent event) {
+		   // Called when a new item is selected in a listView
+		   // Get source of event
+		   ListView source = (ListView) event.getSource();
+		   
+		   // Get UI-ID + selected Item
+		   String currItem = source.getSelectionModel().selectedItemProperty().getValue().toString();	   
+		   String id = source.getId();
+
+		   // Call XMF-Operation to handle the update
+		   String comm = this.customUI.getDiagram().getPackagePath() + "::" + "ListInjection"; // relevant object
+		   comm = comm + "." + "selectNewInstance"; // operation in ControllerMapping, which allows updating references
+		   comm = comm + "(" + "\"" + id + "\"" + "," + "\"" + currItem + "\"" + ")"; // pass UI-ID and selected object from listView with string handling
+		   // The operation is also triggering recursive updating of the reference list
+		   try {
+			  this.customUI.getDiagram().getComm().runOperation(this.customUI.getDiagram().getID(), comm);
+		   } catch(Exception e ) {
+			   e.printStackTrace();
+		   }
+			   
+		   // Yet, the diagram has to be updated first and then the UI
+		   this.customUI.getDiagram().updateDiagram( e -> { this.injectGUI(); });
 	   }
 	   
 	   public void injectGUI() {	   
@@ -217,6 +236,8 @@ public class CustomGUIController {
 						e.printStackTrace();
 					}
 			   }
+		   
+		   System.err.println("Injection of Model into View finished!");
 	   }
 	   	   
 	   // This method allows the execution of operations which are attached to the gui
@@ -262,6 +283,8 @@ public class CustomGUIController {
 				   
 				   // Update first diagram (due to possible changes) and afterwards the GUI
 				   // diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
+					   
+				   // When to update? e.g. only after execution of actions / selection in listview?
 					   
 				   // Note: The current implementation of the GUI is only supporting expressions as input.
 				   // (Except for date..)
