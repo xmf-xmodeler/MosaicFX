@@ -33,8 +33,8 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
-import tool.helper.FXAuxilary.JavaFxButtonAuxilary;
-import tool.helper.FXAuxilary.JavaFxTooltipAuxilary;
+import tool.helper.fXAuxilary.JavaFxButtonAuxilary;
+import tool.helper.fXAuxilary.JavaFxTooltipAuxilary;
 
 public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 	private AbstractPackageViewer diagram;

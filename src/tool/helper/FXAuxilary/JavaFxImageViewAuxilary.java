@@ -1,4 +1,4 @@
-package tool.helper.FXAuxilary;
+package tool.helper.fXAuxilary;
 
 import java.io.File;
 import java.net.MalformedURLException;

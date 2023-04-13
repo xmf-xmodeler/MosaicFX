@@ -1,4 +1,4 @@
-package tool.helper.FXAuxilary;
+package tool.helper.fXAuxilary;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

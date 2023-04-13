@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
-public class FaXML implements Comparable<FaXML>{
+public class PackageActionsList implements Comparable<PackageActionsList>{
 	
 	private final String name;	
-	private final Vector<FaXML> children = new Vector<>();
+	private final Vector<PackageActionsList> children = new Vector<>();
 	private final HashMap<String, String> attributes = new HashMap<>();
 	
-	public FaXML(Vector<Object> content) {
+	public PackageActionsList(Vector<Object> content) {
 //		System.err.println("reading " + content);
 		name = content.get(0).toString();
 		if (name.contains("addOperation2") || name.contains("changeOperationBody")){
@@ -28,7 +28,7 @@ public class FaXML implements Comparable<FaXML>{
 						attributes.put((String)child.get(0),(String)child.get(1));
 					}
 				} else {
-					children.add(new FaXML(child));
+					children.add(new PackageActionsList(child));
 				}
 			}
 		} else {
@@ -42,7 +42,7 @@ public class FaXML implements Comparable<FaXML>{
 					if(child.size() == 2) {
 						System.err.println("wrong type: " + child.get(0) + "/" +child.get(1).getClass().getCanonicalName());
 					}
-					children.add(new FaXML(child));
+					children.add(new PackageActionsList(child));
 				}
 			}
 		}
@@ -53,7 +53,7 @@ public class FaXML implements Comparable<FaXML>{
 	}
 
 	public String getName() { return name; }
-	public Vector<FaXML> getChildren() { return new Vector<>(children); }
+	public Vector<PackageActionsList> getChildren() { return new Vector<>(children); }
 	public Set<String> getAttributes() { return attributes.keySet(); }
 	public String getAttributeValue(String attributeName) { return attributes.get(attributeName); }
 	
@@ -64,12 +64,12 @@ public class FaXML implements Comparable<FaXML>{
 		for(String key : getAttributes()) attString.append(" ").append(key).append("=\"").append(getAttributeValue(key)).append("\"");
 
 		StringBuilder childrenString = new StringBuilder();
-		for(FaXML child : children) childrenString.append(child.toString(prefix + "  "));
+		for(PackageActionsList child : children) childrenString.append(child.toString(prefix + "  "));
 		return prefix + "<" + name + attString + (children.size()>0?(">\n"+childrenString+"</" + name):"/")  + ">\n";
 	}
 	
 	@Override
-	public int compareTo(FaXML that) {
+	public int compareTo(PackageActionsList that) {
 		Integer prio = this.priority().compareTo(that.priority());
 		if(prio != 0) return prio;
 		
