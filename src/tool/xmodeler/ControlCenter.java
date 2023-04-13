@@ -1,6 +1,7 @@
 package tool.xmodeler;
 
 import java.awt.Desktop;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.util.Vector;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
+import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -78,7 +80,7 @@ public class ControlCenter extends Stage {
 		setScene(scene);
 				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
-		this.setOnCloseRequest(event -> handleStageCloseRequest(event));
+		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 			@Override
 			public void run() {
@@ -87,6 +89,23 @@ public class ControlCenter extends Stage {
 		}, 2500);
 	}
 	
+	private void showCloseWarningDialog(Event event) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Close Warning");
+		alert.setHeaderText("Application is closing!");
+		alert.setContentText("Proceed?");
+		
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().add(buttonTypeCancel);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK){
+			//TODO WorkbenchClient.theClient().shutdownEvent();
+			Runtime.getRuntime().halt(0);
+		} else {
+			event.consume(); 
+		}
+	}
+
 	private final class ControlCenterMenuBar extends MenuBar{
 		
 		public ControlCenterMenuBar() {
@@ -230,15 +249,6 @@ public class ControlCenter extends Stage {
 		grid.add(concreteSyntaxWizardStart, 4, 4);
 		
 		return grid;
-	}
-
-	private void handleStageCloseRequest(WindowEvent event) {
-		if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
-			Runtime.getRuntime().halt(0);
-		} else {
-		    WorkbenchClient.theClient().shutdownEvent();
-		}
-		event.consume();
 	}
 
 	private void handelClickOnDiagramListView(MouseEvent me) {

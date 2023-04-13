@@ -1784,10 +1784,10 @@ public class FmmlxDiagramCommunicator {
     }
 
     @SuppressWarnings("unchecked")
-    public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
+    public PackageActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		return new FaXML(responseContent);
+		return new PackageActionsList(responseContent);
     }
 
     @SuppressWarnings("unchecked")

@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
+import tool.helper.fXAuxilary.JavaFxButtonAuxilary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -86,31 +87,22 @@ public class PropertyManager {
 	// GUI
 
 	public void getUserInterface() {
-		
 		TabPane tabPane = new TabPane();
 		Tab saveTab = new Tab("Saved Models");
 		Tab userInterfaceTab  = new Tab("UserInterface");
 		Tab debugTab = new Tab("Debugging");
 		
+		buildSaveTab(saveTab);
+		
 		Button btnCancel = new Button("Cancel");
 		btnCancel.setOnAction(this::onCancelButtonClicked);
-		Button btnCancelSaves = new Button("Cancel");
-		btnCancelSaves.setOnAction(this::onCancelButtonClicked);
 		Button btnCancelDebug = new Button("Cancel");
 		btnCancelDebug.setOnAction(this::onCancelButtonClicked);
-
 		Button btnSave = new Button("Save");
 		btnSave.setOnAction(this::onSaveButtonClicked);
-		Button btnSaveSaves = new Button("Save");
-		btnSaveSaves.setOnAction(this::onSaveButtonClicked);
 		Button btnSaveDebug = new Button("Save");
 		btnSaveDebug.setOnAction(this::onSaveButtonClicked);
-		
-		Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
-	    ImageView imageView = new ImageView(icon);
-	    ImageView imageView2 = new ImageView(icon);
-	    ImageView imageView3 = new ImageView(icon);
-	    
+			    
 		generalGrid = new GridPane();
 		Label uiInfo = new Label("User Interface appearance");
 		uiInfo.setStyle("-fx-font-weight: bold");
@@ -166,70 +158,7 @@ public class PropertyManager {
 		generalGrid.add(btnCancel, 1, 11);
 		GridPane.setHalignment(btnCancel, HPos.LEFT);
 		userInterfaceTab.setContent(generalGrid);
-		
-		pathGrid = new GridPane();
-		pathGrid.setPadding(new Insets(5,5,5,5));
-		pathGrid.setVgap(5);
-		pathGrid.setHgap(5);
-		Label saveInfo = new Label("Locations for files");
-		saveInfo.setStyle("-fx-font-weight: bold");
-		File folder = new File("");
-		folder=new File(folder.toURI()).getParentFile();
-		Label saveLabel = new Label("Directory for saved models ");
-		TextField saveTextField = new TextField(new File(folder, "Saves").toString());
-		
-		
-		DirectoryChooser saveDirectoryChooser = new DirectoryChooser();
-		saveDirectoryChooser.setInitialDirectory(folder);
-		Button saveDirectory = new Button();
-		saveDirectory.setGraphic(imageView);
-		saveDirectory.setOnAction(e -> {
-            File selectedSaveDirectory = saveDirectoryChooser.showDialog(stage);
-        });
-		
-		DirectoryChooser backUpDirectoryChooser = new DirectoryChooser();
-		backUpDirectoryChooser.setInitialDirectory(folder);
-		Label backUpLabel = new Label("Directory for backUp files ");
-		TextField backUpTextField = new TextField(new File(folder, "BackUp").toString());
-		Button backUpDirectory = new Button();
-		backUpDirectory.setGraphic(imageView2);
-		backUpDirectory.setOnAction(e -> {
-            File selectedBackUpDirectory = backUpDirectoryChooser.showDialog(stage);
-        });
-		backUpDirectory.setDisable(true);
-		backUpTextField.setDisable(true);
-		
-		DirectoryChooser graphicDirectoryChooser = new DirectoryChooser();
-		graphicDirectoryChooser.setInitialDirectory(folder);
-		Label graphicLabel = new Label("Directory for graphics ");
-		TextField graphicTextField = new TextField(new File(folder, "Graphics").toString());
-		Button graphicDirectory = new Button();
-		graphicDirectory.setGraphic(imageView3);
-		graphicDirectory.setOnAction(e -> {
-            File selectedGraphicDirectory = graphicDirectoryChooser.showDialog(stage);
-        });
-		graphicTextField.setDisable(true);
-		graphicDirectory.setDisable(true);
-		
-		
-		pathGrid.add(saveInfo, 0, 0);
-		pathGrid.add(saveLabel, 0, 1);
-		pathGrid.add(saveTextField, 1, 1);
-		pathGrid.add(saveDirectory, 2,1);
-		pathGrid.add(backUpLabel, 0, 2);
-		pathGrid.add(backUpTextField, 1, 2);
-		pathGrid.add(backUpDirectory, 2,2);
-		pathGrid.add(graphicLabel, 0, 3);
-		pathGrid.add(graphicTextField, 1, 3);
-		pathGrid.add(graphicDirectory, 2,3);
-		pathGrid.add(btnSaveSaves, 0, 4);
-		GridPane.setHalignment(btnSaveSaves, HPos.RIGHT);
-		pathGrid.add(btnCancelSaves, 1, 4);
-		GridPane.setHalignment(btnCancelSaves, HPos.LEFT);
-		
-		
-		saveTab.setContent(pathGrid);
-		
+				
 		debugGrid = new GridPane();
 		debugGrid.setPadding(new Insets(5,5,5,5));
 		debugGrid.setVgap(5);
@@ -265,55 +194,56 @@ public class PropertyManager {
 		debugGrid.add(btnCancelDebug, 1, 7);
 		GridPane.setHalignment(btnCancelDebug, HPos.LEFT);
 		
-		
-		//fillDebugGrid();
 		debugTab.setContent(debugGrid);
 		debugTab.setDisable(true);
-		
-		
-		
-		
-		
 		tabPane.getTabs().addAll(saveTab,userInterfaceTab,debugTab);
-		
-		
-		
 		VBox vBox = new VBox(tabPane);
 		initScene(vBox);
-			
-//		try {
-//			//init gridpanes
-//			generalGrid = getGridpane();
-//			debugGrid = getGridpane();
-//			pathGrid = getGridpane();
-//
-//			//fill gridpanes
-//			fillPropGrid();
-//			fillDebugGrid();
-//			fillPathGrid();
-//
-//			//labels
-//			Label generalLabel = new Label("General:");
-//			Label debugLabel = new Label("Debug:");
-//			Label pathLabel = new Label("Modelpaths:");
-//
-//			//control buttons
-//			HBox buttons = getControlButtons();
-//
-//			//merge into mainVbox
-//			VBox gridPanes = new VBox(generalLabel, generalGrid, debugLabel, debugGrid, pathLabel, pathGrid);
-//			gridPanes.setPadding(new Insets(10));
-//			VBox mainVbox = new VBox(new ScrollPane(gridPanes), buttons);
-//			mainVbox.setPadding(new Insets(10));
-//			mainVbox.setSpacing(10);
-//
-//			// init scene
-//			initScene(mainVbox);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+	}
 
+	private void buildSaveTab(Tab saveTab) {
+		pathGrid = new GridPane();
+		pathGrid.setPadding(new Insets(5,5,5,5));
+		pathGrid.setVgap(5);
+		pathGrid.setHgap(5);
+		Label saveInfo = new Label("Locations for files");
+		saveInfo.setStyle("-fx-font-weight: bold");
+		File folder = new File("");
+		folder=new File(folder.toURI()).getParentFile();
+		Label saveLabel = new Label("Saved models ");
+		TextField saveTextField = new TextField(new File(folder, "Saves").toString());
+		
+		
+		Button btnSaveSaves = JavaFxButtonAuxilary.createButton("Save", this::onSaveButtonClicked);
+		Button infoButton = JavaFxButtonAuxilary.createButtonWithGraphic("", this::showInfoDialog,"resources/gif/img/about.gif");
+		
+		Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
+	    ImageView imageView = new ImageView(icon);
+	    
+		DirectoryChooser saveDirectoryChooser = new DirectoryChooser();
+		saveDirectoryChooser.setInitialDirectory(folder);
+		Button saveDirectory = new Button();
+		saveDirectory.setGraphic(imageView);
+		saveDirectory.setOnAction(e -> {
+            File selectedSaveDirectory = saveDirectoryChooser.showDialog(stage);
+        });
+		
+		
+		pathGrid.add(saveInfo, 0, 0);
+		pathGrid.add(saveLabel, 0, 1);
+		pathGrid.add(saveTextField, 1, 1);
+		pathGrid.add(saveDirectory, 2,1);
+		pathGrid.add(btnSaveSaves, 0, 4);
+		GridPane.setHalignment(btnSaveSaves, HPos.RIGHT);
+		
+		
+		saveTab.setContent(pathGrid);
+		
+	}
+
+	private EventHandler<ActionEvent> showInfoDialog(ActionEvent actionEvent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void onCancelButtonClicked(ActionEvent actionEvent) {

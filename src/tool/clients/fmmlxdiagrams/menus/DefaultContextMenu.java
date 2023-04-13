@@ -5,7 +5,7 @@ import javafx.scene.control.Menu;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
-import tool.helper.FXAuxilary.JavaFxMenuAuxiliary;
+import tool.helper.fXAuxilary.JavaFxMenuAuxiliary;
 
 public class DefaultContextMenu extends ContextMenu {
 
