@@ -48,7 +48,7 @@ public class DiagramViewHeadToolBar extends VBox {
 				
 		HBox hBox = new HBox();
 		MenuBar menuBar = new MenuBar();
-		menuBar.setStyle("-fx-background-color: #f3f3f3");
+		menuBar.setStyle("-fx-background-color: #F3F3F3");
 		hBox.getChildren().add(menuBar);
 				
 		Menu modelMenu = new Menu("Model");		

@@ -2,7 +2,7 @@ package tool.clients.serializer;
 
 import javafx.util.Pair;
 import org.w3c.dom.Element;
-import tool.clients.fmmlxdiagrams.FaXML;
+import tool.clients.fmmlxdiagrams.PackageActionsList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.TimeOutException;
@@ -204,13 +204,13 @@ public class FmmlxSerializer  {
     public void saveProjectLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         xmlManager.clearLog();
         Element logsElement = xmlManager.getLogs();
-        FaXML protocol = communicator.getDiagramData(diagramID);
+        PackageActionsList protocol = communicator.getDiagramData(diagramID);
         
 //        System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");
 
-        Vector<FaXML> logs = protocol.getChildren();
+        Vector<PackageActionsList> logs = protocol.getChildren();
         Collections.sort(logs);
-        for (FaXML log : logs){
+        for (PackageActionsList log : logs){
             Element newLogElement = xmlManager.createNewLogFromFaXML(log);
             xmlManager.addLog(logsElement, newLogElement);
         }

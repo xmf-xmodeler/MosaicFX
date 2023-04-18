@@ -270,13 +270,6 @@ public class XModeler extends Application {
   public static void main(String[] args) {
 	  System.setProperty("prism.order", "sw");
 	  Locale.setDefault(Locale.ENGLISH);
-//	try {
-//		PrintStream R = new PrintStream(new File("err.txt"));
-//		System.setErr(R);
-//	} catch (FileNotFoundException e) {
-//		e.printStackTrace();
-//	} 
-	  
 	// Prevent loggin of external library
 	PrintStream out = System.out;
 	OutputStream tmp = new OutputStream() {

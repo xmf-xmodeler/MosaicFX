@@ -396,7 +396,7 @@ public class XmlManager extends XmlHandler {
         }
     }
 
-    public Element createNewLogFromFaXML(FaXML faXML){
+    public Element createNewLogFromFaXML(PackageActionsList faXML){
         Element element = createXmlElement(faXML.getName());
         for(String attName : faXML.getAttributes()){
             element.setAttribute(attName, faXML.getAttributeValue(attName));

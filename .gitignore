@@ -8,11 +8,6 @@
 /resources/tmp4ops/*
 
 # user
-/ini_Bjoern_win_multi.txt
-/ini_Bjoern_win.txt
-/classpath-jens
-/ini-Jens-linux.txt
-/ini-Jens-win.txt
 /user_properties.xml
 *.properties
 /ini3.txt
