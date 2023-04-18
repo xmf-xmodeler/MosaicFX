@@ -3,7 +3,6 @@ package tool.xmodeler;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Vector;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;

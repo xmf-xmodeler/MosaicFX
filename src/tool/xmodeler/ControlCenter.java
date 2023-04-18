@@ -8,10 +8,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -76,7 +81,10 @@ public class ControlCenter extends Stage {
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		Scene scene = new Scene(root, 800, 300);
+		
+		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
+		Scene scene = new Scene(root, toolWidth, toolHeight);
 		setScene(scene);
 				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
@@ -84,9 +92,10 @@ public class ControlCenter extends Stage {
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 			@Override
 			public void run() {
+				new StartupModelLoader().loadModelsFromSavedModelsPath();				
 				controlCenterClient.getAllProjects();
 			} 
-		}, 2500);
+		}, 10000);
 	}
 	
 	private void showCloseWarningDialog(Event event) {

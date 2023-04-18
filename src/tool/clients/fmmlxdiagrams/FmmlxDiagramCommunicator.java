@@ -55,19 +55,16 @@ public class FmmlxDiagramCommunicator {
 	/* Operations for setting up the Communicator */
 	
 	public FmmlxDiagramCommunicator() {
-		//System.err.println("DiagramCom aufgerufen?!?FmmlxDiagramCommunicator?!?11111111");
 		if(self != null) throw new IllegalStateException("FmmlxDiagramCommunicator must not be instantiated more than once.");
 		self = this;
 	}
 	
 	public static FmmlxDiagramCommunicator getCommunicator() {
 		if(self != null) return self;
-		//System.err.println("DiagramCom aufgerufen?getCommunicator");
 		throw new IllegalStateException("FmmlxDiagramCommunicator should have been instantiated. Run initCommunicator() first");		
 	}
 	
 	public static void initCommunicator() {
-		//System.err.println("initCommunicator!?!?!?!?!?!?!?!?!");
 		WorkbenchClient.theClient().startFmmlxClient();
 	}
 
