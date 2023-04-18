@@ -501,10 +501,6 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 	
-	public void printProtocol() {
-		diagram.getComm().printProtocol(diagram.getID());
-	}
-
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
 		diagram.updateDiagram();		

@@ -608,8 +608,10 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
-		communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
-		activePackage.updateDiagram();
+		if(newValue != fmmlxObjectListView.getSelectionModel().getSelectedItem().isAbstract()) {
+			communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
+			activePackage.updateDiagram();
+		}
 	}
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
