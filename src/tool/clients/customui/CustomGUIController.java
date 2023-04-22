@@ -1,48 +1,38 @@
 package tool.clients.customui;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.nio.file.FileSystems;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Set;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.ListView;
-import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 
 public class CustomGUIController {
 	// Context of custom UI
-	Map<String, String> eventToID; // required to reference operations for combination of ID and event
-	FXMLLoader loader;
-	CustomUI customUI; // Access to UI object, diagram, and customGUI nodes
+	private Map<String, String> eventToID; // required to reference operations for combination of ID and event
+	private FXMLLoader loader;
+	private CustomUI customUI; // Access to UI object, diagram, and customGUI nodes
 
     private Map<String, Node> objToID = new HashMap<>(); // required to reference all nodes with id in customGUI
 	boolean refreshInProgress = false;
@@ -220,6 +210,7 @@ public class CustomGUIController {
 						   if( Modifier.isPublic( method.getModifiers() )
 								   && ( ( method.getName().equals("setText") && !isListView  ) )
 						   			|| ( method.getName().equals("setItems") && isListView ) ){
+							   
 							   // Handle list view result
 							   if( isListView ) {
 								   value = value.replace("Seq{", "");
@@ -227,7 +218,9 @@ public class CustomGUIController {
 								   ObservableList<String> objList = FXCollections.observableArrayList(Arrays.asList( value.split(",")));
 								   method.invoke(currElem, objList );
 							   } else {
-								   method.invoke(currElem, value );
+								   if( ! value.equals("") ) {
+									   method.invoke(currElem, value );
+								   }
 							   }
 									
 						   }   
@@ -249,46 +242,77 @@ public class CustomGUIController {
 			   String eventID = eventToID.get(lookupId); // determine name of operation
 			   if( eventID != null ){	
 				   try {
-				   // First step TBD: Synchronize parameters to Model Mapping
-				   // Then they will be retrieved for operation execution!
-				   // Parameters are all objects from the mapping, which have a UI id, but do not have a model element name
-				   // Selected instance within listview as parameter?
-				   // Distinction between text fields and list views?
+				   // First step: Synchronize parameters to parameter instances
+				   // Once stored in the corresponding slots, they will be considered for operation execution
+				   // all parameters are passed as string, in case conversions are required, they will be handled in the XMF
+				   // in case of listViews the currently selected element will be used as value
 				   
-				   
-				   // obtain user input from the gui for parametrized ids
-//				   for( String currId : params) {
-//					   Node el = customGUI.lookup("#" + currId);
-//					   if( el instanceof ListView ) {
-//						   String currParam = ((ListView) el).getSelectionModel().getSelectedItem().toString();
-//						   obtParams.add( currParam );
-//					   }
-//					   
-//					   if( el instanceof TextField ) {
-//						   String currParam = ((TextField) el).getText();
-//						   obtParams.add( currParam );
-//					   }
-//				   }
+				   // Loop through all nodes and call update of parameter (if existing) on ID based on current value
+				   for( String currID : objToID.keySet() ) {
+					   Node currEl = objToID.get(currID);
+					   String value = "";
 					   
-					// manipulate value for dates into corresponding XMF expression
-					//if( id.toLowerCase().contains("date") ) {
-					//	  if( value.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]")) {
-					//		  value = "Auxiliary::Date::createDate(" + value.split("\\.")[2] + "," + value.split("\\.")[1] + "," + value.split("\\.")[0] + ")";
-					//	  }
-					//}
+					   if( currEl instanceof Button ) {
+						   continue;
+					   }
+					   
+					   Boolean isListView = currEl instanceof ListView;
+					   try {			
+						   if( isListView ) { // Handle listView result
+							   if( ((ListView) currEl).getSelectionModel().getSelectedItem() == null ) {
+								   ((ListView) currEl).getSelectionModel().selectFirst();
+							   }
+							   value = (String) ((ListView) currEl).getSelectionModel().getSelectedItem();
+						   } else { // Otherwise simply obtain the text by using reflection
+							   Class<?> currCls = currEl.getClass();
+							   Method[] methods = currCls.getMethods();
+							   
+							   for( Method method : methods ) {
+								   if( Modifier.isPublic( method.getModifiers() )
+										   && ( method.getName().equals("getText") 
+												   && ( method.getParameterCount() == 0 ) ) ){
+										   value = (String) method.invoke(currEl);
+										   }
+							   }
+						   }
+						   
+						   // Call update of parameter in controller mapping based on value and uiid
+						   String comm = this.customUI.getDiagram().getPackagePath() + "::" + "Action"; // relevant object
+						   comm = comm + "." + "setParameterValue"; // operation in ControllerMapping, which allows running an operation
+						   comm = comm + "(" + "\"" + currID + "\"" + "," + "\"" + value + "\"" + ")"; // pass UI-ID and relevant event type with string handling
+						   this.customUI.getDiagram().getComm().runOperation(this.customUI.getDiagram().getID(), comm);
+
+						} catch( Exception e ) {
+							e.printStackTrace();
+						}    
+				   }
 				   
-				   // Second step TBD: Trigger execution of action
+				   // outdated: this should be transferred into the model as converter class! bidirectional
+				   // also need for representation classes (e.g. prettyStrings)
+				   // manipulate value for dates into corresponding XMF expression
+				   //if( id.toLowerCase().contains("date") ) {
+				   //	  if( value.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]")) {
+				   //		  value = "Auxiliary::Date::createDate(" + value.split("\\.")[2] + "," + value.split("\\.")[1] + "," + value.split("\\.")[0] + ")";
+				   //	  }
+				   //}
+				   
+				   // Second step: Trigger execution of action
 				   // Determine correct instance of "Action" and trigger operation "runAction"
 				   // Correct requires a correspondence of UI ID, eventID
-				   
+				   // Call XMF-Operation to handle the operation execution of the callee
+				   String opID = event.getEventType().getName();
+				   String comm = this.customUI.getDiagram().getPackagePath() + "::" + "Action"; // relevant object
+				   comm = comm + "." + "sendMessage"; // operation in ControllerMapping, which allows running an operation
+				   comm = comm + "(" + "\"" + id + "\"" + "," + "\"" + opID + "\"" + ")"; // pass UI-ID and relevant event type with string handling
+				   try {
+					   this.customUI.getDiagram().getComm().runOperation(this.customUI.getDiagram().getID(), comm);
+				   } catch(Exception e ) {
+					   e.printStackTrace();
+				   }
+					   
 				   // Update first diagram (due to possible changes) and afterwards the GUI
-				   // diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
-					   
-				   // When to update? e.g. only after execution of actions / selection in listview?
-					   
-				   // Note: The current implementation of the GUI is only supporting expressions as input.
-				   // (Except for date..)
-					   
+				   this.customUI.getDiagram().updateDiagram( e -> { injectGUI(); } );
+					    
 				   } catch( Exception e ) {
 					   e.printStackTrace();
 				   }
