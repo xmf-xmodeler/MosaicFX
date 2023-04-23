@@ -19,7 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
-import tool.helper.FXAuxilary.JavaFxButtonAuxilary;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -27,10 +27,10 @@ import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.helper.FXAuxilary.JavaFxButtonAuxilary;
-import tool.helper.FXAuxilary.JavaFxMenuAuxiliary;
-import tool.helper.FXAuxilary.JavaFxSvgAuxilary;
-import tool.helper.FXAuxilary.JavaFxTooltipAuxilary;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
+import tool.helper.auxilaryFX.JavaFxSvgAuxilary;
+import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.xmodeler.ControlCenterClient;
 
 public class DiagramViewHeadToolBar extends VBox {

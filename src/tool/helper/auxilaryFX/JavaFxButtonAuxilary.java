@@ -1,4 +1,4 @@
-package tool.helper.FXAuxilary;
+package tool.helper.auxilaryFX;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package tool.helper.FXAuxilary;
+package tool.helper.auxilaryFX;
 
 import javafx.scene.layout.Region;
 import javafx.scene.shape.SVGPath;

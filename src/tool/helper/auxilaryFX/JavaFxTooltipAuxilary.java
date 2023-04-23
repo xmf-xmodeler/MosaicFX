@@ -1,4 +1,4 @@
-package tool.helper.FXAuxilary;
+package tool.helper.auxilaryFX;
 
 import javafx.scene.control.Control;
 import javafx.scene.control.Tooltip;
