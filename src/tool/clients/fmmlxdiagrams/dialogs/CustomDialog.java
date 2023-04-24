@@ -5,21 +5,14 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 import tool.clients.importer.Conflict;
 import tool.helper.IconGenerator;
-import tool.xmodeler.ControlCenter;
-import tool.xmodeler.ControlCenterClient;
-import tool.xmodeler.XModeler;
 
-import java.io.File;
 import java.util.List;
 
 public class CustomDialog<R> extends Dialog<R> {
@@ -331,43 +324,6 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 		
-	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(AbstractPackageViewer diagram, FmmlxAttribute attribute) {
-		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
-		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
-			@Override
-			protected void updateItem(IValueGenerator item, boolean empty) {
-				super.updateItem(item, empty);
-
-				if (empty || item == null) {
-					setText(null);
-				} else {
-					setText(item.getValueGeneratorName());
-				}
-			}
-		});
-
-		comboBox.setConverter(new StringConverter<IValueGenerator>() {
-			@Override
-			public String toString(IValueGenerator object) {
-				if (object == null) {
-					return null;
-				} else {
-					return object.getName2();
-				}
-			}
-
-			@Override
-			public IValueGenerator fromString(String string) {
-				return null;
-			}
-		});
-		
-		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog(diagram));
-		
-		comboBox.setPrefWidth(COLUMN_WIDTH);
-		return comboBox;
-	}
-	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
 		ComboBox<FmmlxEnum> comboBox = new ComboBox<>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {

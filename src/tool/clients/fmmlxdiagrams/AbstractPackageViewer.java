@@ -210,6 +210,7 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
 		
+		if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
 		comm.getAllObjects(this, allObjectsReturn);
 
 	}
@@ -445,8 +446,6 @@ public abstract class AbstractPackageViewer {
 			}; throw new RuntimeException("Object not found for OperationValue");
 		} catch (PathNotFoundException pnfe) {throw new RuntimeException("Something went wrong",pnfe);}
 	}
-
-	public Canvas getCanvas() {return null;}
 
 	public Vector<Integer> getAllObjectLevel() {
 		Vector<Integer> result = new Vector<>();

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -29,7 +28,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
-import tool.helper.fXAuxilary.JavaFxButtonAuxilary;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 
 //This class is structures in a Model View-Controller-Style. The basis class serves as model while the inner class represents model and controller
 public class PropertyManager {

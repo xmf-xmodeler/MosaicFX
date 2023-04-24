@@ -608,8 +608,10 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
-		communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
-		activePackage.updateDiagram();
+		if(newValue != fmmlxObjectListView.getSelectionModel().getSelectedItem().isAbstract()) {
+			communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
+			activePackage.updateDiagram();
+		}
 	}
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
@@ -904,7 +906,10 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
 				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
-				addNewMenuItem(this, "Instance Generator", e -> actions.runInstanceGenerator(object), NEVER);
+				
+				addNewMenuItem(this, "Instance Wizard...", e -> actions.openInstanceWizard(object, null), () -> {
+					return (object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract();
+				});		
 	
 				getItems().add(new SeparatorMenuItem());
 	

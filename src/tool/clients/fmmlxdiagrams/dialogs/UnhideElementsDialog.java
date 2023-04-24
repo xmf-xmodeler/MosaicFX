@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Vector;
-
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -33,8 +32,8 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
-import tool.helper.fXAuxilary.JavaFxButtonAuxilary;
-import tool.helper.fXAuxilary.JavaFxTooltipAuxilary;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 
 public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 	private AbstractPackageViewer diagram;

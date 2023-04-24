@@ -677,10 +677,11 @@ public class FmmlxDiagramCommunicator {
 				for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
 					Vector<Object> ownOpList = (Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1));
 					Vector<FmmlxOperation> result = new Vector<>();
-					
 					for (Object o : ownOpList) {
 						Vector<Object> opInfo = (Vector<Object>) o;
-	
+						if(opInfo==null) {
+							System.err.println("NULL"); 
+						} else {
 						Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
 						Vector<String> paramNamesS = new Vector<>();
 						for (Object O : paramNamesO) {
@@ -707,6 +708,7 @@ public class FmmlxDiagramCommunicator {
 								(Boolean) opInfo.get(9) // delToClass
 							);
 						result.add(op);
+						}
 					}
 					
 					obj.setOperations(result);

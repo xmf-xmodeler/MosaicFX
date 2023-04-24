@@ -384,13 +384,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
 		this.nodeCreationType= null;
-		getCanvas().setCursor(Cursor.CROSSHAIR);
+		// TODO getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
-		getCanvas().setCursor(Cursor.CROSSHAIR);
+		// TODO getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 	
 	public String getEdgeCreationType() {
