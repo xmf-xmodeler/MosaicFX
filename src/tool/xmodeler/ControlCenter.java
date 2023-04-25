@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -89,13 +90,17 @@ public class ControlCenter extends Stage {
 				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
-		new java.util.Timer().schedule(new java.util.TimerTask() {
+				
+		Runnable modelLoader = new Runnable() {
+			
 			@Override
 			public void run() {
-				new StartupModelLoader().loadModelsFromSavedModelsPath();				
-				controlCenterClient.getAllProjects();
-			} 
-		}, 10000);
+				controlCenterClient.getAllProjects();		
+				new StartupModelLoader().loadModelsFromSavedModelsPath();
+				
+			}
+		};
+		new Thread(modelLoader).start();			
 	}
 	
 	private void showCloseWarningDialog(Event event) {

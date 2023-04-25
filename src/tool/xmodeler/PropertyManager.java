@@ -139,6 +139,9 @@ public class PropertyManager {
 			Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
 		    ImageView imageView = new ImageView(icon);
 
+		    //Known Bug: If the User deletes the directory, that he has set as savedModlesPath, then there are following errors:
+		    //1. You can´t reset the savedModlesPath-Dir 2. XModeler will not load projects
+		    //Quickfix: Delete savedModlesPath from user.properties
 		    Button saveDirectory = new Button();
 			saveDirectory.setGraphic(imageView);
 			saveDirectory.setOnAction(e -> {

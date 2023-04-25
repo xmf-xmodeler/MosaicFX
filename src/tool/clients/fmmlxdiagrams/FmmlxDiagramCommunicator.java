@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
@@ -1761,7 +1762,29 @@ public class FmmlxDiagramCommunicator {
 
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
-        new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
+
+        Runnable loadProject = new Runnable() {
+			
+			@Override
+			public void run() {
+				fmmlxDeserializer.loadProject(self);
+			}
+		};
+				
+		Set<Thread> threads = Thread.getAllStackTraces().keySet();
+		for (Thread thread : threads) {
+			//checks if there is already a model loading and waits for the process to finish
+			if (thread.getName().equals("Load Projects")) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+        Thread t = new Thread(loadProject);
+        t.setName("Load Projects");
+        t.start(); // Very important. Otherwise assigning diagramID will get stuck
 		XModeler.bringControlCenterToFront();
 	}
 
