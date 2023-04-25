@@ -442,7 +442,6 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
     WorkbenchClient.theClient().startFmmlxClient();
-//    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
   public static void initClients() { // only sets the tab pane

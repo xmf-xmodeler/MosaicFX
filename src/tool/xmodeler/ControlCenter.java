@@ -275,16 +275,18 @@ public class ControlCenter extends Stage {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			if(InputChecker.isValidIdentifier(result.get())) {
-			Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+			FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 				modelLV.getSelectionModel().getSelectedItem(), 
-				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
-				System.err.println("diagramID "  +diagramID);
+				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram, 
+				diagramID->{
+					controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
+				});
+			    
 			}  else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
 					new ButtonType("Damned", ButtonData.YES)).showAndWait();
 			};
-		controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
 		}
 	}
 

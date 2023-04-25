@@ -112,8 +112,10 @@ public final class ModelBrowser extends CustomStage {
 		modelListView.getSelectionModel().clearSelection();
 		if (initialModel!=null) {
 			modelListView.getSelectionModel().select(initialModel);
+
 		}
-		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		
+		if(activePackage != null) fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
 		setMaximized(true);
 	}
 
@@ -617,15 +619,23 @@ public final class ModelBrowser extends CustomStage {
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
 		if(!models.containsKey(selectedPath)) {
-			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser);
-			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
-			models.put(selectedPath, tempViewer);
+			ReturnCall<Integer> onDiagramCreated = (newDiagramID) -> {
+				ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
+				models.put(selectedPath, tempViewer);
+				activePackage = models.get(selectedPath);
+				operationCodeArea.setDiagram(activePackage);
+				constraintBodyArea.setDiagram(activePackage);
+				constraintReasonArea.setDiagram(activePackage);
+				activePackage.updateDiagram();
+			};
+			communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, onDiagramCreated);
+		} else {
+			activePackage = models.get(selectedPath);
+			operationCodeArea.setDiagram(activePackage);
+			constraintBodyArea.setDiagram(activePackage);
+			constraintReasonArea.setDiagram(activePackage);
+			activePackage.updateDiagram();
 		}
-		activePackage = models.get(selectedPath);
-		operationCodeArea.setDiagram(activePackage);
-		constraintBodyArea.setDiagram(activePackage);
-		constraintReasonArea.setDiagram(activePackage);
-		activePackage.updateDiagram();
 	}	
 
 	private void onAttributeListViewNewValue(FmmlxAttribute oldAtt, FmmlxAttribute newAtt) {

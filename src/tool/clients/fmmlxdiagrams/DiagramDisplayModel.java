@@ -49,13 +49,13 @@ public class DiagramDisplayModel {
 		return showPropertiesMap.get(propertie);
 	}
 	
-	public void setPropertieValue (DiagramDisplayProperty propertie, boolean bool) {
+	public void setPropertyValue (DiagramDisplayProperty propertie, boolean bool) {
 		showPropertiesMap.replace(propertie, bool); 
 		sendDisplayPropertiesToXMF ();
 	}
 	
 	public boolean toggleDisplayProperty(DiagramDisplayProperty property){
-		setPropertieValue(property, !getPropertieValue(property));
+		setPropertyValue(property, !getPropertieValue(property));
 		return getPropertieValue(property);
 	}
 	
@@ -79,7 +79,7 @@ public class DiagramDisplayModel {
 		diagramViewHeadToolBar.getFmmlxDiagram().getComm().sendMessage("sendViewOptions", message);
 	}
 	
-	public void recieveDisplayPropertiesFromXMF () {
+	public void receiveDisplayPropertiesFromXMF () {
 		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
 		HashMap<String, Boolean> propertyImport = communicator.getDiagramDisplayProperties(fmmlxDiagram.getID());
 		if (propertyImport.isEmpty()) {
@@ -87,10 +87,9 @@ public class DiagramDisplayModel {
 		} else {
 			for (Entry<String, Boolean> entry : propertyImport.entrySet()) {
 				try {
-					setPropertieValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
+					setPropertyValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
 				} catch (Exception e) {
 					System.err.println("No Enum Value");
-					 continue;
 				}			
 			}
 		}
