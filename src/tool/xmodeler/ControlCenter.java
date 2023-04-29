@@ -94,10 +94,15 @@ public class ControlCenter extends Stage {
 		Runnable modelLoader = new Runnable() {
 			
 			@Override
-			public void run() {
-				controlCenterClient.getAllProjects();		
+			public void run() {				
 				new StartupModelLoader().loadModelsFromSavedModelsPath();
-				
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				controlCenterClient.getAllProjects();		
 			}
 		};
 		new Thread(modelLoader).start();			

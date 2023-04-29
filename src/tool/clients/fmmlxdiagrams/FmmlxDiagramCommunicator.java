@@ -125,7 +125,7 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
 		new Thread(task).start();
 		
-		while(_newDiagramID == null && timeout < 10) {
+		while(_newDiagramID == null && timeout < 100) {
 			System.err.println("timeout: " + timeout);
 			timeout++;
 			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
