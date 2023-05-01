@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Vector;
@@ -1240,48 +1241,38 @@ public class DiagramActions {
 		wizard.showAndWait();
 	}
 	
-public void instantiateGUI(FmmlxObject object) {
+	public void instantiateGUI(FmmlxObject object) {
 		
 		
 		System.err.println("CUSTOM GUI: Instatiating...");
 		
+		Vector<CanvasElement> vector = this.diagram.getSelectedObjects();
+		
 		// instantiating objects and links
-		CustomGUIslotValues = this.instantiateCustomGUI();
-		this.updateDiagram();
-		
-		// updating diagram
-		/*
-		 * 
-		this.diagram.selectedObjects();
-		this.diagram.getSelectedObjects();
-		
-		diagram.actions.s
-		
-		selectedObjects	Vector<E>  (id=8566)	
-	 	*/
-		// filling slots
-		/*
-		this.addSlotValuesCustomGUI(CustomGUIslotValues);
-		this.diagram.updateDiagram();
-		*/
+		Platform.runLater(() -> CustomGUIslotValues = this.instantiateCustomGUI(vector));
+		Platform.runLater(() -> this.diagram.updateDiagram());
+
 	}
 	
 	
 	
 	public void slotValuesGUI() {
 		// filling slots
-		this.addSlotValuesCustomGUI(CustomGUIslotValues);
+		Platform.runLater(() -> this.addSlotValuesCustomGUI(CustomGUIslotValues));
 		// updating diagram
-		this.diagram.updateDiagram();
+		Platform.runLater(() -> this.diagram.updateDiagram());
 	}
 
-	public HashMap<String, Map<String, String>> instantiateCustomGUI() {
+	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector <CanvasElement> selectedObjects) {
 		
 		// Namen der Instanzen müssen mit einem Buchstaben beginnen
 		// TODO how to map isParent und isChild link 
 		// TODO Instanzen hidden
 		// TODO Asynchronität
 		// TODO Extractor einbauen
+		// TODO list view assoziation auch dann prüfen wenn 2 einträge möglich sind ... mehr als 1 bedeutet
+		// 		nicht automatisch '*'
+		// TODO zyklische Beziehungen
 		
 
 		// Instanz der CustomGUI
@@ -1291,9 +1282,14 @@ public void instantiateGUI(FmmlxObject object) {
 		Vector<FmmlxObject> objects = diagram.getObjects();
 
 		// initializing of variables
+		FmmlxObject object;
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
-		//FmmlxObject slotInjection = null;
-		//FmmlxObject actionInjection = null;
+		
+		// casting der selecten objekte zu FmmlxObjekten, wenn sie von CommonClass sind
+		for (CanvasElement element : selectedObjects) {
+			 object = (FmmlxObject) element;
+			 if (object.getMetaClassName().equals("CommonClass")) objectsCommonClass.add(object);
+		}
 
 		Vector<FmmlxAttribute> attributes;
 		Vector<FmmlxOperation> operations;
@@ -1315,16 +1311,6 @@ public void instantiateGUI(FmmlxObject object) {
 		
 		// used if the commonClass needs a listInjection or not
 		Boolean isList = false;
-		
-		// selected objects -> commonClass
-		
-		for (FmmlxObject o: objects) {
-			if (o.getMetaClassName().equals("CommonClass")) {
-				objectsCommonClass.add(o);
-			}
-		}
-		
-		
 
 		// get associations that are mapped
 		FmmlxAssociation associationDerivedFrom = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
@@ -1347,39 +1333,53 @@ public void instantiateGUI(FmmlxObject object) {
 		
 		boolean isAction=false;
 		
+		// map for is parent 1. entry -> parent 2. -> child
+		// Referenznamen, bis diese aufgelöst werden können
+		
+		HashMap<String, String> isChildAssocs = new HashMap<>();
+		HashMap<String, String> commonClassReferenceMap = new HashMap<>();
+		
 		// TODO Single und Multiselektion
 		// for all CommonClass objects
 		// instantiate them and their corresponding reference and injections
 		for (FmmlxObject o : objectsCommonClass) {
 
+			
+			
 			// create references for every commonClass
 			referenceInstanceName = addInstance("Reference", "ref" + UUID.randomUUID().toString().replace("-", ""));
 			
+			commonClassReferenceMap.put(o.getName(), referenceInstanceName);
+			
+			
+
 			// Annahme: Jede CommonClass hat nur eine Assoziation die "eingehend" ist. 
 			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in der Referenz
 			// TODO Was ist wenn zyklische Beziehung
 			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()){
 				if (assoc.getTargetNode().equals(o)) {
 					assocName = assoc.getName();
+				
+					// referenz in map hinzufügen
+					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
 					
 					multiplicity = assoc.getMultiplicityStartToEnd().toString();
 					endChar = multiplicity.charAt(multiplicity.length() - 1);
-					
-					
+
 					// auch vergleich, ob kardinalität > 1 nicht nur auf stern TODO
 					isList = (endChar == '*') ? true : false;
 					continue;
 				}
 			}
 			
+			// wenn gui nur aus einem objekt dann automatisch head
+			if (objectsCommonClass.size() == 1) isHead = "true";
+			
 			isParent = (isHead == "true") ? true: false;
 			isChild = !isParent;
 			
 			// wenn head --> dann auch listinjection
 			isList = (isHead=="true") ? true : isList;
-			
-			
-			// now what?
 			
 			helper.put("associationName",assocName);
 			helper.put("isHead", isHead);
@@ -1473,7 +1473,29 @@ public void instantiateGUI(FmmlxObject object) {
 				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
 				helper.clear();
 			}
+		} // end of for for objects
+		
+		// map isChild / isParent
+		for (Entry <String, String> entryCommonReference : commonClassReferenceMap.entrySet()) {
+			for (Entry<String, String> entryIsParents : isChildAssocs.entrySet()) {
+				if (entryCommonReference.getKey().equals(entryIsParents.getKey())){
+					isChildAssocs.replace(entryCommonReference.getValue(), entryIsParents.getValue());
+					continue;
+				}else if (entryCommonReference.getKey().equals(entryIsParents.getValue())){
+					isChildAssocs.replace(entryIsParents.getKey(), entryCommonReference.getValue());
+					continue;
+				}
+			}
 		}
+		
+		// now the map isChild is filled with the names of the references needed to map
+		for (Entry<String, String> entry : isChildAssocs.entrySet()) {
+			// add ischild
+			addAssociation(entry.getKey(), entry.getValue(), associationIsChild.getName());
+			// add isparent in other direction
+			addAssociation(entry.getValue(), entry.getKey(), associationIsParent.getName());
+		}
+		
 		
 		return slotValues;
 	}

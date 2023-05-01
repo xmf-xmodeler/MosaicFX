@@ -54,11 +54,11 @@ public class ObjectContextMenu extends ContextMenu {
 		// menu item for instantiating and mapping custom GUI
 		MenuItem instantiateGUI = new MenuItem("Instantiate Custom GUI");
 		instantiateGUI.setOnAction(e-> actions.instantiateGUI(object));
-		if ((object.getLevel() == 1 && object.getName().equals("CustomUserInterface"))) getItems().add(instantiateGUI);
+		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
 		
 		MenuItem slotValuesGUI = new MenuItem("Add Slot Values Custom GUI");
 		slotValuesGUI.setOnAction(e-> actions.slotValuesGUI());
-		if ((object.getLevel() == 1 && object.getName().equals("CustomUserInterface"))) getItems().add(slotValuesGUI);
+		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(slotValuesGUI);
 		// End custom UI
 		
 		

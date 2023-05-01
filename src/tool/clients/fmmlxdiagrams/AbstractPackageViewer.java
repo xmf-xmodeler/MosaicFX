@@ -443,5 +443,8 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public View getActiveView() {return null;}
+
+	// implemented in FmmlxDiagram
+	protected abstract Vector<CanvasElement> getSelectedObjects();
 	
 }
