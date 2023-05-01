@@ -2,8 +2,10 @@ package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.Vector;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -47,6 +49,7 @@ import tool.xmodeler.XModeler;
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
+	private HashMap<String, Map<String, String>> CustomGUIslotValues;
 
 	public AbstractPackageViewer getDiagram() {
 		return diagram;
@@ -204,6 +207,14 @@ public class DiagramActions {
 			}
 		});
 	}
+	
+	// FH Method for adding Instances without dialog
+		public String addInstance(String className, String instanceName) {
+			Vector<String> parents = new Vector<String>();
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
+			return instanceName;
+
+		}
 
 	public void addAttributeDialog() {
 		addAttributeDialog(null);
@@ -1227,5 +1238,320 @@ public class DiagramActions {
 		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel()-1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
+	}
+	
+public void instantiateGUI(FmmlxObject object) {
+		
+		
+		System.err.println("CUSTOM GUI: Instatiating...");
+		
+		// instantiating objects and links
+		CustomGUIslotValues = this.instantiateCustomGUI();
+		this.updateDiagram();
+		
+		// updating diagram
+		/*
+		 * 
+		this.diagram.selectedObjects();
+		this.diagram.getSelectedObjects();
+		
+		diagram.actions.s
+		
+		selectedObjects	Vector<E>  (id=8566)	
+	 	*/
+		// filling slots
+		/*
+		this.addSlotValuesCustomGUI(CustomGUIslotValues);
+		this.diagram.updateDiagram();
+		*/
+	}
+	
+	
+	
+	public void slotValuesGUI() {
+		// filling slots
+		this.addSlotValuesCustomGUI(CustomGUIslotValues);
+		// updating diagram
+		this.diagram.updateDiagram();
+	}
+
+	public HashMap<String, Map<String, String>> instantiateCustomGUI() {
+		
+		// Namen der Instanzen müssen mit einem Buchstaben beginnen
+		// TODO how to map isParent und isChild link 
+		// TODO Instanzen hidden
+		// TODO Asynchronität
+		// TODO Extractor einbauen
+		
+
+		// Instanz der CustomGUI
+		String guiInstanceName = addInstance("CustomUserInterface", "gui" + UUID.randomUUID().toString().replace("-", ""));
+
+		// get all objects
+		Vector<FmmlxObject> objects = diagram.getObjects();
+
+		// initializing of variables
+		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
+		//FmmlxObject slotInjection = null;
+		//FmmlxObject actionInjection = null;
+
+		Vector<FmmlxAttribute> attributes;
+		Vector<FmmlxOperation> operations;
+
+		String referenceInstanceName;
+		String injectionInstanceName;
+		String isHead="";
+		
+		// Das hier sind Assoziationen
+		Boolean isChild;
+		Boolean isParent;
+		
+		// Slot Values that can already be determined in this method should be saved for performance
+		// first String		-> 	instanceName
+		// second String 	->	slotName
+		// third String		->	value
+		HashMap<String, Map<String, String>> slotValues = new HashMap<String, Map<String, String>>();
+		HashMap<String, String> helper = new HashMap<String, String>();
+		
+		// used if the commonClass needs a listInjection or not
+		Boolean isList = false;
+		
+		// selected objects -> commonClass
+		
+		for (FmmlxObject o: objects) {
+			if (o.getMetaClassName().equals("CommonClass")) {
+				objectsCommonClass.add(o);
+			}
+		}
+		
+		
+
+		// get associations that are mapped
+		FmmlxAssociation associationDerivedFrom = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
+		FmmlxAssociation associationComposedOf = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
+		FmmlxAssociation associationRefersToStateOf = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
+		FmmlxAssociation associationIsParent = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::isParent");
+		FmmlxAssociation associationIsChild = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::isChild");
+		FmmlxAssociation associationUses = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::uses");
+		FmmlxAssociation associationRepresentedAs = this.diagram.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
+		
+		
+		String assocName="";
+		String multiplicity;
+		char endChar;
+		char asterix = '*';
+		
+		String actionInstanceName;
+		String virtualInstanceName;
+		String parameterInstanceName;
+		
+		boolean isAction=false;
+		
+		// TODO Single und Multiselektion
+		// for all CommonClass objects
+		// instantiate them and their corresponding reference and injections
+		for (FmmlxObject o : objectsCommonClass) {
+
+			// create references for every commonClass
+			referenceInstanceName = addInstance("Reference", "ref" + UUID.randomUUID().toString().replace("-", ""));
+			
+			// Annahme: Jede CommonClass hat nur eine Assoziation die "eingehend" ist. 
+			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in der Referenz
+			// TODO Was ist wenn zyklische Beziehung
+			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()){
+				if (assoc.getTargetNode().equals(o)) {
+					assocName = assoc.getName();
+					
+					multiplicity = assoc.getMultiplicityStartToEnd().toString();
+					endChar = multiplicity.charAt(multiplicity.length() - 1);
+					
+					
+					// auch vergleich, ob kardinalität > 1 nicht nur auf stern TODO
+					isList = (endChar == '*') ? true : false;
+					continue;
+				}
+			}
+			
+			isParent = (isHead == "true") ? true: false;
+			isChild = !isParent;
+			
+			// wenn head --> dann auch listinjection
+			isList = (isHead=="true") ? true : isList;
+			
+			
+			// now what?
+			
+			helper.put("associationName",assocName);
+			helper.put("isHead", isHead);
+			slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
+			helper.clear();
+			
+			
+			// kann man hier auch schon direkt die entscheidung für list view weg nehmen?
+			// wenn assoziation kardinalität bla bla
+			isHead = (assocName == "") ? "true": "false";
+			
+			// add link "refersToStateOf" -> Reference + CommonClassInstance
+			// Annahme, jede CommonClass hat mindestens 1 Instanz
+			addAssociation(referenceInstanceName, o.getInstances().get(0).getName(), associationRefersToStateOf.getName());
+			
+			attributes = o.getAllAttributes();
+			operations = o.getAllOperations();
+
+			// add slotInjections for slots
+			for (FmmlxAttribute attribute : attributes) {
+				// add instance
+				injectionInstanceName = addInstance("SlotInjection", "slot" + UUID.randomUUID().toString().replace("-", ""));
+				
+				helper.put("nameOfModelElement", attribute.getName());
+				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+				helper.clear();
+				
+				// add associations
+				addAssociation(injectionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+				addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
+				// increment id counter
+			}
+
+			// add actionInjections for operations
+			for (FmmlxOperation operation : operations) {
+				// exclude getter and setter
+				if (!operation.getName().contains("get") && !operation.getName().contains("set")) {
+					// add instance of action injection
+					
+					// includes monitor -> dann ist es eine Action
+					String body = operation.getBody();
+					isAction = body.contains("monitor=true") ? true: false;
+					
+					// if monitor
+					if (isAction) {
+						injectionInstanceName = addInstance("ActionInjection", "actInj" + UUID.randomUUID().toString().replace("-", ""));
+						
+						helper.put("nameOfModelElement", operation.getName());
+						slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+						helper.clear();
+						
+						// add associations
+						addAssociation(injectionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+						addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
+					}else {
+						actionInstanceName = addInstance("Action", "act" + UUID.randomUUID().toString().replace("-", ""));
+						
+						helper.put("nameOfModelElement", operation.getName());
+						slotValues.put(actionInstanceName, (Map<String, String>) helper.clone());
+						helper.clear();
+						
+						// add assoziationen
+						addAssociation(actionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+						
+						int paramCounter = 0;
+						
+						// does action need parameter ?
+						for (String paramType : operation.getParamTypes()) {
+							paramCounter ++;
+							parameterInstanceName = addInstance("Parameter", "par" + UUID.randomUUID().toString().replace("-", ""));
+							addAssociation(parameterInstanceName, actionInstanceName, associationUses.getName());
+							helper.put("dataType",paramType);
+							helper.put("orderNo","\"" + String.valueOf(paramCounter) + "\"");
+							helper.put("value","");
+							slotValues.put(parameterInstanceName, (Map<String, String>) helper.clone());
+							helper.clear();
+							
+							virtualInstanceName = addInstance("Virtual", "vir" + UUID.randomUUID().toString().replace("-", ""));
+							addAssociation(virtualInstanceName, parameterInstanceName, associationRepresentedAs.getName());
+						}
+					}
+				}
+			}
+			
+			if (isList) {
+				injectionInstanceName = addInstance("ListInjection", "list" + UUID.randomUUID().toString().replace("-", ""));
+				addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
+				addAssociation(injectionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+				helper.put("isListView", "true");
+				helper.put("nameOfModelElement", o.getName());
+				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+				helper.clear();
+			}
+		}
+		
+		return slotValues;
+	}
+
+	private void addAssociation(String instanceName, String instance2Name, String assocName) {
+		this.diagram.comm.addAssociationInstance(this.diagram.diagramID, instanceName, instance2Name, assocName);
+	}
+
+	public void addSlotValuesCustomGUI(HashMap<String, Map<String, String>> slotValues) {
+		
+		
+		Vector <FmmlxObject> references = new Vector<>();
+		Vector <FmmlxObject> commonClass = new Vector<>();
+		Vector <FmmlxObject> slotInjections = new Vector<>();
+		Vector <FmmlxObject> actionInjections = new Vector<>();
+		Vector <FmmlxObject> listInjections = new Vector<>();
+		Vector <FmmlxObject> parameters = new Vector<>();
+		Vector <FmmlxObject> virtuals = new Vector<>();
+		Vector <FmmlxObject> actions = new Vector<>();
+		
+		Vector <FmmlxObject> objects = this.diagram.getObjects();
+		
+		for (FmmlxObject o : objects) {
+			
+			if (o.getMetaClassName().equals("Reference")) references.add(o);
+			if (o.getMetaClassName().equals("SlotInjection")) slotInjections.add(o);
+			if (o.getMetaClassName().equals("ActionInjection")) actionInjections.add(o);
+			if (o.getMetaClassName().equals("ListInjection")) listInjections.add(o);
+			if (o.getMetaClassName().equals("Action")) actions.add(o);
+			if (o.getMetaClassName().equals("Parameter")) parameters.add(o);
+			if (o.getMetaClassName().equals("Virtual")) virtuals.add(o); 
+			
+		}
+		
+		// TODO	Füllen von Attributen
+		// CustomGui	->	pathToFMXL, pathTOIconOfWindow, titleOfUI <- automatisch machbar -- sinnvoll?
+
+		for (FmmlxObject o : slotInjections) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "idOfUIElement", "\"" + UUID.randomUUID().toString().replace("-", "") + "\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "nameOfModelElement",
+					"\"" + slotValues.get(o.getName()).get("nameOfModelElement") + "\"");
+		}
+		
+		for (FmmlxObject o: references) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "associationName", "\"" + slotValues.get(o.getName()).get("associationName") + "\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "isHead", slotValues.get(o.getName()).get("isHead"));
+		}
+		
+		for (FmmlxObject o : actionInjections) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "eventName", "\""+ "ACTION" +"\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "idOfUIElement", "\""+ UUID.randomUUID().toString().replace("-", "")+"\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "nameOfModelElement",
+					"\"" + slotValues.get(o.getName()).get("nameOfModelElement") + "\"");
+		}
+		
+		for (FmmlxObject o : listInjections) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "idOfUIElement", "\""+ UUID.randomUUID().toString().replace("-", "")+"\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "nameOfModelElement",
+					"\"" + slotValues.get(o.getName()).get("nameOfModelElement") + "\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "isListView", "true");
+		}
+		
+		for (FmmlxObject o : actions) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "eventName", "\""+ "ACTION" +"\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "idOfUIElement", "\""+ UUID.randomUUID().toString().replace("-", "")+"\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "nameOfModelElement",
+					"\"" + slotValues.get(o.getName()).get("nameOfModelElement") + "\"");
+		}
+		
+		for (FmmlxObject o : virtuals) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "idOfUIElement", "\""+ UUID.randomUUID().toString().replace("-", "") +"\"");
+		}
+		
+		for (FmmlxObject o : parameters) {
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "orderNo", "\""+ slotValues.get(o.getName()).get("orderNo").toString() + "\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "dataType", "\""+ slotValues.get(o.getName()).get("dataType") + "\"");
+			diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "value", "");
+		}
+		
 	}
 }
