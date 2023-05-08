@@ -189,7 +189,9 @@ public class FXMLExporter {
 	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
 	        			
 	        			// hier ist ggf. auch ein Controller zu definieren
-	        			fxml.addProperty("fx:controller", "tool.clients.fmmlxdiagrams.classbrowser.CustomGUIController");
+	        			// F.H. mit der Änderung auf das neue Controller Modell und dem Mapping innerhalb des
+	        			// Diagramms, ist es nicht mehr notwendig hier einen Controller festzulegen.
+	        			//fxml.addProperty("fx:controller", "tool.clients.customui.CustomGUIController");
 	        			
 	        			break;
 	        	

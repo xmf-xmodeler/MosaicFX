@@ -115,9 +115,9 @@ public class CustomUI {
 				FXMLLoader loader = new FXMLLoader();
 
 				// Controller factory in case we want to use the controller from the FXML file
-				//loader.setControllerFactory(controller -> {
-				//	return new CustomGUIController(loader, eventToID, this);
-				//});
+				loader.setControllerFactory(controller -> {
+					return new CustomGUIController(loader, eventToID, this);
+				});
 
 				loadedFXML = loader.load(new ByteArrayInputStream(fxml.getBytes()));
 				this.customGUI = loadedFXML;
