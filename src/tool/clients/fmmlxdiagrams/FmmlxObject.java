@@ -573,7 +573,27 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		layout(diagram, diagram.getDiagramViewToolBarModell().getDisplayPropertiesMap());
 	}
 	
+	private transient Vector<Issue> cachedIssues = null;
 	public Vector<Issue> getIssues() {
-		return diagram.getIssues(this);	
+		if(cachedIssues == null) cachedIssues = diagram.getIssues(this);
+		return cachedIssues;
 	}
+	
+	public static String getRelativePath(String fullPathNameSource, String fullPathNameTarget) { 
+		String[] fromPath = fullPathNameSource.split("::");
+		String[] toPath = fullPathNameTarget.split("::");
+		int i = 0; 
+		while(fromPath.length > i && toPath.length > i && fromPath[i].equals(toPath[i])) i++;
+		String path = "";
+		while(toPath.length > i ) {
+			path += "::" + toPath[i];
+			i++;
+		}
+		return path.substring(2); 
+	}
+
+	@Deprecated
+	/* TODO create a new class for non-Fmmlx-Objects */
+	public String type;
+
 }

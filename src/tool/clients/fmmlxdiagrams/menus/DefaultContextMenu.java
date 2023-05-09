@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.menus;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
@@ -30,6 +31,20 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Classes...", e -> actions.openFindClassDialog());
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Senders...", e -> actions.openFindSendersDialog());
 
-		getItems().addAll(addMenu, searchMenu);
+		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
+		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
+		
+		Menu enumerationMenu = new Menu("Enumerations");
+		MenuItem createEnumeration = new MenuItem("Create Enumeration...");
+		createEnumeration.setOnAction(e -> actions.addEnumerationDialog());
+		MenuItem editEnumeration = new MenuItem("Edit Enumeration...");
+		editEnumeration.setOnAction(e -> actions.editEnumerationDialog("edit_element",""));
+		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration...");
+		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
+		//MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
+		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
+		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
+		
+		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu);
 	}
 }

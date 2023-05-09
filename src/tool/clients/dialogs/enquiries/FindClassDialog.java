@@ -5,6 +5,8 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 
 	public class FindClassDialog extends CustomDialog<Object>{
@@ -18,8 +20,12 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	private TextField includesAttributeTextfield = new TextField();
 	ListView<String> modelsListView = new ListView<String>();
 	ListView<String> classesListView = new ListView<String>();
+	private final AbstractPackageViewer diagram;
+	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
 
-	public FindClassDialog() {
+	public FindClassDialog(AbstractPackageViewer diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
+		this.diagram = diagram;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -50,31 +56,21 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 		levelTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		includesAttributeTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		modelsListView.getSelectionModel().selectedItemProperty().addListener((e, oldText, newText) -> {classSelected(newText);});
-
 	}
 
 
 	private void classSelected(String newText) {
 		if(newText != null) {
 			classesListView.getSelectionModel().getSelectedItem();
-			
-		}}
-			//setText(result.get(newText));
-
-
-	/*private void keyTyped() {
-	result = fmmlxDiagramCommunicator.findImplementation(nameTextfield.getText(), modelTextfield.getText(), numberOfParamsTextfield.getText(), returnTypeTextfield.getText());
-	classesListView.getItems().clear();
-	classesListView.getItems().addAll(result.keySet());
-	*/
-	
-	
+		}
+	}
 	
 	private void keyTyped() {
-		System.err.println("The user wants to know more about " + classNameTextfield.getText());
-		System.err.println("The user wants to know more about " + levelTextfield.getText());
-		System.err.println("The user wants to know more about " + includesAttributeTextfield.getText());
-		
+		fmmlxDiagramCommunicator.findClasses(
+			classNameTextfield.getText(), 
+			levelTextfield.getText(), 
+			includesAttributeTextfield.getText(), 
+			findClassResult -> System.err.println("findClassResult: " + findClassResult));
 	}
 	
 }

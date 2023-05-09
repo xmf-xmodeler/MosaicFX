@@ -431,18 +431,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				view.paintOn();
 			}			
 		} else { // create a new Thread
-			CountDownLatch l = new CountDownLatch(1);
+//			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				for(DiagramViewPane view : views) {
 					view.paintOn();
 				}	
-				l.countDown();
+//				l.countDown();
 			});
-			try {
-				l.await();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				l.await();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 	
@@ -1058,6 +1058,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleLeftPressed(MouseEvent e) {
+			
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			Point2D unTransformedPoint = null;
 			try{

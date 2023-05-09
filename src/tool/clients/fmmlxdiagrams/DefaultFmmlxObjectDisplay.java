@@ -37,11 +37,17 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {
-		return diagram.levelColorScheme.getLevelBgColor(this.object.level);
+		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
+			        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
+			        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
+		return diagram.levelColorScheme.getLevelBgColor(level);
 	}
 
 	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {
-		return diagram.levelColorScheme.getLevelFgColor(this.object.level, opacity);
+		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
+	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
+	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
+		return diagram.levelColorScheme.getLevelFgColor(level, opacity);
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
@@ -73,7 +79,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
+//		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
+		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
@@ -187,7 +194,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 						try{
 							NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
 							opsBox.addNodeElement(inhIcon);
-						} catch (Exception e) {System.err.println("Could not determine Icon, because path was not found.");}
+						} catch (Exception e) {
+							NodeImage inhIcon = new NodeImage(14, opsY, "resources/gif/user/Query2.gif", o, NO_ACTION);
+							opsBox.addNodeElement(inhIcon);	
+//							System.err.println("Could not determine Icon, because path was not found.");
+						}
 						int labelX = 30;
 						if(o.isDelegateToClassAllowed()) {
 							NodeImage delIcon = new NodeImage(30, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
@@ -197,7 +208,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 						try{
 							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
 							opsBox.addNodeElement(oLabel);
-						} catch (Exception e) {System.err.println("Could not determine Icon, because path was not found.");}
+						} catch (Exception e) {
+							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + o.getOwner() + ")");
+							opsBox.addNodeElement(oLabel);
+//							System.err.println("Could not determine Icon, because path was not found.");
+						}
 					}
 				}
 			}

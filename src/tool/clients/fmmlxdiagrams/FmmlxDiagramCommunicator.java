@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
@@ -342,6 +343,8 @@ public class FmmlxDiagramCommunicator {
 				for (Object o : parentListO2) {
 					parentListS.add((String) o);
 				}
+				String type = "FMMLX";
+				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
 				FmmlxObject object = new FmmlxObject(
 						(String)  responseObjectList.get(1), // name
 						(Integer) responseObjectList.get(2), // level
@@ -353,6 +356,7 @@ public class FmmlxDiagramCommunicator {
 						(Integer) responseObjectList.get(7), // y-Position 
 						(Boolean) responseObjectList.get(8), // hidden
 						diagram);
+				object.type = type;
 				result.add(object);
 			}
 			objectsReceivedReturn.run(result);
@@ -1696,27 +1700,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(reason)
 		};
         sendMessage("changeConstraintBodyAndReason", message);
-	}	
-//	
-//	public void changeConstraintBody(int diagramID, String path, String name, String body) {
-//		Value[] message = new Value[]{
-//				getNoReturnExpectedMessageID(diagramID),
-//                new Value(path),
-//                new Value(name),
-//                new Value(body)
-//		};
-//        sendMessage("changeConstraintBody", message);
-//	}
-//	
-//	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
-//		Value[] message = new Value[]{
-//				getNoReturnExpectedMessageID(diagramID),
-//                new Value(path),
-//                new Value(name),
-//                new Value(reason)
-//		};
-//        sendMessage("changeConstraintReason", message);
-//	}
+	}
 	
 	public void changeConstraintOwner(int diagramID, String oldOwner, String newOwner, String name) {
 		Value[] message = new Value[]{
@@ -1778,7 +1762,29 @@ public class FmmlxDiagramCommunicator {
 
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
-        new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
+
+        Runnable loadProject = new Runnable() {
+			
+			@Override
+			public void run() {
+				fmmlxDeserializer.loadProject(self);
+			}
+		};
+				
+		Set<Thread> threads = Thread.getAllStackTraces().keySet();
+		for (Thread thread : threads) {
+			//checks if there is already a model loading and waits for the process to finish
+			if (thread.getName().equals("Load Projects")) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+        Thread t = new Thread(loadProject);
+        t.setName("Load Projects");
+        t.start(); // Very important. Otherwise assigning diagramID will get stuck
 		XModeler.bringControlCenterToFront();
 	}
 
@@ -1805,6 +1811,21 @@ public class FmmlxDiagramCommunicator {
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new PackageActionsList(responseContent);
     }
+    
+
+	
+	public void findClasses(String className, String level, String attName, ReturnCall<Object> onResultReceived) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+//			System.err.println("findClasses response from XMF: "+ response);
+//			Boolean success = (Boolean) response.get(0);
+			onResultReceived.run("onResultReceived: " + response);
+		};
+		
+		xmfRequestAsync(handle, -2, "findClasses", localReturn, 
+				 new Value(className),
+				 new Value(level),
+				 new Value(attName));
+	}
 
     @SuppressWarnings("unchecked")
     public HashMap<String, String> findImplementation(AbstractPackageViewer diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {

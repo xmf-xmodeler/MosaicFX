@@ -237,13 +237,13 @@ public class DialogsClient extends Client {
 	  		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 			// we are on the right Thread already:
-			XModeler.getPropertyManager().getUserInterface();
+			XModeler.getPropertyManager().showPropertyManagerStage();
 		} else { // create a new Thread
 //			System.err.println("Calling redraw from " + Thread.currentThread());
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 //				System.err.println("Doing redraw for " + Thread.currentThread());
-				XModeler.getPropertyManager().getUserInterface();
+				XModeler.getPropertyManager().showPropertyManagerStage();
 	    		l.countDown();
 			});
 			try {

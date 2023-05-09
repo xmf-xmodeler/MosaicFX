@@ -1022,7 +1022,7 @@ public class DiagramActions {
 
 	public Object openFindClassDialog() {
 		Platform.runLater(() -> {
-			FindClassDialog dialog = new FindClassDialog();
+			FindClassDialog dialog = new FindClassDialog(diagram, diagram.getComm());
 			dialog.showAndWait();
 		});
 		return null; 

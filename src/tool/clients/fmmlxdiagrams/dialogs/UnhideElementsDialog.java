@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Vector;
-
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -57,7 +56,10 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 		distributeObjects();
 		buildListViews();
 		buildButtonVBox();
+		setTableDoubleclickAction();
 		GridPane selectionView = buildGridPane();
+		hiddenObjectsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		shownObjectsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		getDialogPane().setContent(selectionView);
 	}
 
@@ -150,6 +152,23 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 		shownObjectsListView.getItems().addAll(hiddenObjectsListView.getSelectionModel().getSelectedItems());
 		hiddenObjectsListView.getItems().removeAll(hiddenObjectsListView.getSelectionModel().getSelectedItems());
 		sortListView(shownObjectsListView);
+	}
+	
+	private void setTableDoubleclickAction() {
+		hiddenObjectsListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+				FmmlxObject selectedItem = hiddenObjectsListView.getSelectionModel().getSelectedItem();
+				shownObjectsListView.getItems().add(selectedItem);
+				hiddenObjectsListView.getItems().remove(selectedItem);
+			}
+		});
+		shownObjectsListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+				FmmlxObject selectedItem = shownObjectsListView.getSelectionModel().getSelectedItem();
+				hiddenObjectsListView.getItems().add(selectedItem);
+				shownObjectsListView.getItems().remove(selectedItem);
+			}
+		});
 	}
 
 	private GridPane buildGridPane() {

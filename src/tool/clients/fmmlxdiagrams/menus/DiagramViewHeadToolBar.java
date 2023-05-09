@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -55,7 +54,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu viewMenu = new Menu("View");
 		Menu refactorMenu = new Menu("Refactor");
 		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu);
-		setMenuBarOpenMenusOnHover(hBox, menuBar);
+//		setMenuBarOpenMenusOnHover(hBox, menuBar);
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);	
 		buildRefactorMenu(refactorMenu);
@@ -63,15 +62,15 @@ public class DiagramViewHeadToolBar extends VBox {
 		this.getChildren().addAll(hBox, toolBar);
 	}
 
-	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
-		for(int i = 0 ; i < hBox.getChildren().size() ; i++) {
-            Node parentNode = hBox.getChildren().get(i);
-            Menu menu = menuBar.getMenus().get(i);
-            parentNode.setOnMouseEntered(e->{
-                menu.show();
-            });
-        }
-	}
+//	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
+//		for(int i = 0 ; i < hBox.getChildren().size() ; i++) {
+//            Node parentNode = hBox.getChildren().get(i);
+//            Menu menu = menuBar.getMenus().get(i);
+//            parentNode.setOnMouseEntered(e->{
+//                menu.show();
+//            });
+//        }
+//	}
 
 	private ToolBar buildToolBar() {
 		ToolBar toolBar = new ToolBar();		
@@ -81,6 +80,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
 		updateButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.updateDiagram(), "resources/png/update.24.png");
 		updateSvg = updateButton.getGraphic();
+
 		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object");
