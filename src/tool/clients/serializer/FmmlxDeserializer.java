@@ -38,17 +38,17 @@ public class FmmlxDeserializer {
         
        	fmmlxDiagramCommunicator.createDiagram(projectName, "Deserializer", 
    			this.xmlManager.getSourcePath(), 
-   			FmmlxDiagramCommunicator.DiagramType.ModelBrowser,
+   			FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, 
    			diagramId -> {
    				populateDiagram(diagramId);
    				NodeList diagramNodes = getDiagramsElement().getChildNodes();
-   				for(int i = 0; i< diagramNodes.getLength(); i++) {
+   				for(int i = 0; i < diagramNodes.getLength(); i++) {
    		            Node diagramNode = diagramNodes.item(i);
    		            if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
    		            	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
    		            	fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, 
 	            			this.xmlManager.getSourcePath(), 
-	            			FmmlxDiagramCommunicator.DiagramType.ClassDiagram,
+	            			FmmlxDiagramCommunicator.DiagramType.ClassDiagram, false, 
 	            			localDiagramId -> {
 	            				sendDiagramViewStatus(localDiagramId, diagramNode, fmmlxDiagramCommunicator);
 	            				sendDiagramDisplayProperties(localDiagramId, fmmlxDiagramCommunicator);
@@ -99,8 +99,9 @@ public class FmmlxDeserializer {
     	for(int i = 0; i < attributes.getLength(); i++) { 
 			Node attribute = attributes.item(i);
 			map.put(attribute.getNodeName(), Boolean.valueOf(attribute.getNodeValue()));
-			fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
     	}
+    	fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
+
     	
 	}
  

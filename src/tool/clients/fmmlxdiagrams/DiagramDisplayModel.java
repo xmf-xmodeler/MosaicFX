@@ -81,18 +81,21 @@ public class DiagramDisplayModel {
 	
 	public void receiveDisplayPropertiesFromXMF () {
 		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
-		HashMap<String, Boolean> propertyImport = communicator.getDiagramDisplayProperties(fmmlxDiagram.getID());
-		if (propertyImport.isEmpty()) {
-			return;
-		} else {
-			for (Entry<String, Boolean> entry : propertyImport.entrySet()) {
-				try {
-					setPropertyValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
-				} catch (Exception e) {
-					System.err.println("No Enum Value");
-				}			
+		ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn = propertyImport -> {
+			if (propertyImport.isEmpty()) {
+				return;
+			} else {
+				for (Entry<String, Boolean> entry : propertyImport.entrySet()) {
+					try {
+						setPropertyValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
+					} catch (Exception e) {
+						System.err.println("No Enum Value");
+					}			
+				}
 			}
-		}
+		};
+		
+		communicator.getDiagramDisplayProperties(fmmlxDiagram.getID(), onViewOptionsReturn);
 	}
 		
 }

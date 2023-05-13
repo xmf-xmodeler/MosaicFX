@@ -25,6 +25,7 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+	protected boolean umlMode;
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 

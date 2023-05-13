@@ -8,12 +8,13 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
+import tool.clients.fmmlxdiagrams.uml.UmlObjectDisplay;
+
 import java.util.*;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
@@ -516,7 +517,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
 		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
-			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			if(diagram.umlMode) {
+				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			} else {
+				new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			}
 			return;
 		}
 		
@@ -535,7 +540,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
 		} else {	
-			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			if(diagram.umlMode) {
+				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			} else {
+				new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			}
 		}
 		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
@@ -570,7 +579,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		layout(diagram, diagram.getDiagramViewToolBarModell().getDisplayPropertiesMap());
+		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
 	}
 	
 	private transient Vector<Issue> cachedIssues = null;

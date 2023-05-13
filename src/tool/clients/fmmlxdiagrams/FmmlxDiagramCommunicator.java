@@ -7,14 +7,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.classbrowser.CodeBox;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
-import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog.Result;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
@@ -25,16 +22,11 @@ import xos.Value;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
 	
@@ -98,11 +90,11 @@ public class FmmlxDiagramCommunicator {
 	
 	/* Setting up new or existing diagrams, as well as closing */
 	
-	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions) {
-		CountDownLatch l = new CountDownLatch(1);
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode) {
+//		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfViews);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfViews, umlMode);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -110,19 +102,19 @@ public class FmmlxDiagramCommunicator {
 			}
 			createStage(diagram.getView(), diagramName, this.handle, diagram);	
 			diagrams.add(diagram);
-			l.countDown();
-			diagram.getDiagramViewToolBarModell().receiveDisplayPropertiesFromXMF();
+//			l.countDown();
+			diagram.getDiagramViewToolBarModel().receiveDisplayPropertiesFromXMF();
 			/*
-			If you create a new diagram the backend has no TollBarProperties. If you would save it this way the properties can´t be exported to XML.
-			To avoid this we will send the properties right at the initialization of the model to the backend.
-			*/
-			diagram.getDiagramViewToolBarModell().sendDisplayPropertiesToXMF();
+//			If you create a new diagram the backend has no ToolBarProperties. If you would save it this way the properties can't be exported to XML.
+//			To avoid this we will send the properties right at the initialization of the model to the backend.
+//			*/
+//			diagram.getDiagramViewToolBarModel().sendDisplayPropertiesToXMF();
 		});
-		try {
-			l.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			l.await();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 //	private transient Integer _newDiagramID = null;
@@ -131,13 +123,20 @@ public class FmmlxDiagramCommunicator {
 
     public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
-	public void createDiagram(String packagePath, String diagramName, String file, DiagramType type, ReturnCall<Integer> onDiagramCreated) {
+	public void createDiagram(
+			String packagePath, 
+			String diagramName, 
+			String file, 
+			DiagramType type, 
+			boolean umlMode, 
+			ReturnCall<Integer> onDiagramCreated) {
 		//Creates a diagram which is not displayed yet.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName),
 				new Value(file),
-				new Value(type.toString())
+				new Value(type.toString()),
+				new Value(umlMode)
 		};
 		newlyCreatedDiagrams.put(packagePath+":::"+diagramName, onDiagramCreated);
 		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
@@ -252,7 +251,7 @@ public class FmmlxDiagramCommunicator {
 				if(returnMap.containsKey(requestID)) {
 					Platform.runLater(() -> {returnMap.remove(requestID).run(msgAsVec);});
 				} else {
-					System.err.println("Old queue still in use");
+					System.err.println("Old queue still in use:" + requestID + " -> " + msgAsVec);
 					results.put(requestID, msgAsVec);
 				}
 			}
@@ -2334,20 +2333,35 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendViewOptions", message);
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Boolean> getDiagramDisplayProperties(Integer diagramID) {
-		try {
-			Vector<Object> response = xmfRequest(handle, diagramID, "getViewOptions");
+		public HashMap<String, Boolean> getDiagramDisplayProperties(Integer diagramID) {
+			try {
+				Vector<Object> response = xmfRequest(handle, diagramID, "getViewOptions");
+				HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+				Vector<Vector<Object>> list = (Vector<Vector<Object>>) response.get(0);
+				for(Vector<Object> item : list) {
+					result.put((String) item.get(0), (Boolean) item.get(1));
+				}			
+				return result;
+			} catch (TimeOutException e) {
+				e.printStackTrace();
+				return new HashMap<String, Boolean>();
+			}
+		}
+		
+	@SuppressWarnings("unchecked")
+	public void getDiagramDisplayProperties(Integer diagramID, ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
 			HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 			Vector<Vector<Object>> list = (Vector<Vector<Object>>) response.get(0);
 			for(Vector<Object> item : list) {
 				result.put((String) item.get(0), (Boolean) item.get(1));
-			}			
-			return result;
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-			return new HashMap<String, Boolean>();
-		}
+			}
+			onViewOptionsReturn.run(result);
+		};
+		xmfRequestAsync(handle, diagramID, "getViewOptions", localReturn);
+
 	}
     
     public void runOperation(Integer diagramID, String text) throws TimeOutException {

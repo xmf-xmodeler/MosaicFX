@@ -628,7 +628,7 @@ public final class ModelBrowser extends CustomStage {
 				constraintReasonArea.setDiagram(activePackage);
 				activePackage.updateDiagram();
 			};
-			communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, onDiagramCreated);
+			communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
 		} else {
 			activePackage = models.get(selectedPath);
 			operationCodeArea.setDiagram(activePackage);

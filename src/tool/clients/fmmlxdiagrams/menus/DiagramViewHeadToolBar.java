@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.menus;
 
-import java.io.File;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +14,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
@@ -28,7 +24,6 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
-import tool.helper.auxilaryFX.JavaFxSvgAuxilary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.xmodeler.ControlCenterClient;
 
@@ -191,7 +186,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		return fmmlxDiagram;
 	}
 	
-	 public DiagramDisplayModel getModell() {
+	 public DiagramDisplayModel getModel() {
 		 return model;
 	 }
 	

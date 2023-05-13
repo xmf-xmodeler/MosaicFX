@@ -54,12 +54,12 @@ public class XMLDiagram {
 		}
 
 	private void appendDiagramViewToolBarProperties(Element preferencesElement) {
-		Element diagramViewToolBarPropertiesElement = XMLUtil.createChildElement(preferencesElement, "DiagramViewToolBarProperties");
-		HashMap<String, Boolean> diagramViewToolBarPropertiesMap;
-		diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
-		for (Entry entry : diagramViewToolBarPropertiesMap.entrySet()) {
-			diagramViewToolBarPropertiesElement.setAttribute(entry.getKey().toString(), entry.getValue().toString());
-		}
+//		Element diagramViewToolBarPropertiesElement = XMLUtil.createChildElement(preferencesElement, "DiagramViewToolBarProperties");
+//		HashMap<String, Boolean> diagramViewToolBarPropertiesMap;
+//		diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
+//		for (Entry entry : diagramViewToolBarPropertiesMap.entrySet()) {
+//			diagramViewToolBarPropertiesElement.setAttribute(entry.getKey().toString(), entry.getValue().toString());
+//		}
 	}
 
 

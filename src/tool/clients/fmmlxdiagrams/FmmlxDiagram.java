@@ -96,7 +96,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
 	}
 	DiagramViewHeadToolBar diagramViewToolbar;
-	DiagramDisplayModel diagramViewToolBarModell;
+	DiagramDisplayModel diagramViewToolBarModel;
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -134,17 +134,19 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
-	public DiagramDisplayModel getDiagramViewToolBarModell() {
-		return diagramViewToolBarModell;
+	public DiagramDisplayModel getDiagramViewToolBarModel() {
+		return diagramViewToolBarModel;
 	}
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
 			int diagramID, String name, String packagePath, 
 			Vector<Vector<Object>> listOfViews, 
-			Vector<Vector<Object>> listOfOptions) {
+			Vector<Vector<Object>> listOfOptions,
+			boolean umlMode) {
 		super(comm,diagramID,packagePath);
+		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
-		diagramViewToolBarModell = diagramViewToolbar.getModell();
+		diagramViewToolBarModel = diagramViewToolbar.getModel();
 		
 		this.diagramName = name;
 		splitPane = new SplitPane();
@@ -459,17 +461,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void triggerOverallReLayout() {
-		
+//		long start = System.currentTimeMillis();
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
 			for(FmmlxObject o : new Vector<>(objects)) {
-				o.layout(this, diagramViewToolBarModell.getDisplayPropertiesMap());
+				o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
+//				System.err.println("layout node " + o.name + ":"+ i + "->" +(System.currentTimeMillis()-start));
 			}
+//			System.err.println("layout nodes " + i + "->" +(System.currentTimeMillis()-start));
 			for(Edge<?> edge : new Vector<>(edges)) {
 				edge.align();
 				edge.layoutLabels(this);
 			}
+//			System.err.println("layout edges " + i + "->" +(System.currentTimeMillis()-start));
+
 		}
+//		System.err.println("done "+(System.currentTimeMillis()-start));
 	}
 	
 	public Vector<CanvasElement> getSelectedObjects() {
@@ -500,6 +507,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 		}
 		objectsMoved = false;
+
 	}
 
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
@@ -747,7 +755,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific() {
 		for(FmmlxObject o : objects) {
-			o.layout(this, diagramViewToolBarModell.getDisplayPropertiesMap());
+			o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 		}
 	}
 
@@ -1027,9 +1035,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				for(Edge<?> edge : edges) {
 					edge.dropPoint(FmmlxDiagram.this);
 				}
-
+				
 				triggerOverallReLayout();
-
+				
 				if(diagramRequiresUpdate) {
 					diagramRequiresUpdate = false;
 					updateDiagram();
@@ -1038,6 +1046,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				sendViewStatus();
 			}
 			redraw();
+
 		}
 		
 		private void handleScroll(ScrollEvent e) {
@@ -1058,7 +1067,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleLeftPressed(MouseEvent e) {
-			
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			Point2D unTransformedPoint = null;
 			try{
@@ -1345,6 +1353,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 			g.setTransform(new Affine());	
 			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
+//
+//			g.setFill(Color.RED);
+//			g.fillText("umlMode: " + umlMode, 10, 30);
 		}
 		
 		
@@ -1580,7 +1591,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void switchTableOnAndOffForIssues() {
 		mainView.getChildren().clear();
-		if (diagramViewToolBarModell.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
+		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
 			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
 	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
 			splitPane3 = new SplitPane(tabPane, scrollPane);

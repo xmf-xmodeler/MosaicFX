@@ -221,13 +221,21 @@ public class ControlCenter extends Stage {
 		
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
+
+		Button newDiagram2 = new Button("Create UML Diagram");
+		newDiagram2.setDisable(true);
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
 		
-		Button newDiagram = new Button("Create Diagram");
+		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram.setOnAction(e -> callNewDiagramDialog()); 
+		newDiagram.setOnAction(e -> callNewDiagramDialog(false)); 
+		
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
@@ -252,7 +260,8 @@ public class ControlCenter extends Stage {
 		//build third row
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
-		grid.add(concreteSyntaxWizardStart, 4, 4);
+		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(newDiagram2, 4, 4);
 		
 		return grid;
 	}
@@ -274,7 +283,7 @@ public class ControlCenter extends Stage {
 		wizard.start(new Stage());
 	}
 
-	private void callNewDiagramDialog() {
+	private void callNewDiagramDialog(boolean umlMode) {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Create new Diagram");
 		dialog.setContentText("New diagram name:");
@@ -283,7 +292,7 @@ public class ControlCenter extends Stage {
 			if(InputChecker.isValidIdentifier(result.get())) {
 			FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 				modelLV.getSelectionModel().getSelectedItem(), 
-				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram, 
+				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram, umlMode, 
 				diagramID->{
 					controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
 				});

@@ -71,15 +71,6 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
 		});
 		group.addNodeElement(header);
-		FmmlxObject ofObj = null;
-		
-		try {
-			ofObj = diagram.getObjectByPath(object.getOfPath());
-		} catch (PathNotFoundException e) {
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-//		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
@@ -165,7 +156,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opsY = 0;
 		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Operation);
-		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONS) && opsSize > 0) {
+		if (!object.hidden && diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONS) && opsSize > 0) {
 			yAfterOpsBox = currentY + opsBoxHeight;
 			group.addNodeElement(opsBox);
 			for (FmmlxOperation o : object.getOwnOperations()) {
@@ -368,10 +359,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double neededWidth = FmmlxDiagram.calculateTextWidth(object.name); 
 
 		try {
-			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + of.name + "^"));
+			String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+//			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^MetaClass^"));
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^???^"));
 		}
 		
 		neededWidth += 30; // for level number;
