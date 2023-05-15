@@ -204,13 +204,15 @@ public class FXMLExporter {
 	        			break;
 	        			
 	        		case "Button":
-	        			fxml.addProperty("onAction", "#setSlot"); // Default Action
-	        			
 	        			value = GridPane.getColumnIndex((Node)object);
 	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
 	        			
 	        			value = GridPane.getRowIndex((Node)object);
 	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			
+	        			// get Action of Button
+	        			value = ((javafx.scene.control.Button) object).getText();
+	        			fxml.addProperty("onAction", "#" + value); // Default Action
 	        			break;
 	        			
 	        		case "TextField":
@@ -232,6 +234,7 @@ public class FXMLExporter {
 	        } catch (Exception e) {
 	        	System.err.println(e.getMessage());
 	        }
+	        
 	        
 	        	
 	        for (Property property : properties) {
