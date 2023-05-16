@@ -1263,5 +1263,9 @@ public class DiagramActions {
 		dialog.setContentText("Choose your FmmlxObject: ");
 		Optional<FmmlxObject> result = dialog.showAndWait();
 		return result;
+	}
+
+	public void removeDelegation(String delegatorPath, String delegateePath) {
+		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
 	}	
 }

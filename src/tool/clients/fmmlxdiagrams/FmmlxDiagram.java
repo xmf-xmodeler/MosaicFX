@@ -280,7 +280,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
-						new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
 			}

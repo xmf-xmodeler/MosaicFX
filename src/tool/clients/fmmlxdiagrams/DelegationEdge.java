@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 
@@ -46,7 +47,11 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
-		return new ContextMenu();
+		MenuItem deleteDelegationItem = new MenuItem("delete");
+		ContextMenu menu = new ContextMenu();
+		menu.getItems().add(deleteDelegationItem);
+		deleteDelegationItem.setOnAction(e -> actions.removeDelegation(sourceEnd.getNode().getPath(), targetEnd.getNode().getPath()));
+		return menu;
 	}
 
 	protected Color getPrimaryColor() {
