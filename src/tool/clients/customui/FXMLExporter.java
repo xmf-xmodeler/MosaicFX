@@ -179,6 +179,42 @@ public class FXMLExporter {
 	            propertiesCache.put(object.getClass(), properties);
 	        }
 	        
+	        
+	        // moved that section on top to put the fx:id first in the xml file -> important for CustomUI Controller
+	        for (Property property : properties) {
+	            try {
+	                Object[] parameters = new Object[property.getter.getParameterTypes().length];
+	                
+		            Object value = property.getter.invoke(object, parameters);
+		            
+	                if (value != null) {
+	                    if (value instanceof Collection) {
+	                        Collection collection = (Collection) value;
+	                        if (!collection.isEmpty()) {
+	                            FXML container = fxml.addContainer(property.name);
+	                            for (Object item : collection) {
+	                                container.addChild(exportToFXML(item));
+	                            }
+	                        }
+	                    } else if (value instanceof ObservableArray) {
+	                        int length = ((ObservableArray) value).size();
+	                        if (length > 0) {
+	                            FXML container = fxml.addContainer(property.name);
+	                            container.setValue(value);
+	                        }
+	                    } else if (property.getter.getReturnType().isPrimitive()
+	                            || String.class.equals(value.getClass())) {
+	                        fxml.addProperty(property.name, String.valueOf(value));
+	                    } else {
+	                        FXML container = fxml.addContainer(property.name);
+	                        container.addChild(exportToFXML(value));
+	                    }
+	                }
+	            } catch (Exception ex) {
+	                System.err.println(ex.getMessage());
+	            }
+	        }
+	        
 	        // Additionally try to set property f�r Row and ColumnIndex of GridPane
 	        // if object is label, button or textfield
 	        try {
@@ -233,42 +269,6 @@ public class FXMLExporter {
 	        	}
 	        } catch (Exception e) {
 	        	System.err.println(e.getMessage());
-	        }
-	        
-	        
-	        	
-	        for (Property property : properties) {
-	            try {
-	                Object[] parameters = new Object[property.getter.getParameterTypes().length];
-	                
-		            Object value = property.getter.invoke(object, parameters);
-		            
-	                if (value != null) {
-	                    if (value instanceof Collection) {
-	                        Collection collection = (Collection) value;
-	                        if (!collection.isEmpty()) {
-	                            FXML container = fxml.addContainer(property.name);
-	                            for (Object item : collection) {
-	                                container.addChild(exportToFXML(item));
-	                            }
-	                        }
-	                    } else if (value instanceof ObservableArray) {
-	                        int length = ((ObservableArray) value).size();
-	                        if (length > 0) {
-	                            FXML container = fxml.addContainer(property.name);
-	                            container.setValue(value);
-	                        }
-	                    } else if (property.getter.getReturnType().isPrimitive()
-	                            || String.class.equals(value.getClass())) {
-	                        fxml.addProperty(property.name, String.valueOf(value));
-	                    } else {
-	                        FXML container = fxml.addContainer(property.name);
-	                        container.addChild(exportToFXML(value));
-	                    }
-	                }
-	            } catch (Exception ex) {
-	                System.err.println(ex.getMessage());
-	            }
 	        }
 
 	        return fxml;
