@@ -1,19 +1,33 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
-
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+import tool.helper.XDate;
 
 public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Result> {
 
@@ -21,18 +35,18 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 	private final FmmlxObject object;
 	private final FmmlxSlot initialSlot;
 	private String type;
+	private boolean dateFormatValidation = true;
 
 	private TextField slotValueTextField;
 	private ComboBox<String> slotValueComboBox;
-	private CheckBox isExpressionCheckBox;
+	private CheckBox isExpressionCheckBox = new CheckBox();
 	private ComboBox<FmmlxSlot> slotBox;
 	private TextField slotTypeTextfield;
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton trueButton = new RadioButton("true");
 	private RadioButton falseButton = new RadioButton("false");
 	private String trueOrFalse="false";
-	private DatePicker datePicker = new DatePicker();
-	
+	private DatePicker datePicker = buildDatePicker();
 	private ComboBox<String> currency = new ComboBox<>();
 	private TextField money = new TextField();
 	
@@ -48,17 +62,17 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText(LabelAndHeaderTitle.changeSlotValue);
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-		isExpressionCheckBox = new CheckBox();
+		setOnCloseRequest(event -> {
+			if (!dateFormatValidation) {
+				dateFormatValidation = true;
+				event.consume();
+			}
+		});		
 		layoutContent();
-
 		dialog.setContent(flow);
-
 		setResultConverter();
-		
 		//If TextField is in use, then the cursor should jump there!
 		if (mode==Mode.STRING || mode==Mode.DEFAULT) Platform.runLater(() -> slotValueTextField.requestFocus());
-		
 	}
 
 	private void setMode(FmmlxSlot slot) {
@@ -99,7 +113,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		slotTypeTextfield.setDisable(true);
 		Node inputItem = null; 
 
-
 		nodes.add(new Label(LabelAndHeaderTitle.aClass));
 		nodes.add(classNameTextField);
 		nodes.add(new Label(LabelAndHeaderTitle.name));
@@ -111,8 +124,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		nodes.add(new Label(LabelAndHeaderTitle.expression));
 		nodes.add(isExpressionCheckBox);
 
-//		addNodesToGrid(nodes);
-
 		grid.add(new Label(LabelAndHeaderTitle.aClass), 	0, 0);
 		grid.add(new Label(LabelAndHeaderTitle.name), 		0, 1);
 		grid.add(new Label(LabelAndHeaderTitle.type), 		0, 2);
@@ -122,7 +133,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		grid.add(classNameTextField, 	1, 0);
 		grid.add(slotName, 		        1, 1);
 		grid.add(slotTypeTextfield, 	1, 2);
-//		grid.add(inputItem, 		    1, 3);
 		grid.add(isExpressionCheckBox,  1, 4);
 		setMode(initialSlot);
 	}
@@ -135,8 +145,11 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 			grid.add(slotValueTextField, 1, 3);
 			slotValueTextField.setDisable(mode == Mode.INVALID);
 		} else if (mode==Mode.DATE) {
-	        datePicker.setShowWeekNumbers(true);
-	        grid.add(datePicker, 1, 3);
+			grid.add(datePicker, 1, 3);
+			if (!initialSlot.getValue().equals("null")) {
+				LocalDate currentDateValue = XDate.parseStringToLocalDate(initialSlot.getValue(),"dd LLL yyyy");
+				datePicker.setValue(currentDateValue);
+			}
 		} else if (mode==Mode.BOOLEAN) {
 			trueButton.setToggleGroup(toggleGroup);
 			falseButton.setToggleGroup(toggleGroup);
@@ -165,21 +178,35 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		
 	}
 
-	/*private void getSlotType() {
-		Vector<FmmlxAttribute> allAttributes = new Vector<>();
-		FmmlxObject parent = object;
-		while (parent != null) {
-			allAttributes.addAll(parent.getOwnAttributes());
-			allAttributes.addAll(parent.getOtherAttributes());
-			parent = diagram.getObjectById(parent.getOf());
-		}
+	private DatePicker buildDatePicker() {
+		datePicker = new DatePicker();
+		datePicker.setConverter(new StringConverter<LocalDate>() {
+			 String pattern = "dd MMM yyyy";
+			 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
 
-		for (FmmlxAttribute attribute : allAttributes) {
-			if (attribute.getName().equals(slot.getName())) {
-				this.type = attribute.getType();
-			}
-		}
-	}*/
+			 {
+			     datePicker.setPromptText(pattern.toLowerCase());
+			 }
+
+			 @Override public String toString(LocalDate date) {
+			     if (date != null) {
+			         return dateFormatter.format(date);
+			     } else {
+			         return "";
+			     }
+			 }
+
+			 @Override public LocalDate fromString(String string) {
+			     if (string != null && !string.isEmpty()) {
+			         return LocalDate.parse(string, dateFormatter);
+			     } else {
+			         return null;
+			     }
+			 }
+			});
+		datePicker.setShowWeekNumbers(true);
+		return datePicker;
+	}
 
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
@@ -195,10 +222,21 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 					} else if(mode==Mode.BOOLEAN) {
 						return new Result(object, currentSlot, trueOrFalse);
 					} else if(mode==Mode.DATE) {
-						int year = datePicker.getValue().getYear();
-						int month = datePicker.getValue().getMonthValue();
-						int day = datePicker.getValue().getDayOfMonth();
-						String date = "Date::createDate("+year+","+month+","+day+")";
+						String newDateValue = datePicker.getEditor().getText(); 
+						LocalDate parsedDate = null;
+						try {
+ 							parsedDate = XDate.parseStringToLocalDate(newDateValue, "dd MMM yyyy");														
+						} catch (DateTimeParseException e) {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setHeaderText("Input of wrong format");
+							alert.setContentText("You inserted the date in a wrong format. Choose date via Datepicker or enter date in the Format 'dd MMM yyyy'.");
+							alert.show();
+							dateFormatValidation = false;
+						}
+						int year = parsedDate.getYear();
+						int month = parsedDate.getMonthValue();
+						int day = parsedDate.getDayOfMonth();
+						String date = String.format("Date::createDate(%s,%s,%s)", year, month, day);
 						return new Result(object, currentSlot, date);
 					} else if(mode==Mode.MONEY) {
 						String currencyString = "Auxiliary::Currency(\"" + currency.getSelectionModel().getSelectedItem() + "\", \"" + currency.getSelectionModel().getSelectedItem() + "\", 1.0)";
