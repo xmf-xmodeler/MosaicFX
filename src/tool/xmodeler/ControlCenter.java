@@ -91,8 +91,10 @@ public class ControlCenter extends Stage {
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 				
-		controlCenterClient.getAllProjects();		
-		new StartupModelLoader().loadModelsFromSavedModelsPath();
+		controlCenterClient.getAllProjects();	
+		if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString()))) {
+			new StartupModelLoader().loadModelsFromSavedModelsPath();			
+		}
 	}
 	
 	private void showCloseWarningDialog(Event event) {

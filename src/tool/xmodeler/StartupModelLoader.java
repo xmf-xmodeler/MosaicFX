@@ -14,12 +14,15 @@ public class StartupModelLoader {
 	public void loadModelsFromSavedModelsPath() {
 		
 		ReturnCall<FmmlxDiagramCommunicator> onCommunicatorAvailable = communicator -> {
-			String savedModelsPath = PropertyManager.getProperty("savedModelsPath");
+			String savedModelsPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
 			if (savedModelsPath == null) {
 				return;
 			}
 			Path dir = Paths.get(savedModelsPath);
-	
+			if (!dir.toFile().exists()) {
+				PropertyManager.deleteProperty(UserProperty.MODELS_DIR.toString());
+				return;
+			}
 			Stream<Path> filesFromSavedModelsPath = getFilesFromSavedModelsPath(dir);
 			loadXmlFilesFromStream(filesFromSavedModelsPath, communicator);
 			Stream<Path> visibleSubfolder = loadListOfVisibleSubfolder(dir);

@@ -5,9 +5,10 @@ import java.util.Properties;
 public class DefaultUserProperties extends Properties {
 
 	public DefaultUserProperties() {
-		put("toolHeight", "300");
-		put("toolWidth", "800");
-		put("toolX", "300");
-		put("toolY", "300");
+		put(UserProperty.TOOL_HEIGHT.toString(), "300");
+		put(UserProperty.TOOL_WIDTH.toString(), "800");
+		put(UserProperty.TOOL_X.toString(), "300");
+		put(UserProperty.TOOL_Y.toString(), "300");
+		put(UserProperty.LOAD_MODELS_BY_STARTUP.toString(),"false");
 	}
 }
