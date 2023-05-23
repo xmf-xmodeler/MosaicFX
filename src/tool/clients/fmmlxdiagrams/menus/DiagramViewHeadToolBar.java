@@ -75,11 +75,14 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
 		updateButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.updateDiagram(), "resources/png/update.24.png");
 		updateSvg = updateButton.getGraphic();
-
-		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model");
+		
+		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object");
-		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton );
+		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getComm().saveXmlFile2(fmmlxDiagram.getPackagePath(), fmmlxDiagram.getID()), "resources/png/save.24.png");
+		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
+		
+		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
 		return toolBar;
 	}
 		
