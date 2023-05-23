@@ -1040,41 +1040,6 @@ public class DiagramActions {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
 	}
-
-    public void testGetEdges() {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
-					diagram.getComm().testGetAllEdgePositions(id);
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-    }
-
-	public void testGetLabel() {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
-				System.out.println(ids);
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
-					diagram.getComm().testGetAllLabelPositions(id);
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-	}
-
-	
-	
-	
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			

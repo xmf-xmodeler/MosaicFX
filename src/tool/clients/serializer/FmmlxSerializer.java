@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.PackageActionsList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.xmlManipulator.XmlCreator;
 
@@ -49,15 +50,15 @@ public class FmmlxSerializer  {
     public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         try{
             this.clearAllData();
-            Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
-            Collections.sort(diagramIds);
-            for(Integer id :diagramIds){
+            Vector<DiagramInfo> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
+//            Collections.sort(diagramIds);
+            for(DiagramInfo idAndName : diagramIds){
                 saveProject(packagePath);                
-                saveDiagram(FmmlxDiagramCommunicator.getDiagram(id).getDiagramLabel(), packagePath, id);
+                saveDiagram(idAndName.diagramName, packagePath, idAndName.id);
             }
-            saveProjectLog(diagramIds.get(0), communicator);
+            saveProjectLog(diagramIds.get(0).id, communicator);
             this.xmlManager.flushData();
-            communicator.fileSaved(filePath, diagramIds.get(0));
+            communicator.fileSaved(filePath, diagramIds.get(0).id);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -68,16 +69,16 @@ public class FmmlxSerializer  {
     public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlManager.getSourcePath())){
             try {
-                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
-                Collections.sort(diagramIds);
-                for(Integer id_tmp :diagramIds){
+                Vector<DiagramInfo> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
+//                Collections.sort(diagramIds);
+                for(DiagramInfo idAndName : diagramIds){
 //                    String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
                     saveProject(packagePath);
-                    saveDiagram(FmmlxDiagramCommunicator.getDiagram(id_tmp).getDiagramLabel(), packagePath, id_tmp);
+                    saveDiagram(idAndName.diagramName, packagePath, idAndName.id);
                 }
-                saveProjectLog(diagramIds.get(0), communicator);
+                saveProjectLog(diagramIds.get(0).id, communicator);
                 xmlManager.flushData();
-                communicator.fileSaved(this.filePath, diagramIds.get(0));
+                communicator.fileSaved(this.filePath, diagramIds.get(0).id);
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
             }
@@ -102,12 +103,12 @@ public class FmmlxSerializer  {
     //This methode save the Diagram-Data.
     //This method makes the main XML-node containing Diagram-data and then add the node into xml-document
     public void saveDiagram(String label, String diagramPath, Integer id) throws TransformerException, TimeOutException {
-    	Element diagramsElement = xmlManager.getDiagramsElement();
+    	Element diagramsElement = xmlManager.getDiagramsElement();  	
     	Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);	
     	if(checkFileExist(xmlManager.getSourcePath())) {
-            if (xmlManager.diagramIsExist(label)) {
-                xmlManager.removeDiagram(label);
-            }
+//            if (xmlManager.diagramIsExist(label)) {
+//                xmlManager.removeDiagram(label);
+//            }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
             diagramElement.appendChild(xmlManager.createXmlElement(SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES));

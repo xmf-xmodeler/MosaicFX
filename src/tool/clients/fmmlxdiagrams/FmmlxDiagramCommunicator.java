@@ -496,6 +496,7 @@ public class FmmlxDiagramCommunicator {
 		
 	}
 
+	@Deprecated // use async below
     @SuppressWarnings("unchecked")
 	public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
@@ -529,6 +530,40 @@ public class FmmlxDiagramCommunicator {
 			e.printStackTrace();
 		}
         return result;
+    }
+
+	@Deprecated // use async below
+    @SuppressWarnings("unchecked")
+	public void getAllEdgePositions(Integer diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllEdgePositionsReceived) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		ReturnCall<Vector<Object>> localReturn = response -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+			for(Object contentItem : responseContent) {
+				Vector<Object> contentVector = (Vector<Object>) contentItem;
+				String key = (String) contentVector.get(0);
+				Vector<Object> edgeInfo =  (Vector<Object>) contentVector.get(1);
+
+				Vector<Object> portInfo = new Vector<>();
+				if(edgeInfo.size()>0){
+					portInfo.add(edgeInfo.get(0));
+					portInfo.add(edgeInfo.get(edgeInfo.size()-1));
+				}
+				Vector<Object> intermediatePoints = new Vector<>();
+				for(int i = 1; i< Objects.requireNonNull(edgeInfo).size()-1 ; i++){
+					intermediatePoints.add(edgeInfo.get(i));
+				}
+
+				HashMap<String, Object> edgeInfoMap = new HashMap<>();
+				edgeInfoMap.put("Ports", portInfo);
+				edgeInfoMap.put("IntermediatePoints", intermediatePoints);
+
+				result.put(key, edgeInfoMap);
+			}
+			onAllEdgePositionsReceived.run(result);
+		};        
+        
+		xmfRequestAsync(handle, -2, "getAllEdgePositions", localReturn, new Value(diagramID));
     }
 	
 	@SuppressWarnings("unchecked")
@@ -2017,15 +2052,30 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("closeDiagram", message);
 	}
 	
+	public static class DiagramInfo {
+		public final Integer id;
+		public final String diagramName;
+
+		public DiagramInfo(Integer id, String diagramName) {
+			super();
+			this.id = id;
+			this.diagramName = diagramName;
+		}
+	}
+	
+	@Deprecated // use getAllDiagramInfos
 	@SuppressWarnings("unchecked")
-	public Vector<Integer> getAllDiagramIDs(String packagePath) {
-		Vector<Integer> result = new Vector<>();
+	public Vector<DiagramInfo> getAllDiagramIDs(String packagePath) {
+		Vector<DiagramInfo> result = new Vector<>();
 		try {
 			Vector<Object> response = xmfRequest(handle, -2, "getAllDiagrams", new Value(packagePath));
 			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 			
 			for(Object e : responseContent) {
-				result.add((Integer) e);
+				Vector<Object> idAndLabel = (Vector<Object>) e;
+				Integer id = (Integer) (idAndLabel.get(0));
+				String diagramName = (String) (idAndLabel.get(1));
+				result.add(new DiagramInfo(id, diagramName));
 			}
 			return result;
 		} catch (TimeOutException e1) {
@@ -2034,6 +2084,26 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public void getAllDiagramInfos(String packagePath, ReturnCall<Vector<DiagramInfo>> onDiagramInfosReveived) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<DiagramInfo> result = new Vector<>();
+//			Vector<Object> response = 
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object e : responseContent) {
+				Vector<Object> idAndLabel = (Vector<Object>) e;
+				Integer id = (Integer) (idAndLabel.get(0));
+				String diagramName = (String) (idAndLabel.get(1));
+				result.add(new DiagramInfo(id, diagramName));
+			}
+			onDiagramInfosReveived.run(result);
+		};
+		xmfRequestAsync(handle, -2, "getAllDiagrams", returnCall, new Value(packagePath));
+	}
+
+	@Deprecated // use async below
+	@SuppressWarnings("unchecked")
+
 	public HashMap<String, HashMap<String, Object>> getAllObjectPositions(int diagramID) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		try {
@@ -2058,7 +2128,32 @@ public class FmmlxDiagramCommunicator {
 			throw new RuntimeException(e1);
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void getAllObjectPositions(int diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllObjectPositionsReceived) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object o : responseContent) {
+				Vector<Object> objInfo = (Vector<Object>) o;
+				String key = (String) objInfo.get(0);
+				Integer x = (Integer) objInfo.get(1);
+				Integer y = (Integer) objInfo.get(2);
+				Boolean hidden = (Boolean) objInfo.get(3);
 
+				HashMap<String, Object> objectMap = new HashMap<>();
+				objectMap.put("x", x);
+				objectMap.put("y", y);
+				objectMap.put("hidden", hidden);
+				result.put(key, objectMap);
+			}
+			onAllObjectPositionsReceived.run(result);
+		};
+		xmfRequestAsync(handle, -2, "getAllObjectPositions", returnCall, new Value(diagramID));
+	}
+
+	@Deprecated // use async below
     @SuppressWarnings("unchecked")
 	public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
@@ -2090,30 +2185,32 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
-	@SuppressWarnings("unchecked")
-	public void testGetAllEdgePositions(int id) {
-		Vector<Object> response;
-		try {
-			response = xmfRequest(handle, -2, "getAllEdgePositions", new Value(id));
+    @SuppressWarnings("unchecked")
+	public void getAllLabelPositions(int id, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllLabelPositionsReceived) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-			System.out.println(responseContent);
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		}
 
-	}
+			for (Object o : responseContent) {
+				Vector<Object> labelInfo = (Vector<Object>) o;
+				String ownerID = (String) labelInfo.get(0);
+				Integer localID = (Integer) labelInfo.get(1);
+				float x = (float) labelInfo.get(2);
+				float y = (float) labelInfo.get(3);
 
-	@SuppressWarnings("unchecked")
-	public void testGetAllLabelPositions(int id) {
-		Vector<Object> response;
-		try {
-			response = xmfRequest(handle, -2, "getAllLabelPositions", new Value(id));
-			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-			System.out.println(responseContent);
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		}
-	}
+//				if(type == 0){
+					HashMap<String, Object> labelMap = new HashMap<>();
+					labelMap.put("ownerID", ownerID);
+					labelMap.put("localID", localID);
+					labelMap.put("x", x);
+					labelMap.put("y", y);
+					result.put(ownerID + "::" + localID, labelMap); // just some arbitrary stuff for the hashMap
+//				}
+			}
+			onAllLabelPositionsReceived.run(result);
+		};
+		xmfRequestAsync(handle, -2, "getAllLabelPositions", returnCall, new Value(id));
+    }
 
 	// this map stored the positions of the nodes and edges of freshly loaded xml-files
 	// until the diagram is opened for the first time
@@ -2150,6 +2247,7 @@ public class FmmlxDiagramCommunicator {
 				return diagram;
 			}
 		}
+		System.err.println("Diagram " + id + "not found.");
 		return null;
 	}
 	// -------------------- merge package ---------------------------- //
@@ -2304,6 +2402,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendViewStatusToModel", message);
 	}
 
+	@Deprecated // use asynch below
 	@SuppressWarnings("unchecked")
 	public Vector<Vector<Object>> getAllViews(Integer diagramID) {
 		try {
@@ -2317,7 +2416,16 @@ public class FmmlxDiagramCommunicator {
 			return V;
 		}
 	}
-		public void sendDiagramDisplayOptions(Integer diagramID, HashMap<String, Boolean> map) {
+	
+	@SuppressWarnings("unchecked")
+	public void getAllViews(Integer diagramID, ReturnCall<Vector<Vector<Object>>> onAllViewsReceived) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			onAllViewsReceived.run((Vector<Vector<Object>>) (response.get(0)));
+		};
+		xmfRequestAsync(handle, diagramID, "getAllViews", localReturn);
+	}
+	
+	public void sendDiagramDisplayOptions(Integer diagramID, HashMap<String, Boolean> map) {
 		Vector<Value> items = new Vector<>();
 		for(String key : map.keySet()) {
 			items.add(new Value(new Value[] {new Value(key), new Value(map.get(key))}));
@@ -2333,7 +2441,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendViewOptions", message);
 	}
 
-	@Deprecated
+	@Deprecated // use asynch below
 	@SuppressWarnings("unchecked")
 		public HashMap<String, Boolean> getDiagramDisplayProperties(Integer diagramID) {
 			try {
@@ -2369,5 +2477,4 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
-
 }

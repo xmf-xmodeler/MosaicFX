@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.PackageActionsList;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 
@@ -76,9 +77,9 @@ public class PackageSerializer {
 	}
 
 	private void addDiagrams(Element diagramsElement) {
-		List<Integer> diagramIds = communicator.getAllDiagramIDs(diagram.getPackagePath()); 
-		for (Integer id : diagramIds) {
-			XMLDiagram xmlDiagram = new XMLDiagram(id);			
+		List<DiagramInfo> diagramIds = communicator.getAllDiagramIDs(diagram.getPackagePath()); 
+		for (DiagramInfo id : diagramIds) {
+			XMLDiagram xmlDiagram = new XMLDiagram(id.id);			
 			Element diagramElement = xmlDiagram.getDiagramElement();
 			outputDoc.adoptNode(diagramElement);
 			diagramsElement.appendChild(diagramElement);
