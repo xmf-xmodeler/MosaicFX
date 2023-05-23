@@ -98,6 +98,9 @@ public class ControlCenter extends Stage {
 	}
 	
 	private void showCloseWarningDialog(Event event) {
+		if (!Boolean.valueOf(PropertyManager.getProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString()))){
+			return;
+		}
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setTitle("Close Warning");
 		alert.setHeaderText("Application is closing!");

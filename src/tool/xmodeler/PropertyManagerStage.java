@@ -86,8 +86,8 @@ class PropertyManagerStage extends Stage {
 			}
 		}, "resources/gif/Package.gif");
 		
-		saveTabContentGrid.add(checkboxLabel, 0, 0);
-		saveTabContentGrid.add(loadModels, 2, 0);
+		saveTabContentGrid.add(checkboxLabel, 0, 0, 3, 1);
+		saveTabContentGrid.add(loadModels, 3, 0);
 		saveTabContentGrid.add(saveLabel, 0, 1);
 		saveTabContentGrid.add(infoButton, 1, 1);
 		saveTabContentGrid.add(currentFolderPath, 2, 1);
@@ -142,6 +142,11 @@ class PropertyManagerStage extends Stage {
 
 		Separator separator = new Separator();
 		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		Label closingLabel  = new Label("Show warning on application closing?");
+		CheckBox closingCheckBox = new CheckBox();
+		closingCheckBox.setSelected(Boolean.valueOf(PropertyManager.getProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString())));
+		closingCheckBox.setOnAction(e -> PropertyManager.setProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString(), String.valueOf(closingCheckBox.isSelected())));
 
 		userInterfaceAppearanceGrid.add(header, 0, 0);
 		userInterfaceAppearanceGrid.add(toolX, 0, 1);
@@ -158,6 +163,8 @@ class PropertyManagerStage extends Stage {
 		userInterfaceAppearanceGrid.add(toolHeightField, 0, 4);
 		GridPane.setHalignment(toolHeightField, HPos.RIGHT);
 		userInterfaceAppearanceGrid.add(separator, 0, 5);
+		userInterfaceAppearanceGrid.add(closingLabel, 0, 6,2,1);
+		userInterfaceAppearanceGrid.add(closingCheckBox, 2, 6);
 		return userInterfaceAppearanceGrid;
 	}
 

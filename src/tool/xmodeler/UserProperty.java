@@ -6,7 +6,8 @@ public enum UserProperty {
 	TOOL_X("toolX"),
 	TOOL_Y("toolY"),
 	LOAD_MODELS_BY_STARTUP("loadModelsByStartup"),
-	MODELS_DIR("modelsDir");
+	MODELS_DIR("modelsDir"),
+	APPLICATION_CLOSING_WARNING("applicationClosingWarning");
 	
 	private String saveName; 
 	
