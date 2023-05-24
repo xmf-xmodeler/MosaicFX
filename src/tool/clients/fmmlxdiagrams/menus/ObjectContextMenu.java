@@ -35,7 +35,7 @@ public class ObjectContextMenu extends ContextMenu {
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
 		execUI.setOnAction( e -> actions.executeUI(object) );
-		if( object.getMetaClassName().equals("CustomUserInterface")) getItems().add(execUI);
+		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
 		// End custom UI
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
