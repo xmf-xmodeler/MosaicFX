@@ -936,8 +936,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()),
 				canvasTransform);
 				}
-				mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
+				
 				if (isLeftButton(e)) {
+					mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
 					moveObjectsOnDrag(new Point2D(e.getX(), e.getY()));
 				}
 			}
@@ -970,7 +971,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void mouseDraggedStandard(Point2D p) {
-			final double DRAG_LIMIT=5 ,DRAG_STEP = 5;
+			// These constants define which amount of diagram edge is sensitive to objects 
+			// being dragged out, and how "fast" the view will follow
+			final double DRAG_LIMIT = 5 ,DRAG_STEP = 5;
+			
+			// If the mouse pointer is within the edge regions,
+			// the canvas transform is adapted so that the view follows th dragged object
+			// and the drag start is corrected by this amount, 
+			// otherwise the dragged object would no longer follow the mouse pointer
 			if(p.getX() < DRAG_LIMIT) {
 				canvasTransform.prependTranslation(DRAG_STEP,0);
 				dragStart = new Point2D(dragStart.getX()+DRAG_STEP, dragStart.getY());
@@ -987,6 +995,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				dragStart = new Point2D(dragStart.getX(), dragStart.getY()-DRAG_STEP);
 			}			
 			
+			// Whether the view has followed the mouse or not
+			// now the difference between the start of the drag and the current mouse position 
+			// is used to calculate the drag transformation
+			// (which is chained to the the other transformations of an object until it is dropped)
 			try {
 				Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
 				Affine a = new Affine(canvasTransform);
@@ -994,10 +1006,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				a.prepend(canvasTransform.createInverse());
 				dragAffine = a;
 			} catch (NonInvertibleTransformException e1) {
+				// Hopefully this will never happen.
+				// Presumably this only happens if it's zoomed in or out infinitely far
 				e1.printStackTrace();
-			}
-			
-			
+			}			
 		}
 
 		private void moveObjectsOnDrag(Point2D p) {
@@ -1353,9 +1365,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 			g.setTransform(new Affine());	
 			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
-//
-//			g.setFill(Color.RED);
-//			g.fillText("umlMode: " + umlMode, 10, 30);
 		}
 		
 		
@@ -1479,6 +1488,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleCenterDragged(MouseEvent e) {
+			if(wheelDragStartAffine == null) return; // user was too fast, let them try again later
 			canvasTransform = new Affine(wheelDragStartAffine);
 			canvasTransform.prependTranslation(e.getX() - wheelDragStartPoint.getX(), e.getY() - wheelDragStartPoint.getY());
 			redraw();

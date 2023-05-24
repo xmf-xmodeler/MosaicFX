@@ -275,7 +275,8 @@ public class FmmlxDiagramCommunicator {
 		// the idCounter could in theory cycle through all int. But as -1 is reserved the cycle has to be cut short.
 		if(idCounter > 10000) idCounter = 0;
 		int requestID = idCounter++;
-		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
+//		if (DEBUG) 
+			System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
 		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(requestID)});
 		boolean waiting = true;
@@ -305,6 +306,8 @@ public class FmmlxDiagramCommunicator {
 			String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 
 		Value[] args2 = new Value[args.length + 1];
+		// the idCounter could in theory cycle through all int. But as -1 is reserved the cycle has to be cut short.
+		if(idCounter > 10000) idCounter = 0;
 		int requestID = idCounter++;
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
@@ -1839,6 +1842,7 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
+    @Deprecated // use async below
     @SuppressWarnings("unchecked")
     public PackageActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagramID, "getDiagramData");
@@ -1846,7 +1850,14 @@ public class FmmlxDiagramCommunicator {
 		return new PackageActionsList(responseContent);
     }
     
-
+    @SuppressWarnings("unchecked")
+    public void getDiagramData(Integer diagramID, ReturnCall<PackageActionsList> onDiagramDataReceived ) throws TimeOutException {
+    	ReturnCall<Vector<Object>> localReturn = (response) -> {
+    		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+    		onDiagramDataReceived.run(new PackageActionsList(responseContent));
+    	};
+    	xmfRequestAsync(handle, diagramID, "getDiagramData", localReturn);
+    }
 	
 	public void findClasses(String className, String level, String attName, ReturnCall<Object> onResultReceived) {
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
