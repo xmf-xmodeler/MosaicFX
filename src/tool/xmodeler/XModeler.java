@@ -363,7 +363,7 @@ public class XModeler extends Application {
   }
 
   private static void setProjectDirectory(String[] args) {
-    projDir = PropertyManager.getProperty("savedModelsPath");
+    projDir = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
 //	 projDir = lookupArg("projects", args);
 //    if (projDir == null) throw new Error("you have not set the project directory in the initialisation arguments:\n" + Arrays.toString(args));
   }

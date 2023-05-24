@@ -2,18 +2,23 @@ package tool.helper;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class XDate {
-//	boolean precisionDayOnly;
-//	long time;
-	
-	public XDate() {};
 	
 	public String getNow() {return System.currentTimeMillis()+"";}
 	
 	public String printDate(String timeString, String pattern) { return new SimpleDateFormat(pattern).format(new Date(Long.parseLong(timeString))); }
+	
+	public static LocalDate parseStringToLocalDate(String dateString, String pattern) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
+		LocalDate localDate = LocalDate.parse(dateString, formatter);
+		return localDate;
+	}
 	
 	public String getYearMonthDay(int year, int month, int day) {
 		return getYearMonthDayHourMinuteSecond(year, month, day, 0, 0, 0);

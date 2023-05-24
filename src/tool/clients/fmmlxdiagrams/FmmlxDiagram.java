@@ -298,6 +298,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						getPressedKeys().contains(KeyCode.S)) {
 						getComm().saveXmlFile2(packagePath, diagramID);;
 					}
+				if (getPressedKeys().contains(KeyCode.F5)) {
+						getComm().triggerUpdate();
+					}
 			}
 		});
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
