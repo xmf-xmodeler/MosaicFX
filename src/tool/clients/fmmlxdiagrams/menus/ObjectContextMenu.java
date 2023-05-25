@@ -32,7 +32,11 @@ public class ObjectContextMenu extends ContextMenu {
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 
-		
+		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
+		MenuItem execUI = new MenuItem("Execute UI");
+		execUI.setOnAction( e -> actions.executeUI(object) );
+		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
+		// End custom UI
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
@@ -45,11 +49,6 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
-		
-		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
-		MenuItem execUI = new MenuItem("Execute UI");
-		execUI.setOnAction( e -> actions.executeUI(object) );
-		if( object.getMetaClassName().equals("CustomUserInterface")) getItems().add(execUI);
 		
 		// menu item for instantiating and mapping custom GUI
 		MenuItem instantiateGUI = new MenuItem("Instantiate Custom GUI");

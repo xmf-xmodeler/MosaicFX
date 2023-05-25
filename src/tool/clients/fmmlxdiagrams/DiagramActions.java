@@ -227,7 +227,7 @@ public class DiagramActions {
 	// FH Method for adding Instances without dialog that are automatically hidden
 		public String addInstance(String className, String instanceName) {
 			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
 			return instanceName;
 
 		}
@@ -1271,31 +1271,28 @@ public class DiagramActions {
 		this.diagram.updateDiagram();
 		
 		// fill slots after diagram has updated
-		// 2 seconds seem to be enough
+		// 100 ms seems to be enough
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 		@Override
 			public void run() {
 				addSlotValuesCustomGUI(customGUIslotValues);
 				diagram.updateDiagram();
 			} 
-		}, 2000);
+		}, 100);
 	}
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector <CanvasElement> selectedObjects) {
-		
-		// Namen der Instanzen müssen mit einem Buchstaben beginnen
-		// TODO Asynchronität
-		// TODO zyklische Beziehungen
-		// TODO paramValuesAsList Date + Float!!! Constructor von nem getter klauen -> anschließend Luca schicken
+		// TODO rename classes names to new names by luca
+		// TODO better error handling if image is missing
 		
 		// name of gui
-		String guiName;
+		String guiName = "";
 		
 		// for the fxml export
 		int rowCount = 0;
 		
 		// instance of customGUI
-		String guiInstanceName = addInstance("CustomUserInterface", "gui" + UUID.randomUUID().toString().replace("-", ""), false);
+		String guiInstanceName = addInstance("UserInterface", "gui" + UUID.randomUUID().toString().replace("-", ""), false);
 
 		// objects for customGUI
 		FmmlxObject object;
@@ -1620,7 +1617,7 @@ public class DiagramActions {
 		
 		
 		helper.put("pathToFXML", file.getPath());
-		helper.put("titleOfUI", "Example UI");
+		helper.put("titleOfUI", guiName);
 		//helper.put("pathToIconOfWindow", "");
 		
 		slotValues.put(guiInstanceName, (Map<String, String>) helper.clone());
@@ -1661,7 +1658,7 @@ public class DiagramActions {
 			if (o.getMetaClassName().equals("Action")) actions.add(o);
 			if (o.getMetaClassName().equals("Parameter")) parameters.add(o);
 			if (o.getMetaClassName().equals("Virtual")) virtuals.add(o); 
-			if (o.getMetaClassName().equals("CustomUserInterface")) customGuiInterface.add(o); 
+			if (o.getMetaClassName().equals("UserInterface")) customGuiInterface.add(o); 
 			
 		}
 		
