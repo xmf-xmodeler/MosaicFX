@@ -227,7 +227,7 @@ public class DiagramActions {
 	// FH Method for adding Instances without dialog that are automatically hidden
 		public String addInstance(String className, String instanceName) {
 			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
 			return instanceName;
 
 		}
@@ -1262,39 +1262,23 @@ public class DiagramActions {
 		wizard.showAndWait();
 	}
 	
+	// F.H. instantiate StandardGUI from given Domain Model
 	public void instantiateGUI(FmmlxObject object) {
-		System.err.println("CUSTOM GUI: Instatiating 0/2");
+		// instantiate CustomGUI instances
 		Vector<CanvasElement> vector = this.diagram.getSelectedObjects();
-		
 		this.customGUIslotValues.clear();
-		// instantiating objects and links
+		customGUIslotValues = this.instantiateCustomGUI(vector);
+		this.diagram.updateDiagram();
 		
-		Platform.runLater(() -> customGUIslotValues = this.instantiateCustomGUI(vector));
-		Platform.runLater(() -> this.diagram.updateDiagram());
-		
-		System.err.println("CUSTOM GUI: Instatiating finished 1/2");
-		
-		
-		
-		/*
-		Platform.runLater(() -> this.addSlotValuesCustomGUI(CustomGUIslotValues));
-		// updating diagram
-		Platform.runLater(() -> this.diagram.updateDiagram());
-		
-		Platform.runLater(() -> System.err.println("CUSTOM GUI: Slot values added 2/2"));
-		*/
-		
-	}
-	
-	
-	
-	public void slotValuesGUI() {
-		// filling slots
-		Platform.runLater(() -> this.addSlotValuesCustomGUI(customGUIslotValues));
-		// updating diagram
-		Platform.runLater(() -> this.diagram.updateDiagram());
-
-		System.err.println("CUSTOM GUI: Slot values added 2/2");
+		// fill slots after diagram has updated
+		// 2 seconds seem to be enough
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+		@Override
+			public void run() {
+				addSlotValuesCustomGUI(customGUIslotValues);
+				diagram.updateDiagram();
+			} 
+		}, 2000);
 	}
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector <CanvasElement> selectedObjects) {

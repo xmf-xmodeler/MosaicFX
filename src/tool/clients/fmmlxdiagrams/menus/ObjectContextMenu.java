@@ -56,11 +56,6 @@ public class ObjectContextMenu extends ContextMenu {
 		instantiateGUI.setOnAction(e-> actions.instantiateGUI(object));
 		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
 		
-		MenuItem slotValuesGUI = new MenuItem("Add Slot Values Custom GUI");
-		slotValuesGUI.setOnAction(e-> actions.slotValuesGUI());
-		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(slotValuesGUI);
-		// End custom UI
-		
 		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
