@@ -227,7 +227,7 @@ public class DiagramActions {
 	// FH Method for adding Instances without dialog that are automatically hidden
 		public String addInstance(String className, String instanceName) {
 			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
 			return instanceName;
 
 		}
@@ -1262,27 +1262,55 @@ public class DiagramActions {
 		wizard.showAndWait();
 	}
 	
+	
+	// recursive function to get Objects for CustomgUI
+	public Vector<CanvasElement> recurGetObjectsForGUI(Vector<CanvasElement> vector, FmmlxObject root, int depth){
+		// only go to certain depth
+		if (!(depth>0)) return vector;
+		depth--;
+		
+		// add root if not added already
+		if (!vector.contains(root)) vector.add(root);
+			
+		// can this be done easier?
+		for (FmmlxAssociation assoc : root.getAllRelatedAssociations()) {
+			vector = recurGetObjectsForGUI(vector, assoc.getSourceNode(), depth);
+			vector = recurGetObjectsForGUI(vector, assoc.getTargetNode(), depth);
+		}
+		return vector;
+	}
+	
 	// F.H. instantiate StandardGUI from given Domain Model
-	public void instantiateGUI(FmmlxObject object) {
+	public void instantiateGUI(FmmlxObject object, String type) {
 		// instantiate CustomGUI instances
-		Vector<CanvasElement> vector = this.diagram.getSelectedObjects();
+		Vector<CanvasElement> vector = new Vector<CanvasElement>();
+		
+		if (type == "multi") {
+			vector = this.diagram.getSelectedObjects();
+		} else if (type == "single") {
+			// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
+			// depth of 1 equivalent to only the selected object
+			int depth = 2;
+			vector = recurGetObjectsForGUI(vector, object, depth);
+		}
+		
 		this.customGUIslotValues.clear();
 		customGUIslotValues = this.instantiateCustomGUI(vector);
 		this.diagram.updateDiagram();
 		
 		// fill slots after diagram has updated
-		// 100 ms seems to be enough
+		// TODO change to Tasks and Threads and join them after finishing !!
+		
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 		@Override
 			public void run() {
 				addSlotValuesCustomGUI(customGUIslotValues);
 				diagram.updateDiagram();
 			} 
-		}, 100);
+		}, 2500);
 	}
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector <CanvasElement> selectedObjects) {
-		// TODO rename classes names to new names by luca
 		// TODO better error handling if image is missing
 		
 		// name of gui
@@ -1367,7 +1395,7 @@ public class DiagramActions {
 			
 			// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist. 
 			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in der Referenz
-			// TODO Was ist wenn zyklische Beziehung
+			// TODO Was ist wenn dieser Fall nicht zutrifft?
 			
 			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()){	
 				
@@ -1389,8 +1417,7 @@ public class DiagramActions {
 						int a = Character.getNumericValue(endChar);
 						isList = (a>1) ? true: false;
 					}
-					
-					// to avoid analyzing multiple associations in the same clas
+					// to avoid analyzing multiple associations in the same class
 					continue;
 				}
 			}
@@ -1406,7 +1433,7 @@ public class DiagramActions {
 			// head defines name for gui
 			if (isHead.equals("true")) {
 				isList = true;
-				guiName = o.getName() + "CustomUI";
+				guiName = o.getName() + " CustomUI";
 			}
 			
 			helper.put("associationName",assocName);
@@ -1578,6 +1605,7 @@ public class DiagramActions {
 		
 				
 		// now the map isChild is filled with the names of the references needed to map if there are any isChild associations
+		// TODO check whether the changes in the cardinality can be better represented here ? -> tree structure now; no longer list
 		if (selectedObjects.size()>1) {
 			for (Entry<String, String> entry : isChildAssocs.entrySet()) {
 				// add ischild
@@ -1591,32 +1619,33 @@ public class DiagramActions {
 		// export standard gui
 		// File picker as save dialogue
 		// TODO: add better instantiation dialog which includes the save option
-		FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select location for saving the GUI extraction");
-        fileChooser.getExtensionFilters().addAll(
-				new ExtensionFilter("JavaFX as XML", "*.fxml"),
-		        new ExtensionFilter("All Files", "*.*"));
-        
         ScrollPane defaultGUIPane = new ScrollPane();
         
         Scene scene = new Scene(defaultGUIPane);
 		Stage stage = new Stage();
 		stage.setScene(scene);
 		
-		stage.setTitle("Standard GUI");
+		stage.setTitle(guiName);
 		stage.setWidth(800);
 		stage.setHeight(400);
 		
+		FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select location for saving the extraction of " + guiName);
+        fileChooser.getExtensionFilters().addAll(
+				new ExtensionFilter("JavaFX as XML", "*.fxml"),
+		        new ExtensionFilter("All Files", "*.*"));
 		
         File file = fileChooser.showSaveDialog(stage);
-	
+        String path= ""; 
+        
 		if (file != null) {
 			FXMLExporter exporter = new FXMLExporter(file.getPath());
 			exporter.export(rechteSeiteGrid);
+			path = file.getPath();
 		}
 		
 		
-		helper.put("pathToFXML", file.getPath());
+		helper.put("pathToFXML", path);
 		helper.put("titleOfUI", guiName);
 		//helper.put("pathToIconOfWindow", "");
 		
@@ -1636,7 +1665,7 @@ public class DiagramActions {
 	}
 
 	public void addSlotValuesCustomGUI(HashMap<String, Map<String, String>> slotValues) {
-		
+		// TODO refactor this 
 		
 		Vector <FmmlxObject> references = new Vector<>();
 		Vector <FmmlxObject> slotInjections = new Vector<>();
@@ -1675,6 +1704,7 @@ public class DiagramActions {
 				
 				
 				// auto icon
+				// TODO change that with instantiation dialog
 				String pathIcon = "C:\\\\Users\\\\fhend\\\\OneDrive\\\\Desktop\\\\XModelerIconUndGUI\\\\invoice.png";
 				diagram.getComm().changeSlotValue(this.diagram.getID(), o.getName(), "pathToIconOfWindow",
 						"\"" + pathIcon + "\"");
