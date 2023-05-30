@@ -343,14 +343,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		switchTableOnAndOffForIssues();
 		Thread t = new Thread( () -> {
 			this.fetchDiagramData( a -> { } );
+			updateConcreteSyntaxes();
 		});
-		t.start();
-		
-		updateConcreteSyntaxes();
+		t.start();		
 	}
 
 	private void updateConcreteSyntaxes() {
-
 		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
 			Vector<File> directories = new Vector<>();
@@ -746,10 +744,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}
 
-			
-	
-	
-
 	@Override
 	protected void clearDiagram_specific() {
 		labels.clear();
@@ -765,7 +759,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		
-		updateConcreteSyntaxes();
 		triggerOverallReLayout();
 		newFmmlxPalette.update();
 
