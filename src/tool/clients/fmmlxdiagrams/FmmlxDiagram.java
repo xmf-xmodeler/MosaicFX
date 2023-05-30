@@ -70,6 +70,7 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.XMLCreator;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -283,6 +284,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.P) {
+					new XMLCreator().createXMLRepresentation(packagePath, null);
+					}
 			}
         });
         tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {

@@ -1851,10 +1851,10 @@ public class FmmlxDiagramCommunicator {
     }
     
     @SuppressWarnings("unchecked")
-    public void getDiagramData(Integer diagramID, ReturnCall<PackageActionsList> onDiagramDataReceived ) throws TimeOutException {
+    public void getModelData(Integer diagramID, ReturnCall<PackageActionsList> onModelDataReceived ){
     	ReturnCall<Vector<Object>> localReturn = (response) -> {
     		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-    		onDiagramDataReceived.run(new PackageActionsList(responseContent));
+    		onModelDataReceived.run(new PackageActionsList(responseContent));
     	};
     	xmfRequestAsync(handle, diagramID, "getDiagramData", localReturn);
     }
@@ -2095,7 +2095,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllDiagramInfos(String packagePath, ReturnCall<Vector<DiagramInfo>> onDiagramInfosReveived) {
+	public void getAllDiagramInfos(String packagePath, ReturnCall<Vector<DiagramInfo>> onDiagramInfosReceived) {
 		ReturnCall<Vector<Object>> returnCall = response -> {
 			Vector<DiagramInfo> result = new Vector<>();
 //			Vector<Object> response = 
@@ -2107,7 +2107,7 @@ public class FmmlxDiagramCommunicator {
 				String diagramName = (String) (idAndLabel.get(1));
 				result.add(new DiagramInfo(id, diagramName));
 			}
-			onDiagramInfosReveived.run(result);
+			onDiagramInfosReceived.run(result);
 		};
 		xmfRequestAsync(handle, -2, "getAllDiagrams", returnCall, new Value(packagePath));
 	}
@@ -2143,7 +2143,7 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unchecked")
 	public void getAllObjectPositions(int diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllObjectPositionsReceived) {
 		ReturnCall<Vector<Object>> returnCall = response -> {
-			HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+			HashMap<String, HashMap<String, Object>> objectPositions = new HashMap<>();
 			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 			
 			for(Object o : responseContent) {
@@ -2157,9 +2157,9 @@ public class FmmlxDiagramCommunicator {
 				objectMap.put("x", x);
 				objectMap.put("y", y);
 				objectMap.put("hidden", hidden);
-				result.put(key, objectMap);
+				objectPositions.put(key, objectMap);
 			}
-			onAllObjectPositionsReceived.run(result);
+			onAllObjectPositionsReceived.run(objectPositions);
 		};
 		xmfRequestAsync(handle, -2, "getAllObjectPositions", returnCall, new Value(diagramID));
 	}
