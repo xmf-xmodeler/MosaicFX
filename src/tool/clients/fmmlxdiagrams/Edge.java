@@ -146,6 +146,11 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			layoutLabels(view.getDiagram()); 
 			view.getDiagram().redraw();
 		} else {
+			
+		//HIER!!!	
+			if (currentTransform.)
+		// paintOn bei Klasse
+				
 			Vector<Point2D> points = getAllPoints();
 			/* SHOW ANGLE 
             g.setFill(new Color(.8, .8, .9, 1.));

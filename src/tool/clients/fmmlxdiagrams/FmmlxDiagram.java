@@ -139,6 +139,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		super(null,-1,null);
 		this.newFmmlxPalette = null;
 		this.diagramName = null;
+		setInitialPosition(100,100);
 	}
 
 	public DiagramDisplayModel getDiagramViewToolBarModell() {
@@ -566,6 +567,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	////////////////////////////////////////////////////////////////////
 
+	private void setInitialPosition(double x, double y) {
+		try{
+			View view = getActiveView();
+			lastPointPressed = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
+		} catch (Exception ex) {
+			lastPointPressed = new Point2D(x, y);
+		}		
+	}
+	
 	private void storeLastClick(double x, double y) {
 		try{
 			View view = getActiveView();
