@@ -1272,11 +1272,19 @@ public class DiagramActions {
 		// add root if not added already
 		if (!vector.contains(root)) vector.add(root);
 			
-		// can this be done easier?
-		for (FmmlxAssociation assoc : root.getAllRelatedAssociations()) {
-			vector = recurGetObjectsForGUI(vector, assoc.getSourceNode(), depth);
-			vector = recurGetObjectsForGUI(vector, assoc.getTargetNode(), depth);
+		// can this be done better ? - look in both directions
+		if (root.getAllRelatedAssociations().size() > 0 ) {
+			for (FmmlxAssociation assoc : root.getAllRelatedAssociations()) {
+				//vector = recurGetObjectsForGUI(vector, assoc.getSourceNode(), depth);
+				if (root.equals(assoc.getSourceNode())) {
+					vector = recurGetObjectsForGUI(vector, assoc.getTargetNode(), depth);
+				}
+			}
+		} else {
+			// if no associations then cancel
+			depth = 0;
 		}
+		
 		return vector;
 	}
 	
@@ -1290,7 +1298,7 @@ public class DiagramActions {
 		} else if (type == "single") {
 			// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
 			// depth of 1 equivalent to only the selected object
-			int depth = 2;
+			int depth = 5;
 			vector = recurGetObjectsForGUI(vector, object, depth);
 		}
 		
