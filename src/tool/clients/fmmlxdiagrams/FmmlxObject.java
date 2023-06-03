@@ -23,8 +23,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final String ownPath;
 	final String ofPath;
 	private final Vector<String> parentsPaths;
-	
+
 	private final boolean isAbstract;
+	private final boolean isCollective;
 	final int level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
@@ -47,6 +48,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			String ofPath,
 			Vector<String> parentPaths,
 			Boolean isAbstract,
+			Boolean isCollective,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
 		super();
@@ -57,6 +59,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.hidden = hidden;
 		this.level = level;
 		this.isAbstract = isAbstract;
+		this.isCollective = isCollective;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
@@ -207,8 +210,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return allClasses;
 	}
-	
+
 	public boolean isAbstract() {return isAbstract;}
+	public boolean isCollective() {return isCollective;}
 
 	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
@@ -485,7 +489,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel(), isAbstract, "");
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel(), isAbstract||isCollective, "");
 		return new PaletteItem(tool);
 	}
 

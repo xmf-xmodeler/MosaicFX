@@ -346,14 +346,17 @@ public class FmmlxDiagramCommunicator {
 					parentListS.add((String) o);
 				}
 				String type = "FMMLX";
+				Boolean isCollective = false;
 				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
+				try{ isCollective = (Boolean) responseObjectList.get(4); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
 				FmmlxObject object = new FmmlxObject(
 						(String)  responseObjectList.get(1), // name
 						(Integer) responseObjectList.get(2), // level
-						(String)  responseObjectList.get(10), // ownPath
-						(String)  responseObjectList.get(11), // ofPath
-						parentListS,                          // parentsPath
-						(Boolean) responseObjectList.get(5),
+						(String)  responseObjectList.get(10),// ownPath
+						(String)  responseObjectList.get(11),// ofPath
+						parentListS,                         // parentsPath
+						(Boolean) responseObjectList.get(5), // isAbstract
+						isCollective,                        // isCollective
 						(Integer) responseObjectList.get(6), // x-Position
 						(Integer) responseObjectList.get(7), // y-Position 
 						(Boolean) responseObjectList.get(8), // hidden
@@ -1089,12 +1092,32 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addMetaClass", message);
 	}
 	
-	public void addNewInstance(int diagramID, String className, String name, Integer level, Vector<String> parents, boolean isAbstract, int x,
-							   int y, boolean hidden) {
+	public void addNewInstance(int diagramID, 
+			String className, 
+			String name,
+			Integer level, 
+			Vector<String> parents,
+			boolean isAbstract, boolean isCollective,
+			int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+				new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+		sendMessage("addInstance", message);
+	}
+	
+	@Deprecated
+	public void addNewInstance(int diagramID, 
+			String className, 
+			String name,
+			Integer level, 
+			Vector<String> parents,
+			boolean isAbstract, 
+			int x, int y, boolean hidden) {
+		Value[] parentsArray = createValueArray(parents);
+
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
+				new Value(parentsArray), new Value(isAbstract), new Value(false), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	
@@ -1583,12 +1606,20 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeAssociationEnd2StartMultiplicity", message);
     }
 
-    public void setClassAbstract(int diagramID, String className, boolean b) {
+    public void setClassAbstract(int diagramID, String className, boolean isAbstract) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(className),
-                new Value(b)};
+                new Value(isAbstract)};
         sendMessage("setClassAbstract", message);
+    }
+
+    public void setClassCollective(int diagramID, String className, boolean isCollective) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(isCollective)};
+        sendMessage("setClassCollective", message);
     }
 
     public void levelRaiseAll(int diagramID) {

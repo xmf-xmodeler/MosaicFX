@@ -365,10 +365,10 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public final String convertPath2Short(String typePath) {
-		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root::Auxiliary", "Root"};
+		String[] prefixes = new String[]{packagePath+"::", "Root::XCore::", "Root::Auxiliary::", "Root::"};
 			for(String prefix : prefixes) {
 				if(typePath.startsWith(prefix)) {
-					return typePath.substring(prefix.length()+2);
+					return typePath.substring(prefix.length());
 				}
 			}
 		return typePath;
