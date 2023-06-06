@@ -50,15 +50,15 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
 		
-		// menu item for instantiating and mapping custom GUI
-		MenuItem instantiateGUIMulti = new MenuItem("Instantiate Custom GUI Multi Selection");
-		instantiateGUIMulti.setOnAction(e-> actions.instantiateGUI(object, "multi"));
-		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUIMulti);
-		
-		// menu item for instantiating and mapping custom GUI
-		MenuItem instantiateGUISingle = new MenuItem("Instantiate Custom GUI Single Selection");
-		instantiateGUISingle.setOnAction(e-> actions.instantiateGUI(object, "single"));
-		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUISingle);
+//		// menu item for instantiating and mapping custom GUI
+//		MenuItem instantiateGUIMulti = new MenuItem("Instantiate Custom GUI Multi Selection");
+//		instantiateGUIMulti.setOnAction(e-> actions.instantiateGUI(object, "multi"));
+//		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUIMulti);
+//		
+//		// menu item for instantiating and mapping custom GUI
+//		MenuItem instantiateGUISingle = new MenuItem("Instantiate Custom GUI Single Selection");
+//		instantiateGUISingle.setOnAction(e-> actions.instantiateGUI(object, "single"));
+//		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUISingle);
 		
 		
 		MenuItem changeNameItem = new MenuItem("Change name");

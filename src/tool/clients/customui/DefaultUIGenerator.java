@@ -31,12 +31,9 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
 public class DefaultUIGenerator {
 
-	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<CanvasElement> selectedObjects,
-			AbstractPackageViewer diagram, DiagramActions actions) {
+	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects, Vector<FmmlxAssociation> associations,
+			AbstractPackageViewer diagram, DiagramActions actions, String pathIcon, String titleGUI) {
 		// TODO better error handling if image is missing
-
-		// name of gui
-		String guiName = "";
 
 		// for the fxml export
 		int rowCount = 0;
@@ -51,7 +48,7 @@ public class DefaultUIGenerator {
 
 		String assocName = "";
 
-		String referenceInstanceName;
+		String referenceInstanceName ="";
 		String injectionInstanceName;
 		String actionInstanceName;
 		String virtualInstanceName;
@@ -79,9 +76,10 @@ public class DefaultUIGenerator {
 		// used if the commonClass needs a listInjection or not
 		Boolean isList;
 		String isHead = "";
+		
 		boolean isActionInjection;
 
-		for (CanvasElement element : selectedObjects) {
+		for (CanvasElement element : objects) {
 			object = (FmmlxObject) element;
 			if (object.getMetaClassName().equals("CommonClass"))
 				objectsCommonClass.add(object);
@@ -106,39 +104,42 @@ public class DefaultUIGenerator {
 		rechteSeiteGrid.setVgap(3);
 		rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// instantiate references and injections for domain classes
 		for (FmmlxObject o : objectsCommonClass) {
 
-			isHead = "false";
+			isHead = "true";
 			isList = false;
 			isActionInjection = false;
 			assocName = "";
+			
+			for (FmmlxAssociation assoc : associations) {
+				
+				if (assoc.getTargetNode().equals(o)){
+					isHead = "false";
+					
+					referenceInstanceName = actions.addInstance("Reference",
+							"ref" + UUID.randomUUID().toString().replace("-", ""));
 
-			// create reference
-			referenceInstanceName = actions.addInstance("Reference",
-					"ref" + UUID.randomUUID().toString().replace("-", ""));
-
-			// reference mapping
-			commonClassReferenceMap.put(o.getName(), referenceInstanceName);
-
-			// find associations and head
-
-			// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist.
-			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in
-			// der Referenz
-			// TODO Was ist wenn dieser Fall nicht zutrifft?
-
-			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
-
-				// association needs to be "inside" the selected objects
-				if (assoc.getTargetNode().equals(o) && selectedObjects.contains(assoc.getSourceNode())) {
-
+					// reference mapping
+					commonClassReferenceMap.put(o.getName(), referenceInstanceName);
+					
+					if (objectsCommonClass.size() == 1) {
+						isHead = "true";
+					}
+					
 					assocName = assoc.getName();
-
-					// add reference to map
 					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
-
-					// check if multiplicity > 1 then list
+					
 					multiplicity = assoc.getMultiplicityStartToEnd().toString();
 					endChar = multiplicity.charAt(multiplicity.length() - 1);
 
@@ -148,30 +149,33 @@ public class DefaultUIGenerator {
 						int a = Character.getNumericValue(endChar);
 						isList = (a > 1) ? true : false;
 					}
-					// to avoid analyzing multiple associations in the same class
-					continue;
+					
+					helper.put("associationName", assocName);
+					helper.put("isHead", isHead);
+					slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
+					helper.clear();
+					
 				}
+				
 			}
-
-			// if gui is only one class then it is automatically head
-			if (objectsCommonClass.size() == 1)
-				isHead = "true";
-			// if no further associations are outgoing it is head
-			if (assocName.equals(""))
-				isHead = "true";
-
-			// if head --> listInjection needed
-			// head defines name for gui
+			
+			// keine eingegehenden assocs
 			if (isHead.equals("true")) {
 				isList = true;
-				guiName = o.getName() + " CustomUI";
+				assocName="";
+				
+				referenceInstanceName = actions.addInstance("Reference",
+						"ref" + UUID.randomUUID().toString().replace("-", ""));
+				commonClassReferenceMap.put(o.getName(), referenceInstanceName);
+				
+				helper.put("associationName", assocName);
+				helper.put("isHead", isHead);
+				slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
+				helper.clear();
+				
 			}
-
-			helper.put("associationName", assocName);
-			helper.put("isHead", isHead);
-			slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
-			helper.clear();
-
+			
+			
 			// List Injection
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
@@ -342,7 +346,7 @@ public class DefaultUIGenerator {
 		// if there are any isChild associations
 		// TODO check whether the changes in the cardinality can be better represented
 		// here ? -> tree structure now; no longer list
-		if (selectedObjects.size() > 1) {
+		if (objects.size() > 1) {
 			for (Entry<String, String> entry : isChildAssocs.entrySet()) {
 				// add ischild
 				actions.addAssociation(entry.getKey(), entry.getValue(), associationIsParent.getName());
@@ -360,12 +364,12 @@ public class DefaultUIGenerator {
 		Stage stage = new Stage();
 		stage.setScene(scene);
 
-		stage.setTitle(guiName);
+		stage.setTitle(titleGUI);
 		stage.setWidth(800);
 		stage.setHeight(400);
 
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select location for saving the extraction of " + guiName);
+		fileChooser.setTitle("Select location for saving the extraction of " + titleGUI);
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("JavaFX as XML", "*.fxml"),
 				new ExtensionFilter("All Files", "*.*"));
 
@@ -379,17 +383,108 @@ public class DefaultUIGenerator {
 		}
 
 		helper.put("pathToFXML", path);
-		helper.put("titleOfUI", guiName);
-		// helper.put("pathToIconOfWindow", "");
+		helper.put("titleOfUI", titleGUI);
+		helper.put("pathToIconOfWindow", pathIcon);
 
 		slotValues.put(guiInstanceName, (Map<String, String>) helper.clone());
 		helper.clear();
 
 		return slotValues;
 	}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			// if gui is only one class then it is automatically head
+//						
+//						// if no further associations are outgoing it is head
+//						if (assocName.equals(""))
+//							isHead = "true";
+//
+//						// if head --> listInjection needed
+//						// head defines name for gui
+//						
+
+						
+			
+			
+			
+//			
+//			isHead = "false";
+//			isList = false;
+//			isActionInjection = false;
+//			assocName = "";
+//
+//			// create reference
+//			referenceInstanceName = actions.addInstance("Reference",
+//					"ref" + UUID.randomUUID().toString().replace("-", ""));
+//
+//			// reference mapping
+//			commonClassReferenceMap.put(o.getName(), referenceInstanceName);
+
+			// find associations and head
+
+			// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist.
+			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in
+			// der Referenz
+			// TODO Was ist wenn dieser Fall nicht zutrifft?
+
+//			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
+//
+//				// association needs to be "inside" the selected objects
+//				if (assoc.getTargetNode().equals(o) && objects.contains(assoc.getSourceNode())) {
+//
+//					assocName = assoc.getName();
+//
+//					// add reference to map
+//					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
+//
+//					// check if multiplicity > 1 then list
+//					multiplicity = assoc.getMultiplicityStartToEnd().toString();
+//					endChar = multiplicity.charAt(multiplicity.length() - 1);
+//
+//					if (endChar == '*') {
+//						isList = true;
+//					} else {
+//						int a = Character.getNumericValue(endChar);
+//						isList = (a > 1) ? true : false;
+//					}
+//					// to avoid analyzing multiple associations in the same class
+//					continue;
+//				}
+//			}
+
+//			// if gui is only one class then it is automatically head
+//			if (objectsCommonClass.size() == 1)
+//				isHead = "true";
+//			// if no further associations are outgoing it is head
+//			if (assocName.equals(""))
+//				isHead = "true";
+//
+//			// if head --> listInjection needed
+//			// head defines name for gui
+//			if (isHead.equals("true")) {
+//				isList = true;
+//			}
+//
+//			helper.put("associationName", assocName);
+//			helper.put("isHead", isHead);
+//			slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
+//			helper.clear();
+
+
 
 	// recursive function to get Objects for CustomgUI
-	public Vector<CanvasElement> recurGetObjectsForGUI(Vector<CanvasElement> vector, FmmlxObject root, int depth) {
+	public Vector<FmmlxObject> recurGetObjectsForGUI(Vector<FmmlxObject> vector, FmmlxObject root, int depth) {
 		// only go to certain depth
 		if (!(depth > 0))
 			return vector;
@@ -450,10 +545,6 @@ public class DefaultUIGenerator {
 
 		}
 
-		// TODO Füllen von Attributen
-		// CustomGui -> pathTOIconOfWindow, titleOfUI <- automatisch machbar --
-		// sinnvoll?
-
 		for (FmmlxObject o : customGuiInterface) {
 			if (slotValues.containsKey(o.getName())) {
 				String path = slotValues.get(o.getName()).get("pathToFXML");
@@ -463,7 +554,13 @@ public class DefaultUIGenerator {
 
 				// auto icon
 				// TODO change that with instantiation dialog
-				String pathIcon = "C:\\\\Users\\\\fhend\\\\OneDrive\\\\Desktop\\\\XModelerIconUndGUI\\\\invoice.png";
+				String pathIcon = slotValues.get(o.getName()).get("pathToIconOfWindow");
+				if (pathIcon.equals("")) {
+					pathIcon = "C:\\\\Users\\\\fhend\\\\OneDrive\\\\Desktop\\\\XModelerIconUndGUI\\\\invoice.png";
+				} else {
+					pathIcon = pathIcon.replace("\\", "\\\\");
+				}
+
 				diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), "pathToIconOfWindow",
 						"\"" + pathIcon + "\"");
 

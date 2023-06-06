@@ -37,6 +37,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
+import tool.clients.fmmlxdiagrams.dialogs.AddStandardUIDialog.Result;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -213,7 +214,7 @@ public class DiagramActions {
 	// FH Method for adding Instances without dialog that are automatically hidden
 		public String addInstance(String className, String instanceName) {
 			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
 			return instanceName;
 
 		}
@@ -1195,6 +1196,15 @@ public class DiagramActions {
 			updateDiagram();
 		});
 	}
+	
+	public void generateCustomUI() {
+		Platform.runLater(() ->{
+			Platform.runLater(() -> {
+				AddStandardUIDialog dialog = new AddStandardUIDialog(diagram);
+				dialog.showAndWait();
+			});
+		});
+	}
 
 	public void runOperation(String path, String opName) {
 		try {
@@ -1248,30 +1258,56 @@ public class DiagramActions {
 		wizard.showAndWait();
 	}
 	
+	public void showGenerateCustomUIDialog() {
+		new AddStandardUIDialog(this.diagram).showDialog();
+	}
 	
-	// F.H. instantiate StandardGUI from given Domain Model
-	public void instantiateGUI(FmmlxObject object, String type) {
-		// instantiate CustomGUI instances
-		Vector<CanvasElement> vector = new Vector<CanvasElement>();
+	
+	
+	public void instantiateGUI(Optional<Result> r) {
 		
+		if (!r.isPresent()) 
+			return;
+
 		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
 		
-		if (type == "multi") {
-			vector = this.diagram.getSelectedObjects();
-		} else if (type == "single") {
-			// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
-			// depth of 1 equivalent to only the selected object
-			int depth = 5;
-			vector = uiGenerator.recurGetObjectsForGUI(vector, object, depth);
+		// instantiate CustomGUI instances
+		Vector<FmmlxObject> guiObjects = new Vector<FmmlxObject>();
+				
+		int distance = r.get().distance;
+		int height = r.get().height;
+		FmmlxObject root;
+		String pathIcon = r.get().pathIcon;
+		String titleGUI = r.get().titleGUI;
+		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
+		Vector<FmmlxAssociation> selectedAssociations  = r.get().selectedAssociations;
+		
+		try {
+			root = this.diagram.getObjectByPath(this.diagram.packagePath + "::" + r.get().root);
+		} catch (Exception e) {
+			//System.err.println(e);
+			root = null;
 		}
 		
-		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(vector, this.diagram, this);
+		if (root==null) {
+			if (!selectedObjects.isEmpty()) {
+				// classic multi selection
+				guiObjects = selectedObjects;
+			}
+		} else {
+			if (distance > 0) {
+				// classic single select
+				guiObjects = uiGenerator.recurGetObjectsForGUI(guiObjects, root, distance);
+			}
+		}
+				
+		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(guiObjects, selectedAssociations, this.diagram, this, pathIcon, titleGUI);
 		
 		//customGUIslotValues 
 		this.diagram.updateDiagram();
 		
 		// fill slots after diagram has updated
-		// TODO change to Tasks and Threads and join them after finishing !!
+		// TODO change to Tasks and Threads and join them after finishing
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 		@Override
 			public void run() {
@@ -1279,7 +1315,79 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			} 
 		}, 2500);
+				
+				
+				
+				
+				
+		
+		
+//		
+//
+//					vector = this.diagram.getSelectedObjects();
+//				} else if (type == "single") {
+//					// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
+//					// depth of 1 equivalent to only the selected object
+//					int depth = 5;
+//					vector = uiGenerator.recurGetObjectsForGUI(vector, object, depth);
+//				}
+//				
+//				final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(vector, this.diagram, this);
+//				
+//				//customGUIslotValues 
+//				this.diagram.updateDiagram();
+//				
+//				// fill slots after diagram has updated
+//				// TODO change to Tasks and Threads and join them after finishing !!
+//				new java.util.Timer().schedule(new java.util.TimerTask() {
+//				@Override
+//					public void run() {
+//						uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
+//						diagram.updateDiagram();
+//					} 
+//				}, 2500);
+				
+				this.updateDiagram();
+		
+		
+        
+		return;
 	}
+	
+	
+	// F.H. instantiate StandardGUI from given Domain Model
+//	public void instantiateGUI(FmmlxObject object, String type) {
+//		// instantiate CustomGUI instances
+//		Vector<CanvasElement> vector = new Vector<CanvasElement>();
+//		
+//		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
+//		
+//		if (type == "multi") {
+//			vector = this.diagram.getSelectedObjects();
+//		} else if (type == "single") {
+//			// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
+//			// depth of 1 equivalent to only the selected object
+//			int depth = 5;
+//			vector = uiGenerator.recurGetObjectsForGUI(vector, object, depth);
+//		}
+//		
+//		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(vector, this.diagram, this);
+//		
+//		//customGUIslotValues 
+//		this.diagram.updateDiagram();
+//		
+//		// fill slots after diagram has updated
+//		// TODO change to Tasks and Threads and join them after finishing !!
+//		new java.util.Timer().schedule(new java.util.TimerTask() {
+//		@Override
+//			public void run() {
+//				uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
+//				diagram.updateDiagram();
+//			} 
+//		}, 2500);
+//		
+//		this.updateDiagram();
+//	}
 
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName!=null && instance2Name!=null && assocName!=null) {

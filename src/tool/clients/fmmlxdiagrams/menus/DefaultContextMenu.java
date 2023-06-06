@@ -56,6 +56,9 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem importDiagram = new MenuItem("Import Package (BETA)");
 		importDiagram.setOnAction(e -> actions.importDiagram());
 
+		MenuItem generateCustomUI = new MenuItem("Generate Custom UI");
+		generateCustomUI.setOnAction(e -> actions.showGenerateCustomUIDialog());
+			
 		Menu filterObjectsMenu = new Menu("Filter Objects (BETA)");
 		MenuItem showAll = new MenuItem("Show All");
 		showAll.setOnAction(e -> actions.showAll());
@@ -98,6 +101,7 @@ public class DefaultContextMenu extends ContextMenu {
 			levelMenu, 
 			enumerationMenu, 
 			unhideItem,
+			generateCustomUI,
 			centerObject,
 			//packageListView, 
 			exportMenu, 
