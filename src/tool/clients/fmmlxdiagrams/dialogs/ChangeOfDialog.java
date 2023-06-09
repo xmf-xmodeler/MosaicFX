@@ -85,7 +85,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 		selectedObjectTextField.setDisable(true);
 		currentOfTextField = new TextField();
 
-		for (FmmlxObject fmmlxObject : diagram.getObjects()) {
+		for (FmmlxObject fmmlxObject : diagram.getObjectsReadOnly()) {
 			if (object.getOfPath().equals(fmmlxObject.getName())) {
 				currentOfTextField.setText(fmmlxObject.getName());
 			}

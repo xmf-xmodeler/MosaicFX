@@ -1,22 +1,27 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
+
+import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.WritableImage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
@@ -25,6 +30,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
@@ -37,11 +44,10 @@ import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
+import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -413,26 +419,6 @@ public class DiagramActions {
 		});
 	}
 	
-	public void runInstanceGenerator(FmmlxObject object) {
-		Platform.runLater(() -> {
-
-			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
-			instanceGenerator.openDialog(diagram);
-
-			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
-				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator.getValue().entrySet()) {
-					System.out.println(instanceGenerator.getSelectedParent());
-					System.out.println(fmmlxAttributeIValueGeneratorEntry.getKey().getName() + " : " + ((IValueGenerator) fmmlxAttributeIValueGeneratorEntry.getValue()).getGeneratedValue().get(i));
-				}
-				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
-			}
-			if(instanceGenerator.getNumberOfInstance()>0){
-				diagram.updateDiagram();
-			}
-		});
-	}
-
 	public void changeOfDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
@@ -516,10 +502,6 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 	
-	public void printProtocol() {
-		diagram.getComm().printProtocol(diagram.getID());
-	}
-
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
 		diagram.updateDiagram();		
@@ -741,7 +723,7 @@ public class DiagramActions {
 		}
 		if(delegateTo == null) {
 			Vector<FmmlxObject> delegationCandidates = new Vector<>();
-			for(FmmlxObject o : diagram.getObjects()) {
+			for(FmmlxObject o : diagram.getObjectsReadOnly()) {
 				if(o != delegateFrom && o.level == delegateFrom.level) delegationCandidates.add(o);
 			}
 			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(delegateFrom.getDelegatesTo(false), delegationCandidates);
@@ -790,7 +772,7 @@ public class DiagramActions {
 					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
 				}
 				FmmlxObject delegateTo = de.targetNode;
-				for(FmmlxObject o : diagram.getObjects()) {
+				for(FmmlxObject o : diagram.getObjectsReadOnly()) {
 					if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
 				}
 				ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
@@ -970,8 +952,9 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	
 
-	public void assignToGlobal(FmmlxObject object) {
+	public void assignToGlobalVariable(FmmlxObject object) {
 		TextInputDialog dialog = new TextInputDialog("");
 		dialog.setTitle("Assign to Global Variable");
 		dialog.setHeaderText("Global Variable Name:");
@@ -979,6 +962,13 @@ public class DiagramActions {
 		Optional<String> result = dialog.showAndWait();
 
 		result.ifPresent(s -> diagram.getComm().assignToGlobal(diagram.getID(), object, s));
+	}
+	
+	public void assignGlobalVariable() {
+		Optional<FmmlxObject> result = showChooseFmmlxObjectsDialog("Choose Object to assign to Global Variable", false);
+		if (result.isPresent()) {
+			assignToGlobalVariable(result.get());
+		}
 	}
 
 	public void showBody(FmmlxObject object, FmmlxOperation operation) {
@@ -992,7 +982,7 @@ public class DiagramActions {
 
 			if(solution.isPresent()) {
 				if(solution.get().createNew) {
-					addInstanceDialog(solution.get().selection, diagram.getActiveView());
+					addInstanceDialog(solution.get().selection, diagram.getActiveDiagramViewPane());
 				} else {
 					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
 					diagram.updateDiagram();
@@ -1034,7 +1024,7 @@ public class DiagramActions {
 
 	public Object openFindClassDialog() {
 		Platform.runLater(() -> {
-			FindClassDialog dialog = new FindClassDialog();
+			FindClassDialog dialog = new FindClassDialog(diagram, diagram.getComm());
 			dialog.showAndWait();
 		});
 		return null; 
@@ -1053,37 +1043,6 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-    public void testGetEdges() {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
-					diagram.getComm().testGetAllEdgePositions(id);
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-    }
-
-	public void testGetLabel() {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
-				System.out.println(ids);
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
-					diagram.getComm().testGetAllLabelPositions(id);
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-	}
-
 	// LM, 07.04.2023, New Action for execution of custom UI
 	public void executeUI(FmmlxObject object) {
 		
@@ -1091,7 +1050,6 @@ public class DiagramActions {
 			
 	}
 	// End customUI
-	
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
@@ -1124,6 +1082,34 @@ public class DiagramActions {
 		}
 		});
 	}
+	
+	public void exportPNG() {
+		
+		DiagramViewPane mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
+		
+		mainViewPane.setMaxZoom();
+
+	    FileChooser fileChooser = new FileChooser();
+
+	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+	    if (!initalDirectory.equals("")) {
+	    	File dir = new File(initalDirectory);
+    		if(dir.exists()) fileChooser.setInitialDirectory(dir);
+    	}
+
+    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
+    	fileChooser.setTitle("Save Diagram to PNG");
+	    File file = fileChooser.showSaveDialog(XModeler.getStage());
+
+	    if(file != null){
+	        WritableImage wi = new WritableImage((int)mainViewPane.canvas.getWidth(),(int)mainViewPane.canvas.getHeight());
+	        try {
+	        	ImageIO.write(SwingFXUtils.fromFXImage(mainViewPane.canvas.snapshot(null,wi),null),"png",file);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
 	private double getExtraHeight() {
 		return (diagram.issues.size()+1) * 14;
@@ -1138,7 +1124,7 @@ public class DiagramActions {
 				final Vector<Integer> chosenLevel = result.get();
 //				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
 
-				Vector<FmmlxObject> objects = diagram.getObjects();
+				Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
 				Vector<FmmlxObject> hiddenObjects = new Vector<>();
 				Vector<FmmlxObject> unHiddenObjects = new Vector<>();
 				for(FmmlxObject obj : objects){
@@ -1157,12 +1143,12 @@ public class DiagramActions {
 
 	public void showAll() {
 		Platform.runLater(() ->{
-			hide(diagram.getObjects(), false);
+			hide(diagram.getObjectsReadOnly(), false);
 			updateDiagram();
 		});
 	}
 
-	public void importDiagram() {
+	public void mergeModels() {
 		Platform.runLater(() ->{
 			FileChooser fc = new FileChooser();
 			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("xml", "*.xml"));
@@ -1219,8 +1205,8 @@ public class DiagramActions {
 			diagram.updateDiagram();
 		}
 	}
-	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
-		new UnhideElementsDialog(dialog).showDialog();
+	public void showUnhideElementsDialog() {
+		new UnhideElementsDialog(diagram).showDialog();
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
@@ -1228,4 +1214,33 @@ public class DiagramActions {
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}
+	
+	public void centerViewOnObject() {
+		DiagramViewPane viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
+		
+		String dialogTitle = "Center view on specific Object";
+		Optional<FmmlxObject> result = showChooseFmmlxObjectsDialog(dialogTitle, true);
+		if (result.isPresent()) {
+			viewPane.centerObject(result.get());
+		}
+	}
+	
+	public Optional<FmmlxObject> showChooseFmmlxObjectsDialog(String dialogTitle, boolean showVisible) {
+		ChoiceDialog<FmmlxObject> dialog;
+		if (showVisible) {
+			Vector<FmmlxObject> visibleObjects = diagram.getVisibleObjectsReadOnly();			
+			dialog = new ChoiceDialog<FmmlxObject>(null, visibleObjects);			
+		} else {
+			Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();			
+			dialog = new ChoiceDialog<FmmlxObject>(null, objects);
+		}
+		dialog.setTitle(dialogTitle);
+		dialog.setContentText("Choose your FmmlxObject: ");
+		Optional<FmmlxObject> result = dialog.showAndWait();
+		return result;
+	}
+
+	public void removeDelegation(String delegatorPath, String delegateePath) {
+		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
+	}	
 }

@@ -11,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
@@ -79,8 +80,9 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 				tabPane, 
 				constraintBox);
 		vBox.setSpacing(5.);
-		vBox.setPadding(new Insets(5.));	
-		getDialogPane().setContent(vBox);
+		vBox.setPadding(new Insets(5.));
+		
+		getDialogPane().setContent(new ScrollPane(vBox));
 		
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		

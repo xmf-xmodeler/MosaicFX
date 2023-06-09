@@ -6,6 +6,7 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
@@ -24,6 +25,7 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+	protected boolean umlMode;
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -45,8 +47,19 @@ public abstract class AbstractPackageViewer {
 		return diagramID;
 	}
 	
-	public Vector<FmmlxObject> getObjects() {
-		return new Vector<>(objects); // read-only
+	public Vector<FmmlxObject> getObjectsReadOnly() {
+		return new Vector<>(objects);
+	}
+	
+	public Vector<FmmlxObject> getVisibleObjectsReadOnly() {
+		Vector<FmmlxObject> allObjects = getObjectsReadOnly();
+		Vector<FmmlxObject> allVisibleObjects = new Vector<FmmlxObject>();
+
+		for (FmmlxObject o : allObjects) {
+			if (o.hidden == false)
+				allVisibleObjects.add(o);
+		}
+		return allVisibleObjects;
 	}
 	
 	public void updateDiagram() {
@@ -104,8 +117,14 @@ public abstract class AbstractPackageViewer {
 			if(TIMER) System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
 	
 			fetchingData = false;
-			setViewerStatus(ViewerStatus.CLEAN);
+			
 			fetchDiagramDataSpecific2();
+//			Platform.runLater(()-> {
+//				
+//			});
+			
+			setViewerStatus(ViewerStatus.CLEAN);
+			
 			a.run(null);
 		};
 		
@@ -192,6 +211,7 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
 		
+		if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
 		comm.getAllObjects(this, allObjectsReturn);
 
 	}
@@ -322,12 +342,12 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
-		for(FmmlxObject obj : getObjects()) {
+		for(FmmlxObject obj : getObjectsReadOnly()) {
 			if (obj.getPath().equals(path)){
 				return obj;
 			}
 		}
-		for(FmmlxObject obj : getObjects()) {
+		for(FmmlxObject obj : getObjectsReadOnly()) {
 			if (obj.getName().equals(path)){
 				return obj;
 			}
@@ -345,10 +365,10 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public final String convertPath2Short(String typePath) {
-		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root::Auxiliary", "Root"};
+		String[] prefixes = new String[]{packagePath+"::", "Root::XCore::", "Root::Auxiliary::", "Root::"};
 			for(String prefix : prefixes) {
 				if(typePath.startsWith(prefix)) {
-					return typePath.substring(prefix.length()+2);
+					return typePath.substring(prefix.length());
 				}
 			}
 		return typePath;
@@ -410,7 +430,7 @@ public abstract class AbstractPackageViewer {
 
 	public FmmlxOperation getOperation(FmmlxOperationValue newOpV) {
 		try{
-			for(FmmlxObject o : getObjects()) {
+			for(FmmlxObject o : getObjectsReadOnly()) {
 				if(o.getOperationValues().contains(newOpV)) {
 					FmmlxObject oOf = getObjectByPath(o.getOfPath());
 					for(FmmlxOperation op : oOf.getAllOperations()) {
@@ -428,8 +448,6 @@ public abstract class AbstractPackageViewer {
 		} catch (PathNotFoundException pnfe) {throw new RuntimeException("Something went wrong",pnfe);}
 	}
 
-	public Canvas getCanvas() {return null;}
-
 	public Vector<Integer> getAllObjectLevel() {
 		Vector<Integer> result = new Vector<>();
 		for(FmmlxObject obj : objects){
@@ -442,6 +460,6 @@ public abstract class AbstractPackageViewer {
 		return result;
 	}
 
-	public View getActiveView() {return null;}
+	public View getActiveDiagramViewPane() {return null;}
 	
 }

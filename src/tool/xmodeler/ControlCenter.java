@@ -1,20 +1,28 @@
 package tool.xmodeler;
 
 import java.awt.Desktop;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Timer;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.FloatProperty;
+import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -74,19 +82,41 @@ public class ControlCenter extends Stage {
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		Scene scene = new Scene(root, 800, 300);
+		
+		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
+		Scene scene = new Scene(root, toolWidth, toolHeight);
 		setScene(scene);
 				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
-		this.setOnCloseRequest(event -> handleStageCloseRequest(event));
-		new java.util.Timer().schedule(new java.util.TimerTask() {
-			@Override
-			public void run() {
-				controlCenterClient.getAllProjects();
-			} 
-		}, 2500);
+		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
+				
+		controlCenterClient.getAllProjects();	
+		if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString()))) {
+			new StartupModelLoader().loadModelsFromSavedModelsPath();			
+		}
 	}
 	
+	private void showCloseWarningDialog(Event event) {
+		if (!Boolean.valueOf(PropertyManager.getProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString()))){
+			return;
+		}
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Close Warning");
+		alert.setHeaderText("Application is closing!");
+		alert.setContentText("Proceed?");
+		
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().add(buttonTypeCancel);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK){
+			//TODO WorkbenchClient.theClient().shutdownEvent();
+			Runtime.getRuntime().halt(0);
+		} else {
+			event.consume(); 
+		}
+	}
+
 	private final class ControlCenterMenuBar extends MenuBar{
 		
 		public ControlCenterMenuBar() {
@@ -196,13 +226,21 @@ public class ControlCenter extends Stage {
 		
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
+
+		Button newDiagram2 = new Button("Create UML Diagram");
+		newDiagram2.setDisable(true);
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
 		
-		Button newDiagram = new Button("Create Diagram");
+		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram.setOnAction(e -> callNewDiagramDialog()); 
+		newDiagram.setOnAction(e -> callNewDiagramDialog(false)); 
+		
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
@@ -227,18 +265,10 @@ public class ControlCenter extends Stage {
 		//build third row
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
-		grid.add(concreteSyntaxWizardStart, 4, 4);
+		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(newDiagram2, 4, 4);
 		
 		return grid;
-	}
-
-	private void handleStageCloseRequest(WindowEvent event) {
-		if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
-			Runtime.getRuntime().halt(0);
-		} else {
-		    WorkbenchClient.theClient().shutdownEvent();
-		}
-		event.consume();
 	}
 
 	private void handelClickOnDiagramListView(MouseEvent me) {
@@ -255,31 +285,28 @@ public class ControlCenter extends Stage {
 
 	private void callConcreteSyntaxWizard() {
 		ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
-		try {
-			wizard.start(new Stage());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		wizard.start(new Stage());
 	}
 
-	private void callNewDiagramDialog() {
+	private void callNewDiagramDialog(boolean umlMode) {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Create new Diagram");
 		dialog.setContentText("New diagram name:");
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			if(InputChecker.isValidIdentifier(result.get())) {
-			Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+			FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 				modelLV.getSelectionModel().getSelectedItem(), 
-				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
-				System.err.println("diagramID "  +diagramID);
+				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram, umlMode, 
+				diagramID->{
+					controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
+				});
+			    
 			}  else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
 					new ButtonType("Damned", ButtonData.YES)).showAndWait();
 			};
-		controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
 		}
 	}
 

@@ -20,7 +20,7 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 
 	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored, boolean delegateToClassAllowed) {
 		this.name = name;
-		this.level = level;
+		this.level = level==null?-1:level;
 		this.type = type;
 		this.owner = owner;
 //		this.multiplicity = multiplicity;

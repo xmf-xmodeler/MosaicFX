@@ -37,14 +37,20 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {
-		return diagram.levelColorScheme.getLevelBgColor(this.object.level);
+		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
+			        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
+			        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
+		return diagram.levelColorScheme.getLevelBgColor(level);
 	}
 
 	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {
-		return diagram.levelColorScheme.getLevelFgColor(this.object.level, opacity);
+		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
+	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
+	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
+		return diagram.levelColorScheme.getLevelFgColor(level, opacity);
 	}
 
-	public void layout(Map<DiagramDisplayProperties, Boolean> diagramDisplayProperties) {
+	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
 		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
@@ -65,15 +71,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
 		});
 		group.addNodeElement(header);
-		FmmlxObject ofObj = null;
-		
-		try {
-			ofObj = diagram.getObjectByPath(object.getOfPath());
-		} catch (PathNotFoundException e) {
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
+		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
@@ -90,7 +88,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		currentY += headerLines * textHeight + EXTRA_Y_PER_LINE;
 		
 		Vector<Issue> issues = diagram.getIssues(object);
-		if(issues.size() > 0 && diagramDisplayProperties.get(DiagramDisplayProperties.SHOWCONSTRAINTREPORTS)) {
+		if(issues.size() > 0 && diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTREPORTS)) {
 			double issueBoxHeight = lineHeight * issues.size() + EXTRA_Y_PER_LINE;
 			NodeBox issueBox = new IssueBox(0, currentY, neededWidth, issueBoxHeight, 
 				Color.BLACK, Color.BLACK, (x) -> 1., PropertyType.Issue);
@@ -140,7 +138,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attBox.addNodeElement(attLevelLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDATTRIBUTES)) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
 			attY += lineHeight;
 			String ownerName = att.ownerPath;
 			try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
@@ -158,11 +156,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opsY = 0;
 		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Operation);
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWOPERATIONS) && opsSize > 0) {
+		if (!object.hidden && diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONS) && opsSize > 0) {
 			yAfterOpsBox = currentY + opsBoxHeight;
 			group.addNodeElement(opsBox);
 			for (FmmlxOperation o : object.getOwnOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
 					NodeLabel.Action changeOpLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Operation);
 					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "");
@@ -179,27 +177,39 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				}
 			}
 			for (FmmlxOperation o : object.getOtherOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
-					opsY += lineHeight;
-					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
-					opsBox.addNodeElement(oLevelLabel);
-					NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
-					opsBox.addNodeElement(inhIcon);
-					int labelX = 30;
-					if(o.isDelegateToClassAllowed()) {
-						NodeImage delIcon = new NodeImage(30, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
-						opsBox.addNodeElement(delIcon);
-						labelX +=16;
-					}	
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
-					opsBox.addNodeElement(oLabel);
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
+						opsY += lineHeight;
+						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
+						opsBox.addNodeElement(oLevelLabel);
+						try{
+							NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
+							opsBox.addNodeElement(inhIcon);
+						} catch (Exception e) {
+							NodeImage inhIcon = new NodeImage(14, opsY, "resources/gif/user/Query2.gif", o, NO_ACTION);
+							opsBox.addNodeElement(inhIcon);	
+//							System.err.println("Could not determine Icon, because path was not found.");
+						}
+						int labelX = 30;
+						if(o.isDelegateToClassAllowed()) {
+							NodeImage delIcon = new NodeImage(30, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
+							opsBox.addNodeElement(delIcon);
+							labelX +=16;
+						}	
+						try{
+							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
+							opsBox.addNodeElement(oLabel);
+						} catch (Exception e) {
+							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + o.getOwner() + ")");
+							opsBox.addNodeElement(oLabel);
+//							System.err.println("Could not determine Icon, because path was not found.");
+						}
 					}
 				}
 			}
 			for (FmmlxOperation o : object.getDelegatedOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 					opsY += lineHeight;
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
 					opsBox.addNodeElement(oLevelLabel);
@@ -224,8 +234,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				}
 			}			
 			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
 						NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
 						opsBox.addNodeElement(oLabel);
@@ -244,7 +254,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double constraintBoxHeight = Math.max(lineHeight * constraintSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double constraintY = 0;
 		NodeBox coinstraintsBox = new NodeBox(0, currentY, neededWidth, constraintBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Constraint);
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWCONSTRAINTS) && constraintSize > 0) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTS) && constraintSize > 0) {
 			yAfterConstraintBox = currentY + constraintBoxHeight;
 			group.addNodeElement(coinstraintsBox);
 			for (Constraint con : object.getConstraints()) {
@@ -263,7 +273,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double slotBoxHeight = Math.max(lineHeight * slotSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double slotsY = 0;
 		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Slot);
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWSLOTS) && slotSize > 0) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && slotSize > 0) {
 			yAfterSlotBox = currentY + slotBoxHeight;
 			group.addNodeElement(slotsBox);
 			for (FmmlxSlot s : object.slots) {
@@ -283,7 +293,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double opvBoxHeight = Math.max(lineHeight * opvSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opvY = 0;
 		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.OperationValue);
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWOPERATIONVALUES) && opvSize > 0) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES) && opvSize > 0) {
 			yAfterOPVBox = currentY + opvBoxHeight;
 			group.addNodeElement(opvBox);
 			for (FmmlxOperationValue opv : object.getOperationValues()) {
@@ -305,31 +315,31 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
 	}
 
-	private int countOperationsToBeShown(Map<DiagramDisplayProperties, Boolean> diagramDisplayProperties) {
+	private int countOperationsToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
 		int counter=0;
 		for (FmmlxOperation o : object.getOwnOperations()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 			counter++;	
 			}
 		}
 
 		for (FmmlxOperation o : object.getOtherOperations()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
 		}		
 		for (FmmlxOperation o : object.getDelegatedOperations()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
 		}		
 		for (FmmlxOperation o : object.getDelegateToClassOperations()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
@@ -337,22 +347,23 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		return counter;
 	}
 	
-	private int countAttributesToBeShown(Map<DiagramDisplayProperties, Boolean> diagramDisplayProperties) {
-		return (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
+	private int countAttributesToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		return (diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
 	}
 
 	private boolean hasParents() {
 		return object.getParentsPaths().size() != 0;
 	}
 
-	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperties, Boolean> diagramDisplayProperties) {
+	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
 		double neededWidth = FmmlxDiagram.calculateTextWidth(object.name); 
 
 		try {
-			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + of.name + "^"));
+			String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+//			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^MetaClass^"));
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^???^"));
 		}
 		
 		neededWidth += 30; // for level number;
@@ -362,56 +373,62 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
-			if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDATTRIBUTES)) {
+			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
 				String ownerName = att.ownerPath;
 				try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWOPERATIONS)) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONS)) {
 			for (FmmlxOperation o : object.getOwnOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS)  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS)  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 				}
 			}	
 			for (FmmlxOperation o : object.getOtherOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
+						String owner = o.getOwner();
+						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 					}
 				}
 			}	
 			for (FmmlxOperation o : object.getDelegatedOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
+						String owner = o.getOwner();
+						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 					}
 				}
 			}
 			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
-				if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWGETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-					if(diagramDisplayProperties.get(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS)) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
+				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
+						String owner = o.getOwner();
+						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
 					}
 				}
 			}
 		}
 		//determine maximal width of slots
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWSLOTS) && object.slots.size() > 0) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && object.slots.size() > 0) {
 			for (FmmlxSlot slot : object.slots) {
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
 
 			}
 		}
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWOPERATIONVALUES)) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES)) {
 			for (FmmlxOperationValue opValue : object.getAllOperationValues()) {
 				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
 		
-		if (diagramDisplayProperties.get(DiagramDisplayProperties.SHOWCONSTRAINTS)) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTS)) {
 			for (Constraint con : object.getConstraints()) {
 				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(con.getName()) + INST_LEVEL_WIDTH, neededWidth);
 			}
