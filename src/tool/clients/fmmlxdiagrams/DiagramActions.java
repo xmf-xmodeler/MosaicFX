@@ -51,7 +51,7 @@ import tool.xmodeler.XModeler;
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
-	//private HashMap<String, Map<String, String>> customGUIslotValues;
+	// private HashMap<String, Map<String, String>> customGUIslotValues;
 
 	public AbstractPackageViewer getDiagram() {
 		return diagram;
@@ -59,11 +59,11 @@ public class DiagramActions {
 
 	public DiagramActions(AbstractPackageViewer diagram) {
 		this.diagram = diagram;
-		//this.customGUIslotValues = new HashMap<>();
+		// this.customGUIslotValues = new HashMap<>();
 	}
-	
+
 	public void openClassBrowserStage(boolean xmf) {
-		if(xmf)  {
+		if (xmf) {
 			diagram.getComm().openPackageBrowser();
 		} else {
 			Platform.runLater(() -> ClassBrowserClient.show(diagram));
@@ -80,28 +80,27 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final CreateMetaClassDialog.Result mcdResult = result.get();
 
-				if(view != null) {				
+				if (view != null) {
 					view.getCanvas().setCursor(Cursor.CROSSHAIR);
-	
+
 					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 						public void handle(MouseEvent e) {
 							// use mouse x/y to have a result in matrix does not invert
 							double x = e.getX();
 							double y = e.getY();
-							
-							try{
+
+							try {
 								Point2D p = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
-								x = p.getX(); y = p.getY();
-							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
-													
+								x = p.getX();
+								y = p.getY();
+							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {
+							}
+
 							if (x > 0 && y > 0) {
-								diagram.getComm().addMetaClass(diagram.getID(), 
-										mcdResult.name, 
-										mcdResult.level, 
-										mcdResult.getParentNames(), 
-										mcdResult.isAbstract, 
-										(int) (x+.5), (int) (y+.5), false);
-	
+								diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, mcdResult.level,
+										mcdResult.getParentNames(), mcdResult.isAbstract, (int) (x + .5),
+										(int) (y + .5), false);
+
 								view.getCanvas().setCursor(Cursor.DEFAULT);
 								view.getCanvas().removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 								diagram.updateDiagram();
@@ -110,18 +109,15 @@ public class DiagramActions {
 					};
 					view.getCanvas().addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				} else {
-					diagram.getComm().addMetaClass(diagram.getID(), 
-							mcdResult.name, 
-							mcdResult.level, 
-							mcdResult.getParentNames(),
-							mcdResult.isAbstract, 0, 0, true);
+					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, mcdResult.level,
+							mcdResult.getParentNames(), mcdResult.isAbstract, 0, 0, true);
 					diagram.updateDiagram();
 				}
 
 			}
 		});
 	}
-	
+
 	public void addMetaClassDialog(Point2D p) {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
@@ -131,12 +127,11 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final CreateMetaClassDialog.Result mcdResult = result.get();
 
-				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, 
-						mcdResult.level, mcdResult.getParentNames(), mcdResult.isAbstract, 
-						(int) (p.getX()+.5), (int) (p.getY()+.5), 
+				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, mcdResult.level,
+						mcdResult.getParentNames(), mcdResult.isAbstract, (int) (p.getX() + .5), (int) (p.getY() + .5),
 						false);
 				diagram.updateDiagram();
-			
+
 			}
 		});
 	}
@@ -155,34 +150,33 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
 
-				if(view == null) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
-							aidResult.name, aidResult.level,
-                            aidResult.getParentNames(), aidResult.isAbstract, 0, 0, true);
+				if (view == null) {
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.name,
+							aidResult.level, aidResult.getParentNames(), aidResult.isAbstract, 0, 0, true);
 					diagram.updateDiagram();
 				} else {
 					view.getCanvas().setCursor(Cursor.CROSSHAIR);
-	
+
 					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 						public void handle(MouseEvent e) {
 							double x = e.getX();
 							double y = e.getY();
-							
-							try{
+
+							try {
 								Point2D p = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
-								x = p.getX(); y = p.getY();
-							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
-							
-	
+								x = p.getX();
+								y = p.getY();
+							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {
+							}
+
 							if (x > 0 && y > 0) {
-								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
-										aidResult.name, aidResult.level, 
-										aidResult.getParentNames(), aidResult.isAbstract, 
-										(int) (x+.5), (int) (y+.5), false);
-	
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.name,
+										aidResult.level, aidResult.getParentNames(), aidResult.isAbstract,
+										(int) (x + .5), (int) (y + .5), false);
+
 								view.getCanvas().setCursor(Cursor.DEFAULT);
 								view.getCanvas().removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
-	
+
 								diagram.updateDiagram();
 							}
 						}
@@ -192,7 +186,7 @@ public class DiagramActions {
 			}
 		});
 	}
-	
+
 	public void addInstanceDialog(FmmlxObject object, Point2D p) {
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
@@ -201,29 +195,29 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
-				diagram.getComm().addNewInstance(
-						diagram.getID(), aidResult.getOfName(), aidResult.name,
-						aidResult.level,
-                        aidResult.getParentNames(), aidResult.isAbstract, 
-                        (int) (p.getX()+.5), (int) (p.getY()+.5), false);
+				diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.name,
+						aidResult.level, aidResult.getParentNames(), aidResult.isAbstract, (int) (p.getX() + .5),
+						(int) (p.getY() + .5), false);
 				diagram.updateDiagram();
 			}
 		});
 	}
-	
-	// FH Method for adding Instances without dialog that are automatically hidden
-		public String addInstance(String className, String instanceName) {
-			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
-			return instanceName;
 
-		}
-		// adding instances that can be shown
-		public String addInstance(String className, String instanceName, boolean hidden) {
-			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, hidden);
-			return instanceName;
-		}
+	// FH Method for adding Instances without dialog that are automatically hidden
+	public String addInstance(String className, String instanceName) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
+		return instanceName;
+
+	}
+
+	// adding instances that can be shown
+	public String addInstance(String className, String instanceName, boolean hidden) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0,
+				hidden);
+		return instanceName;
+	}
 
 	public void addAttributeDialog() {
 		addAttributeDialog(null);
@@ -243,7 +237,8 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi);
+				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type,
+						aad.multi);
 			}
 			diagram.updateDiagram();
 		});
@@ -252,7 +247,7 @@ public class DiagramActions {
 	public void addEnumerationDialog() {
 		Platform.runLater(() -> {
 			AddEnumerationDialog dlg;
-			
+
 			dlg = new AddEnumerationDialog();
 
 			dlg.setTitle("Create Enumeration");
@@ -260,37 +255,37 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				String aed = result.get();
-				diagram.getComm().addEnumeration(diagram.getID(), aed); 
+				diagram.getComm().addEnumeration(diagram.getID(), aed);
 			}
 			diagram.updateDiagram();
 		});
-		
+
 	}
-	
+
 	public void editEnumerationDialog(String string, String enumName) {
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
-			
+
 			dlg = new EditEnumerationDialog(diagram);
 
 			if (string.equals("edit_element")) {
 				dlg.setTitle("Edit Enumeration");
-			} 
-		
+			}
+
 			dlg.show();
 		});
 	}
-	
+
 	public void deleteEnumerationDialog() {
 //		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			DeleteEnumerationDialog dlg;
-			
+
 			dlg = new DeleteEnumerationDialog(diagram);
 
 			dlg.setTitle("Delete Enumeration");
-			//Optional<DeleteEnumerationDialogResult> result = 
+			// Optional<DeleteEnumerationDialogResult> result =
 			dlg.showAndWait();
 			diagram.updateDiagram();
 //			l.countDown();
@@ -300,8 +295,9 @@ public class DiagramActions {
 	public void removeDialog(FmmlxObject object, PropertyType type) {
 		removeDialog(object, type, diagram.getSelectedProperty());
 	}
-	
-	public <Property extends FmmlxProperty> void removeDialog(FmmlxObject object, PropertyType type, Property selectedFmmlxProperty) {
+
+	public <Property extends FmmlxProperty> void removeDialog(FmmlxObject object, PropertyType type,
+			Property selectedFmmlxProperty) {
 
 		Platform.runLater(() -> {
 			RemoveDialog<Property> dlg = new RemoveDialog<Property>(object, type);
@@ -313,30 +309,34 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final RemoveDialog<Property>.Result result = opt.get();
 				switch (type) {
-					case Class:
-						diagram.getComm().removeClass(diagram.getID(), result.object.getName(), 0);
-						break;
-					case Operation:
-						diagram.getComm().removeOperation(diagram.getID(), result.object.getName(), result.property.getName(), 0);
-						break;
-					case Attribute:
-						diagram.getComm().removeAttribute(diagram.getID(), result.object.getName(), result.property.getName(), 0);
-						break;
-					case Association:
-						diagram.getComm().removeAssociation(diagram.getID(), result.object.getName(), 0);
-						break;
-					case Constraint:
-						diagram.getComm().removeConstraint(diagram.getID(), result.object.getPath(), result.property.getName());
-						break;
-					default:
-						System.err.println("RemoveDialogResult: No matching content type!");
+				case Class:
+					diagram.getComm().removeClass(diagram.getID(), result.object.getName(), 0);
+					break;
+				case Operation:
+					diagram.getComm().removeOperation(diagram.getID(), result.object.getName(),
+							result.property.getName(), 0);
+					break;
+				case Attribute:
+					diagram.getComm().removeAttribute(diagram.getID(), result.object.getName(),
+							result.property.getName(), 0);
+					break;
+				case Association:
+					diagram.getComm().removeAssociation(diagram.getID(), result.object.getName(), 0);
+					break;
+				case Constraint:
+					diagram.getComm().removeConstraint(diagram.getID(), result.object.getPath(),
+							result.property.getName());
+					break;
+				default:
+					System.err.println("RemoveDialogResult: No matching content type!");
 				}
 			}
 			diagram.updateDiagram();
 		});
 	}
 
-	public <Property extends FmmlxProperty> void changeNameDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
+	public <Property extends FmmlxProperty> void changeNameDialog(FmmlxObject object, PropertyType type,
+			Property selectedProperty) {
 		Platform.runLater(() -> {
 			ChangeNameDialog<Property> dlg = new ChangeNameDialog<Property>(diagram, object, type, selectedProperty);
 
@@ -345,19 +345,21 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeNameDialog<?>.Result result = opt.get();
 				switch (result.type) {
-					case Class:
-						diagram.getComm().changeClassName(diagram.getID(), result.getObjectName(), result.newName);
-						break;
-					case Operation:
-						diagram.getComm().changeOperationName(diagram.getID(), result.getObjectName(), result.oldName, result.newName);
-						break;
-					case Attribute:
-						diagram.getComm().changeAttributeName(diagram.getID(), result.getObjectName(), result.oldName, result.newName);
-						break;
+				case Class:
+					diagram.getComm().changeClassName(diagram.getID(), result.getObjectName(), result.newName);
+					break;
+				case Operation:
+					diagram.getComm().changeOperationName(diagram.getID(), result.getObjectName(), result.oldName,
+							result.newName);
+					break;
+				case Attribute:
+					diagram.getComm().changeAttributeName(diagram.getID(), result.getObjectName(), result.oldName,
+							result.newName);
+					break;
 //					case Association:
 //						diagram.getComm().changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
-					default:
-						System.err.println("ChangeNameDialogResult: No matching content type!");
+				default:
+					System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
 			diagram.updateDiagram();
@@ -376,29 +378,30 @@ public class DiagramActions {
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		changeMultiplicityDialog(object, type, diagram.getSelectedProperty());
 	}
-		
+
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
-			
+
 			Platform.runLater(() -> {
 				MultiplicityDialog md = new MultiplicityDialog(oldMul);
 				Optional<Multiplicity> mr = md.showAndWait();
-				if(mr.isPresent()) {
-					diagram.getComm().changeAttributeMultiplicity(diagram.getID(), object.getName(), att.name, oldMul, mr.get());
+				if (mr.isPresent()) {
+					diagram.getComm().changeAttributeMultiplicity(diagram.getID(), object.getName(), att.name, oldMul,
+							mr.get());
 					diagram.updateDiagram();
 				}
 			});
-			
+
 		}
 	}
-	
+
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
 		changeLevelDialog(object, type, diagram.getSelectedProperty());
 	}
-		
+
 	public void changeLevelDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		Platform.runLater(() -> {
@@ -411,20 +414,22 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeLevelDialog.Result result = opt.get();
 				switch (result.type) {
-					case Class:
-						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
-						break;
-					case Attribute:
-						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
-						break;
-					case Operation:
-						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
-						break;
+				case Class:
+					diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
+					break;
+				case Attribute:
+					diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name,
+							result.oldLevel, result.newLevel);
+					break;
+				case Operation:
+					diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name,
+							result.oldLevel, result.newLevel);
+					break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 //						break;
-					default:
-						System.err.println("ChangeLevelDialogResult: No matching content type!");
+				default:
+					System.err.println("ChangeLevelDialogResult: No matching content type!");
 				}
 				diagram.updateDiagram();
 			}
@@ -432,22 +437,25 @@ public class DiagramActions {
 //			latch.countDown();
 		});
 	}
-	
+
 	public void runInstanceGenerator(FmmlxObject object) {
 		Platform.runLater(() -> {
 
 			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
 			instanceGenerator.openDialog(diagram);
 
-			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
-				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator.getValue().entrySet()) {
+			for (int i = 0; i < instanceGenerator.getNumberOfInstance(); i++) {
+				System.out.println("Name : " + instanceGenerator.getGeneratedInstanceName().get(i));
+				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator
+						.getValue().entrySet()) {
 					System.out.println(instanceGenerator.getSelectedParent());
-					System.out.println(fmmlxAttributeIValueGeneratorEntry.getKey().getName() + " : " + ((IValueGenerator) fmmlxAttributeIValueGeneratorEntry.getValue()).getGeneratedValue().get(i));
+					System.out.println(fmmlxAttributeIValueGeneratorEntry.getKey().getName() + " : "
+							+ ((IValueGenerator) fmmlxAttributeIValueGeneratorEntry.getValue()).getGeneratedValue()
+									.get(i));
 				}
 				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
 			}
-			if(instanceGenerator.getNumberOfInstance()>0){
+			if (instanceGenerator.getNumberOfInstance() > 0) {
 				diagram.updateDiagram();
 			}
 		});
@@ -460,12 +468,13 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialog.Result result = cod.get();
-				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName, result.newOf.getName());
+				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName,
+						result.newOf.getName());
 				diagram.updateDiagram();
 			}
 		});
 	}
-	
+
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 		if (belongsPropertyToObject(object, selectedProperty, type)) {
@@ -474,8 +483,9 @@ public class DiagramActions {
 			changeOwnerDialog(object, type, null);
 		}
 	}
-	
-	private <Property extends FmmlxProperty> void changeOwnerDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
+
+	private <Property extends FmmlxProperty> void changeOwnerDialog(FmmlxObject object, PropertyType type,
+			Property selectedProperty) {
 		Platform.runLater(() -> {
 			ChangeOwnerDialog<Property> dlg = new ChangeOwnerDialog<Property>(diagram, object, type);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
@@ -487,15 +497,17 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeOwnerDialog<Property>.Result result = opt.get();
 				switch (result.type) {
-					case Attribute:
-						diagram.getComm().changeAttributeOwner(diagram.getID(), result.object.getName(), result.property.getName(), result.newOwner.name);
-						break;
-					case Operation:
-						diagram.getComm().changeOperationOwner(diagram.getID(), result.object.getName(), result.property.getName(), result.newOwner.name);
-						break;
-					default:
-						System.err.println("ChangeOwnerDialogResult: No matching content type!");
-						break;
+				case Attribute:
+					diagram.getComm().changeAttributeOwner(diagram.getID(), result.object.getName(),
+							result.property.getName(), result.newOwner.name);
+					break;
+				case Operation:
+					diagram.getComm().changeOperationOwner(diagram.getID(), result.object.getName(),
+							result.property.getName(), result.newOwner.name);
+					break;
+				default:
+					System.err.println("ChangeOwnerDialogResult: No matching content type!");
+					break;
 				}
 				diagram.updateDiagram();
 			}
@@ -509,7 +521,8 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialog.Result result = cpd.get();
-				diagram.getComm().changeParent(diagram.getID(), result.object.getName(), result.getCurrentParentNames(), result.getNewParentNames());
+				diagram.getComm().changeParent(diagram.getID(), result.object.getName(), result.getCurrentParentNames(),
+						result.getNewParentNames());
 				diagram.updateDiagram();
 			}
 		});
@@ -517,16 +530,18 @@ public class DiagramActions {
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
-		if(hitProperty != null && "Boolean".equals(hitProperty.getType(diagram))){
-			diagram.getComm().changeSlotValue(diagram.getID(), hitObject.getName(), hitProperty.getName(), "true".equals(hitProperty.getValue())?"false":"true");
-			diagram.updateDiagram();			
+		if (hitProperty != null && "Boolean".equals(hitProperty.getType(diagram))) {
+			diagram.getComm().changeSlotValue(diagram.getID(), hitObject.getName(), hitProperty.getName(),
+					"true".equals(hitProperty.getValue()) ? "false" : "true");
+			diagram.updateDiagram();
 		} else {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
 			Optional<ChangeSlotValueDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				ChangeSlotValueDialog.Result slotValueDialogResult = result.get();
-				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.object.getName(), slotValueDialogResult.slot.getName(), slotValueDialogResult.newValue);
+				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.object.getName(),
+						slotValueDialogResult.slot.getName(), slotValueDialogResult.newValue);
 				diagram.updateDiagram();
 			}
 		}
@@ -535,16 +550,16 @@ public class DiagramActions {
 	public void updateDiagram() {
 		diagram.updateDiagram();
 	}
-	
+
 	public void printProtocol() {
 		diagram.getComm().printProtocol(diagram.getID());
 	}
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
-		diagram.updateDiagram();		
+		diagram.updateDiagram();
 	}
-	
+
 	public void addOperationDialog(FmmlxObject object) {
 
 		Platform.runLater(() -> {
@@ -558,25 +573,27 @@ public class DiagramActions {
 			}
 		});
 	}
-	
+
 	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
-		if(initiallySelectedOperation == null) {
+		if (initiallySelectedOperation == null) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setContentText("This MenuItem requires an Operation to be selected.");
-			alert.show(); return;
-		} 
+			alert.show();
+			return;
+		}
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
 			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name,
+						result.body);
 				diagram.updateDiagram();
 			}
 		});
 	}
-	
+
 	public void addConstraintDialog(FmmlxObject object) {
 
 		Platform.runLater(() -> {
@@ -585,55 +602,43 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddConstraintDialog.Result result = opt.get();
-				diagram.getComm().addConstraint(
-						diagram.getID(), 
-						result.object.getPath(), 
-						result.constName, 
-						result.instLevel, 
-						result.body, 
-						result.reason);
+				diagram.getComm().addConstraint(diagram.getID(), result.object.getPath(), result.constName,
+						result.instLevel, result.body, result.reason);
 				diagram.updateDiagram();
 			}
 		});
 	}
-	
+
 	public void editConstraint(FmmlxObject object, Constraint constraint) {
 		Platform.runLater(() -> {
-		AddConstraintDialog dlg = new AddConstraintDialog(diagram,object,constraint);
-		Optional<AddConstraintDialog.Result> opt = dlg.showAndWait();
-		if(opt.isPresent()) {
-			final AddConstraintDialog.Result result = opt.get();
-					diagram.getComm().editConstraint(
-							diagram.getID(), 
-							object.getPath(),
-							result.object.getPath(),
-							constraint.name,
-							result.constName,
-							constraint.level,
-							result.instLevel, 
-							constraint.bodyFull,
-							result.body,
-							constraint.reasonFull,
-							result.reason);
-			diagram.updateDiagram();
-		}
+			AddConstraintDialog dlg = new AddConstraintDialog(diagram, object, constraint);
+			Optional<AddConstraintDialog.Result> opt = dlg.showAndWait();
+			if (opt.isPresent()) {
+				final AddConstraintDialog.Result result = opt.get();
+				diagram.getComm().editConstraint(diagram.getID(), object.getPath(), result.object.getPath(),
+						constraint.name, result.constName, constraint.level, result.instLevel, constraint.bodyFull,
+						result.body, constraint.reasonFull, result.reason);
+				diagram.updateDiagram();
+			}
 		});
 	}
-	
+
 	public Object removeConstraintDialog(FmmlxObject object) {
 		FmmlxProperty property = diagram.getSelectedProperty();
-				
+
 		return null;
 	}
 
 //	public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type) {
 //		changeTypeDialog(object, type, diagram.getSelectedProperty());
 //	}
-	
-    public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type, Property selectedProperty, Vector<Property> availableProperties) {
+
+	public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type,
+			Property selectedProperty, Vector<Property> availableProperties) {
 
 		Platform.runLater(() -> {
-			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty);
+			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties,
+					selectedProperty);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
@@ -643,20 +648,20 @@ public class DiagramActions {
 				final ChangeTypeDialog<?>.Result result = opt.get();
 
 				switch (result.type) {
-					case Attribute:
-						diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(), result.property.getName(),
-								result.oldType, result.newType);
-						break;
-					case Operation:
-						diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(), result.property.getName(),
-								result.newType);
-						break;
+				case Attribute:
+					diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(),
+							result.property.getName(), result.oldType, result.newType);
+					break;
+				case Operation:
+					diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(),
+							result.property.getName(), result.newType);
+					break;
 //					case Association:
 //						diagram.getComm().changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
 //								result.getOldType(), result.getNewType());
 //						break;
-					default:
-						System.err.println("AddDialogResult: No matching content type!");
+				default:
+					System.err.println("AddDialogResult: No matching content type!");
 				}
 				diagram.updateDiagram();
 			}
@@ -665,7 +670,7 @@ public class DiagramActions {
 		});
 	}
 
-    // CURRENTLY UNUNSED
+	// CURRENTLY UNUNSED
 	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
 //		CountDownLatch latch = new CountDownLatch(1);
 
@@ -675,7 +680,8 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeTargetDialog.Result result = opt.get();
-				diagram.getComm().changeAssociationTarget(diagram.getID(), result.getAssociationName(), result.oldTargetName, result.newTargetName);
+				diagram.getComm().changeAssociationTarget(diagram.getID(), result.getAssociationName(),
+						result.oldTargetName, result.newTargetName);
 				diagram.updateDiagram();
 			}
 
@@ -691,15 +697,11 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AssociationDialog.Result result = opt.get();
-				diagram.getComm().addAssociation(diagram.getID(),
-						result.source.getName(), result.target.getName(),
-						result.newIdentifierSource, result.newIdentifierTarget,
-						result.newDisplayName,
-						null, result.multTargetToSource, result.multSourceToTarget,
-						result.newInstLevelSource, result.newInstLevelTarget,
-						result.sourceVisibleFromTarget,  result.targetVisibleFromSource, 
-						result.symmetric, result.transitive
-						);
+				diagram.getComm().addAssociation(diagram.getID(), result.source.getName(), result.target.getName(),
+						result.newIdentifierSource, result.newIdentifierTarget, result.newDisplayName, null,
+						result.multTargetToSource, result.multSourceToTarget, result.newInstLevelSource,
+						result.newInstLevelTarget, result.sourceVisibleFromTarget, result.targetVisibleFromSource,
+						result.symmetric, result.transitive);
 				diagram.updateDiagram();
 			}
 		});
@@ -712,115 +714,146 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AssociationDialog.Result result = opt.get();
-				
-				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), false, result.sourceVisibleFromTarget);				
+
+				if (result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(),
+							false, result.sourceVisibleFromTarget);
 				}
-				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), true, result.targetVisibleFromSource);				
+				if (result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(),
+							true, result.targetVisibleFromSource);
 				}
-				
-				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
-					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierSource);
+
+				if (!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
+					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart()
+							+ "--> " + result.newIdentifierSource);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(),
+							result.selectedAssociation.getName(), result.newIdentifierSource);
 				}
-				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
-					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierTarget);
+				if (!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
+					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd()
+							+ "--> " + result.newIdentifierTarget);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(),
+							result.selectedAssociation.getName(), result.newIdentifierTarget);
 				}
-				
-				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
-					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelSource);
+
+				if (!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
+					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> "
+							+ result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(),
+							result.selectedAssociation.getName(), result.newInstLevelSource);
 				}
-				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
-					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
-					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelTarget);
+				if (!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
+					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> "
+							+ result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(),
+							result.selectedAssociation.getName(), result.newInstLevelTarget);
 				}
-				
-				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multTargetToSource);
+
+				if (!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(),
+							result.selectedAssociation.getName(), result.multTargetToSource);
 				}
-				if(!result.selectedAssociation.getMultiplicityStartToEnd().equals(result.multSourceToTarget)) {
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multSourceToTarget);
+				if (!result.selectedAssociation.getMultiplicityStartToEnd().equals(result.multSourceToTarget)) {
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(),
+							result.selectedAssociation.getName(), result.multSourceToTarget);
 				}
-				
-				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
-					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
-					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
+
+				if (!result.selectedAssociation.getName().equals(result.newDisplayName)) {
+					System.err.println(
+							"changeName:" + result.selectedAssociation.getName() + "-->" + result.newDisplayName);
+					diagram.getComm().changeAssociationForwardName(diagram.getID(),
+							result.selectedAssociation.getName(), result.newDisplayName);
 				}
-					
+
 				diagram.updateDiagram();
 			}
 		});
 	}
-	
+
 	public void setDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
-		if(delegateFrom == null) {
-			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		if (delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL)
+					.showAndWait();
+			return;
 		}
-		if(delegateTo == null) {
+		if (delegateTo == null) {
 			Vector<FmmlxObject> delegationCandidates = new Vector<>();
-			for(FmmlxObject o : diagram.getObjects()) {
-				if(o != delegateFrom && o.level == delegateFrom.level) delegationCandidates.add(o);
+			for (FmmlxObject o : diagram.getObjects()) {
+				if (o != delegateFrom && o.level == delegateFrom.level)
+					delegationCandidates.add(o);
 			}
-			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(delegateFrom.getDelegatesTo(false), delegationCandidates);
+			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(
+					delegateFrom.getDelegatesTo(false), delegationCandidates);
 			delegationChooseDialog.setTitle("Set Delegation");
 			delegationChooseDialog.setHeaderText("Select delegation target for " + delegateFrom.getName());
 			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
-			if(chosenTarget.isPresent()) {
+			if (chosenTarget.isPresent()) {
 				delegateTo = chosenTarget.get();
 			} else {
-				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL)
+						.showAndWait();
+				return;
 			}
 		}
-		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
+		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(),
+				delegateFrom.level - 1);
 		diagram.updateDiagram();
 	}
-	
+
 	public void removeDelegation(FmmlxObject delegateFrom) {
-		if(delegateFrom == null) {
-			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		if (delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL)
+					.showAndWait();
+			return;
 		}
 		diagram.getComm().removeDelegation(diagram.getID(), delegateFrom.getName());
 		diagram.updateDiagram();
 	}
-	
+
 	public void removeRoleFiller(FmmlxObject role) {
-		if(role == null) {
-			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+		if (role == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait();
+			return;
 		}
 		diagram.getComm().removeRoleFiller(diagram.getID(), role.getName());
 		diagram.updateDiagram();
 
 	}
-	
+
 	public void setRoleFiller(final FmmlxObject role, final FmmlxObject roleFiller) {
 		Platform.runLater(() -> {
 			FmmlxObject roleFiller_Local = roleFiller;
-			if(role == null) {
-				new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+			if (role == null) {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait();
+				return;
 			}
-			if(roleFiller_Local == null) {
+			if (roleFiller_Local == null) {
 				Vector<FmmlxObject> roleFillerCandidates = new Vector<>();
 				FmmlxObject delegateFrom = diagram.getObjectByPath(role.getOfPath());
-				
+
 				DelegationEdge de = delegateFrom.getDelegatesToEdge(true);
-				if(de == null) {
-					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
+				if (de == null) {
+					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL)
+							.showAndWait();
+					return;
 				}
 				FmmlxObject delegateTo = de.targetNode;
-				for(FmmlxObject o : diagram.getObjects()) {
-					if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
+				for (FmmlxObject o : diagram.getObjects()) {
+					if (o.getAllAncestors().contains(delegateTo))
+						roleFillerCandidates.add(o);
 				}
-				ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
+				ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null,
+						roleFillerCandidates);
 				delegationChooseDialog.setTitle("Set RoleFiller");
 				delegationChooseDialog.setHeaderText("Select roleFiller for " + role.getName());
 				Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
-				if(chosenTarget.isPresent()) {
+				if (chosenTarget.isPresent()) {
 					roleFiller_Local = chosenTarget.get();
 				} else {
-					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL)
+							.showAndWait();
+					return;
 				}
 			}
 			diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller_Local.getName());
@@ -830,19 +863,22 @@ public class DiagramActions {
 
 	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
 		if (source != null && target != null) {
-			// this case is relatively easy. We have two objects. Now we try to find the 
-			// association they belong to. If there are more than one, show a dialog to pick one.
-			// if there is only one, or one has been picked: proceed to xmf, otherwise nothing
-			//FmmlxAssociation association = null;
-			if(association==null) {
-				association=chooseAssociation(source, target);
-				
+			// this case is relatively easy. We have two objects. Now we try to find the
+			// association they belong to. If there are more than one, show a dialog to pick
+			// one.
+			// if there is only one, or one has been picked: proceed to xmf, otherwise
+			// nothing
+			// FmmlxAssociation association = null;
+			if (association == null) {
+				association = chooseAssociation(source, target);
+
 			}
 			if (association != null) {
-				//				CountDownLatch l = new CountDownLatch(1);
+				// CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(diagram.getID(), source.getName(), target.getName(), association.getName());
+				diagram.getComm().addAssociationInstance(diagram.getID(), source.getName(), target.getName(),
+						association.getName());
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -855,35 +891,46 @@ public class DiagramActions {
 //			} // swap
 			// now: source != null and target == null
 			// We don't know the association, so we try to figure it out:
-			if (association==null) {
-				association=chooseAssociation(source, target);
+			if (association == null) {
+				association = chooseAssociation(source, target);
 			}
-			
-			if(association!=null) {
-				
-				if((source==null || association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(source)) && (target==null ||association.targetNode.getInstancesByLevel(association.getLevelTarget()).contains(target))) {
-					addAssociationInstanceDialog(source, target, association);		
-				} else if((target==null || association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(target)) && (source==null ||association.targetNode.getInstancesByLevel(association.getLevelTarget()).contains(source))){
-					addAssociationInstanceDialog(target, source, association);	
+
+			if (association != null) {
+
+				if ((source == null
+						|| association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(source))
+						&& (target == null || association.targetNode.getInstancesByLevel(association.getLevelTarget())
+								.contains(target))) {
+					addAssociationInstanceDialog(source, target, association);
+				} else if ((target == null
+						|| association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(target))
+						&& (source == null || association.targetNode.getInstancesByLevel(association.getLevelTarget())
+								.contains(source))) {
+					addAssociationInstanceDialog(target, source, association);
 				} else {
-					new Alert(AlertType.ERROR, "Selected elements don't fit association definition.", ButtonType.OK).showAndWait();
+					new Alert(AlertType.ERROR, "Selected elements don't fit association definition.", ButtonType.OK)
+							.showAndWait();
 				}
-				
+
 			} else {
-				new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();	
+				new Alert(AlertType.ERROR,
+						"No strategy for this situation yet. Choose two objects to create an Association Instance instead.",
+						ButtonType.OK).showAndWait();
 			}
 		} else {
 			// nothing supplied
-			if(association==null) {
-				addAssociationInstanceDialog(source, target, association);	
+			if (association == null) {
+				addAssociationInstanceDialog(source, target, association);
 			} else {
-				new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();	
-			}	
+				new Alert(AlertType.ERROR,
+						"No strategy for this situation yet. Choose two objects to create an Association Instance instead.",
+						ButtonType.OK).showAndWait();
+			}
 		}
 	}
 
 	private FmmlxAssociation chooseAssociation(FmmlxObject source, FmmlxObject target) {
-		FmmlxAssociation association=null;
+		FmmlxAssociation association = null;
 		Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
 		if (associations.size() > 1) {
 			ChoiceDialog<FmmlxAssociation> dialog = new ChoiceDialog<>(associations.firstElement(), associations);
@@ -893,16 +940,17 @@ public class DiagramActions {
 
 			// Traditional way to get the response value.
 			Optional<FmmlxAssociation> result = dialog.showAndWait();
-			if (result.isPresent()){
-			    association = result.get();
+			if (result.isPresent()) {
+				association = result.get();
 			} else {
 				// do nothing
 			}
 		} else if (associations.size() == 1) {
 			association = associations.firstElement();
 		} else {
-			// if associations.size() == 0 then association remains null		
-			new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
+			// if associations.size() == 0 then association remains null
+			new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK)
+					.showAndWait();
 		}
 		return association;
 	}
@@ -917,7 +965,7 @@ public class DiagramActions {
 		ComboBox<FmmlxObject> targetCB = new ComboBox<FmmlxObject>();
 		Vector<FmmlxObject> sourceList = new Vector<FmmlxObject>();
 		Vector<FmmlxObject> targetList = new Vector<FmmlxObject>();
-		if(source!=null) {
+		if (source != null) {
 			sourceList.add(source);
 			sourceCB.getItems().addAll(sourceList);
 			sourceCB.setValue(source);
@@ -925,7 +973,7 @@ public class DiagramActions {
 			sourceList.addAll(association.sourceNode.getInstancesByLevel(association.getLevelSource()));
 			sourceCB.getItems().addAll(sourceList);
 		}
-		if(target!=null) {
+		if (target != null) {
 			targetList.add(target);
 			targetCB.getItems().addAll(targetList);
 			targetCB.setValue(target);
@@ -933,32 +981,30 @@ public class DiagramActions {
 			targetList.addAll(association.targetNode.getInstancesByLevel(association.getLevelTarget()));
 			targetCB.getItems().addAll(targetList);
 		}
-		Label space=new Label("        ");
+		Label space = new Label("        ");
 		GridPane grid = new GridPane();
 		grid.add(sourceLabel, 1, 1);
 		grid.add(sourceCB, 1, 2);
-		grid.add(space,2,1);
+		grid.add(space, 2, 1);
 		grid.add(targetLabel, 3, 1);
 		grid.add(targetCB, 3, 2);
 		dialog.getDialogPane().setContent(grid);
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(Bindings.createBooleanBinding(
-			    () -> sourceCB.getValue() == null || targetCB.getValue() == null,
-			    sourceCB.valueProperty(),
-			    targetCB.valueProperty()
-			));
-		Optional<Void> result= dialog.showAndWait();
+		dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty()
+				.bind(Bindings.createBooleanBinding(() -> sourceCB.getValue() == null || targetCB.getValue() == null,
+						sourceCB.valueProperty(), targetCB.valueProperty()));
+		Optional<Void> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
+			diagram.getComm().addAssociationInstance(diagram.getID(),
+					sourceCB.getSelectionModel().getSelectedItem().getName(),
+					targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
 		} else {
 			dialog.close();
 		}
 	}
-	
+
 	public void removeAssociationInstance(FmmlxLink link) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), 
-				link.getOfName(), 
-				link.getSourceNode().getName(), 
+		diagram.getComm().removeAssociationInstance(diagram.getID(), link.getOfName(), link.getSourceNode().getName(),
 				link.getTargetNode().getName());
 		diagram.updateDiagram();
 	}
@@ -971,31 +1017,52 @@ public class DiagramActions {
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
 		Platform.runLater(() -> {
 			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
-			//Optional<AssociationValueDialogResult> opt = 
-		    dlg.showAndWait();
+			// Optional<AssociationValueDialogResult> opt =
+			dlg.showAndWait();
 		});
 	}
 
 	public boolean belongsPropertyToObject(FmmlxObject object, FmmlxProperty property, PropertyType dialogType) {
-		if(object.getOwnAttributes().contains(property)) return true;
-		if(object.getOwnOperations().contains(property)) return true;
-		if(object.getConstraints().contains(property)) return true;
+		if (object.getOwnAttributes().contains(property))
+			return true;
+		if (object.getOwnOperations().contains(property))
+			return true;
+		if (object.getConstraints().contains(property))
+			return true;
 		return false;
 	}
 
-	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram.getID());diagram.updateDiagram();}
-	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram.getID());diagram.updateDiagram();}
+	public void levelRaiseAll() {
+		diagram.getComm().levelRaiseAll(diagram.getID());
+		diagram.updateDiagram();
+	}
 
-	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelLowerAll() {
+		diagram.getComm().levelLowerAll(diagram.getID());
+		diagram.updateDiagram();
+	}
+
+	public void levelRaiseRelated(FmmlxObject o) {
+		throw new RuntimeException("Not implemented yet");
+	}
+
+	public void levelLowerRelated(FmmlxObject o) {
+		throw new RuntimeException("Not implemented yet");
+	}
+
+	public void levelInsertBelow(FmmlxObject o) {
+		throw new RuntimeException("Not implemented yet");
+	}
+
+	public void levelRemoveThis(FmmlxObject o) {
+		throw new RuntimeException("Not implemented yet");
+	}
 
 	public void assignToGlobal(FmmlxObject object) {
 		TextInputDialog dialog = new TextInputDialog("");
 		dialog.setTitle("Assign to Global Variable");
 		dialog.setHeaderText("Global Variable Name:");
-		 
+
 		Optional<String> result = dialog.showAndWait();
 
 		result.ifPresent(s -> diagram.getComm().assignToGlobal(diagram.getID(), object, s));
@@ -1010,11 +1077,12 @@ public class DiagramActions {
 			AddMissingLinkDialog dlg = new AddMissingLinkDialog(obj, assoc);
 			Optional<AddMissingLinkDialog.Result> solution = dlg.showAndWait();
 
-			if(solution.isPresent()) {
-				if(solution.get().createNew) {
+			if (solution.isPresent()) {
+				if (solution.get().createNew) {
 					addInstanceDialog(solution.get().selection, diagram.getActiveView());
 				} else {
-					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
+					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(),
+							solution.get().selection.getName(), assoc.getName());
 					diagram.updateDiagram();
 				}
 			}
@@ -1026,17 +1094,18 @@ public class DiagramActions {
 			return diagram.getComm().evalList(diagram, text);
 		} catch (TimeOutException e) {
 			return new Vector<>(Arrays.asList("Time", "Out", "Exception"));
-		}	
+		}
 	}
 
 	public void save() {
-		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
+		if (!(diagram instanceof FmmlxDiagram))
+			throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
 				String filePath = ((FmmlxDiagram) diagram).getFilePath();
 				FmmlxDiagramCommunicator communicator = diagram.getComm();
-				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
-				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
+				String label = ((FmmlxDiagram) diagram).getDiagramLabel();
+				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram) diagram).getFilePath());
 				serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
@@ -1057,7 +1126,7 @@ public class DiagramActions {
 			FindClassDialog dialog = new FindClassDialog();
 			dialog.showAndWait();
 		});
-		return null; 
+		return null;
 	}
 
 	public Object openFindSendersDialog() {
@@ -1073,20 +1142,20 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-    public void testGetEdges() {
+	public void testGetEdges() {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
+				for (int id : ids) {
+					System.out.println("diagram id : " + id);
 					diagram.getComm().testGetAllEdgePositions(id);
 				}
 				return null;
 			}
 		};
 		new Thread(task).start();
-    }
+	}
 
 	public void testGetLabel() {
 		Task<Void> task = new Task<Void>() {
@@ -1094,8 +1163,8 @@ public class DiagramActions {
 			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
 				System.out.println(ids);
-				for (int id : ids){
-					System.out.println("diagram id : "+id);
+				for (int id : ids) {
+					System.out.println("diagram id : " + id);
 					diagram.getComm().testGetAllLabelPositions(id);
 				}
 				return null;
@@ -1106,63 +1175,63 @@ public class DiagramActions {
 
 	// LM, 07.04.2023, New Action for execution of custom UI
 	public void executeUI(FmmlxObject object) {
-		
+
 		Platform.runLater(() -> new CustomUI(diagram, object));
-			
+
 	}
 	// End customUI
-	
-		
+
 	public void showObjectBrowser(FmmlxObject object) {
-			
+
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
-			
+
 	}
 
 	public void exportSvg() {
-		Platform.runLater(() ->{
-		FileChooser fc = new FileChooser();
-		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
-		fc.setTitle("Export File");
-		File file = fc.showSaveDialog(XModeler.getStage());
+		Platform.runLater(() -> {
+			FileChooser fc = new FileChooser();
+			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
+			fc.setTitle("Export File");
+			File file = fc.showSaveDialog(XModeler.getStage());
 
-		if(file!= null){
-			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
-			Platform.runLater(() -> {
-				String filePath = file.getPath();
-				FmmlxDiagram diagram2 = (FmmlxDiagram) diagram;
-				Bounds bounds = diagram2.getBounds();
-				double extraHeight = getExtraHeight();
-				SvgExporter svgExporter;
-				try {
-					svgExporter = new SvgExporter(filePath, bounds,extraHeight);
-					svgExporter.export(diagram, extraHeight);
-				} catch (TransformerException | ParserConfigurationException e) {
-					e.printStackTrace();
-				}
-			});
-		}
+			if (file != null) {
+				if (!(diagram instanceof FmmlxDiagram))
+					throw new IllegalArgumentException();
+				Platform.runLater(() -> {
+					String filePath = file.getPath();
+					FmmlxDiagram diagram2 = (FmmlxDiagram) diagram;
+					Bounds bounds = diagram2.getBounds();
+					double extraHeight = getExtraHeight();
+					SvgExporter svgExporter;
+					try {
+						svgExporter = new SvgExporter(filePath, bounds, extraHeight);
+						svgExporter.export(diagram, extraHeight);
+					} catch (TransformerException | ParserConfigurationException e) {
+						e.printStackTrace();
+					}
+				});
+			}
 		});
 	}
 
 	private double getExtraHeight() {
-		return (diagram.issues.size()+1) * 14;
+		return (diagram.issues.size() + 1) * 14;
 	}
 
 	public void showCertainLevel() {
-		Platform.runLater(() ->{
+		Platform.runLater(() -> {
 			ShowCertainLevelDialog dlg = new ShowCertainLevelDialog(diagram);
 			Optional<Vector<Integer>> result = dlg.showAndWait();
 
-			if(result.isPresent()){
+			if (result.isPresent()) {
 				final Vector<Integer> chosenLevel = result.get();
 //				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
 
 				Vector<FmmlxObject> objects = diagram.getObjects();
 				Vector<FmmlxObject> hiddenObjects = new Vector<>();
 				Vector<FmmlxObject> unHiddenObjects = new Vector<>();
-				for(FmmlxObject obj : objects){
-					if(!chosenLevel.contains(obj.getLevel())){
+				for (FmmlxObject obj : objects) {
+					if (!chosenLevel.contains(obj.getLevel())) {
 						hiddenObjects.add(obj);
 					} else {
 						unHiddenObjects.add(obj);
@@ -1176,31 +1245,31 @@ public class DiagramActions {
 	}
 
 	public void showAll() {
-		Platform.runLater(() ->{
+		Platform.runLater(() -> {
 			hide(diagram.getObjects(), false);
 			updateDiagram();
 		});
 	}
 
 	public void importDiagram() {
-		Platform.runLater(() ->{
+		Platform.runLater(() -> {
 			FileChooser fc = new FileChooser();
 			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("xml", "*.xml"));
 			fc.setTitle("choose File");
 			File file = fc.showOpenDialog(XModeler.getStage());
 
-			if(file!= null){
+			if (file != null) {
 				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
 				importer.handleLogs();
 			}
 			updateDiagram();
 		});
 	}
-	
+
 	public void generateCustomUI() {
-		Platform.runLater(() ->{
+		Platform.runLater(() -> {
 			Platform.runLater(() -> {
-				AddStandardUIDialog dialog = new AddStandardUIDialog(diagram);
+				AddStandardUIDialog dialog = new AddStandardUIDialog(diagram, diagram.getSelectedObjects());
 				dialog.showAndWait();
 			});
 		});
@@ -1208,23 +1277,25 @@ public class DiagramActions {
 
 	public void runOperation(String path, String opName) {
 		try {
-			diagram.getComm().runOperation(diagram.diagramID, path+"."+opName+"()");
+			diagram.getComm().runOperation(diagram.diagramID, path + "." + opName + "()");
 			updateDiagram();
 		} catch (TimeOutException e) {
 			throw new RuntimeException("runOperation failed", e);
-		}	
+		}
 	}
 
 	public void classify(Vector<FmmlxObject> objs) {
 		String m = "";
-		if(objs.size() == 1) {
+		if (objs.size() == 1) {
 			m = "Meta" + objs.get(0).getName();
-		} else { for(int i = 0; i < objs.size(); i++) {
-			int a = (int) (objs.get(i).getName().length() * 1. * i / objs.size());
-			int b = -(int) (-objs.get(i).getName().length() * 1. * (i+1) / objs.size());
+		} else {
+			for (int i = 0; i < objs.size(); i++) {
+				int a = (int) (objs.get(i).getName().length() * 1. * i / objs.size());
+				int b = -(int) (-objs.get(i).getName().length() * 1. * (i + 1) / objs.size());
 //			System.err.println(objs.get(i).getName()+","+a+","+b);
-			m += objs.get(i).getName().substring(a,b);
-		}}
+				m += objs.get(i).getName().substring(a, b);
+			}
+		}
 		TextInputDialog dialog = new TextInputDialog(m);
 
 		dialog.setTitle("Classify Elements");
@@ -1237,91 +1308,78 @@ public class DiagramActions {
 			diagram.getComm().classify(diagram.diagramID, objs, result.get());
 //		    this.label.setText(name);
 		});
-		
+
 	}
 
 	public void openMergePropertiesDialog(FmmlxObject mergeIntoClass) {
 		MergePropertyDialog dialog = new MergePropertyDialog(mergeIntoClass, diagram);
 		Optional<MergePropertyDialog.Result> result = dialog.showAndWait();
-		if(result.isPresent()) {
+		if (result.isPresent()) {
 			diagram.getComm().mergeProperties(mergeIntoClass, result.get().createMessage());
 			diagram.updateDiagram();
 		}
 	}
+
 	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
 		new UnhideElementsDialog(dialog).showDialog();
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
-		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel()-1);
+		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel() - 1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}
-	
+
 	public void showGenerateCustomUIDialog() {
-		new AddStandardUIDialog(this.diagram).showDialog();
+		new AddStandardUIDialog(this.diagram, this.diagram.getSelectedObjects()).showDialog();
 	}
-	
-	
-	
+
 	public void instantiateGUI(Optional<Result> r) {
-		
-		if (!r.isPresent()) 
+
+		if (!r.isPresent())
 			return;
 
 		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
-		
+
 		// instantiate CustomGUI instances
 		Vector<FmmlxObject> guiObjects = new Vector<FmmlxObject>();
-				
+
 		int distance = r.get().distance;
 		int height = r.get().height;
-		FmmlxObject root;
+		Vector<FmmlxObject> roots = r.get().root;
 		String pathIcon = r.get().pathIcon;
 		String titleGUI = r.get().titleGUI;
 		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
-		Vector<FmmlxAssociation> selectedAssociations  = r.get().selectedAssociations;
+		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
+
 		
-		try {
-			root = this.diagram.getObjectByPath(this.diagram.packagePath + "::" + r.get().root);
-		} catch (Exception e) {
-			//System.err.println(e);
-			root = null;
-		}
-		
-		if (root==null) {
-			if (!selectedObjects.isEmpty()) {
-				// classic multi selection
-				guiObjects = selectedObjects;
-			}
-		} else {
-			if (distance > 0) {
-				// classic single select
-				guiObjects = uiGenerator.recurGetObjectsForGUI(guiObjects, root, distance);
+		if (!roots.isEmpty()) {
+			for (FmmlxObject root : roots) {
+				// add recursively by root
+				guiObjects.addAll(uiGenerator.recurGetObjectsForGUI(guiObjects, root, distance));
 			}
 		}
-				
-		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(guiObjects, selectedAssociations, this.diagram, this, pathIcon, titleGUI);
-		
-		//customGUIslotValues 
+		else {
+			// add only explicit choosen objects
+			guiObjects.addAll(selectedObjects);
+		}
+
+		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(guiObjects,
+				selectedAssociations, this.diagram, this, pathIcon, titleGUI);
+
+		// customGUIslotValues
 		this.diagram.updateDiagram();
-		
+
 		// fill slots after diagram has updated
 		// TODO change to Tasks and Threads and join them after finishing
 		new java.util.Timer().schedule(new java.util.TimerTask() {
-		@Override
+			@Override
 			public void run() {
 				uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
 				diagram.updateDiagram();
-			} 
+			}
 		}, 2500);
-				
-				
-				
-				
-				
-		
-		
+
 //		
 //
 //					vector = this.diagram.getSelectedObjects();
@@ -1346,15 +1404,12 @@ public class DiagramActions {
 //						diagram.updateDiagram();
 //					} 
 //				}, 2500);
-				
-				this.updateDiagram();
-		
-		
-        
+
+		this.updateDiagram();
+
 		return;
 	}
-	
-	
+
 	// F.H. instantiate StandardGUI from given Domain Model
 //	public void instantiateGUI(FmmlxObject object, String type) {
 //		// instantiate CustomGUI instances
@@ -1390,12 +1445,12 @@ public class DiagramActions {
 //	}
 
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
-		if (instanceName!=null && instance2Name!=null && assocName!=null) {
+		if (instanceName != null && instance2Name != null && assocName != null) {
 			this.diagram.comm.addAssociationInstance(this.diagram.diagramID, instanceName, instance2Name, assocName);
 		} else {
 			System.err.println("Association cannot be instantiated, because one of the parameters is null");
 		}
-		
+
 	}
 
 }

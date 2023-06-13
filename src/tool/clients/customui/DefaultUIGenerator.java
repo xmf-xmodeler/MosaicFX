@@ -31,8 +31,9 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
 public class DefaultUIGenerator {
 
-	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects, Vector<FmmlxAssociation> associations,
-			AbstractPackageViewer diagram, DiagramActions actions, String pathIcon, String titleGUI) {
+	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
+			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
+			String pathIcon, String titleGUI) {
 		// TODO better error handling if image is missing
 
 		// for the fxml export
@@ -48,7 +49,7 @@ public class DefaultUIGenerator {
 
 		String assocName = "";
 
-		String referenceInstanceName ="";
+		String referenceInstanceName = "";
 		String injectionInstanceName;
 		String actionInstanceName;
 		String virtualInstanceName;
@@ -76,13 +77,12 @@ public class DefaultUIGenerator {
 		// used if the commonClass needs a listInjection or not
 		Boolean isList;
 		String isHead = "";
-		
+
 		boolean isActionInjection;
 
-		for (CanvasElement element : objects) {
-			object = (FmmlxObject) element;
-			if (object.getMetaClassName().equals("CommonClass"))
-				objectsCommonClass.add(object);
+		for (FmmlxObject o : objects) {
+			if (o.getMetaClassName().equals("CommonClass"))
+				objectsCommonClass.add(o);
 		}
 
 		// get associations that are mapped
@@ -104,16 +104,9 @@ public class DefaultUIGenerator {
 		rechteSeiteGrid.setVgap(3);
 		rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		// get a ... of all needed references, than iterate over them regarding
+		// injections
+
 		// instantiate references and injections for domain classes
 		for (FmmlxObject o : objectsCommonClass) {
 
@@ -121,25 +114,26 @@ public class DefaultUIGenerator {
 			isList = false;
 			isActionInjection = false;
 			assocName = "";
-			
+
 			for (FmmlxAssociation assoc : associations) {
-				
-				if (assoc.getTargetNode().equals(o)){
+
+				// wenn assoziation nicht abgebildet werden soll, wird sie nicht beychtet
+				if (assoc.getTargetNode().equals(o) && associations.contains(assoc)) {
 					isHead = "false";
-					
+
 					referenceInstanceName = actions.addInstance("Reference",
 							"ref" + UUID.randomUUID().toString().replace("-", ""));
 
 					// reference mapping
 					commonClassReferenceMap.put(o.getName(), referenceInstanceName);
-					
+
 					if (objectsCommonClass.size() == 1) {
 						isHead = "true";
 					}
-					
+
 					assocName = assoc.getName();
 					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
-					
+
 					multiplicity = assoc.getMultiplicityStartToEnd().toString();
 					endChar = multiplicity.charAt(multiplicity.length() - 1);
 
@@ -149,33 +143,34 @@ public class DefaultUIGenerator {
 						int a = Character.getNumericValue(endChar);
 						isList = (a > 1) ? true : false;
 					}
-					
+
 					helper.put("associationName", assocName);
 					helper.put("isHead", isHead);
 					slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
 					helper.clear();
-					
+
 				}
-				
+
 			}
-			
+
 			// keine eingegehenden assocs
 			if (isHead.equals("true")) {
 				isList = true;
-				assocName="";
-				
+				assocName = "";
+
 				referenceInstanceName = actions.addInstance("Reference",
 						"ref" + UUID.randomUUID().toString().replace("-", ""));
 				commonClassReferenceMap.put(o.getName(), referenceInstanceName);
-				
+
 				helper.put("associationName", assocName);
 				helper.put("isHead", isHead);
 				slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
 				helper.clear();
-				
+
 			}
-			
-			
+
+			// ------- cut here ---------
+
 			// List Injection
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
@@ -391,20 +386,8 @@ public class DefaultUIGenerator {
 
 		return slotValues;
 	}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			// if gui is only one class then it is automatically head
+
+	// if gui is only one class then it is automatically head
 //						
 //						// if no further associations are outgoing it is head
 //						if (assocName.equals(""))
@@ -414,10 +397,6 @@ public class DefaultUIGenerator {
 //						// head defines name for gui
 //						
 
-						
-			
-			
-			
 //			
 //			isHead = "false";
 //			isList = false;
@@ -431,12 +410,12 @@ public class DefaultUIGenerator {
 //			// reference mapping
 //			commonClassReferenceMap.put(o.getName(), referenceInstanceName);
 
-			// find associations and head
+	// find associations and head
 
-			// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist.
-			// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in
-			// der Referenz
-			// TODO Was ist wenn dieser Fall nicht zutrifft?
+	// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist.
+	// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in
+	// der Referenz
+	// TODO Was ist wenn dieser Fall nicht zutrifft?
 
 //			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
 //
@@ -480,8 +459,6 @@ public class DefaultUIGenerator {
 //			helper.put("isHead", isHead);
 //			slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
 //			helper.clear();
-
-
 
 	// recursive function to get Objects for CustomgUI
 	public Vector<FmmlxObject> recurGetObjectsForGUI(Vector<FmmlxObject> vector, FmmlxObject root, int depth) {
