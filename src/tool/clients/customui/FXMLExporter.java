@@ -117,7 +117,7 @@ public class FXMLExporter {
 	            	//found = true;
 	            } if(TextField.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich GridPane Ids ermitteln
-	            	res.add(new Property(aClass.getMethod("isEditable"),""));
+	            	res.add(new Property(aClass.getMethod("isEditable"),"editable"));
 	            	//found = true;
 	            } if(GridPane.class.isAssignableFrom(aClass)) {
 	            	//res.add(new Property(aClass.getMethod("getChildren"), "children")); 
