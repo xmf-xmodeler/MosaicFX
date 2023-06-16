@@ -1,11 +1,11 @@
 package tool.clients.customui;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -22,7 +22,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
@@ -33,7 +32,7 @@ public class DefaultUIGenerator {
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
 			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
-			String pathIcon, String titleGUI) {
+			String pathIcon, String titleGUI, Vector<FmmlxObject> roots, int distance) {
 		// TODO better error handling if image is missing
 
 		// for the fxml export
@@ -47,9 +46,9 @@ public class DefaultUIGenerator {
 		FmmlxObject object;
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
 
-		String assocName = "";
+//		String assocName = "";
 
-		String referenceInstanceName = "";
+		String referenceInstanceName;
 		String injectionInstanceName;
 		String actionInstanceName;
 		String virtualInstanceName;
@@ -69,14 +68,25 @@ public class DefaultUIGenerator {
 		HashMap<String, Map<String, String>> slotValues = new HashMap<String, Map<String, String>>();
 		HashMap<String, String> helper = new HashMap<String, String>();
 
-		// map for is parent 1. entry -> parent 2. -> child
-		// Referenznamen, bis diese aufgelöst werden können
-		HashMap<String, String> isChildAssocs = new HashMap<>();
-		HashMap<String, String> commonClassReferenceMap = new HashMap<>();
-
 		// used if the commonClass needs a listInjection or not
 		Boolean isList;
 		String isHead = "";
+
+		if (!roots.isEmpty()) {
+			for (FmmlxObject root : roots) {
+				// add recursively by root
+				objects = this.recurGetObjectsForGUI(objects, root, distance);
+
+				// add needed assocs
+				for (FmmlxObject o : objects) {
+					for (FmmlxAssociation a : o.getAllRelatedAssociations()) {
+						if (!associations.contains(a))
+							associations.add(a);
+					}
+
+				}
+			}
+		}
 
 		boolean isActionInjection;
 
@@ -104,114 +114,116 @@ public class DefaultUIGenerator {
 		rechteSeiteGrid.setVgap(3);
 		rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
 
-		// get a ... of all needed references, than iterate over them regarding
-		// injections
-
 		// instantiate references and injections for domain classes
+
+		ArrayList<Reference> referenceMapping = new ArrayList<>();
+		Boolean head;
+
+		// wenn keine root explizit gegeben -> dann sind alle associationen gegeben
+		// get all needed references
 		for (FmmlxObject o : objectsCommonClass) {
-
-			isHead = "true";
-			isList = false;
-			isActionInjection = false;
-			assocName = "";
-
+			head = true;
 			for (FmmlxAssociation assoc : associations) {
 
-				// wenn assoziation nicht abgebildet werden soll, wird sie nicht beychtet
-				if (assoc.getTargetNode().equals(o) && associations.contains(assoc)) {
-					isHead = "false";
+				if (assoc.getTargetNode().equals(o)) {
 
+					head = false;
 					referenceInstanceName = actions.addInstance("Reference",
 							"ref" + UUID.randomUUID().toString().replace("-", ""));
 
-					// reference mapping
-					commonClassReferenceMap.put(o.getName(), referenceInstanceName);
-
-					if (objectsCommonClass.size() == 1) {
-						isHead = "true";
-					}
-
-					assocName = assoc.getName();
-					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
-
-					multiplicity = assoc.getMultiplicityStartToEnd().toString();
-					endChar = multiplicity.charAt(multiplicity.length() - 1);
-
-					if (endChar == '*') {
-						isList = true;
-					} else {
-						int a = Character.getNumericValue(endChar);
-						isList = (a > 1) ? true : false;
-					}
-
-					helper.put("associationName", assocName);
-					helper.put("isHead", isHead);
-					slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
-					helper.clear();
+					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false));
 
 				}
-
 			}
 
-			// keine eingegehenden assocs
-			if (isHead.equals("true")) {
-				isList = true;
-				assocName = "";
-
+			if (head) {
 				referenceInstanceName = actions.addInstance("Reference",
 						"ref" + UUID.randomUUID().toString().replace("-", ""));
-				commonClassReferenceMap.put(o.getName(), referenceInstanceName);
 
-				helper.put("associationName", assocName);
+				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
+			}
+		}
+
+		for (Reference reference : referenceMapping) {
+
+			// add attributes to reference
+
+			if (reference.isHead()) {
+				isList = true;
+				isHead = "true";
+				helper.put("associationName", "");
 				helper.put("isHead", isHead);
-				slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
-				helper.clear();
 
+			} else {
+
+				multiplicity = reference.getAssoc().getMultiplicityStartToEnd().toString();
+				endChar = multiplicity.charAt(multiplicity.length() - 1);
+				isHead = "false";
+
+				if (endChar == '*') {
+					isList = true;
+				} else {
+					int a = Character.getNumericValue(endChar);
+					isList = (a > 1) ? true : false;
+				}
+
+				helper.put("associationName", reference.getAssoc().getName());
+				helper.put("isHead", isHead);
 			}
 
-			// ------- cut here ---------
+			slotValues.put(reference.getReferenceInstanceName(), (Map<String, String>) helper.clone());
+			helper.clear();
 
-			// List Injection
+			// take care of parent child
+
+			// add link "refersToStateOf" -> Reference + CommonClassInstance ANNAHME:
+			// Jede gewählte CommonClass hat mind. 1 Instanz.
+			// TODO: Prio 3 -> Wie damit umgehen, wenn keine Instanz existiert
+			// TODO: Was ist wenn die Instanz nicht den richtigen
+			actions.addAssociation(reference.getReferenceInstanceName(),
+					reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
+
+			Label instancesOfClassLabel = new Label("Instance(s) of " + reference.getObject().getName());
+			instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR,
+					Font.getDefault().getSize()));
+			rechteSeiteGrid.add(instancesOfClassLabel, 0, rowCount++);
+
+			// beschreibung der assoziation
+			if (!reference.isHead()) {
+				Label assocDesc = new Label("Association: " + reference.getAssoc().getSourceNode().getName().toString()
+						+ " " + reference.getAssoc().getName().toString() + " "
+						+ reference.getAssoc().getTargetNode().toString());
+				rechteSeiteGrid.add(assocDesc, 0, rowCount++);
+			}
+
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
 						"list" + UUID.randomUUID().toString().replace("-", ""));
+
 				actions.addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
-				actions.addAssociation(injectionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+				actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
+						associationDerivedFrom.getName());
+
 				helper.put("isListView", "true");
-				helper.put("nameOfModelElement", o.getName());
+				helper.put("nameOfModelElement", reference.getObject().getName());
 				helper.put("idOfUIElement", injectionInstanceName);
+
 				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
 				helper.clear();
-
-				// add to standardGUI
-				Label instancesOfClassLabel = new Label("Instances of " + o.getName());
-				instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD,
-						FontPosture.REGULAR, Font.getDefault().getSize()));
-				rechteSeiteGrid.add(instancesOfClassLabel, 0, rowCount++);
 
 				ListView<String> objectListView = new ListView<>();
 				objectListView.setId(injectionInstanceName);
 				rechteSeiteGrid.add(objectListView, 0, rowCount++);
 			}
 
-			// add link "refersToStateOf" -> Reference + CommonClassInstance
-			// ANNAHME: Jede gewählte CommonClass hat mind. 1 Instanz.
-			// TODO: Prio 3 -> Wie damit umgehen, wenn keine Instanz existiert
-			actions.addAssociation(referenceInstanceName, o.getInstances().get(0).getName(),
-					associationRefersToStateOf.getName());
+			attributes = reference.getObject().getAllAttributes();
+			operations = reference.getObject().getAllOperations();
 
-			attributes = o.getAllAttributes();
-			operations = o.getAllOperations();
-
-			// Standard GUI
 			if (attributes.size() > 0) {
 				rechteSeiteGrid.add(new Label("Slots:"), 0, rowCount++);
 			}
 
-			// add slotInjections for slots
 			for (FmmlxAttribute attribute : attributes) {
-
-				// add instance
 				injectionInstanceName = actions.addInstance("SlotInjection",
 						"slot" + UUID.randomUUID().toString().replace("-", ""));
 
@@ -220,13 +232,13 @@ public class DefaultUIGenerator {
 				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
 				helper.clear();
 
-				// add associations
-				actions.addAssociation(injectionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+				actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
+						associationDerivedFrom.getName());
 				actions.addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
 
-				// Standard GUI
 				TextField valueTextField = new TextField(attribute.getName());
 				valueTextField.setId(injectionInstanceName);
+				valueTextField.setEditable(false);
 				Label slotName = new Label(attribute.getName());
 
 				rechteSeiteGrid.add(slotName, 0, rowCount);
@@ -234,7 +246,6 @@ public class DefaultUIGenerator {
 				rowCount++;
 			}
 
-			// Standard GUI
 			if (operations.size() > 0) {
 				rechteSeiteGrid.add(new Label("Operations:"), 0, rowCount++);
 			}
@@ -242,8 +253,9 @@ public class DefaultUIGenerator {
 			// add actionInjections for operations
 			for (FmmlxOperation operation : operations) {
 
-				// if method is monitor than action; otherwise actionInjection
+				// if method is monitor than action; otherwise actionInjection //
 				// TODO: maybe find something better more robust approach
+
 				String body = operation.getBody();
 				isActionInjection = body.contains("monitor=true") ? true : false;
 
@@ -259,7 +271,7 @@ public class DefaultUIGenerator {
 					helper.clear();
 
 					// add associations
-					actions.addAssociation(injectionInstanceName, referenceInstanceName,
+					actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
 							associationDerivedFrom.getName());
 					actions.addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
 
@@ -272,20 +284,21 @@ public class DefaultUIGenerator {
 					rowCount++;
 
 				} else {
-					actionInstanceName = actions.addInstance("Action",
-							"act" + UUID.randomUUID().toString().replace("-", ""));
+					actionInstanceName = actions.addInstance("Action", "act" +
+
+							UUID.randomUUID().toString().replace("-", ""));
 					helper.put("idOfUIElement", actionInstanceName);
 
 					slotValues.put(actionInstanceName, (Map<String, String>) helper.clone());
 					helper.clear();
 
 					// add associations
-					actions.addAssociation(actionInstanceName, referenceInstanceName, associationDerivedFrom.getName());
+					actions.addAssociation(actionInstanceName, reference.getReferenceInstanceName(),
+							associationDerivedFrom.getName());
 
 					int paramCounter = 0;
-
-					// standard GUI
 					Button wertAendern = new Button(operation.getName());
+
 					rechteSeiteGrid.add(wertAendern, 1, rowCount);
 					wertAendern.setId(actionInstanceName);
 					rowCount++;
@@ -327,34 +340,37 @@ public class DefaultUIGenerator {
 					}
 				}
 			}
+		} // end for references
 
-		} // end of for for objects
+		// add isChild and isParent links
 
-		// build references correctly
-		for (Entry<String, String> entryIsChild : isChildAssocs.entrySet()) {
-			if (!entryIsChild.getValue().startsWith("ref")) {
-				isChildAssocs.replace(entryIsChild.getKey(), commonClassReferenceMap.get(entryIsChild.getValue()));
+		for (Reference reference : referenceMapping) {
+
+			FmmlxAssociation assoc = reference.getAssoc();
+
+			if (assoc == null) {
+				// head can be ignored
+				continue;
+			} else {
+				FmmlxObject source = assoc.getSourceNode();
+				for (Reference refChild : referenceMapping) {
+					if (refChild.getObject().equals(source)) {
+
+						actions.addAssociation(refChild.getReferenceInstanceName(),
+								reference.getReferenceInstanceName(), associationIsChild.getName());
+						actions.addAssociation(reference.getReferenceInstanceName(),
+								refChild.getReferenceInstanceName(), associationIsParent.getName());
+						continue;
+					}
+				}
+
 			}
-		}
 
-		// now the map isChild is filled with the names of the references needed to map
-		// if there are any isChild associations
-		// TODO check whether the changes in the cardinality can be better represented
-		// here ? -> tree structure now; no longer list
-		if (objects.size() > 1) {
-			for (Entry<String, String> entry : isChildAssocs.entrySet()) {
-				// add ischild
-				actions.addAssociation(entry.getKey(), entry.getValue(), associationIsParent.getName());
-				// add isparent in other direction
-				actions.addAssociation(entry.getValue(), entry.getKey(), associationIsChild.getName());
-			}
 		}
 
 		// export standard gui
 		// File picker as save dialogue
-		// TODO: add better instantiation dialog which includes the save option
 		ScrollPane defaultGUIPane = new ScrollPane();
-
 		Scene scene = new Scene(defaultGUIPane);
 		Stage stage = new Stage();
 		stage.setScene(scene);
@@ -386,79 +402,6 @@ public class DefaultUIGenerator {
 
 		return slotValues;
 	}
-
-	// if gui is only one class then it is automatically head
-//						
-//						// if no further associations are outgoing it is head
-//						if (assocName.equals(""))
-//							isHead = "true";
-//
-//						// if head --> listInjection needed
-//						// head defines name for gui
-//						
-
-//			
-//			isHead = "false";
-//			isList = false;
-//			isActionInjection = false;
-//			assocName = "";
-//
-//			// create reference
-//			referenceInstanceName = actions.addInstance("Reference",
-//					"ref" + UUID.randomUUID().toString().replace("-", ""));
-//
-//			// reference mapping
-//			commonClassReferenceMap.put(o.getName(), referenceInstanceName);
-
-	// find associations and head
-
-	// ANNAHME: Jede CommonClass hat nur eine Assoziation die "eingehend" ist.
-	// Diese bildet die Grundlage für die isHead Beziehung und die Assozioation in
-	// der Referenz
-	// TODO Was ist wenn dieser Fall nicht zutrifft?
-
-//			for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
-//
-//				// association needs to be "inside" the selected objects
-//				if (assoc.getTargetNode().equals(o) && objects.contains(assoc.getSourceNode())) {
-//
-//					assocName = assoc.getName();
-//
-//					// add reference to map
-//					isChildAssocs.put(referenceInstanceName, assoc.getSourceNode().getName());
-//
-//					// check if multiplicity > 1 then list
-//					multiplicity = assoc.getMultiplicityStartToEnd().toString();
-//					endChar = multiplicity.charAt(multiplicity.length() - 1);
-//
-//					if (endChar == '*') {
-//						isList = true;
-//					} else {
-//						int a = Character.getNumericValue(endChar);
-//						isList = (a > 1) ? true : false;
-//					}
-//					// to avoid analyzing multiple associations in the same class
-//					continue;
-//				}
-//			}
-
-//			// if gui is only one class then it is automatically head
-//			if (objectsCommonClass.size() == 1)
-//				isHead = "true";
-//			// if no further associations are outgoing it is head
-//			if (assocName.equals(""))
-//				isHead = "true";
-//
-//			// if head --> listInjection needed
-//			// head defines name for gui
-//			if (isHead.equals("true")) {
-//				isList = true;
-//			}
-//
-//			helper.put("associationName", assocName);
-//			helper.put("isHead", isHead);
-//			slotValues.put(referenceInstanceName, (Map<String, String>) helper.clone());
-//			helper.clear();
 
 	// recursive function to get Objects for CustomgUI
 	public Vector<FmmlxObject> recurGetObjectsForGUI(Vector<FmmlxObject> vector, FmmlxObject root, int depth) {
@@ -619,4 +562,36 @@ public class DefaultUIGenerator {
 		}
 
 	}
+
+	public class Reference {
+		private FmmlxObject object;
+		private FmmlxAssociation assoc;
+		private String referenceInstanceName;
+		private Boolean head;
+
+		public FmmlxObject getObject() {
+			return object;
+		}
+
+		public FmmlxAssociation getAssoc() {
+			return assoc;
+		}
+
+		public String getReferenceInstanceName() {
+			return referenceInstanceName;
+		}
+
+		public boolean isHead() {
+			return head;
+		}
+
+		public Reference(FmmlxObject object, FmmlxAssociation assoc, String referenceInstanceName, boolean head) {
+			this.object = object;
+			this.assoc = assoc;
+			this.referenceInstanceName = referenceInstanceName;
+			this.head = head;
+		}
+
+	}
+
 }

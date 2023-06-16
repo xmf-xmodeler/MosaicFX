@@ -1,7 +1,7 @@
 package tool.clients.customui;
 
-import java.awt.Button;
-import java.awt.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -111,14 +111,14 @@ public class FXMLExporter {
 	            	// every Subclass of Labeled is affected
 	            	res.add(new Property(aClass.getMethod("getText"), "text")); 
 	            }      
-	            if(Button.class.isAssignableFrom(aClass)) { // does not work..?
+	            if(Button.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich Default on Action ermitteln 
 	            	// zus�tzlich GridPane Ids ermitteln
-	            	found = true;
-	            } if(TextField.class.isAssignableFrom(aClass)) { // does not work..?
+	            	//found = true;
+	            } if(TextField.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich GridPane Ids ermitteln
-	            	// TODO Attriut editierbar hinzufügen
-	            	found = true;
+	            	res.add(new Property(aClass.getMethod("isEditable"),""));
+	            	//found = true;
 	            } if(GridPane.class.isAssignableFrom(aClass)) {
 	            	//res.add(new Property(aClass.getMethod("getChildren"), "children")); 
 	            	res.add(new Property(aClass.getMethod("getChildrenUnmodifiable"), "children"));
@@ -221,6 +221,12 @@ public class FXMLExporter {
 	        try {
 	        	Object value;
 	        	switch( fxml.tagName ) {
+	        	// FH
+	        		case "ScrollPane": 
+	        			fxml.addProperty("xmlns:fx", "http://javafx.com/fxml/1"); // Default Action
+	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
+	        			break;
+	        	
 	        		case "GridPane":
 	        			fxml.addProperty("xmlns:fx", "http://javafx.com/fxml/1"); // Default Action
 	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action

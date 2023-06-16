@@ -12,13 +12,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.collections.ListChangeListener;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramActions;
@@ -125,7 +124,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		for (FmmlxObject object : selectedObjects) {
 			listClasses.add(object);
 			for (FmmlxAssociation assoc : object.getAllRelatedAssociations()) {
-				if (assoc.getSourceNode().equals(object) && !listAssociations.contains(assoc))
+				if (assoc.getSourceNode().equals(object) && selectedObjects.contains(assoc.getTargetNode()) && !listAssociations.contains(assoc))
 					listAssociations.add(assoc);
 			}
 		}

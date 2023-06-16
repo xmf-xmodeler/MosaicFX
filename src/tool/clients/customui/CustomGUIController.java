@@ -22,6 +22,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -71,25 +72,30 @@ public class CustomGUIController {
 		   Parent recall;
 		   
 		   // Handle different kind of contents
-		   Class<?> cls = content.getClass();
-		   if( Pane.class.isAssignableFrom( cls ) ) {
-			   children = ((Pane) content).getChildren();
-		   } else if( TabPane.class.isAssignableFrom( cls ) ) {
-			   ObservableList<Tab> tabs = ((TabPane) content).getTabs();
-			   for(Tab tab: tabs) {
-				   recall = (Parent) tab.getContent();
-				   fillChildren(recall);
-			   }
-			   return; // exit condition on recursive call
-		   } else if( TitledPane.class.isAssignableFrom( cls ) ) {
-			   recall = (Parent) ((TitledPane) content).getContent();
-			   fillChildren(recall);
-			   return; // exit condition on recursive call
-		   } else {
-			   System.err.println("Cannot handle the following UI-Element during loading of CustomUI: " + cls.getName());
-			   return; // error situation
-		   }
-		   
+			Class<?> cls = content.getClass();
+			if (Pane.class.isAssignableFrom(cls)) {
+				children = ((Pane) content).getChildren();
+			} else if (TabPane.class.isAssignableFrom(cls)) {
+				ObservableList<Tab> tabs = ((TabPane) content).getTabs();
+				for (Tab tab : tabs) {
+					recall = (Parent) tab.getContent();
+					fillChildren(recall);
+				}
+				return; // exit condition on recursive call
+			} else if (TitledPane.class.isAssignableFrom(cls)) {
+				recall = (Parent) ((TitledPane) content).getContent();
+				fillChildren(recall);
+				return; // exit condition on recursive call
+			} else if (ScrollPane.class.isAssignableFrom(cls)) {
+				recall = (Parent) ((ScrollPane) content).getContent();
+				fillChildren(recall);
+				return; // exit condition on recursive call
+			} else {
+				System.err
+						.println("Cannot handle the following UI-Element during loading of CustomUI: " + cls.getName());
+				return; // error situation
+			}
+
 		   // Create Map-Entries
 		   String id;
 		   Node obj;

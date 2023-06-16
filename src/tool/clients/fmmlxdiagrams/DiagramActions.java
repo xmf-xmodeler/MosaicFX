@@ -205,8 +205,10 @@ public class DiagramActions {
 
 	// FH Method for adding Instances without dialog that are automatically hidden
 	public String addInstance(String className, String instanceName) {
+		// change for debug
+		boolean hidden = true;
 		Vector<String> parents = new Vector<String>();
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, false);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, hidden);
 		return instanceName;
 
 	}
@@ -1352,20 +1354,8 @@ public class DiagramActions {
 		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
 		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
 
-		
-		if (!roots.isEmpty()) {
-			for (FmmlxObject root : roots) {
-				// add recursively by root
-				guiObjects.addAll(uiGenerator.recurGetObjectsForGUI(guiObjects, root, distance));
-			}
-		}
-		else {
-			// add only explicit choosen objects
-			guiObjects.addAll(selectedObjects);
-		}
-
-		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(guiObjects,
-				selectedAssociations, this.diagram, this, pathIcon, titleGUI);
+		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(selectedObjects,
+				selectedAssociations, this.diagram, this, pathIcon, titleGUI, roots, distance);
 
 		// customGUIslotValues
 		this.diagram.updateDiagram();
@@ -1380,69 +1370,12 @@ public class DiagramActions {
 			}
 		}, 2500);
 
-//		
-//
-//					vector = this.diagram.getSelectedObjects();
-//				} else if (type == "single") {
-//					// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
-//					// depth of 1 equivalent to only the selected object
-//					int depth = 5;
-//					vector = uiGenerator.recurGetObjectsForGUI(vector, object, depth);
-//				}
-//				
-//				final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(vector, this.diagram, this);
-//				
-//				//customGUIslotValues 
-//				this.diagram.updateDiagram();
-//				
-//				// fill slots after diagram has updated
-//				// TODO change to Tasks and Threads and join them after finishing !!
-//				new java.util.Timer().schedule(new java.util.TimerTask() {
-//				@Override
-//					public void run() {
-//						uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
-//						diagram.updateDiagram();
-//					} 
-//				}, 2500);
-
 		this.updateDiagram();
 
-		return;
+
 	}
 
-	// F.H. instantiate StandardGUI from given Domain Model
-//	public void instantiateGUI(FmmlxObject object, String type) {
-//		// instantiate CustomGUI instances
-//		Vector<CanvasElement> vector = new Vector<CanvasElement>();
-//		
-//		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
-//		
-//		if (type == "multi") {
-//			vector = this.diagram.getSelectedObjects();
-//		} else if (type == "single") {
-//			// parameter for depth of recursion -> later in dialog for user to choose not hardcoded
-//			// depth of 1 equivalent to only the selected object
-//			int depth = 5;
-//			vector = uiGenerator.recurGetObjectsForGUI(vector, object, depth);
-//		}
-//		
-//		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(vector, this.diagram, this);
-//		
-//		//customGUIslotValues 
-//		this.diagram.updateDiagram();
-//		
-//		// fill slots after diagram has updated
-//		// TODO change to Tasks and Threads and join them after finishing !!
-//		new java.util.Timer().schedule(new java.util.TimerTask() {
-//		@Override
-//			public void run() {
-//				uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
-//				diagram.updateDiagram();
-//			} 
-//		}, 2500);
-//		
-//		this.updateDiagram();
-//	}
+
 
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName != null && instance2Name != null && assocName != null) {

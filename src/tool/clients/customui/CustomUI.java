@@ -17,8 +17,9 @@ import org.dom4j.io.XMLWriter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
@@ -90,8 +91,10 @@ public class CustomUI {
 		// new ExtensionFilter("All Files", "*.*"));
 		// File selectedFile = fileChooser.showOpenDialog(stage);
 
-		Parent loadedFXML = new Pane();
-
+		Parent loadedFXML = new ScrollPane();
+		((ScrollPane) loadedFXML).setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		((ScrollPane) loadedFXML).setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		
 		if (fxmlFile != null) {
 			try {
 				// First step: Read FXML file
@@ -118,8 +121,8 @@ public class CustomUI {
 				loader.setControllerFactory(controller -> {
 					return new CustomGUIController(loader, eventToID, this);
 				});
-
-				loadedFXML = loader.load(new ByteArrayInputStream(fxml.getBytes()));
+				
+				((ScrollPane) loadedFXML).setContent(loader.load(new ByteArrayInputStream(fxml.getBytes())));
 				this.customGUI = loadedFXML;
 				
 				// Set default controller to prevent linking the controller in the file
