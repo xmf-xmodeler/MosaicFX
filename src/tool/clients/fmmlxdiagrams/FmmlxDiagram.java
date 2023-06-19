@@ -70,9 +70,10 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.XMLCreator;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.helper.persistence.XMLCreator;
+import tool.xmodeler.XModeler;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -285,7 +286,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					}
 				}
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.P) {
-					new XMLCreator().createXMLRepresentation(packagePath, null);
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
 					}
 			}
         });

@@ -38,7 +38,7 @@ public class XmlCreator {
     }
 
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store FMMLXDiagram data.*/
-    private void initXML(Document document) {
+    public static void initXML(Document document) {
         Element root = document.createElement(SerializerConstant.TAG_NAME_ROOT);
         document.appendChild(root);
 

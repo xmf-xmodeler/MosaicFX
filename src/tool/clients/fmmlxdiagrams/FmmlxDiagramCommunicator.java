@@ -535,7 +535,6 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
-	@Deprecated // use async below
     @SuppressWarnings("unchecked")
 	public void getAllEdgePositions(Integer diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllEdgePositionsReceived) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
@@ -2072,6 +2071,14 @@ public class FmmlxDiagramCommunicator {
 			this.id = id;
 			this.diagramName = diagramName;
 		}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public String getDiagramName() {
+			return diagramName;
+		}
 	}
 	
 	@Deprecated // use getAllDiagramInfos
@@ -2470,14 +2477,14 @@ public class FmmlxDiagramCommunicator {
 		}
 		
 	@SuppressWarnings("unchecked")
-	public void getDiagramDisplayProperties(Integer diagramID, ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn) {
+	public void getDiagramDisplayProperties(Integer diagramID, ReturnCall<HashMap<String, Boolean>> onDiagramDisplayPropertiesReturn) {
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
 			HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 			Vector<Vector<Object>> list = (Vector<Vector<Object>>) response.get(0);
 			for(Vector<Object> item : list) {
 				result.put((String) item.get(0), (Boolean) item.get(1));
 			}
-			onViewOptionsReturn.run(result);
+			onDiagramDisplayPropertiesReturn.run(result);
 		};
 		xmfRequestAsync(handle, diagramID, "getViewOptions", localReturn);
 
