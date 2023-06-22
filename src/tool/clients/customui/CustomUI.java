@@ -66,9 +66,14 @@ public class CustomUI {
 		stage.setTitle(title.getValue());
 
 		// Obtail icon from UI object
-		FmmlxSlot icon = customUIobject.getSlot("pathToIconOfWindow");
-		Image imageIcon = new Image(icon.getValue());
-		stage.getIcons().add(imageIcon);
+		try {
+			FmmlxSlot icon = customUIobject.getSlot("pathToIconOfWindow");
+			Image imageIcon = new Image(icon.getValue());
+			stage.getIcons().add(imageIcon);
+		} catch (Exception e) {
+			System.err.println("CustomUI can not set a icon");
+			System.err.println(e.toString());
+		}
 		
 		// Obtain FXML file from UI object
 		FmmlxSlot filePath = customUIobject.getSlot("pathToFXML");

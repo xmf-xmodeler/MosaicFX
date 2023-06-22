@@ -206,7 +206,7 @@ public class DiagramActions {
 	// FH Method for adding Instances without dialog that are automatically hidden
 	public String addInstance(String className, String instanceName) {
 		// change for debug
-		boolean hidden = true;
+		boolean hidden = false;
 		Vector<String> parents = new Vector<String>();
 		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, hidden);
 		return instanceName;
@@ -1343,19 +1343,18 @@ public class DiagramActions {
 
 		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
 
-		// instantiate CustomGUI instances
-		Vector<FmmlxObject> guiObjects = new Vector<FmmlxObject>();
 
 		int distance = r.get().distance;
 		int height = r.get().height;
 		Vector<FmmlxObject> roots = r.get().root;
 		String pathIcon = r.get().pathIcon;
+		String pathGUI = r.get().pathGUI;
 		String titleGUI = r.get().titleGUI;
 		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
 		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
 
 		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(selectedObjects,
-				selectedAssociations, this.diagram, this, pathIcon, titleGUI, roots, distance);
+				selectedAssociations, this.diagram, this, pathIcon, pathGUI, titleGUI, roots, distance);
 
 		// customGUIslotValues
 		this.diagram.updateDiagram();
@@ -1371,8 +1370,6 @@ public class DiagramActions {
 		}, 2500);
 
 		this.updateDiagram();
-
-
 	}
 
 
@@ -1380,6 +1377,7 @@ public class DiagramActions {
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName != null && instance2Name != null && assocName != null) {
 			this.diagram.comm.addAssociationInstance(this.diagram.diagramID, instanceName, instance2Name, assocName);
+			System.err.println(assocName + "instance1: "+ instanceName + "instance2: " + instance2Name);
 		} else {
 			System.err.println("Association cannot be instantiated, because one of the parameters is null");
 		}

@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -15,9 +16,14 @@ import javafx.scene.control.TitledPane;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
-
+import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramActions;
@@ -44,7 +50,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private Label lblSelectedAssociations = new Label("Selected Associations");
 	private ListView<FmmlxAssociation> selectedLVAssociations = new ListView<>();
 
-	private Label lblRoot = new Label("Root(s)");
+	private Label lblRoot = new Label("Head(s)");
 	private ListView<FmmlxObject> lvRoot = new ListView<>();
 
 	private CheckBox checkDistance = new CheckBox("find associated classes recursively");
@@ -57,15 +63,19 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 	private Label lblPathGUI = new Label("Path to GUI");
 	private TextField textPathGUI = new TextField();
+	private Button buttonPathGUI = new Button("Select path");
 
 	private Label lblPathIcon = new Label("Path to Icon");
 	private TextField textPathIcon = new TextField();
+	private Button buttonPathIcon = new Button("Select path");
 
 	private Label lblTitleGUI = new Label("Titel of Standard GUI");
 	private TextField textTitleGUI = new TextField();
 
 	private Vector<FmmlxObject> listClasses = new Vector<>();
 	private Vector<FmmlxAssociation> listAssociations = new Vector<>();
+
+	private int windowWidthCollapsed = 380;
 
 	public AddStandardUIDialog(AbstractPackageViewer diagram, Vector<CanvasElement> selectedObjects) {
 		super();
@@ -77,7 +87,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		this.getDialogPane().getButtonTypes().add(cancelButtonType);
 
 		this.setTitle("Generate Standard UI");
-		
+
 		// initial load of LV
 		fillListViews(selectedObjects);
 		// layout
@@ -88,16 +98,10 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		// save
 		addOKButtonListener();
 
-		dialog.setMaxWidth(320);
-		dialog.minWidth(320);
-		dialog.prefWidth(320);
-		
-		// TODO effect of checkmark when transmitting result
-		// TODO add support for selecting paths
+		dialog.setMaxWidth(windowWidthCollapsed);
+		dialog.minWidth(windowWidthCollapsed);
+		dialog.prefWidth(windowWidthCollapsed);
 	}
-
-
-
 
 	private void fillListViews(Vector<CanvasElement> canvasElements) {
 
@@ -110,21 +114,21 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		// ggf. Anpassungen notwendig wenn multilevel ?
 
 		Vector<FmmlxObject> selectedObjects = new Vector<>();
-		
+
 		for (CanvasElement element : canvasElements) {
 			try {
 				selectedObjects.add((FmmlxObject) element);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.err.println(e);
 				continue;
 			}
 		}
-		
+
 		for (FmmlxObject object : selectedObjects) {
 			listClasses.add(object);
 			for (FmmlxAssociation assoc : object.getAllRelatedAssociations()) {
-				if (assoc.getSourceNode().equals(object) && selectedObjects.contains(assoc.getTargetNode()) && !listAssociations.contains(assoc))
+				if (assoc.getSourceNode().equals(object) && selectedObjects.contains(assoc.getTargetNode())
+						&& !listAssociations.contains(assoc))
 					listAssociations.add(assoc);
 			}
 		}
@@ -137,23 +141,26 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private void layoutContent() {
 
 		// basic grid
-		grid.setPrefSize(300, 150);
-		grid.setMinSize(300, 150);
+		grid.setPrefSize(windowWidthCollapsed, 150);
+		grid.setMinSize(windowWidthCollapsed, 150);
 
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(10));
-		// grid.autosize();
 
 		grid.add(lblTitleGUI, 0, 0, 1, 1);
 		grid.add(textTitleGUI, 1, 0, 1, 1);
 
 		grid.add(lblPathIcon, 0, 1, 1, 1);
 		grid.add(textPathIcon, 1, 1, 1, 1);
+		grid.add(buttonPathIcon, 2, 1, 1, 1);
+		textPathIcon.setEditable(false);
 
 		grid.add(lblPathGUI, 0, 2, 1, 1);
 		grid.add(textPathGUI, 1, 2, 1, 1);
-
+		grid.add(buttonPathGUI, 2, 2, 1, 1);
+		textPathGUI.setEditable(false);
+		
 		// advanced grid
 		titledPane.setText("Advanced");
 		titledPane.setExpanded(false);
@@ -183,14 +190,19 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		advancedGrid.add(textHeight, 1, 5, 1, 1);
 
 		titledPane.setContent(advancedGrid);
-		grid.add(titledPane, 0, 3, 2, 1);
+		grid.add(titledPane, 0, 3, 3, 1);
 
 		dialog.setContent(grid);
 	}
 
 	private void initContent() {
-		// TODO add editable status when distance checkmark is set
+
+		// checkmark sets editable
+		checkDistance.selectedProperty().addListener((obs, oldValue, newValue) -> {textDistance.setEditable(newValue);});	
+		checkHeight.selectedProperty().addListener((obs, oldValue, newValue) -> {textHeight.setEditable(newValue);});
 		
+		
+		// dynamic size of window
 		titledPane.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 			if (isNowExpanded) {
 				// resize
@@ -199,10 +211,71 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 			} else {
 				// resize back
-				this.setWidth(320);
+				this.setWidth(windowWidthCollapsed + 20);
 				this.setHeight(250);
 			}
 		});
+
+		// file chooser for icon path
+		buttonPathIcon.setOnAction(e -> {
+
+			Pane pane = new Pane();
+			Scene scene = new Scene(pane);
+			Stage stage = new Stage();
+			stage.setScene(scene);
+
+			stage.setTitle("Select Path for Icon of Standard GUI");
+			stage.setWidth(800);
+			stage.setHeight(400);
+
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select location of icon ");
+			fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PNG Image", "*.png"),
+					new ExtensionFilter("All Files", "*.*"));
+
+			File file = fileChooser.showSaveDialog(stage);
+			String path = "";
+
+			if (file != null) {
+				path = file.getPath();
+			} else {
+				path = "";
+			}
+
+			textPathIcon.setText(path);
+
+		});
+
+		// file chooser for gui path
+		buttonPathGUI.setOnAction(e -> {
+
+			Pane pane = new Pane();
+			Scene scene = new Scene(pane);
+			Stage stage = new Stage();
+			stage.setScene(scene);
+
+			stage.setTitle("Select Path for extraction of Standard GUI");
+			stage.setWidth(800);
+			stage.setHeight(400);
+
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select location for saving the extraction of Standard GUI");
+			fileChooser.getExtensionFilters().addAll(new ExtensionFilter("JavaFX as XML", "*.fxml"),
+					new ExtensionFilter("All Files", "*.*"));
+
+			File file = fileChooser.showSaveDialog(stage);
+			String path = "";
+
+			if (file != null) {
+				path = file.getPath();
+			} else {
+				path = "";
+			}
+
+			textPathGUI.setText(path);
+
+		});
+
 	}
 
 	private void addOKButtonListener() {
@@ -213,9 +286,12 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			if (dialogButton == okButtonType) {
 
 				try {
-
+					
+					if (!checkDistance.isSelected()) textDistance.setText("0");
+					if (!checkHeight.isSelected()) textHeight.setText("0");
+					
 					Result result = new Result(textDistance.getText(), textHeight.getText(), lvRoot.getItems(),
-							textPathIcon.getText(), textTitleGUI.getText(), selectedLVClasses.getItems(),
+							textPathIcon.getText(), textPathGUI.getText() ,textTitleGUI.getText(), selectedLVClasses.getItems(),
 							selectedLVAssociations.getItems());
 					return result;
 				} catch (Exception e) {
@@ -233,7 +309,6 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			new DiagramActions(diagram).instantiateGUI(result);
 		}
 	}
-
 
 	private void setTableDoubleclickAction(boolean editable) {
 
@@ -297,12 +372,14 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		public int height;
 		public Vector<FmmlxObject> root = new Vector<>();
 		public String pathIcon;
+		public String pathGUI;
 		public String titleGUI;
 		public Vector<FmmlxObject> selectedObjects = new Vector<>();
 		public Vector<FmmlxAssociation> selectedAssociations = new Vector<>();
 
-		public Result(String distance, String height, ObservableList<FmmlxObject> root, String pathIcon, String titleGUI,
-				ObservableList<FmmlxObject> selectedObjects, ObservableList<FmmlxAssociation> selectedAssociations) {
+		public Result(String distance, String height, ObservableList<FmmlxObject> root, String pathIcon,
+				String pathGUI, String titleGUI, ObservableList<FmmlxObject> selectedObjects,
+				ObservableList<FmmlxAssociation> selectedAssociations) {
 
 			try {
 				this.distance = Integer.parseInt(distance);
@@ -321,8 +398,9 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 					this.root.add(o);
 				}
 			}
-			
+
 			this.pathIcon = pathIcon;
+			this.pathGUI = pathGUI;
 			this.titleGUI = titleGUI;
 
 			if (!selectedObjects.isEmpty()) {

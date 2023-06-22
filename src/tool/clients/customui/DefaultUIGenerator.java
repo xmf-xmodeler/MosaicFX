@@ -1,6 +1,5 @@
 package tool.clients.customui;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,19 +7,15 @@ import java.util.UUID;
 import java.util.Vector;
 
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.FileChooser.ExtensionFilter;
+
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
@@ -32,8 +27,7 @@ public class DefaultUIGenerator {
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
 			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
-			String pathIcon, String titleGUI, Vector<FmmlxObject> roots, int distance) {
-		// TODO better error handling if image is missing
+			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance) {
 
 		// for the fxml export
 		int rowCount = 0;
@@ -43,10 +37,7 @@ public class DefaultUIGenerator {
 				"gui" + UUID.randomUUID().toString().replace("-", ""), false);
 
 		// objects for customGUI
-		FmmlxObject object;
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
-
-//		String assocName = "";
 
 		String referenceInstanceName;
 		String injectionInstanceName;
@@ -75,8 +66,14 @@ public class DefaultUIGenerator {
 		if (!roots.isEmpty()) {
 			for (FmmlxObject root : roots) {
 				// add recursively by root
-				objects = this.recurGetObjectsForGUI(objects, root, distance);
 
+				// wenn keine distanz gegeben ist -> head ist relevant für kreise aber nicht um
+				// rekursiv zu suchen
+				if (distance > 0) {
+					objects = this.recurGetObjectsForGUI(objects, root, distance);
+				} else {
+					objects.addAll(roots);
+				}
 				// add needed assocs
 				for (FmmlxObject o : objects) {
 					for (FmmlxAssociation a : o.getAllRelatedAssociations()) {
@@ -119,29 +116,44 @@ public class DefaultUIGenerator {
 		ArrayList<Reference> referenceMapping = new ArrayList<>();
 		Boolean head;
 
+		Boolean atLeastOneHead = false;
+
+		int i = 0;
+
 		// wenn keine root explizit gegeben -> dann sind alle associationen gegeben
 		// get all needed references
 		for (FmmlxObject o : objectsCommonClass) {
 			head = true;
 			for (FmmlxAssociation assoc : associations) {
-
 				if (assoc.getTargetNode().equals(o)) {
 
 					head = false;
-					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + UUID.randomUUID().toString().replace("-", ""));
+					referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
 
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false));
-
 				}
 			}
 
-			if (head) {
-				referenceInstanceName = actions.addInstance("Reference",
-						"ref" + UUID.randomUUID().toString().replace("-", ""));
-
-				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
+			// wenn root -> dann auch head
+			if (!head && roots.contains(o)) {
+				head = true;
 			}
+
+			if (head) {
+				referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
+				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
+				atLeastOneHead = true;
+			}
+		}
+
+		if (!atLeastOneHead) {
+			System.err.println("Head has not been set explicitly and no head could be detected\n"
+					+ "One reason for that could be a circle in your model.\n" + "Head will be set to "
+					+ objectsCommonClass.get(0).getName());
+
+			referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
+			referenceMapping.add(new Reference(objectsCommonClass.get(0), null, referenceInstanceName, true));
+
 		}
 
 		for (Reference reference : referenceMapping) {
@@ -186,7 +198,6 @@ public class DefaultUIGenerator {
 			Label instancesOfClassLabel = new Label("Instance(s) of " + reference.getObject().getName());
 			instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR,
 					Font.getDefault().getSize()));
-			rechteSeiteGrid.add(instancesOfClassLabel, 0, rowCount++);
 
 			// beschreibung der assoziation
 			if (!reference.isHead()) {
@@ -194,7 +205,11 @@ public class DefaultUIGenerator {
 						+ " " + reference.getAssoc().getName().toString() + " "
 						+ reference.getAssoc().getTargetNode().toString());
 				rechteSeiteGrid.add(assocDesc, 0, rowCount++);
+			} else { // bezeichnung head hinzufügen
+				instancesOfClassLabel.setText(instancesOfClassLabel.getText() + " (head)");
 			}
+
+			rechteSeiteGrid.add(instancesOfClassLabel, 0, rowCount++);
 
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
@@ -253,7 +268,7 @@ public class DefaultUIGenerator {
 			// add actionInjections for operations
 			for (FmmlxOperation operation : operations) {
 
-				// if method is monitor than action; otherwise actionInjection //
+				// if method is monitor than action; otherwise acttionInjection //
 				// TODO: maybe find something better more robust approach
 
 				String body = operation.getBody();
@@ -343,14 +358,13 @@ public class DefaultUIGenerator {
 		} // end for references
 
 		// add isChild and isParent links
-
+		// TODO fix by multiplen associationen
 		for (Reference reference : referenceMapping) {
 
 			FmmlxAssociation assoc = reference.getAssoc();
 
 			if (assoc == null) {
 				// head can be ignored
-				continue;
 			} else {
 				FmmlxObject source = assoc.getSourceNode();
 				for (Reference refChild : referenceMapping) {
@@ -369,31 +383,10 @@ public class DefaultUIGenerator {
 		}
 
 		// export standard gui
-		// File picker as save dialogue
-		ScrollPane defaultGUIPane = new ScrollPane();
-		Scene scene = new Scene(defaultGUIPane);
-		Stage stage = new Stage();
-		stage.setScene(scene);
+		FXMLExporter exporter = new FXMLExporter(pathGUI);
+		exporter.export(rechteSeiteGrid);
 
-		stage.setTitle(titleGUI);
-		stage.setWidth(800);
-		stage.setHeight(400);
-
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select location for saving the extraction of " + titleGUI);
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("JavaFX as XML", "*.fxml"),
-				new ExtensionFilter("All Files", "*.*"));
-
-		File file = fileChooser.showSaveDialog(stage);
-		String path = "";
-
-		if (file != null) {
-			FXMLExporter exporter = new FXMLExporter(file.getPath());
-			exporter.export(rechteSeiteGrid);
-			path = file.getPath();
-		}
-
-		helper.put("pathToFXML", path);
+		helper.put("pathToFXML", pathGUI);
 		helper.put("titleOfUI", titleGUI);
 		helper.put("pathToIconOfWindow", pathIcon);
 
@@ -473,13 +466,8 @@ public class DefaultUIGenerator {
 				diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), "pathToFXML", "\"" + path + "\"");
 
 				// auto icon
-				// TODO change that with instantiation dialog
 				String pathIcon = slotValues.get(o.getName()).get("pathToIconOfWindow");
-				if (pathIcon.equals("")) {
-					pathIcon = "C:\\\\Users\\\\fhend\\\\OneDrive\\\\Desktop\\\\XModelerIconUndGUI\\\\invoice.png";
-				} else {
-					pathIcon = pathIcon.replace("\\", "\\\\");
-				}
+				pathIcon = pathIcon.replace("\\", "\\\\");
 
 				diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), "pathToIconOfWindow",
 						"\"" + pathIcon + "\"");
