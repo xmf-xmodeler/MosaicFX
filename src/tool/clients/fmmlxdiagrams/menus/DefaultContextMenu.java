@@ -1,8 +1,5 @@
 package tool.clients.fmmlxdiagrams.menus;
 
-import java.util.Optional;
-import java.util.Vector;
-
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
@@ -57,7 +54,9 @@ public class DefaultContextMenu extends ContextMenu {
 		importDiagram.setOnAction(e -> actions.importDiagram());
 
 		MenuItem generateCustomUI = new MenuItem("Generate Custom UI");
-		generateCustomUI.setOnAction(e -> actions.showGenerateCustomUIDialog());
+		if (!diagram.getSelectedObjects().isEmpty()){
+			generateCustomUI.setOnAction(e -> actions.showGenerateCustomUIDialog());
+		}
 			
 		Menu filterObjectsMenu = new Menu("Filter Objects (BETA)");
 		MenuItem showAll = new MenuItem("Show All");
