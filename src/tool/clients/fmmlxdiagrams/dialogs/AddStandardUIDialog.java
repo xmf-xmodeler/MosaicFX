@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -42,13 +43,13 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private GridPane advancedGrid = new GridPane();
 
 	private Label lblAssociations = new Label("Associations");
-	private ListView<FmmlxAssociation> lvAssociations = new ListView<>();
+	private ListView<String> lvAssociations = new ListView<>();
 
 	private Label lblSelectedClasses = new Label("Selected Classes");
 	private ListView<FmmlxObject> selectedLVClasses = new ListView<>();
 
 	private Label lblSelectedAssociations = new Label("Selected Associations");
-	private ListView<FmmlxAssociation> selectedLVAssociations = new ListView<>();
+	private ListView<String> selectedLVAssociations = new ListView<>();
 
 	private Label lblRoot = new Label("Head(s)");
 	private ListView<FmmlxObject> lvRoot = new ListView<>();
@@ -74,6 +75,8 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 	private Vector<FmmlxObject> listClasses = new Vector<>();
 	private Vector<FmmlxAssociation> listAssociations = new Vector<>();
+	private Vector<String> prettyAssocNames = new Vector<>();
+	private HashMap<String, FmmlxAssociation> prettyStringMap = new HashMap<>();
 
 	private int windowWidthCollapsed = 380;
 
@@ -133,7 +136,18 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			}
 		}
 
-		selectedLVAssociations.getItems().addAll(listAssociations);
+		// pretty Strings for associations
+
+		this.prettyStringMap.clear();
+
+		for (FmmlxAssociation assoc : listAssociations) {
+			String pretty = assoc.getSourceNode().getName() + "--" + assoc.getName() + "->"
+					+ assoc.getTargetNode().getName();
+			this.prettyStringMap.put(pretty, assoc);
+			this.prettyAssocNames.add(pretty);
+		}
+
+		selectedLVAssociations.getItems().addAll(prettyAssocNames);
 		selectedLVClasses.getItems().addAll(selectedObjects);
 
 	}
@@ -160,7 +174,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		grid.add(textPathGUI, 1, 2, 1, 1);
 		grid.add(buttonPathGUI, 2, 2, 1, 1);
 		textPathGUI.setEditable(false);
-		
+
 		// advanced grid
 		titledPane.setText("Advanced");
 		titledPane.setExpanded(false);
@@ -197,16 +211,22 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 	private void initContent() {
 
+		textDistance.setEditable(false);
+		textHeight.setEditable(false);
+		
 		// checkmark sets editable
-		checkDistance.selectedProperty().addListener((obs, oldValue, newValue) -> {textDistance.setEditable(newValue);});	
-		checkHeight.selectedProperty().addListener((obs, oldValue, newValue) -> {textHeight.setEditable(newValue);});
-		
-		
+		checkDistance.selectedProperty().addListener((obs, oldValue, newValue) -> {
+			textDistance.setEditable(newValue);
+		});
+		checkHeight.selectedProperty().addListener((obs, oldValue, newValue) -> {
+			textHeight.setEditable(newValue);
+		});
+
 		// dynamic size of window
 		titledPane.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 			if (isNowExpanded) {
 				// resize
-				this.setWidth(700);
+				this.setWidth(800);
 				this.setHeight(700);
 
 			} else {
@@ -286,13 +306,25 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			if (dialogButton == okButtonType) {
 
 				try {
-					
-					if (!checkDistance.isSelected()) textDistance.setText("0");
-					if (!checkHeight.isSelected()) textHeight.setText("0");
-					
+
+					if (!checkDistance.isSelected())
+						textDistance.setText("0");
+					if (!checkHeight.isSelected())
+						textHeight.setText("0");
+
+					// convert pretty strings to associations
+
+					Vector<FmmlxAssociation> asscos = new Vector<>();
+
+					for (String pretty : selectedLVAssociations.getItems()) {
+
+						asscos.add(prettyStringMap.get(pretty));
+
+					}
+
 					Result result = new Result(textDistance.getText(), textHeight.getText(), lvRoot.getItems(),
-							textPathIcon.getText(), textPathGUI.getText() ,textTitleGUI.getText(), selectedLVClasses.getItems(),
-							selectedLVAssociations.getItems());
+							textPathIcon.getText(), textPathGUI.getText(), textTitleGUI.getText(),
+							selectedLVClasses.getItems(), asscos);
 					return result;
 				} catch (Exception e) {
 					System.err.println(e);
@@ -349,14 +381,14 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			});
 			lvAssociations.setOnMouseClicked(e -> {
 				if (e.getClickCount() == 2) {
-					FmmlxAssociation selectedItem = lvAssociations.getSelectionModel().getSelectedItem();
+					String selectedItem = lvAssociations.getSelectionModel().getSelectedItem();
 					selectedLVAssociations.getItems().add(selectedItem);
 					lvAssociations.getItems().remove(selectedItem);
 				}
 			});
 			selectedLVAssociations.setOnMouseClicked(e -> {
 				if (e.getClickCount() == 2) {
-					FmmlxAssociation selectedItem = selectedLVAssociations.getSelectionModel().getSelectedItem();
+					String selectedItem = selectedLVAssociations.getSelectionModel().getSelectedItem();
 					lvAssociations.getItems().add(selectedItem);
 					selectedLVAssociations.getItems().remove(selectedItem);
 				}
@@ -377,9 +409,9 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		public Vector<FmmlxObject> selectedObjects = new Vector<>();
 		public Vector<FmmlxAssociation> selectedAssociations = new Vector<>();
 
-		public Result(String distance, String height, ObservableList<FmmlxObject> root, String pathIcon,
-				String pathGUI, String titleGUI, ObservableList<FmmlxObject> selectedObjects,
-				ObservableList<FmmlxAssociation> selectedAssociations) {
+		public Result(String distance, String height, ObservableList<FmmlxObject> root, String pathIcon, String pathGUI,
+				String titleGUI, ObservableList<FmmlxObject> selectedObjects,
+				Vector<FmmlxAssociation> selectedAssociations) {
 
 			try {
 				this.distance = Integer.parseInt(distance);

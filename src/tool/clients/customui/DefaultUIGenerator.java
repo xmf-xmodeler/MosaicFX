@@ -7,7 +7,10 @@ import java.util.UUID;
 import java.util.Vector;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -29,6 +32,17 @@ public class DefaultUIGenerator {
 			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
 			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance) {
 
+		
+		if (pathGUI.equals("")) {
+			Alert alert = new Alert(AlertType.CONFIRMATION, "No Path has been set for the GUI. Extraction of GUI is not possible.");
+			alert.showAndWait().ifPresent(response -> {
+			     if (response == ButtonType.OK) {
+			        return;
+			     }
+			 });
+			return null;
+		}
+		
 		// for the fxml export
 		int rowCount = 0;
 
@@ -147,13 +161,14 @@ public class DefaultUIGenerator {
 			}
 		}
 
-		// TODO change to alert for user not console
 		if (!atLeastOneHead) {
-			System.err.println("Head has not been set explicitly and no head could be detected\n"
-					+ "One reason for that could be a circle in your model.\n" + "You have to set a head manually");
-
-			return slotValues;
-
+			Alert alert = new Alert(AlertType.CONFIRMATION, "No head of GUI could detected. This configuration is invalid!");
+			alert.showAndWait().ifPresent(response -> {
+			     if (response == ButtonType.OK) {
+			        return;
+			     }
+			 });
+			return null;
 		}
 
 		// mapping von parent
@@ -460,6 +475,10 @@ public class DefaultUIGenerator {
 
 	public void addSlotValuesCustomGUI(HashMap<String, Map<String, String>> slotValues, AbstractPackageViewer diagram) {
 		// TODO refactor this
+		
+		if (slotValues == null) {
+			return;
+		}
 
 		Vector<FmmlxObject> references = new Vector<>();
 		Vector<FmmlxObject> slotInjections = new Vector<>();
