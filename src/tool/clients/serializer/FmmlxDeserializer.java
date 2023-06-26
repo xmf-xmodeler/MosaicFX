@@ -9,9 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.xmodeler.XModeler;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -36,24 +34,29 @@ public class FmmlxDeserializer {
 
         String projectPath = xmlManager.getProjectPath();
         String projectName = xmlManager.getProjectName(projectPath);
-        NodeList diagramNodes = getDiagramsElement().getChildNodes();
-        fmmlxDiagramCommunicator.createProject(projectName, xmlManager.getAllDiagramNames(), this.xmlManager.getSourcePath());
+        fmmlxDiagramCommunicator.createProject(projectName, this.xmlManager.getSourcePath());
         
-        boolean projectPopulated = false;
-        for(int i =0; i< diagramNodes.getLength(); i++){
-            Node diagramNode = diagramNodes.item(i);
-            if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
-            	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
-            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlManager.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
-            	sendDiagramViewStatus(diagramId, diagramNode, fmmlxDiagramCommunicator);
-            	sendDiagramDisplayProperties(diagramId, fmmlxDiagramCommunicator);
-            	if(!projectPopulated) {
-                    fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
-            		populateDiagram(diagramId);
-            		projectPopulated = true;
-            	}
-            }    
-        }
+       	fmmlxDiagramCommunicator.createDiagram(projectName, "Deserializer", 
+   			this.xmlManager.getSourcePath(), 
+   			FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, 
+   			diagramId -> {
+   				populateDiagram(diagramId);
+   				NodeList diagramNodes = getDiagramsElement().getChildNodes();
+   				for(int i = 0; i < diagramNodes.getLength(); i++) {
+   		            Node diagramNode = diagramNodes.item(i);
+   		            if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
+   		            	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
+   		            	fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, 
+	            			this.xmlManager.getSourcePath(), 
+	            			FmmlxDiagramCommunicator.DiagramType.ClassDiagram, false, 
+	            			localDiagramId -> {
+	            				sendDiagramViewStatus(localDiagramId, diagramNode, fmmlxDiagramCommunicator);
+	            				sendDiagramDisplayProperties(localDiagramId, fmmlxDiagramCommunicator);
+	            				fmmlxDiagramCommunicator.preparePositionInfo(localDiagramId, diagramNode);  			            
+	            		});
+   		            }    
+   		        }
+   			});
     }
 
     
@@ -96,8 +99,9 @@ public class FmmlxDeserializer {
     	for(int i = 0; i < attributes.getLength(); i++) { 
 			Node attribute = attributes.item(i);
 			map.put(attribute.getNodeName(), Boolean.valueOf(attribute.getNodeValue()));
-			fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
     	}
+    	fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
+
     	
 	}
  

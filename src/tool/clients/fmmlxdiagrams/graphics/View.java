@@ -7,6 +7,5 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 public interface View {
 	Canvas getCanvas();
 	Affine getCanvasTransform();
-	void centerObject();
 	void centerObject(FmmlxObject affectedObject);
 }

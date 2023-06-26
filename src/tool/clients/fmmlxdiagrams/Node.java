@@ -24,7 +24,7 @@ public abstract class Node implements CanvasElement {
 	private FmmlxObjectPort port;
 	
 	transient boolean requiresReLayout;
-	NodeGroup rootNodeElement = null;	
+	public NodeGroup rootNodeElement = null;	
 	
 	public void triggerLayout() {
 		this.requiresReLayout = true;

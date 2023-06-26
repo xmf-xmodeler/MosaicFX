@@ -62,7 +62,7 @@ public class InputChecker {
 //	}
 
 	public boolean classNameIsAvailable(String name, AbstractPackageViewer diagram) {
-		for (FmmlxObject object : diagram.getObjects()) {
+		for (FmmlxObject object : diagram.getObjectsReadOnly()) {
 			if (name.equals(object.getName())) return false;
 		}
 		return true;

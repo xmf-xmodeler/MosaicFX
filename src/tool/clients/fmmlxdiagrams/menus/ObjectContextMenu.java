@@ -59,16 +59,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
-		
-//		MenuItem instanceGenerator = new MenuItem("Instance Generator");
-//
-//		instanceGenerator.setOnAction(e -> actions.runInstanceGenerator(object));
-//		if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
-//			instanceGenerator.setDisable(true);
-//		}
-//		getItems().add(instanceGenerator);
-		
-		
+				
 		if(diagram.getSelectedObjects().size() > 1) {
 			boolean classifyPossible = true;
 			Vector<FmmlxObject> objs = new Vector<>();
@@ -137,9 +128,6 @@ public class ObjectContextMenu extends ContextMenu {
 		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
 		levelMergeItem.setDisable(true);
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
-
-		MenuItem assignItem = new MenuItem("Assign to Global Variable");
-		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
@@ -157,12 +145,7 @@ public class ObjectContextMenu extends ContextMenu {
 				Optional<Integer> result = dialog.showAndWait();
 				if (result.isPresent()){
 					ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, object, result.get());
-					try {
-						wizard.start(new Stage());
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					wizard.start(new Stage());
 				}
 			}
 		});
@@ -176,7 +159,6 @@ public class ObjectContextMenu extends ContextMenu {
 				delegationMenu, 
 				slotMenu, 
 				associationInstanceMenu, 
-				assignItem,
 				editConcreteSyntaxItem);
 		
 		addRunMenu();

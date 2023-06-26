@@ -24,7 +24,7 @@ public class ProtocolHandler {
     public ProtocolHandler(AbstractPackageViewer diagram) {
         this.diagram = diagram;
         this.conflicts = new ArrayList<>();
-        this.objects = diagram.getObjects();
+        this.objects = diagram.getObjectsReadOnly();
         this.associations = diagram.getAssociations();
         this.links = diagram.getAssociationInstance();
         this.delegationEdges = diagram.getDelegations();
