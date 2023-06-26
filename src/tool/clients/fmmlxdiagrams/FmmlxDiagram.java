@@ -279,6 +279,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
 					actions.centerViewOnObject();
 				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Z) {
+					actions.undo();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
+					actions.redo();
+				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {

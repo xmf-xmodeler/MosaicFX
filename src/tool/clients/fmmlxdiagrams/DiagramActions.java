@@ -1232,5 +1232,13 @@ public class DiagramActions {
 
 	public void removeDelegation(String delegatorPath, String delegateePath) {
 		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
+	}
+	
+	public void undo() {
+		System.err.println("Undo");
+	}
+	
+	public void redo() {
+		System.err.println("redo");
 	}	
 }
