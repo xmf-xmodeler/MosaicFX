@@ -118,8 +118,6 @@ public class DefaultUIGenerator {
 
 		Boolean atLeastOneHead = false;
 
-		int i = 0;
-
 		// wenn keine root explizit gegeben -> dann sind alle associationen gegeben
 		// get all needed references
 		for (FmmlxObject o : objectsCommonClass) {
@@ -128,9 +126,11 @@ public class DefaultUIGenerator {
 				if (assoc.getTargetNode().equals(o)) {
 
 					head = false;
-					referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
+					referenceInstanceName = actions.addInstance("Reference",
+							"ref" + UUID.randomUUID().toString().replace("-", ""));
 
-					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false));
+					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
+							new Reference(assoc.getSourceNode())));
 				}
 			}
 
@@ -140,19 +140,67 @@ public class DefaultUIGenerator {
 			}
 
 			if (head) {
-				referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
+				referenceInstanceName = actions.addInstance("Reference",
+						"ref" + UUID.randomUUID().toString().replace("-", ""));
 				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
 				atLeastOneHead = true;
 			}
 		}
 
+		// TODO change to alert for user not console
 		if (!atLeastOneHead) {
 			System.err.println("Head has not been set explicitly and no head could be detected\n"
-					+ "One reason for that could be a circle in your model.\n" + "Head will be set to "
-					+ objectsCommonClass.get(0).getName());
+					+ "One reason for that could be a circle in your model.\n" + "You have to set a head manually");
 
-			referenceInstanceName = actions.addInstance("Reference", "ref" + i++);
-			referenceMapping.add(new Reference(objectsCommonClass.get(0), null, referenceInstanceName, true));
+			return slotValues;
+
+		}
+
+		// mapping von parent
+		for (Reference reference : referenceMapping) {
+
+			boolean parentSet = false;
+			if (reference.isHead()) {
+				continue;
+			}
+
+			for (Reference reference2 : referenceMapping) {
+
+				if (reference2.equals(reference)) {
+					continue;
+				}
+
+				// wenn parent auf head verweist
+				if (reference2.getObject().equals(reference.getParent().getObject()) && reference2.getAssoc() == null
+						&& parentSet == false) {
+					reference.setParent(reference2);
+					parentSet = true;
+					System.err.println(reference.getReferenceInstanceName() + " hat als parent head ("
+							+ reference2.getReferenceInstanceName() + ")bekommen");
+				}
+			}
+
+			// wenn parent nicht auf head verweist -> mapping auf ein beliebiges mögliches
+			// parent objekt
+			// beliebig klingt drastisch, ist es aber nicht
+			if (!parentSet) {
+				for (Reference reference2 : referenceMapping) {
+					if (reference2.isHead()) {
+						continue;
+					}
+					if (!parentSet && reference2.getObject().equals(reference.getParent().getObject())) {
+						reference.setParent(reference2);
+						parentSet = true;
+						System.err.println(reference.getReferenceInstanceName() + " hat als parent ("
+								+ reference2.getReferenceInstanceName() + ")bekommen");
+					}
+				}
+
+			}
+
+			if (!parentSet) {
+				System.err.println("kein parent fuer " + reference.getReferenceInstanceName());
+			}
 
 		}
 
@@ -357,29 +405,16 @@ public class DefaultUIGenerator {
 			}
 		} // end for references
 
-		// add isChild and isParent links
-		// TODO fix by multiplen associationen
+		// mapping isChild and isParent relations
 		for (Reference reference : referenceMapping) {
 
-			FmmlxAssociation assoc = reference.getAssoc();
+			if (reference.isHead())
+				continue;
 
-			if (assoc == null) {
-				// head can be ignored
-			} else {
-				FmmlxObject source = assoc.getSourceNode();
-				for (Reference refChild : referenceMapping) {
-					if (refChild.getObject().equals(source)) {
-
-						actions.addAssociation(refChild.getReferenceInstanceName(),
-								reference.getReferenceInstanceName(), associationIsChild.getName());
-						actions.addAssociation(reference.getReferenceInstanceName(),
-								refChild.getReferenceInstanceName(), associationIsParent.getName());
-						continue;
-					}
-				}
-
-			}
-
+			actions.addAssociation(reference.getReferenceInstanceName(),
+					reference.getParent().getReferenceInstanceName(), associationIsParent.getName());
+			actions.addAssociation(reference.getParent().getReferenceInstanceName(),
+					reference.getReferenceInstanceName(), associationIsChild.getName());
 		}
 
 		// export standard gui
@@ -556,6 +591,7 @@ public class DefaultUIGenerator {
 		private FmmlxAssociation assoc;
 		private String referenceInstanceName;
 		private Boolean head;
+		private Reference parent;
 
 		public FmmlxObject getObject() {
 			return object;
@@ -573,11 +609,35 @@ public class DefaultUIGenerator {
 			return head;
 		}
 
+		public Reference(FmmlxObject object) {
+			this.object = object;
+		}
+
 		public Reference(FmmlxObject object, FmmlxAssociation assoc, String referenceInstanceName, boolean head) {
 			this.object = object;
 			this.assoc = assoc;
 			this.referenceInstanceName = referenceInstanceName;
 			this.head = head;
+		}
+
+		public Reference(FmmlxObject object, FmmlxAssociation assoc, String referenceInstanceName, Boolean head,
+				Reference parent) {
+			super();
+			this.object = object;
+			this.assoc = assoc;
+			this.referenceInstanceName = referenceInstanceName;
+			this.head = head;
+			this.parent = parent;
+		}
+
+		public Reference getParent() {
+			return parent;
+		}
+
+		public void setParent(Reference parent) {
+			if (parent != null)
+				this.head = false;
+			this.parent = parent;
 		}
 
 	}

@@ -114,11 +114,11 @@ public class FXMLExporter {
 	            if(Button.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich Default on Action ermitteln 
 	            	// zus�tzlich GridPane Ids ermitteln
-	            	//found = true;
+	            	found = true;
 	            } if(TextField.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich GridPane Ids ermitteln
 	            	res.add(new Property(aClass.getMethod("isEditable"),"editable"));
-	            	//found = true;
+	            	found = true;
 	            } if(GridPane.class.isAssignableFrom(aClass)) {
 	            	//res.add(new Property(aClass.getMethod("getChildren"), "children")); 
 	            	res.add(new Property(aClass.getMethod("getChildrenUnmodifiable"), "children"));

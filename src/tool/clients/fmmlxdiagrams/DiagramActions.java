@@ -1377,7 +1377,6 @@ public class DiagramActions {
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName != null && instance2Name != null && assocName != null) {
 			this.diagram.comm.addAssociationInstance(this.diagram.diagramID, instanceName, instance2Name, assocName);
-			System.err.println(assocName + "instance1: "+ instanceName + "instance2: " + instance2Name);
 		} else {
 			System.err.println("Association cannot be instantiated, because one of the parameters is null");
 		}
