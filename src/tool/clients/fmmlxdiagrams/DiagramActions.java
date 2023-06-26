@@ -1235,10 +1235,10 @@ public class DiagramActions {
 	}
 	
 	public void undo() {
-		System.err.println("Undo");
+		diagram.getComm().undo(diagram.diagramID);	
 	}
 	
 	public void redo() {
-		System.err.println("redo");
+		diagram.getComm().redo(diagram.diagramID);
 	}	
 }

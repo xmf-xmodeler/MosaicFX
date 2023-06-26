@@ -123,7 +123,23 @@ public class FmmlxDiagramCommunicator {
 
     public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
-	public void createDiagram(
+	public void createFmmlxDiagram(String packagePath, 
+			String diagramName, 
+			String file, 
+			DiagramType type,  
+			ReturnCall<Integer> onDiagramCreated){
+		createDiagram(packagePath, diagramName, file, type, false, onDiagramCreated);
+	}
+    
+	public void createUMLDiagram(String packagePath, 
+			String diagramName, 
+			String file, 
+			DiagramType type,  
+			ReturnCall<Integer> onDiagramCreated){
+		createDiagram(packagePath, diagramName, file, type, true, onDiagramCreated);
+	}
+   
+    public void createDiagram(
 			String packagePath, 
 			String diagramName, 
 			String file, 
@@ -2400,6 +2416,20 @@ public class FmmlxDiagramCommunicator {
 				new Value(body)
 		};
 		sendMessage("mergeOperation", message);
+	}
+	
+	public void undo(int diagramID) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID)
+		};
+		sendMessage("undo", message);
+	}
+	
+	public void redo(int diagramID) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID)
+		};
+		sendMessage("redo", message);
 	}
 
 	public void sendViewStatus(int diagramID, Vector<String> names, Vector<Affine> transformations) {

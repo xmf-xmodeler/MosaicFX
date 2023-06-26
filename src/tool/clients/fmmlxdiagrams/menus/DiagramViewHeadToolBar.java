@@ -74,8 +74,8 @@ public class DiagramViewHeadToolBar extends VBox {
 	private ToolBar buildToolBar() {
 		ToolBar toolBar = new ToolBar();		
 		
-		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.undo(), "resources/png/undo.24.png");
-		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.redo(), "resources/png/redo.24.png");
+		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.undo(); fmmlxDiagram.updateDiagram();}, "resources/png/undo.24.png");
+		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.redo();fmmlxDiagram.updateDiagram();}, "resources/png/redo.24.png");
 		
 		JavaFxTooltipAuxilary.addTooltip(undoButton, "Undo last action(Strg + Z)");
 		JavaFxTooltipAuxilary.addTooltip(redoButton, "Redo last action(Strg + Y)");
