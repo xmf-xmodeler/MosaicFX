@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -32,7 +33,8 @@ public class XMLCreator  {
 		this.packagePath = packagePath;
 		Document doc = initXML();	
 		//calls save operation after representation is build
-		getData(packagePath, o -> {saveToFile(doc);});	
+		getData(packagePath, o -> {saveToFile(doc);});
+		
 	}
 
 	private void saveToFile(Document doc) {
@@ -62,7 +64,8 @@ public class XMLCreator  {
 		ReturnCall<PackageActionsList> onModelDataReceived = packageContent -> {
 			Vector<PackageActionsList> logs = packageContent.getChildren();
 			Collections.sort(logs);
-			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName()); 
+			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName());
+			model.setAttribute(XMLAttributes.NAME.getName(), packagePath.split("::")[1]);
 			for (PackageActionsList logData : logs) {
 				Element log = XMLUtil.createChildElement(model, logData.getName());
 				for (String attName : logData.getAttributes()) {
@@ -88,8 +91,9 @@ public class XMLCreator  {
 		if (diagramToDoList.isEmpty()) {
 			onDataReceived.run("Resolve ToDoList");
 		} else {
+			Element diagrams = returnDiagramsTag();
 			DiagramInfo diagramInfo = diagramToDoList.remove(0);
-			Element diagram = createDiagramElement(diagramInfo); 
+			Element diagram = createDiagramElement(diagramInfo, diagrams); 
 			appendEdgesToDiagram(diagramInfo, diagram);
 			appendLabelsToDiagram(diagramInfo, diagram);
 			appendObjectPositionsToDiagram(diagramInfo, diagram);
@@ -97,6 +101,18 @@ public class XMLCreator  {
 			//the next function also makes reursive call to resolveToDoList
 			appendViewsToDiagram(onDataReceived, diagramInfo, diagram);
 		}
+	}
+
+	private Element returnDiagramsTag() {
+		NodeList nodes = root.getElementsByTagName(XMLTags.DIAGRAMS.getName());
+		//if diagrams do not exist append new tag to document
+		if (nodes.getLength() == 0) {
+			Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());	
+			return diagrams;
+		} 
+		// if diagram exists return existing diagrams tag
+		Element diagrams = (Element) nodes.item(0);
+		return diagrams;
 	}
 
 	private void appendDiagramDisplayPropertiesToDiagram(DiagramInfo diagramInfo, Element diagram) {
@@ -221,8 +237,7 @@ comm.getAllLabelPositions(diagramInfo.getId(), onAllLabelPositionsReceived);
 		 object.setAttribute(XMLAttributes.HIDDEN.getName(), String.valueOf(attributesMap.get("hidden")));
 	}
 
-	private Element createDiagramElement(DiagramInfo diagramInfo) {
-		Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
+	private Element createDiagramElement(DiagramInfo diagramInfo, Element diagrams) {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
 		XMLUtil.createChildElement(diagram, XMLTags.OBJECTS.getName());
@@ -233,6 +248,7 @@ comm.getAllLabelPositions(diagramInfo.getId(), onAllLabelPositionsReceived);
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = 	doc.getDocumentElement(); 
 		root.setAttribute(XMLAttributes.VERSION.getName(), exportVersion);
+		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
 		return doc;
     }
 }
