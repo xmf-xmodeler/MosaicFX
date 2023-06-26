@@ -1297,5 +1297,21 @@ public class DiagramActions {
 	
 	}
 	
+
+	// FH adding instances that can be shown
+	public String addInstance(String className, String instanceName, boolean hidden) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, hidden);
+		return instanceName;
+	}
+	
+	// FH adding instances that can be shown
+		public String addInstance(String className, String instanceName) {
+			Vector<String> parents = new Vector<String>();
+			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
+			return instanceName;
+		}
+		
+	
 	
 }

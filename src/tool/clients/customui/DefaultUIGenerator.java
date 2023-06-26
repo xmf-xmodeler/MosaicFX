@@ -190,8 +190,6 @@ public class DefaultUIGenerator {
 						&& parentSet == false) {
 					reference.setParent(reference2);
 					parentSet = true;
-					System.err.println(reference.getReferenceInstanceName() + " hat als parent head ("
-							+ reference2.getReferenceInstanceName() + ")bekommen");
 				}
 			}
 
@@ -206,8 +204,6 @@ public class DefaultUIGenerator {
 					if (!parentSet && reference2.getObject().equals(reference.getParent().getObject())) {
 						reference.setParent(reference2);
 						parentSet = true;
-						System.err.println(reference.getReferenceInstanceName() + " hat als parent ("
-								+ reference2.getReferenceInstanceName() + ")bekommen");
 					}
 				}
 
@@ -489,7 +485,7 @@ public class DefaultUIGenerator {
 		Vector<FmmlxObject> actions = new Vector<>();
 		Vector<FmmlxObject> customGuiInterface = new Vector<>();
 
-		Vector<FmmlxObject> objects = diagram.getObjects();
+		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
 
 		for (FmmlxObject o : objects) {
 
