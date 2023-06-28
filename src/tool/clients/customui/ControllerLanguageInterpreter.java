@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.classbrowser;
+package tool.clients.customui;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.ArrayList;
@@ -251,11 +251,11 @@ public class ControllerLanguageInterpreter {
 			FmmlxOperation actOp = currEl.getOperationByName(classComponent);
 			
 			// underlyingDiagram.getComm().runOperation(underlyingDiagram.getID(), "");
-			// Parameter über neues Sprachelement "USE.."
+			// Parameter ï¿½ber neues Sprachelement "USE.."
 			
 			// Konsolen inhalt, ggf. mit Semikolon
 			// Qualified name: Invoicing::i1.invoiceTotal()
-			// TBD: Wie muss hier der Befehl aussehen, um eine Operation auszuführen?
+			// TBD: Wie muss hier der Befehl aussehen, um eine Operation auszufï¿½hren?
 			// XMF-Statement als String?
 			// For Now: No-arg-Actions?
 			return "";
@@ -268,5 +268,19 @@ public class ControllerLanguageInterpreter {
 		
 		// no result could be fetched
 		throw new IllegalClassFormatException();		
+	}
+}
+
+
+class maxParent{
+	public static String max(AbstractPackageViewer diagram, FmmlxObject start){
+		
+		String par = start.getMetaClassName();
+		
+		if( par.equals("MetaClass") ) {
+			return start.getName();
+		} else {
+			return max( diagram, diagram.getObjectByPath(diagram.getPackagePath() + "::" + par));
+		}
 	}
 }

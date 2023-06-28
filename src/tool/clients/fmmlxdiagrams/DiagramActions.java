@@ -33,6 +33,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
+import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -1040,6 +1041,15 @@ public class DiagramActions {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
 	}
+
+	// LM, 07.04.2023, New Action for execution of custom UI
+	public void executeUI(FmmlxObject object) {
+		
+		Platform.runLater(() -> new CustomUI(diagram, object));
+			
+	}
+	// End customUI
+	
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			

@@ -61,7 +61,7 @@ import javafx.scene.transform.Translate;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -363,7 +363,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			for (File file : files) {
 				try {
-					AbstractSyntax group = AbstractSyntax.load(file);
+					ConcreteSyntaxPattern group = ConcreteSyntaxPattern.load(file);
 					if(group instanceof ConcreteSyntax) {
 						ConcreteSyntax c = ((ConcreteSyntax) group);
 						syntaxes.put(c.classPath + "@" + c.level, c);

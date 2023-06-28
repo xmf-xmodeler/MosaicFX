@@ -311,7 +311,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 
 	public boolean isInstanceOf(FmmlxObject theClass, Integer myLevel) {
-		if (myLevel != level) return false;
+		// -1 is allowed for contingent level associations
+		if (myLevel != level && myLevel != -1) return false;
 		return this.getAllAncestors().contains(theClass);
 	}
 

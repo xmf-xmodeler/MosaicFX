@@ -18,7 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
-public class AbstractSyntax extends NodeGroup{
+public class ConcreteSyntaxPattern extends NodeGroup {
 	
 	protected File file;
 	private boolean metaImport = false;
@@ -27,7 +27,7 @@ public class AbstractSyntax extends NodeGroup{
 		throw new RuntimeException("Not yet implemented!");
 	}
 	
-	public static AbstractSyntax load(File file) throws Exception {
+	public static ConcreteSyntaxPattern load(File file) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(false);
         factory.setValidating(false);
@@ -53,13 +53,13 @@ public class AbstractSyntax extends NodeGroup{
 				vec.add(readGroup((Element) n, file.getParentFile()));
 			} else if("Import".equals(n.getNodeName())){
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
-				AbstractSyntax importElements = load(f);
+				ConcreteSyntaxPattern importElements = load(f);
 				Affine transform = readTransform((Element) n);
 				importElements.myTransform = transform;
 				vec.add(importElements);
 			} else if("ImportMeta".equals(n.getNodeName())){
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
-				AbstractSyntax metaSyntax = load(f);
+				ConcreteSyntaxPattern metaSyntax = load(f);
 				metaSyntax.metaImport = true;
 				Affine transform = readTransform((Element) n);
 				metaSyntax.myTransform = transform;
@@ -67,12 +67,12 @@ public class AbstractSyntax extends NodeGroup{
 			}
 		}
 		
-		AbstractSyntax object; 
+		ConcreteSyntaxPattern object; 
 		
 		if("ConcreteSyntax".equals(root.getNodeName())) {
 			object = ConcreteSyntax.load2(file,root);
 		} else {
-			object = new AbstractSyntax();
+			object = new ConcreteSyntaxPattern();
 		}
 		
 		object.nodeElements = vec;

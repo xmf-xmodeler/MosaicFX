@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.classbrowser;
+package tool.clients.customui;
 
 import java.util.Objects;
 

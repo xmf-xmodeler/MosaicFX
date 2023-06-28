@@ -870,7 +870,6 @@ public void sendMessage(final Message message) {
 
   //management
   private void addBrowser(final String id, final String label, String tooltip, final String url, final String text) {
-    System.out.println("addBrowser, id: " + id + ", url: " + url);
     WebBrowser browser = new WebBrowser(id, getHandler());
     browsers.put(id, browser);
     

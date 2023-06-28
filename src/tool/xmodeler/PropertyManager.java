@@ -2,6 +2,7 @@ package tool.xmodeler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -19,6 +20,8 @@ public class PropertyManager {
 	private void loadProperties() {
 		try {
 			properties.load(new FileInputStream(userPropertiesFile));
+		} catch (FileNotFoundException e) {
+			System.err.println("No user.properties found. Will be created once you change some preferences.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

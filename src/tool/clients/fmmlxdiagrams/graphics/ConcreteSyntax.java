@@ -20,7 +20,7 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
-public class ConcreteSyntax extends AbstractSyntax{
+public class ConcreteSyntax extends ConcreteSyntaxPattern{
 	
 	private Vector<Modification> modifications = new Vector<>();
 	public Vector<Modification> getModifications() {return new Vector<>(modifications);}
