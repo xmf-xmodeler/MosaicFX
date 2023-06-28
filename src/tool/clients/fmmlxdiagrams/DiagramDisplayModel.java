@@ -43,6 +43,7 @@ public class DiagramDisplayModel {
 		showPropertiesMap.put(DiagramDisplayProperty.METACLASSNAME, showMetaClassName);
 		showPropertiesMap.put(DiagramDisplayProperty.CONCRETESYNTAX, showConcreteSyntax);
 		showPropertiesMap.put(DiagramDisplayProperty.ISSUETABLE, issueTableVisible);
+		sendDisplayPropertiesToXMF();
 	}
 
 	public boolean getPropertieValue (DiagramDisplayProperty propertie) {

@@ -1,6 +1,8 @@
 package tool.helper.persistence;
 
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -9,7 +11,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -23,12 +27,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XMLUtil {
-
-	public static Document getDocument() throws Exception {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		return documentBuilder.newDocument();
-	}
 
 	public static Document createDocument(String elementName) {
 		DocumentBuilder dbdr = null;
@@ -53,13 +51,13 @@ public class XMLUtil {
 		return child;
 	}
 
-	public static Element getChildElement(Element element, String tagName) throws Exception {
+	public static Element getChildElement(Element element, String tagName) {
 
 		return getChildElement(element, tagName, true);
 
 	}
 
-	public static Element getChildElement(Element element, String tagName, boolean create) throws Exception {
+	public static Element getChildElement(Element element, String tagName, boolean create) {
 		Node node = null;
 		NodeList nodeList = element.getChildNodes();
 		Element childElm = null;
@@ -78,7 +76,7 @@ public class XMLUtil {
 		return childElm;
 	}
 
-	public static List<Element> getChildElements(Element element, String tagName) throws Exception {
+	public static List<Element> getChildElements(Element element, String tagName) {
 		Node node = null;
 		List<Element> elementList = new ArrayList();
 		NodeList nodeList = element.getChildNodes();
@@ -135,5 +133,37 @@ public class XMLUtil {
 			ex.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static void saveDocumentToFile(Document doc, File saveFile) {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = null;
+		
+		try {
+			transformer = transformerFactory.newTransformer();
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DOMSource source = new DOMSource(doc);
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter(saveFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		StreamResult result = new StreamResult(writer);
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+		
+		
+		try {
+			transformer.transform(source, result);
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

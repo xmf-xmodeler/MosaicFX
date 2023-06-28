@@ -72,6 +72,8 @@ import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.helper.persistence.XMLCreator;
+import tool.xmodeler.XModeler;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -277,12 +279,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
 					actions.centerViewOnObject();
 				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Z) {
+					actions.undo();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
+					actions.redo();
+				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
 						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.P) {
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
+					}
 			}
         });
         tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {

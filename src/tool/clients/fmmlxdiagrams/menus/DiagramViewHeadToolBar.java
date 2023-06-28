@@ -74,6 +74,12 @@ public class DiagramViewHeadToolBar extends VBox {
 	private ToolBar buildToolBar() {
 		ToolBar toolBar = new ToolBar();		
 		
+		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.undo(); fmmlxDiagram.updateDiagram();}, "resources/png/undo.24.png");
+		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.redo();fmmlxDiagram.updateDiagram();}, "resources/png/redo.24.png");
+		
+		JavaFxTooltipAuxilary.addTooltip(undoButton, "Undo last action(Strg + Z)");
+		JavaFxTooltipAuxilary.addTooltip(redoButton, "Redo last action(Strg + Y)");
+		
 		Button zoomInButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomIn(), "resources/png/magnifier+.24.png");
 		Button zoomOneButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOne(), "resources/png/magnifier1.24.png");
 		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
@@ -86,7 +92,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getComm().saveXmlFile2(fmmlxDiagram.getPackagePath(), fmmlxDiagram.getID()), "resources/png/save.24.png");
 		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 		
-		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
+		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
 		return toolBar;
 	}
 		
@@ -200,6 +206,8 @@ public class DiagramViewHeadToolBar extends VBox {
 				+ "Strg + S: Save Diagram\n"
 				+ "Strg + A: Select all Elements\n"
 				+ "Strg + F: Find Objects\n"
+				+ "Strg + Z: Undo\n"
+				+ "Strg + Y: Redo\n"
 				+ "\n"
 				+ "Mouse ombinations:\n"
 				+ "Mouse + Space or Alt: Move Canvas";

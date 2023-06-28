@@ -28,6 +28,8 @@ public class SerializerConstant {
     public static final String TAG_NAME_ATTRIBUTE = "Attribute";
 	public static final String TAG_NAME_LABELS = "Labels";
 	public static final String TAG_NAME_LABEL = "Label";
+	public static final String TAG_NAME_VIEWS = "Views";
+	public static final String TAG_NAME_VIEW = "View";
 
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_PACKAGE_PATH = "package_path";
