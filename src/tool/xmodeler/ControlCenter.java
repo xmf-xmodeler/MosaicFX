@@ -52,6 +52,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
@@ -65,6 +66,7 @@ public class ControlCenter extends Stage {
 	private final ListView<String> projectLV = new ListView<String>();
 	private final ListView<String> modelLV = new ListView<String>();
 	private final ListView<String> diagramLV = new ListView<String>();
+	private final ListView<FmmlxObject> customGuiLV = new ListView<FmmlxObject>();
 	private MenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
 
@@ -244,7 +246,11 @@ public class ControlCenter extends Stage {
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
-		//build second column
+		// GUI
+		Label guiLabel = new Label("Custom User Interfaces");
+		grid.add(guiLabel, 5, 1);
+		
+		//build second row
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
 		TreeItem loading = new TreeItem("Loading");
@@ -261,6 +267,11 @@ public class ControlCenter extends Stage {
 		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
+		
+		// TODO
+		diagramLV.setOnMouseClicked(me -> handleClickOnGUIListView(me));
+		customGuiLV.setPrefSize(250, 150);
+		grid.add(customGuiLV, 5, 2);
 
 		//build third row
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
@@ -271,7 +282,10 @@ public class ControlCenter extends Stage {
 		return grid;
 	}
 
+
+
 	private void handelClickOnDiagramListView(MouseEvent me) {
+		// open diagram
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if(selectedDiagramString != null) {
@@ -281,6 +295,18 @@ public class ControlCenter extends Stage {
 		       }
 		   }
 		}
+		
+		// list potential guis
+		if (me.getClickCount() == 1 && me.getButton() == MouseButton.PRIMARY) {
+			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
+			if (selectedDiagramString != null) {
+				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
+				if (selectedModelString != null) {
+					Vector <FmmlxObject> guiObjects = loadCustomGUIS();
+				}
+			}
+		}
+		
 	}
 
 	private void callConcreteSyntaxWizard() {
@@ -335,6 +361,19 @@ public class ControlCenter extends Stage {
 		}
 		return modelBrowser;
 	}
+	
+	
+	// load CustomUIs and display
+	public Vector<FmmlxObject> loadCustomGUIS() {
+		return null;
+	}
+	
+	// open CustomUI
+	private void handleClickOnGUIListView(MouseEvent me) {
+		return;
+	}
+	
+	
 
 	public Stage getStageForConsole() {
 		return new Stage();
