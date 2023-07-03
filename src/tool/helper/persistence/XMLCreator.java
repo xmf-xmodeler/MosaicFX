@@ -92,23 +92,23 @@ public class XMLCreator  {
 		if (diagramToDoList.isEmpty()) {
 			onDataReceived.run("Resolve ToDoList");
 		} else {
+			Element diagrams = returnDiagramsTag();
 			DiagramInfo diagramInfo = diagramToDoList.remove(0);
-			Element diagrams = returnDiagramsTag(diagramInfo);
 			Element diagram = createDiagramElement(diagramInfo, diagrams); 
 			appendEdgesToDiagram(diagramInfo, diagram);
 			appendLabelsToDiagram(diagramInfo, diagram);
 			appendObjectPositionsToDiagram(diagramInfo, diagram);
+			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagram);
 			//the next function also makes reursive call to resolveToDoList
 			appendViewsToDiagram(onDataReceived, diagramInfo, diagram);
 		}
 	}
 
-	private Element returnDiagramsTag(DiagramInfo diagramInfo) {
+	private Element returnDiagramsTag() {
 		NodeList nodes = root.getElementsByTagName(XMLTags.DIAGRAMS.getName());
 		//if diagrams do not exist append new tag to document
 		if (nodes.getLength() == 0) {
-			Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
-			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagrams);
+			Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());	
 			return diagrams;
 		} 
 		// if diagram exists return existing diagrams tag
@@ -117,7 +117,7 @@ public class XMLCreator  {
 	}
 
 	private void appendDiagramDisplayPropertiesToDiagrams(DiagramInfo diagramInfo, Element diagram) {
-		Element diagramDisplayProperties = XMLUtil.createChildElement(diagram, XMLTags.DIAGRAMS_DISPLAY_PROPERTIES.getName());
+		Element diagramDisplayProperties = XMLUtil.createChildElement(diagram, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
 		ReturnCall<HashMap<String, Boolean>> onDiagramDisplayPropertiesReturn = diagramDisplayPropertiesData -> {
 			for (Entry<String,Boolean> entry : diagramDisplayPropertiesData.entrySet()) {
 				String tagname = entry.getKey();
