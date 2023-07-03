@@ -16,7 +16,8 @@ public enum XMLAttributes {
 	XX("xx"),
 	TX("tx"),
 	TY("ty"),
-	HIDDEN("hidden");
+	HIDDEN("hidden"),
+	PATH("path") ;
 		
     public final String name;
 

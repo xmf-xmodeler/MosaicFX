@@ -16,7 +16,7 @@ public enum XMLTags {
 	VIEWS("Views"),
 	VIEW("View"),
 	OBJECT("Object"),
-	DIAGRAMDISPLAYPROPERTIES("DiagramDisplayProperties");
+	DIAGRAMS_DISPLAY_PROPERTIES("DiagramsDisplayProperties");
 	
     public final String name;
 
