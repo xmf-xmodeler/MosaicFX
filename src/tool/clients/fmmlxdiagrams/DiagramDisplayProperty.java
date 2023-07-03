@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
-public enum DiagramsDisplayProperty {
+public enum DiagramDisplayProperty {
 	OPERATIONS("Operations"),
 	OPERATIONVALUES("Operation Values"),
 	SLOTS("Slots"),
@@ -15,7 +15,7 @@ public enum DiagramsDisplayProperty {
 	
 	 public final String label;
 
-    private DiagramsDisplayProperty(String label) {
+    private DiagramDisplayProperty(String label) {
         this.label = label;
     }
 
