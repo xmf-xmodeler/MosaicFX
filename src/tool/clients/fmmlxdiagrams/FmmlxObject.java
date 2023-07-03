@@ -515,8 +515,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
-		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
+	protected void layout(FmmlxDiagram diagram, Map<DiagramsDisplayProperty, Boolean> diagramToolBarProperties) {
+		if (!diagramToolBarProperties.get(DiagramsDisplayProperty.CONCRETESYNTAX)){
 			if(diagram.umlMode) {
 				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
 			} else {

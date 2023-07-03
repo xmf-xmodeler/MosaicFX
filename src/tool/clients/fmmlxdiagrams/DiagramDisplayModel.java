@@ -26,47 +26,47 @@ public class DiagramDisplayModel {
 	boolean showConcreteSyntax = true;
 	boolean issueTableVisible = false;
 	
-	Map<DiagramDisplayProperty, Boolean> showPropertiesMap = new LinkedHashMap<>();
+	Map<DiagramsDisplayProperty, Boolean> showPropertiesMap = new LinkedHashMap<>();
 	
 	public DiagramDisplayModel(DiagramViewHeadToolBar diagramViewToolBar) {
 		this.diagramViewHeadToolBar = diagramViewToolBar;
 		fmmlxDiagram = diagramViewToolBar.getFmmlxDiagram();
 				
-		showPropertiesMap.put(DiagramDisplayProperty.OPERATIONS, showOperations);
-		showPropertiesMap.put(DiagramDisplayProperty.OPERATIONVALUES, showOperationValues);
-		showPropertiesMap.put(DiagramDisplayProperty.SLOTS, showSlots);
-		showPropertiesMap.put(DiagramDisplayProperty.GETTERSANDSETTERS, showGettersAndSetters);
-		showPropertiesMap.put(DiagramDisplayProperty.DERIVEDOPERATIONS, showDerivedOperations);
-		showPropertiesMap.put(DiagramDisplayProperty.DERIVEDATTRIBUTES, showDerivedAttributes);
-		showPropertiesMap.put(DiagramDisplayProperty.CONSTRAINTS, showConstraints);
-		showPropertiesMap.put(DiagramDisplayProperty.CONSTRAINTREPORTS, showConstraintReports);
-		showPropertiesMap.put(DiagramDisplayProperty.METACLASSNAME, showMetaClassName);
-		showPropertiesMap.put(DiagramDisplayProperty.CONCRETESYNTAX, showConcreteSyntax);
-		showPropertiesMap.put(DiagramDisplayProperty.ISSUETABLE, issueTableVisible);
+		showPropertiesMap.put(DiagramsDisplayProperty.OPERATIONS, showOperations);
+		showPropertiesMap.put(DiagramsDisplayProperty.OPERATIONVALUES, showOperationValues);
+		showPropertiesMap.put(DiagramsDisplayProperty.SLOTS, showSlots);
+		showPropertiesMap.put(DiagramsDisplayProperty.GETTERSANDSETTERS, showGettersAndSetters);
+		showPropertiesMap.put(DiagramsDisplayProperty.DERIVEDOPERATIONS, showDerivedOperations);
+		showPropertiesMap.put(DiagramsDisplayProperty.DERIVEDATTRIBUTES, showDerivedAttributes);
+		showPropertiesMap.put(DiagramsDisplayProperty.CONSTRAINTS, showConstraints);
+		showPropertiesMap.put(DiagramsDisplayProperty.CONSTRAINTREPORTS, showConstraintReports);
+		showPropertiesMap.put(DiagramsDisplayProperty.METACLASSNAME, showMetaClassName);
+		showPropertiesMap.put(DiagramsDisplayProperty.CONCRETESYNTAX, showConcreteSyntax);
+		showPropertiesMap.put(DiagramsDisplayProperty.ISSUETABLE, issueTableVisible);
 		sendDisplayPropertiesToXMF();
 	}
 
-	public boolean getPropertieValue (DiagramDisplayProperty propertie) {
+	public boolean getPropertieValue (DiagramsDisplayProperty propertie) {
 		return showPropertiesMap.get(propertie);
 	}
 	
-	public void setPropertyValue (DiagramDisplayProperty propertie, boolean bool) {
+	public void setPropertyValue (DiagramsDisplayProperty propertie, boolean bool) {
 		showPropertiesMap.replace(propertie, bool); 
 		sendDisplayPropertiesToXMF ();
 	}
 	
-	public boolean toggleDisplayProperty(DiagramDisplayProperty property){
+	public boolean toggleDisplayProperty(DiagramsDisplayProperty property){
 		setPropertyValue(property, !getPropertieValue(property));
 		return getPropertieValue(property);
 	}
 	
-	public Map<DiagramDisplayProperty, Boolean> getDisplayPropertiesMap(){
+	public Map<DiagramsDisplayProperty, Boolean> getDisplayPropertiesMap(){
 		return showPropertiesMap;
 	}
 	
 	public void sendDisplayPropertiesToXMF () {
 		Vector<Value> items = new Vector<>();
-		for (DiagramDisplayProperty propertie : DiagramDisplayProperty.values()) {
+		for (DiagramsDisplayProperty propertie : DiagramsDisplayProperty.values()) {
 			items.add(new Value(new Value[] {new Value(propertie.name()), 	new Value(getPropertieValue(propertie) )}));
 		}
 		Value[] itemArray = new Value[items.size()];
@@ -88,7 +88,7 @@ public class DiagramDisplayModel {
 			} else {
 				for (Entry<String, Boolean> entry : propertyImport.entrySet()) {
 					try {
-						setPropertyValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
+						setPropertyValue(DiagramsDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
 					} catch (Exception e) {
 						System.err.println("No Enum Value");
 					}			

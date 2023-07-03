@@ -10,7 +10,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractFmmlxObjectDisplay;
-import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
+import tool.clients.fmmlxdiagrams.DiagramsDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -27,7 +27,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 	private final static NodeBaseElement.Action NO_ACTION = null;
 
-	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+	public void layout(Map<DiagramsDisplayProperty, Boolean> diagramDisplayProperties) {
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.getX(), 0, 1, object.getY()));
 
 		NodeBox header = new NodeBox(0, 0, 100, 50, Color.LIGHTGRAY, Color.BLACK, (x) -> 1., PropertyType.Class);

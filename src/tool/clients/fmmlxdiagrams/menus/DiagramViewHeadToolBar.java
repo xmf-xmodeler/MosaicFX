@@ -21,7 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
-import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
+import tool.clients.fmmlxdiagrams.DiagramsDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
@@ -103,15 +103,15 @@ public class DiagramViewHeadToolBar extends VBox {
 		class ToggleMenuItem extends MenuItem {
 			final String visibleText;
 			final String invisibleText;
-			final DiagramDisplayProperty property;
+			final DiagramsDisplayProperty property;
 			
-			private ToggleMenuItem(DiagramDisplayProperty property) {
+			private ToggleMenuItem(DiagramsDisplayProperty property) {
 				this.property = property;
 				visibleText = "Hide " + property.getLabel();
 				invisibleText = "Show " + property.getLabel();
 				setText();
 				//IssueTable is the only DiagramDisplayProperty which visualization is not requested from XMF
-				if (property.equals(DiagramDisplayProperty.ISSUETABLE)) {
+				if (property.equals(DiagramsDisplayProperty.ISSUETABLE)) {
 					setOnAction(e -> {toggleItem(); fmmlxDiagram.switchTableOnAndOffForIssues();});	
 				} else {					
 					setOnAction(e -> toggleItem());
@@ -134,25 +134,25 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 		}
 		
-		Map<DiagramDisplayProperty, MenuItem> itemMap = new HashMap<DiagramDisplayProperty, MenuItem>();
-		EnumSet.allOf(DiagramDisplayProperty.class)
+		Map<DiagramsDisplayProperty, MenuItem> itemMap = new HashMap<DiagramsDisplayProperty, MenuItem>();
+		EnumSet.allOf(DiagramsDisplayProperty.class)
 			.forEach(property -> itemMap.put(property,(MenuItem)new ToggleMenuItem(property)));
 				
 		Menu operationsMenu = new Menu("Operations");
-		operationsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.OPERATIONS), itemMap.get(DiagramDisplayProperty.OPERATIONVALUES), itemMap.get(DiagramDisplayProperty.DERIVEDOPERATIONS));
+		operationsMenu.getItems().addAll(itemMap.get(DiagramsDisplayProperty.OPERATIONS), itemMap.get(DiagramsDisplayProperty.OPERATIONVALUES), itemMap.get(DiagramsDisplayProperty.DERIVEDOPERATIONS));
 		
 		Menu constraintsMenu = new Menu("Constraints");
-		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS), itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));		
+		constraintsMenu.getItems().addAll(itemMap.get(DiagramsDisplayProperty.CONSTRAINTS), itemMap.get(DiagramsDisplayProperty.CONSTRAINTREPORTS));		
 		
 		viewMenu.getItems().addAll(
 				operationsMenu,
-				itemMap.get(DiagramDisplayProperty.SLOTS),
-				itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
-				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES),
+				itemMap.get(DiagramsDisplayProperty.SLOTS),
+				itemMap.get(DiagramsDisplayProperty.GETTERSANDSETTERS),
+				itemMap.get(DiagramsDisplayProperty.DERIVEDATTRIBUTES),
 				constraintsMenu,
-				itemMap.get(DiagramDisplayProperty.METACLASSNAME),
-				itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
-				itemMap.get(DiagramDisplayProperty.ISSUETABLE)				
+				itemMap.get(DiagramsDisplayProperty.METACLASSNAME),
+				itemMap.get(DiagramsDisplayProperty.CONCRETESYNTAX),
+				itemMap.get(DiagramsDisplayProperty.ISSUETABLE)				
 		);
 		viewMenu.getItems().add(new SeparatorMenuItem());
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", 
