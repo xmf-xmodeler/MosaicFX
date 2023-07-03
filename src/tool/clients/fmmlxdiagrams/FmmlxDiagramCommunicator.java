@@ -24,8 +24,10 @@ import javax.xml.transform.TransformerException;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.Vector;
 
 public class FmmlxDiagramCommunicator {
@@ -123,7 +125,21 @@ public class FmmlxDiagramCommunicator {
 
     public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
-	public void createFmmlxDiagram(String packagePath, 
+    public void createFmmlxModelBrowser(String packagePath, 
+			String diagramName, 
+			String file,  
+			ReturnCall<Integer> onDiagramCreated){
+    	createFmmlxDiagram(packagePath, diagramName, file,DiagramType.ModelBrowser, onDiagramCreated);
+	}
+    
+    public void createFmmlxClassDiagram(String packagePath, 
+			String diagramName, 
+			String file,   
+			ReturnCall<Integer> onDiagramCreated){
+    	createFmmlxDiagram(packagePath, diagramName, file,DiagramType.ClassDiagram, onDiagramCreated);
+	}
+    
+    public void createFmmlxDiagram(String packagePath, 
 			String diagramName, 
 			String file, 
 			DiagramType type,  
@@ -2432,6 +2448,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("redo", message);
 	}
 
+	@Deprecated // use function below
 	public void sendViewStatus(int diagramID, Vector<String> names, Vector<Affine> transformations) {
 		if(names.size() != transformations.size()) throw new IllegalArgumentException("list sizes do not match");
 		Value[] listOfViews = new Value[names.size()];
@@ -2449,6 +2466,30 @@ public class FmmlxDiagramCommunicator {
 		};
 		sendMessage("sendViewStatusToModel", message);
 	}
+	
+	public void sendViewStatus(Integer diagramID, SortedMap<String, Affine> views) {
+		Value[] listOfViews = new Value[views.size()];
+		int size = views.size();
+		for(int i = 0; i < size; i++) {
+			Value[] view = new Value[4];
+			//Add view name
+			view[0] = new Value(views.firstKey());
+			
+			Affine affine = views.get(views.firstKey());
+			view[1] = new Value((float) affine.getMxx());	
+			view[2] = new Value((float) affine.getTx());
+			view[3] = new Value((float) affine.getTy());
+			listOfViews[i] = new Value(view);
+			views.remove(views.firstKey());
+		}
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(listOfViews)
+		};
+		sendMessage("sendViewStatusToModel", message);
+	}
+	
+	
 
 	@Deprecated // use asynch below
 	@SuppressWarnings("unchecked")
@@ -2525,4 +2566,6 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
+
+	
 }
