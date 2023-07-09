@@ -18,6 +18,7 @@ import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+import java.util.Arrays;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -51,6 +52,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import javafx.scene.Node;
+import javafx.collections.*;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
@@ -376,6 +379,9 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 		TreeItem<String> root = new TreeItem<>("root");
 		
+		ObservableList<Integer> currSel = projectTree.getSelectionModel().getSelectedIndices();
+		Integer[] integerArray = Arrays.copyOf(currSel.toArray(), currSel.toArray().length, Integer[].class);
+		
 		for (String projectString : vec) {
 			String[] projectPath = projectString.split("::");
 			TreeItem<String> currentTreeItemPosition = root;
@@ -402,6 +408,32 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
+		
+		//if( integerArray.length > 0 ) {
+			
+			//for( int i : integerArray) {
+				//projectTree.getSelectionModel().selectIndices( i ); // Remember the selected indices from the listView after update
+				// Might be counterintuitive if new projects are created in the meanwhile
+				// Instead derive the id based on the projectname
+				// For now always do the below
+			//}
+		//} else {
+			// Default select the first Element under "myProjects" if no selection is made
+			int i = 0;
+			try {
+				while( i < 500000) {
+					TreeItem<String> currEl = projectTree.getTreeItem(i);
+					i++;
+					if ( currEl.getValue().equals("MyProjects")) {
+						break; // i contains the first custom project
+					}
+				}
+			} catch( Exception e ) {
+				i = 0; // Select root element
+			}
+			
+			projectTree.getSelectionModel().select(i);
+		//}
 		});
 	}
 		

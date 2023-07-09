@@ -2,6 +2,7 @@ package tool.clients.customui;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,6 +76,15 @@ public class CustomUI {
 		
 		this.scene = new Scene(loadUI(fxmlFile)); // Loaded file represents the scene for the stage
 		this.stage.setScene(scene);
+		
+		// Load stylesheets related to FXML file
+		File rootDir = new File( fxmlFile.getParent() );
+		String[] CSSNextToFXML = rootDir.list( new CSSExtFilter() );
+		for (String file : CSSNextToFXML) {
+			String currfile = "file:/" + rootDir.toString() + "/" + file;
+			currfile = currfile.replaceAll("\\\\", "/");
+			scene.getStylesheets().add(currfile);
+		}
 
 		stage.show();
 	}
@@ -172,4 +182,18 @@ public class CustomUI {
 
 		return eventToID;
 	}
+	
+	 // inner class, generic extension filter for CSS Stylesheets
+	  public class CSSExtFilter implements FilenameFilter {
+	 
+	   private String ext;
+	 
+	   public CSSExtFilter() {
+	    this.ext = ".css";
+	   }
+	 
+	   public boolean accept(File dir, String name) {
+	    return (name.endsWith(ext));
+	   }
+	  }
 }
