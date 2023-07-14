@@ -30,7 +30,7 @@ public class DefaultUIGenerator {
 
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
 			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
-			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance) {
+			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance, int height) {
 
 		
 		if (pathGUI.equals("")) {
@@ -87,6 +87,11 @@ public class DefaultUIGenerator {
 					objects = this.recurGetObjectsForGUI(objects, root, distance);
 				} else {
 					objects.addAll(roots);
+				}
+				
+				// beachten von height
+				if (height > 0) {
+					// recursive objects hoch iterieren, um metaklassen zu finden
 				}
 				// add needed assocs
 				for (FmmlxObject o : objects) {

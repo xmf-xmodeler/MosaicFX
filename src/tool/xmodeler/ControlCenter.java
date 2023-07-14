@@ -51,6 +51,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import tool.clients.customui.CustomUI;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
@@ -269,7 +271,9 @@ public class ControlCenter extends Stage {
 		grid.add(diagramLV, 4, 2);
 		
 		// TODO
-		diagramLV.setOnMouseClicked(me -> handleClickOnGUIListView(me));
+		customGuiLV
+				.setOnMouseClicked(me -> handleClickOnGUIListView(me, diagramLV.getSelectionModel().getSelectedItem(),
+						modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems()));
 		customGuiLV.setPrefSize(250, 150);
 		grid.add(customGuiLV, 5, 2);
 
@@ -302,7 +306,7 @@ public class ControlCenter extends Stage {
 			if (selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 				if (selectedModelString != null) {
-					Vector <FmmlxObject> guiObjects = loadCustomGUIS();
+					loadCustomGUIS(selectedModelString, selectedDiagramString, modelLV.getItems());
 				}
 			}
 		}
@@ -363,13 +367,26 @@ public class ControlCenter extends Stage {
 	}
 	
 	
-	// load CustomUIs and display
-	public Vector<FmmlxObject> loadCustomGUIS() {
-		return null;
+	// FH load CustomUIs and display
+	public void loadCustomGUIS(String project, String model, Collection<String> models) {
+
+		ModelBrowser modelBrowser = new ModelBrowser(project, model, models);
+		ListView<FmmlxObject> listViewObjects = modelBrowser.getGUIListView();
+		customGuiLV.setItems(listViewObjects.getItems());
 	}
 	
-	// open CustomUI
-	private void handleClickOnGUIListView(MouseEvent me) {
+	// FH open CustomUI
+	private void handleClickOnGUIListView( MouseEvent me, String project, String model, Collection<String> models) {
+		
+		
+		FmmlxObject gui = customGuiLV.getSelectionModel().getSelectedItem();
+
+		
+		
+		
+		
+		
+		
 		return;
 	}
 	

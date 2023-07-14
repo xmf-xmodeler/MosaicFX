@@ -56,6 +56,10 @@ public final class ModelBrowser extends CustomStage {
 	private final ListView<FmmlxObject> fmmlxObjectListView = new ListView<>();
 	private final ListView<FmmlxAttribute> fmmlxAttributeListView = new ListView<>();
 	private final ListView<FmmlxSlot> slotListView = new ListView<>();
+	// FH ListView für 
+	private ListView<FmmlxObject> guiListView = new ListView<>();
+	// FH struct class for carrying diagram
+	private AbstractPackageViewer guiStructure;
 
 	private final Button opCodeButton = new Button("Commit");
 	private final Button conCodeButton = new Button("Commit");
@@ -616,6 +620,9 @@ public final class ModelBrowser extends CustomStage {
 		}
 	}
 	
+	// FH Part den ich nicht verstehe
+	// Wie funktioniert diagramID?
+	// Diagram wird nur hier gesetz, wieso kann ich es nicht abrufen?
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
 		if(!models.containsKey(selectedPath)) {
@@ -796,13 +803,40 @@ public final class ModelBrowser extends CustomStage {
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
-
+			
+			
+			// FH add guiobjects to guilistView
+			for (FmmlxObject o : objects) {
+				if (o.getMetaClassName().equals("UserInterface")) {
+					guiListView.getItems().add(o);
+				}
+			}
+			// FH for getting the diagram later in the control center
+			AbstractPackageViewer diagram = activePackage;
+			this.guiStructure = diagram;
+			
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
 			//set Flag for loaded okay...
 			restoreSelection();
 		});
 	}
+	
+	// FH return list view of objects
+	public ListView<FmmlxObject> getObjectListView(){
+		return this.fmmlxObjectListView;
+	}
+	
+	// FH getGUIListView
+	public ListView<FmmlxObject> getGUIListView(){
+		return this.guiListView;
+	}
+	
+	// FH return diagram struct
+	public AbstractPackageViewer getDiagramFromStruct() {
+		return this.activePackage;
+	}
+	
 	
 	private transient HashMap<String, String> selection = new HashMap<>();
 	
@@ -972,6 +1006,7 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this,"Remove Constraint", e -> actions.removeDialog(object,PropertyType.Constraint, constraint),() -> {return constraint != null;});
 		}
 	}
+	
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {
 		MenuItem item = new MenuItem(text);

@@ -1269,7 +1269,7 @@ public class DiagramActions {
 		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
 	
 		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(selectedObjects,
-				selectedAssociations, this.diagram, this, pathIcon, pathGUI, titleGUI, roots, distance);
+				selectedAssociations, this.diagram, this, pathIcon, pathGUI, titleGUI, roots, distance, height);
 	
 		// customGUIslotValues
 		this.diagram.updateDiagram();
