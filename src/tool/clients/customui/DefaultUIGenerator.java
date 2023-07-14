@@ -26,12 +26,30 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
+// TODO refactoring 
 public class DefaultUIGenerator {
 
+	AbstractPackageViewer diagram;
+	
+	private boolean instanceOfCommonClass(FmmlxObject object) {
+
+		boolean instanceOf = false;
+		FmmlxObject metaClass = this.diagram
+				.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
+
+		if (metaClass.getName().equals("CommonClass"))
+			instanceOf = true;
+		while (!instanceOf && !metaClass.getName().equals("FMMLx::MetaClass")) {
+			instanceOf = instanceOfCommonClass(metaClass);
+		}
+		return instanceOf;
+	}
+	
 	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
 			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
 			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance, int height) {
 
+		this.diagram = diagram;
 		
 		if (pathGUI.equals("")) {
 			Alert alert = new Alert(AlertType.CONFIRMATION, "No Path has been set for the GUI. Extraction of GUI is not possible.");
@@ -106,10 +124,12 @@ public class DefaultUIGenerator {
 
 		boolean isActionInjection;
 
+		// check if from commonClass
 		for (FmmlxObject o : objects) {
-			if (o.getMetaClassName().equals("CommonClass"))
+			if (instanceOfCommonClass(o)) 
 				objectsCommonClass.add(o);
 		}
+		
 
 		// get associations that are mapped
 		FmmlxAssociation associationDerivedFrom = diagram
