@@ -310,7 +310,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 					if (!checkDistance.isSelected())
 						textDistance.setText("0");
 					if (!checkHeight.isSelected())
-						textHeight.setText("0");
+						textHeight.setText("-1");
 
 					// convert pretty strings to associations
 
@@ -416,13 +416,15 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 			try {
 				this.distance = Integer.parseInt(distance);
 			} catch (Exception e) {
+				System.err.println(e + "Distance could not be parsed");
 				this.distance = 0;
 			}
 
 			try {
-				Integer.parseInt(height);
+				this.height = Integer.parseInt(height);
 			} catch (Exception e) {
-				this.height = 0;
+				this.height = -1;
+				System.err.println(e + "Height could not be parsed");
 			}
 
 			if (!root.isEmpty()) {

@@ -54,6 +54,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.customui.CustomUI;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import javafx.scene.Node;
 import javafx.collections.*;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -373,6 +374,10 @@ public class ControlCenter extends Stage {
 	// FH load CustomUIs and display
 	public void loadCustomGUIS(String project, String model, Collection<String> models) {
 
+		//FmmlxDiagramCommunicator.getCommunicator().openDiagram(project, model);
+		
+		
+		
 		ModelBrowser modelBrowser = new ModelBrowser(project, model, models);
 		ListView<FmmlxObject> listViewObjects = modelBrowser.getGUIListView();
 		customGuiLV.setItems(listViewObjects.getItems());
@@ -381,12 +386,26 @@ public class ControlCenter extends Stage {
 	// FH open CustomUI
 	private void handleClickOnGUIListView( MouseEvent me, String project, String model, Collection<String> models) {
 		
+		if (!(me.getClickCount() == 2)) {
+			return;
+		}
 		
 		FmmlxObject gui = customGuiLV.getSelectionModel().getSelectedItem();
-
+		
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram(project, model);
 		
 		
+		// FH Methode um diagram zu erstellen aber nicht zu öffnen, speziell für context menu, communicator create diagram
 		
+		//FmmlxDiagramCommunicator.getCommunicator().createDiagram();
+		
+		AbstractPackageViewer diagram = FmmlxDiagramCommunicator.getDiagram(1);
+		CustomUI customUI = new CustomUI(null, gui);
+		System.err.println(diagram.getObjectsReadOnly());
+	
+				
+		
+	
 		
 		
 		

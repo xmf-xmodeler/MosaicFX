@@ -2,7 +2,6 @@ package tool.clients.customui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -30,7 +29,63 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 public class DefaultUIGenerator {
 
 	AbstractPackageViewer diagram;
-	
+	Vector<FmmlxObject> objects;
+	Vector<FmmlxAssociation> associations;
+	DiagramActions actions;
+	String pathIcon;
+	String pathGUI;
+	String titleGUI;
+	Vector<FmmlxObject> roots;
+	int distance;
+	int height;
+
+	HashMap<String, HashMap<String, String>> customGuiSlots;
+
+	public DefaultUIGenerator(AbstractPackageViewer diagram, Vector<FmmlxObject> objects,
+			Vector<FmmlxAssociation> associations, DiagramActions actions, String pathIcon, String pathGUI,
+			String titleGUI, Vector<FmmlxObject> roots, int distance, int height) {
+		this.diagram = diagram;
+		this.objects = objects;
+		this.associations = associations;
+		this.actions = actions;
+		this.pathIcon = pathIcon;
+		this.pathGUI = pathGUI;
+		this.titleGUI = titleGUI;
+		this.roots = roots;
+		this.distance = distance;
+		this.height = height;
+
+	}
+
+	// TODO add callback here
+	public void instantiateCustomGUI() {
+
+		this.customGuiSlots = instantiateGUI();
+
+		this.diagram.updateDiagram();
+
+		// fill slots after diagram has updated
+		// TODO change to callback
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+			@Override
+			public void run() {
+				addSlotValuesCustomGUI(customGuiSlots);
+			}
+		}, 2500);
+
+		this.diagram.updateDiagram();
+
+		// todo callback
+		/*
+		 * 
+		 * ReturnCall<HashMap<String,HashMap<String,String>>> slotValues = slotsValues
+		 * -> { addSlotValuesCustomGUI(slotsValues); };
+		 * 
+		 * instantiateGUI(slotValues);
+		 * 
+		 */
+	}
+
 	private boolean instanceOfCommonClass(FmmlxObject object) {
 
 		boolean instanceOf = false;
@@ -39,28 +94,25 @@ public class DefaultUIGenerator {
 
 		if (metaClass.getName().equals("CommonClass"))
 			instanceOf = true;
-		while (!instanceOf && !metaClass.getName().equals("FMMLx::MetaClass")) {
+		while (!instanceOf && !metaClass.getName().equals("Root::FMMLx::MetaClass")) {
 			instanceOf = instanceOfCommonClass(metaClass);
 		}
 		return instanceOf;
 	}
-	
-	public HashMap<String, Map<String, String>> instantiateCustomGUI(Vector<FmmlxObject> objects,
-			Vector<FmmlxAssociation> associations, AbstractPackageViewer diagram, DiagramActions actions,
-			String pathIcon, String pathGUI, String titleGUI, Vector<FmmlxObject> roots, int distance, int height) {
 
-		this.diagram = diagram;
-		
+	private HashMap<String, HashMap<String, String>> instantiateGUI() {
+
 		if (pathGUI.equals("")) {
-			Alert alert = new Alert(AlertType.CONFIRMATION, "No Path has been set for the GUI. Extraction of GUI is not possible.");
+			Alert alert = new Alert(AlertType.CONFIRMATION,
+					"No Path has been set for the GUI. Extraction of GUI is not possible.");
 			alert.showAndWait().ifPresent(response -> {
-			     if (response == ButtonType.OK) {
-			        return;
-			     }
-			 });
+				if (response == ButtonType.OK) {
+					return;
+				}
+			});
 			return null;
 		}
-		
+
 		// for the fxml export
 		int rowCount = 0;
 
@@ -88,7 +140,7 @@ public class DefaultUIGenerator {
 		// first String -> instanceName
 		// second String -> slotName
 		// third String -> value
-		HashMap<String, Map<String, String>> slotValues = new HashMap<String, Map<String, String>>();
+		HashMap<String, HashMap<String, String>> slotValues = new HashMap<String, HashMap<String, String>>();
 		HashMap<String, String> helper = new HashMap<String, String>();
 
 		// used if the commonClass needs a listInjection or not
@@ -106,30 +158,64 @@ public class DefaultUIGenerator {
 				} else {
 					objects.addAll(roots);
 				}
-				
-				// beachten von height
-				if (height > 0) {
-					// recursive objects hoch iterieren, um metaklassen zu finden
-				}
+
 				// add needed assocs
 				for (FmmlxObject o : objects) {
 					for (FmmlxAssociation a : o.getAllRelatedAssociations()) {
-						if (!associations.contains(a))
+						if (!associations.contains(a)) {
 							associations.add(a);
+						}
+
 					}
 
 				}
 			}
 		}
 
+
+
+		int i = 0;	
+
+		// check if height > 0 and additional assocs have to be considered
+		if (height > 0 || height == -1) {
+			// für alle objekte
+			for (FmmlxObject o : objects) {
+				// prüfe ob es eine metaklasse gibt
+				i = 0;
+				while ((height > i || height == -1) && !(o.getMetaClassName().equals("Root::FMMLx::MetaClass"))) {
+					i += 1;
+					o = diagram.getObjectByPath(diagram.getPackagePath() + "::" + o.getMetaClassName());
+					// die eine assoziation hat
+					for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
+						// welche auf level 0 instanziert wird
+						if (assoc.getSourceNode().equals(o) && assoc.getLevelSource() == 0) {
+							if (!associations.contains(assoc)) {
+								associations.add(assoc);
+							}
+
+						}
+					}
+				}
+			}
+		}
+		
+		// check if all objects are included for the needed assocs
+		
+		for (FmmlxAssociation assoc : associations) {
+
+			if (!objects.contains(assoc.getTargetNode())) {
+				objects.add(assoc.getTargetNode());
+			}
+
+		}
+
 		boolean isActionInjection;
 
 		// check if from commonClass
 		for (FmmlxObject o : objects) {
-			if (instanceOfCommonClass(o)) 
+			if (instanceOfCommonClass(o))
 				objectsCommonClass.add(o);
 		}
-		
 
 		// get associations that are mapped
 		FmmlxAssociation associationDerivedFrom = diagram
@@ -165,9 +251,10 @@ public class DefaultUIGenerator {
 				if (assoc.getTargetNode().equals(o)) {
 
 					head = false;
-					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + UUID.randomUUID().toString().replace("-", ""));
+					//referenceInstanceName = actions.addInstance("Reference",
+					//		"ref" + UUID.randomUUID().toString().replace("-", ""));
 
+					referenceInstanceName = actions.addInstance("Reference",  "ref" + assoc.getTargetNode().toString() + " " + o.toString());
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
@@ -187,15 +274,20 @@ public class DefaultUIGenerator {
 		}
 
 		if (!atLeastOneHead) {
-			Alert alert = new Alert(AlertType.CONFIRMATION, "No head of GUI could detected. This configuration is invalid!");
+			Alert alert = new Alert(AlertType.CONFIRMATION,
+					"No head of GUI could detected. This configuration is invalid!");
 			alert.showAndWait().ifPresent(response -> {
-			     if (response == ButtonType.OK) {
-			        return;
-			     }
-			 });
+				if (response == ButtonType.OK) {
+					return;
+				}
+			});
 			return null;
 		}
-
+		
+		// TODO Problem bei MLM
+		// parent der ferenz wird auf eine klasse gesetzt, die keine repräsemntation als referenz hat -> document vs invoice
+		// wie damit umgehen und korrekt mappen? hier auf invoice
+		
 		// mapping von parent
 		for (Reference reference : referenceMapping) {
 
@@ -249,9 +341,7 @@ public class DefaultUIGenerator {
 				isHead = "true";
 				helper.put("associationName", "");
 				helper.put("isHead", isHead);
-
 			} else {
-
 				multiplicity = reference.getAssoc().getMultiplicityStartToEnd().toString();
 				endChar = multiplicity.charAt(multiplicity.length() - 1);
 				isHead = "false";
@@ -267,7 +357,7 @@ public class DefaultUIGenerator {
 				helper.put("isHead", isHead);
 			}
 
-			slotValues.put(reference.getReferenceInstanceName(), (Map<String, String>) helper.clone());
+			slotValues.put(reference.getReferenceInstanceName(), (HashMap<String, String>) helper.clone());
 			helper.clear();
 
 			// take care of parent child
@@ -307,7 +397,7 @@ public class DefaultUIGenerator {
 				helper.put("nameOfModelElement", reference.getObject().getName());
 				helper.put("idOfUIElement", injectionInstanceName);
 
-				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+				slotValues.put(injectionInstanceName, (HashMap<String, String>) helper.clone());
 				helper.clear();
 
 				ListView<String> objectListView = new ListView<>();
@@ -315,8 +405,17 @@ public class DefaultUIGenerator {
 				rechteSeiteGrid.add(objectListView, 0, rowCount++);
 			}
 
-			attributes = reference.getObject().getAllAttributes();
-			operations = reference.getObject().getAllOperations();
+			// all operations and attributes of all meta classes
+			if (height == -1) {
+				attributes = reference.getObject().getAllAttributes();
+				operations = reference.getObject().getAllOperations();
+			} else if (height == 0) {
+				attributes = reference.getObject().getOwnAttributes();
+				operations = reference.getObject().getOwnOperations();
+			} else {
+				attributes = getAttributesByHeight(reference, height);
+				operations = getOperationsByHeight(reference, height);
+			}
 
 			if (attributes.size() > 0) {
 				rechteSeiteGrid.add(new Label("Slots:"), 0, rowCount++);
@@ -328,7 +427,7 @@ public class DefaultUIGenerator {
 
 				helper.put("idOfUIElement", injectionInstanceName);
 				helper.put("nameOfModelElement", attribute.getName());
-				slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+				slotValues.put(injectionInstanceName, (HashMap<String, String>) helper.clone());
 				helper.clear();
 
 				actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
@@ -366,7 +465,7 @@ public class DefaultUIGenerator {
 							"actInj" + UUID.randomUUID().toString().replace("-", ""));
 					helper.put("idOfUIElement", injectionInstanceName);
 
-					slotValues.put(injectionInstanceName, (Map<String, String>) helper.clone());
+					slotValues.put(injectionInstanceName, (HashMap<String, String>) helper.clone());
 					helper.clear();
 
 					// add associations
@@ -388,7 +487,7 @@ public class DefaultUIGenerator {
 							UUID.randomUUID().toString().replace("-", ""));
 					helper.put("idOfUIElement", actionInstanceName);
 
-					slotValues.put(actionInstanceName, (Map<String, String>) helper.clone());
+					slotValues.put(actionInstanceName, (HashMap<String, String>) helper.clone());
 					helper.clear();
 
 					// add associations
@@ -416,14 +515,14 @@ public class DefaultUIGenerator {
 						helper.put("dataType", paramType);
 						helper.put("orderNo", String.valueOf(paramCounter));
 						helper.put("value", "");
-						slotValues.put(parameterInstanceName, (Map<String, String>) helper.clone());
+						slotValues.put(parameterInstanceName, (HashMap<String, String>) helper.clone());
 						helper.clear();
 
 						// virtual for every parameter
 						virtualInstanceName = actions.addInstance("Virtual",
 								"vir" + UUID.randomUUID().toString().replace("-", ""));
 						helper.put("idOfUIElement", virtualInstanceName);
-						slotValues.put(virtualInstanceName, (Map<String, String>) helper.clone());
+						slotValues.put(virtualInstanceName, (HashMap<String, String>) helper.clone());
 						helper.clear();
 						actions.addAssociation(virtualInstanceName, parameterInstanceName,
 								associationRepresentedAs.getName());
@@ -461,10 +560,37 @@ public class DefaultUIGenerator {
 		helper.put("titleOfUI", titleGUI);
 		helper.put("pathToIconOfWindow", pathIcon);
 
-		slotValues.put(guiInstanceName, (Map<String, String>) helper.clone());
+		slotValues.put(guiInstanceName, (HashMap<String, String>) helper.clone());
 		helper.clear();
 
 		return slotValues;
+	}
+
+	// get Operations from meta classes
+	private Vector<FmmlxOperation> getOperationsByHeight(Reference reference, int height) {
+
+		Vector<FmmlxOperation> operations = new Vector<>();
+		FmmlxObject object = reference.getObject();
+		int i = 0;
+		while (i < height && !object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+			operations.addAll(reference.getObject().getOwnOperations());
+			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
+			i += 1;
+		}
+		return operations;
+	}
+
+	// get Attributes from meta classes
+	private Vector<FmmlxAttribute> getAttributesByHeight(Reference reference, int height) {
+		Vector<FmmlxAttribute> attributes = new Vector<>();
+		FmmlxObject object = reference.getObject();
+		int i = 0;
+		while (i < height && !object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+			attributes.addAll(reference.getObject().getOwnAttributes());
+			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
+			i += 1;
+		}
+		return attributes;
 	}
 
 	// recursive function to get Objects for CustomgUI
@@ -494,9 +620,9 @@ public class DefaultUIGenerator {
 		return vector;
 	}
 
-	public void addSlotValuesCustomGUI(HashMap<String, Map<String, String>> slotValues, AbstractPackageViewer diagram) {
+	private void addSlotValuesCustomGUI(HashMap<String, HashMap<String, String>> slotValues) {
 		// TODO refactor this
-		
+
 		if (slotValues == null) {
 			return;
 		}

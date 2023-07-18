@@ -73,7 +73,7 @@ public class CustomUI {
 			stage.getIcons().add(imageIcon);
 		} catch (Exception e) {
 			System.err.println("CustomUI can not set a icon");
-			System.err.println(e.toString());
+			//System.err.println(e.toString());
 		}
 		
 		// Obtain FXML file from UI object

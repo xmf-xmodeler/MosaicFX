@@ -121,6 +121,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<String, ReturnCall<Integer>> newlyCreatedDiagrams = new HashMap<>();
 
 
+	// FH new diagram type for GUI
     public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
 	public void createDiagram(

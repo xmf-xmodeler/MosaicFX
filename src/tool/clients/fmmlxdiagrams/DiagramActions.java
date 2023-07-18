@@ -1252,13 +1252,10 @@ public class DiagramActions {
 	}
 	
 	public void instantiateGUI(Optional<Result> r) {
-		
+
 		if (!r.isPresent())
 			return;
-	
-		DefaultUIGenerator uiGenerator = new DefaultUIGenerator();
-	
-	
+
 		int distance = r.get().distance;
 		int height = r.get().height;
 		Vector<FmmlxObject> roots = r.get().root;
@@ -1267,24 +1264,11 @@ public class DiagramActions {
 		String titleGUI = r.get().titleGUI;
 		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
 		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
-	
-		final HashMap<String, Map<String, String>> customGUIslotValues = uiGenerator.instantiateCustomGUI(selectedObjects,
-				selectedAssociations, this.diagram, this, pathIcon, pathGUI, titleGUI, roots, distance, height);
-	
-		// customGUIslotValues
-		this.diagram.updateDiagram();
-	
-		// fill slots after diagram has updated
-		// TODO change to callback
-		new java.util.Timer().schedule(new java.util.TimerTask() {
-			@Override
-			public void run() {
-				uiGenerator.addSlotValuesCustomGUI(customGUIslotValues, diagram);
-				diagram.updateDiagram();
-			}
-		}, 2500);
-	
-		this.updateDiagram();
+
+		DefaultUIGenerator uiGenerator = new DefaultUIGenerator(this.diagram, selectedObjects, selectedAssociations,
+				this, pathIcon, pathGUI, titleGUI, roots, distance, height);
+
+		uiGenerator.instantiateCustomGUI();
 	}
 	
 	// FH addAssociation
