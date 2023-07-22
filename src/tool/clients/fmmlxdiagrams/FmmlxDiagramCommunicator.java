@@ -16,6 +16,7 @@ import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.persistence.XMLInstanceStub;
 import tool.xmodeler.XModeler;
 import xos.Value;
 
@@ -24,7 +25,6 @@ import javax.xml.transform.TransformerException;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
@@ -105,6 +105,7 @@ public class FmmlxDiagramCommunicator {
 			createStage(diagram.getView(), diagramName, this.handle, diagram);	
 			diagrams.add(diagram);
 //			l.countDown();
+			//TODO still needed?
 			diagram.getDiagramViewToolBarModel().receiveDisplayPropertiesFromXMF();
 			/*
 //			If you create a new diagram the backend has no ToolBarProperties. If you would save it this way the properties can't be exported to XML.
@@ -1010,8 +1011,9 @@ public class FmmlxDiagramCommunicator {
 	////////////////////////////////////////////////
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
-
-	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y, boolean hidden) {
+	//TODO extract as XMLCommunicator
+	@Deprecated //use function below
+	public void sendObjectInformation(int diagramID, String objectPath, int x, int y, boolean hidden) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectPath),
@@ -1020,8 +1022,18 @@ public class FmmlxDiagramCommunicator {
 				new Value(hidden)};
 		sendMessage("sendNewPosition", message);
 	}
+	
+	public void sendObjectInformation(int diagramID, XMLInstanceStub stub) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(stub.getRef()),
+				new Value(stub.getxCoordinate()),
+				new Value(stub.getyCoordinate()),
+				new Value(stub.isHidden())};
+		sendMessage("sendNewPosition", message);
+	}
 
-	public void sendCurrentPositions(int diagramID, Edge<?> edge) {
+	public void sendCurrentEdgePositions(int diagramID, Edge<?> edge) {
 		Vector<Point2D> points = edge.getIntermediatePoints();
 		
 		if(points.size() < 2) System.err.println("Suspicious edge alignment");
@@ -2180,7 +2192,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllObjectPositions(int diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllObjectPositionsReceived) {
+	public void getObjectsInformation(int diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllObjectPositionsReceived) {
 		ReturnCall<Vector<Object>> returnCall = response -> {
 			HashMap<String, HashMap<String, Object>> objectPositions = new HashMap<>();
 			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
@@ -2558,7 +2570,6 @@ public class FmmlxDiagramCommunicator {
 			onDiagramDisplayPropertiesReturn.run(result);
 		};
 		xmfRequestAsync(handle, diagramID, "getViewOptions", localReturn);
-
 	}
     
     public void runOperation(Integer diagramID, String text) throws TimeOutException {
