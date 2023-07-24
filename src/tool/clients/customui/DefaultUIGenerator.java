@@ -24,8 +24,8 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 
-// TODO refactoring 
 public class DefaultUIGenerator {
 
 	AbstractPackageViewer diagram;
@@ -57,33 +57,36 @@ public class DefaultUIGenerator {
 
 	}
 
-	// TODO add callback here
 	public void instantiateCustomGUI() {
 
-		this.customGuiSlots = instantiateGUI();
+		// 3. step: slot values are set
+		ReturnCall<Object> onUpdate = update -> {
+			addSlotValuesCustomGUI(customGuiSlots);
+			diagram.updateDiagram();
+		};
 
-		this.diagram.updateDiagram();
+		// 2. step: diagram is updated to ensure the instances are available
+		ReturnCall<Vector<Object>> onInstanceCreated = onCreated -> {
+			diagram.updateDiagram(onUpdate);
+		};
 
-		// fill slots after diagram has updated
-		// TODO change to callback
-		new java.util.Timer().schedule(new java.util.TimerTask() {
-			@Override
-			public void run() {
-				addSlotValuesCustomGUI(customGuiSlots);
-			}
-		}, 2500);
+		// 1. step: instantiate objects
+		this.customGuiSlots = instantiateGUI(onInstanceCreated);
 
-		this.diagram.updateDiagram();
-
-		// todo callback
 		/*
+		 * this.customGuiSlots = instantiateGUI();
 		 * 
-		 * ReturnCall<HashMap<String,HashMap<String,String>>> slotValues = slotsValues
-		 * -> { addSlotValuesCustomGUI(slotsValues); };
+		 * this.diagram.updateDiagram();
 		 * 
-		 * instantiateGUI(slotValues);
+		 *
+		 * java.util.Timer().schedule(new java.util.TimerTask() {
 		 * 
+		 * @Override public void run() { addSlotValuesCustomGUI(customGuiSlots); } },
+		 * 2500);
+		 * 
+		 * this.diagram.updateDiagram();
 		 */
+
 	}
 
 	private boolean instanceOfCommonClass(FmmlxObject object) {
@@ -100,7 +103,7 @@ public class DefaultUIGenerator {
 		return instanceOf;
 	}
 
-	private HashMap<String, HashMap<String, String>> instantiateGUI() {
+	private HashMap<String, HashMap<String, String>> instantiateGUI(ReturnCall<Vector<Object>> onInstanceCreated) {
 
 		if (pathGUI.equals("")) {
 			Alert alert = new Alert(AlertType.CONFIRMATION,
@@ -118,7 +121,7 @@ public class DefaultUIGenerator {
 
 		// instance of customGUI
 		String guiInstanceName = actions.addInstance("UserInterface",
-				"gui" + UUID.randomUUID().toString().replace("-", ""), false);
+				"gui" + UUID.randomUUID().toString().replace("-", ""), false, onInstanceCreated);
 
 		// objects for customGUI
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
@@ -172,9 +175,7 @@ public class DefaultUIGenerator {
 			}
 		}
 
-
-
-		int i = 0;	
+		int i = 0;
 
 		// check if height > 0 and additional assocs have to be considered
 		if (height > 0 || height == -1) {
@@ -198,9 +199,9 @@ public class DefaultUIGenerator {
 				}
 			}
 		}
-		
+
 		// check if all objects are included for the needed assocs
-		
+
 		for (FmmlxAssociation assoc : associations) {
 
 			if (!objects.contains(assoc.getTargetNode())) {
@@ -251,10 +252,11 @@ public class DefaultUIGenerator {
 				if (assoc.getTargetNode().equals(o)) {
 
 					head = false;
-					//referenceInstanceName = actions.addInstance("Reference",
-					//		"ref" + UUID.randomUUID().toString().replace("-", ""));
+					referenceInstanceName = actions.addInstance("Reference",
+							"ref" + UUID.randomUUID().toString().replace("-", ""));
 
-					referenceInstanceName = actions.addInstance("Reference",  "ref" + assoc.getTargetNode().toString() + " " + o.toString());
+					// referenceInstanceName = actions.addInstance("Reference", "ref" +
+					// assoc.getTargetNode().toString() + " " + o.toString());
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
@@ -283,11 +285,13 @@ public class DefaultUIGenerator {
 			});
 			return null;
 		}
-		
+
 		// TODO Problem bei MLM
-		// parent der ferenz wird auf eine klasse gesetzt, die keine repräsemntation als referenz hat -> document vs invoice
+		// parent der ferenz wird auf eine klasse gesetzt, die keine repräsemntation als
+		// referenz hat -> document vs invoice
 		// wie damit umgehen und korrekt mappen? hier auf invoice
-		
+		// durch iterieren, welcher kinder haben eine referenz und da den besten nehmen
+
 		// mapping von parent
 		for (Reference reference : referenceMapping) {
 

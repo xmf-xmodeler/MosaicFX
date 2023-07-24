@@ -377,15 +377,21 @@ public class ControlCenter extends Stage {
 		//FmmlxDiagramCommunicator.getCommunicator().openDiagram(project, model);
 		
 		
+		// TODO create new diagram type in xmf
+		// create new diagram
+		// load diagram and keep it
+		
+		/*
 		
 		ModelBrowser modelBrowser = new ModelBrowser(project, model, models);
 		ListView<FmmlxObject> listViewObjects = modelBrowser.getGUIListView();
 		customGuiLV.setItems(listViewObjects.getItems());
+		*/
 	}
 	
 	// FH open CustomUI
 	private void handleClickOnGUIListView( MouseEvent me, String project, String model, Collection<String> models) {
-		
+		/*
 		if (!(me.getClickCount() == 2)) {
 			return;
 		}
@@ -403,13 +409,8 @@ public class ControlCenter extends Stage {
 		CustomUI customUI = new CustomUI(null, gui);
 		System.err.println(diagram.getObjectsReadOnly());
 	
-				
+		*/
 		
-	
-		
-		
-		
-		return;
 	}
 	
 	

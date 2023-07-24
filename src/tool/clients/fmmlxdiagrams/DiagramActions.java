@@ -1282,19 +1282,19 @@ public class DiagramActions {
 	}
 	
 
-	// FH adding instances that can be shown
-	public String addInstance(String className, String instanceName, boolean hidden) {
+	// FH adding instances that can be shown, asynchronously
+	public String addInstance(String className, String instanceName, boolean hidden, ReturnCall<Vector<Object>> onInstantiation) {
 		Vector<String> parents = new Vector<String>();
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, hidden);
+ 		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, hidden, onInstantiation);
 		return instanceName;
 	}
 	
 	// FH adding instances that can be shown
-		public String addInstance(String className, String instanceName) {
-			Vector<String> parents = new Vector<String>();
-			diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, 0, 0, true);
-			return instanceName;
-		}
+	public String addInstance(String className, String instanceName) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, true);
+		return instanceName;
+	}
 		
 	
 	
