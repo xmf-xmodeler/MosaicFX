@@ -92,8 +92,13 @@ public class DefaultUIGenerator {
 	private boolean instanceOfCommonClass(FmmlxObject object) {
 
 		boolean instanceOf = false;
+		
+		if (object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+			return instanceOf;
+		}
+		
 		FmmlxObject metaClass = this.diagram
-				.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
+				.getObjectByPath(object.getMetaClassName());
 
 		if (metaClass.getName().equals("CommonClass"))
 			instanceOf = true;

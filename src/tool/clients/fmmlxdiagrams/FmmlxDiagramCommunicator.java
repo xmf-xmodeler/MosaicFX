@@ -122,7 +122,7 @@ public class FmmlxDiagramCommunicator {
 
 
 	// FH new diagram type for GUI
-    public static enum DiagramType {ClassDiagram, ModelBrowser};
+    public static enum DiagramType {ClassDiagram, ModelBrowser, ControlCenter};
 	
 	public void createDiagram(
 			String packagePath, 

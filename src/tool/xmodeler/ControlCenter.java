@@ -6,23 +6,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 import java.util.Arrays;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.FloatProperty;
 import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -50,19 +42,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import javafx.collections.*;
+
 import tool.clients.customui.CustomUI;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import javafx.scene.Node;
-import javafx.collections.*;
+import tool.clients.fmmlxdiagrams.ControlCenterGUIView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
 
 public class ControlCenter extends Stage {
@@ -75,6 +67,7 @@ public class ControlCenter extends Stage {
 	private final ListView<FmmlxObject> customGuiLV = new ListView<FmmlxObject>();
 	private MenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
+	private HashMap<String, AbstractPackageViewer> loadedDiagrams = new HashMap<>();
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -275,9 +268,7 @@ public class ControlCenter extends Stage {
 		grid.add(diagramLV, 4, 2);
 		
 		// TODO
-		customGuiLV
-				.setOnMouseClicked(me -> handleClickOnGUIListView(me, diagramLV.getSelectionModel().getSelectedItem(),
-						modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems()));
+		customGuiLV.setOnMouseClicked(me -> handleClickOnGUIListView(me, customGuiLV.getSelectionModel().getSelectedItem()));
 		customGuiLV.setPrefSize(250, 150);
 		grid.add(customGuiLV, 5, 2);
 
@@ -305,7 +296,7 @@ public class ControlCenter extends Stage {
 		}
 		
 		// list potential guis
-		if (me.getClickCount() == 1 && me.getButton() == MouseButton.PRIMARY) {
+		if (me.getClickCount() == 2 && me.getButton() == MouseButton.SECONDARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if (selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
@@ -370,46 +361,78 @@ public class ControlCenter extends Stage {
 		return modelBrowser;
 	}
 	
-	
 	// FH load CustomUIs and display
 	public void loadCustomGUIS(String project, String model, Collection<String> models) {
 
-		//FmmlxDiagramCommunicator.getCommunicator().openDiagram(project, model);
+		customGuiLV.getItems().clear();
 		
 		
 		// TODO create new diagram type in xmf
-		// create new diagram
 		// load diagram and keep it
+		String packagePath = modelLV.getSelectionModel().getSelectedItem();
+		String diagramName = "ControllerMapping"; //to be changed
+		String file = "";
+
+		// 3rd step adding gui items to list view
+		ReturnCall<Vector<FmmlxObject>> onObjectsReturn = objects -> {
+			for (FmmlxObject o : objects) {
+				if (o.getMetaClassName().equals("Root::"+ model + "::UserInterface")) {
+					customGuiLV.getItems().add(o);
+					loadedDiagrams.put(o.getName(), o.getDiagram());
+				}
+			}
+		};
 		
-		/*
+		// 2nd step get objects from diagram
+		ReturnCall<Integer> onDiagramCreated = onCreated -> {
+			AbstractPackageViewer diagram = new ControlCenterGUIView(FmmlxDiagramCommunicator.getCommunicator(),
+					onCreated, packagePath);
+
+			
+			FmmlxDiagramCommunicator.getCommunicator().getAllObjects(diagram, onObjectsReturn);
+
+		};
+
+		// 1st step create new diagram
+		// TODO führt zu Problemen mit dem Fmmlx Diagram -> alle 
+		// objekte sind hidden und auf 0,0
+		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, diagramName, file,
+				DiagramType.ControlCenter, false, onDiagramCreated);
 		
-		ModelBrowser modelBrowser = new ModelBrowser(project, model, models);
-		ListView<FmmlxObject> listViewObjects = modelBrowser.getGUIListView();
-		customGuiLV.setItems(listViewObjects.getItems());
-		*/
+		
+
 	}
-	
+
 	// FH open CustomUI
-	private void handleClickOnGUIListView( MouseEvent me, String project, String model, Collection<String> models) {
-		/*
-		if (!(me.getClickCount() == 2)) {
+	private void handleClickOnGUIListView(MouseEvent me, FmmlxObject gui) {
+		if (!(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY)) {
 			return;
 		}
-		
-		FmmlxObject gui = customGuiLV.getSelectionModel().getSelectedItem();
-		
-		FmmlxDiagramCommunicator.getCommunicator().openDiagram(project, model);
-		
-		
-		// FH Methode um diagram zu erstellen aber nicht zu öffnen, speziell für context menu, communicator create diagram
-		
-		//FmmlxDiagramCommunicator.getCommunicator().createDiagram();
-		
-		AbstractPackageViewer diagram = FmmlxDiagramCommunicator.getDiagram(1);
-		CustomUI customUI = new CustomUI(null, gui);
-		System.err.println(diagram.getObjectsReadOnly());
+
+		// problem .. slots are not set at this moment
+		// need for ALL slots - not all names are known prrior -> domain slots
+		AbstractPackageViewer diagram = loadedDiagrams.get(gui.getName());
 	
-		*/
+		HashMap<FmmlxObject, Vector<String>> slots = new HashMap<>();
+		Vector<String> slotNames = new Vector<>();
+		
+		slotNames.add("titleOfUI");
+		slotNames.add("pathToIconOfWindow");
+		slotNames.add("pathToFXML");
+		
+		slots.put(gui, slotNames);
+		
+		
+		ReturnCall<?> onSlotsFetched = onReturnCall ->{
+			CustomUI customUI = new CustomUI(diagram, gui);
+		};
+		
+		FmmlxDiagramCommunicator.getCommunicator().fetchAllSlots(diagram, slots, onSlotsFetched);
+		
+		
+		
+		
+		
 		
 	}
 	

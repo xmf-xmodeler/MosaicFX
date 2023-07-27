@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +24,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
@@ -42,8 +42,8 @@ public class CustomGUIController {
 		this.loader = loader;
 		this.eventToID = eventToID;
 		this.customUI = customUI;
-	}  
-	   
+	}
+	
 	@FXML
 	public void initialize() {
 		// initialize the missing attributes after the loading of the controller is finished
@@ -59,12 +59,13 @@ public class CustomGUIController {
 				((ListView) currEl).setOnMouseClicked(this::selectNewInstance); // event also covers update of UI / Model
 			}
 		}
-		   
+		  
+
 		// Inject values of the mapping model into the custom UI to complete initialization
 		injectGUI();
-		   		   
 		// Output information
 		System.err.println("Load of View from file finished!");
+		
 	}
 	   
 	private void fillChildren(Parent content) {

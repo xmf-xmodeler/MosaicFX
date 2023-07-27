@@ -605,6 +605,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return path.substring(2); 
 	}
+	
+	public AbstractPackageViewer getDiagram() {
+		return this.diagram;
+	}
 
 	@Deprecated
 	/* TODO create a new class for non-Fmmlx-Objects */
