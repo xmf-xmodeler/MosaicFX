@@ -153,11 +153,16 @@ public class XMLCreator {
 		edge.setAttribute(XMLAttributes.NAME.getName(), packagePath + "::" + ref);
 		edge.setAttribute(XMLAttributes.REF.getName(), ref);
 		
-		
 		HashMap<String, Object> attributesMap = edgeData.getValue();
 		setEdgePorts(edge, attributesMap);
 		appendIntermediatePointsToEdge(attributesMap, edge);
 		setEdgeType(edge, edgeData);
+		appendLabelsToEdge(edge);
+	}
+
+	private void appendLabelsToEdge(Element edge) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void setEdgeType(Element edge, Entry<String, HashMap<String, Object>> edgeData) {
