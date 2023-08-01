@@ -10,6 +10,7 @@ public enum XMLAttributes {
 	X_COORDINATE("xCoordinate"),
 	Y_COORDINATE("yCoordinate"),
 	NAME("name"),
+	//TODO
 	ATTRIBUTE_PARENT_ASSOCIATION("whatsWithThat"),
 	LOCAL_ID("localID"),
 	OWNER_ID("ownerID"),

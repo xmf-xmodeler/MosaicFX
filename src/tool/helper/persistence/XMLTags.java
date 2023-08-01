@@ -12,10 +12,10 @@ public enum XMLTags {
 	INTERMEDIATE_POINT("IntermediatePoint"),
 	LABELS("Labels"),
 	LABEL("Label"),
-	OBJECTS("Objects"),
+	INSTANCES("Instances"),
 	VIEWS("Views"),
 	VIEW("View"),
-	OBJECT("Object"),
+	INSTANCE("Instance"),
 	DIAGRAM_DISPLAY_PROPERTIES("DiagramDisplayProperties");
 	
     public final String name;
