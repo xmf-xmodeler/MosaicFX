@@ -103,7 +103,6 @@ public class XMLCreator {
 			DiagramInfo diagramInfo = diagramsWaitingForParsing.remove(0);
 			Element diagram = createDiagramElement(diagramInfo, diagrams);
 			appendEdgesToDiagram(diagramInfo, diagram);
-			appendLabelsToDiagram(diagramInfo, diagram);
 			appendObjectInformationToDiagram(diagramInfo, diagram);
 			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagram);
 			// the next function also makes reursive call to resolveToDoList
@@ -141,27 +140,29 @@ public class XMLCreator {
 		Element edges = XMLUtil.createChildElement(diagram, XMLTags.EDGES.getName());
 		ReturnCall<HashMap<String, HashMap<String, Object>>> onAllEdgePositionsReceived = edgesData -> {
 			for (Entry<String, HashMap<String, Object>> edgeData : edgesData.entrySet()) {
-				appendEdgeToEdges(edges, edgeData);
+				appendEdgeToEdges(edges, edgeData, diagramInfo);
 			}
 		};
 		comm.getAllEdgePositions(diagramInfo.getId(), onAllEdgePositionsReceived);
 	}
 
-	private void appendEdgeToEdges(Element edges, Entry<String, HashMap<String, Object>> edgeData) {
+	private void appendEdgeToEdges(Element edges, Entry<String, HashMap<String, Object>> edgeData, DiagramInfo diagramInfo) {
 		Element edge = XMLUtil.createChildElement(edges, XMLTags.EDGE.getName());
 		String ref = edgeData.getKey();
-		edge.setAttribute(XMLAttributes.NAME.getName(), packagePath + "::" + ref);
+		String edgeName = packagePath + "::" + ref;
+		edge.setAttribute(XMLAttributes.NAME.getName(),edgeName);
 		edge.setAttribute(XMLAttributes.REF.getName(), ref);
 		
 		HashMap<String, Object> attributesMap = edgeData.getValue();
 		setEdgePorts(edge, attributesMap);
 		appendIntermediatePointsToEdge(attributesMap, edge);
 		setEdgeType(edge, edgeData);
-		appendLabelsToEdge(edge);
+		appendLabelsToEdge(edge, diagramInfo);
 	}
 
-	private void appendLabelsToEdge(Element edge) {
-		// TODO Auto-generated method stub
+	private void appendLabelsToEdge(Element edge, DiagramInfo diagramInfo) {
+		Element labels = XMLUtil.createChildElement(edge, XMLTags.LABELS.getName());
+		appendLabelToLabels(diagramInfo, labels, edge);
 		
 	}
 
@@ -200,21 +201,24 @@ public class XMLCreator {
 		}
 	}
 
-	private void appendLabelsToDiagram(DiagramInfo diagramInfo, Element diagram) {
-		Element labels = XMLUtil.createChildElement(diagram, XMLTags.LABELS.getName());
+	private void appendLabelToLabels(DiagramInfo diagramInfo, Element labels, Element edge) {
 		ReturnCall<HashMap<String, HashMap<String, Object>>> onAllLabelPositionsReceived = labelsData -> {
 			for (Entry<String, HashMap<String, Object>> labelData : labelsData.entrySet()) {
-				Element label = XMLUtil.createChildElement(labels, XMLTags.LABEL.getName());
-
-				HashMap<String, Object> attributesMap = labelData.getValue();
-
-				label.setAttribute(XMLAttributes.LOCAL_ID.getName(), String.valueOf(attributesMap.get("localID")));
-				label.setAttribute(XMLAttributes.OWNER_ID.getName(), String.valueOf(attributesMap.get("ownerID")));
-				label.setAttribute(XMLAttributes.X_COORDINATE.getName(), String.valueOf(attributesMap.get("x")));
-				label.setAttribute(XMLAttributes.Y_COORDINATE.getName(), String.valueOf(attributesMap.get("y")));
+				HashMap<String, Object> attributesMap = labelData.getValue();				
+				if (attributesMap.get("ownerID").equals(edge.getAttribute(XMLAttributes.NAME.getName()))) {
+					Element label = XMLUtil.createChildElement(labels, XMLTags.LABEL.getName());
+					setLabelAttributes(attributesMap, label);
+				}
 			}
 		};
 		comm.getAllLabelPositions(diagramInfo.getId(), onAllLabelPositionsReceived);
+	}
+
+	private void setLabelAttributes(HashMap<String, Object> attributesMap, Element label) {
+		label.setAttribute(XMLAttributes.LOCAL_ID.getName(), String.valueOf(attributesMap.get("localID")));
+		label.setAttribute(XMLAttributes.OWNER_ID.getName(), String.valueOf(attributesMap.get("ownerID")));
+		label.setAttribute(XMLAttributes.X_COORDINATE.getName(), String.valueOf(attributesMap.get("x")));
+		label.setAttribute(XMLAttributes.Y_COORDINATE.getName(), String.valueOf(attributesMap.get("y")));
 	}
 
 	// TODO store this information until the a fmmlxDiagram object is created. When

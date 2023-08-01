@@ -194,7 +194,7 @@ public class XmlManager extends XmlHandler {
                 double y = Double.parseDouble(tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
                 boolean hidden = "true".equals(tmp.getAttribute(SerializerConstant.ATTRIBUTE_HIDDEN));
                 String objectPath = tmp.getAttribute(SerializerConstant.ATTRIBUTE_REFERENCE);
-                communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y), hidden);
+                communicator.sendObjectInformation(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y), hidden);
             }
         }
     }
