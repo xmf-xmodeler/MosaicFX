@@ -80,7 +80,7 @@ public class DiagramDisplayModel {
 		diagramViewHeadToolBar.getFmmlxDiagram().getComm().sendMessage("sendViewOptions", message);
 	}
 	
-	public void receiveDisplayPropertiesFromXMF () {
+	public void receiveDisplayPropertiesFromXMF () { // used while updating
 		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
 		ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn = propertyImport -> {
 			if (propertyImport.isEmpty()) {
@@ -97,6 +97,22 @@ public class DiagramDisplayModel {
 		};
 		
 		communicator.getDiagramDisplayProperties(fmmlxDiagram.getID(), onViewOptionsReturn);
+	}
+
+	public void setProperties(Vector<Vector<Object>> listOfOptions) { // used on diagram Creation
+		for(Vector<Object> option : listOfOptions) {
+			try {
+				String name = (String) option.get(0);
+				Boolean b = (Boolean) option.get(1);
+				try {
+					setPropertyValue(DiagramDisplayProperty.valueOf(name.toUpperCase()),b);					
+				} catch (Exception e) {
+					System.err.println("No Enum Value");
+				}
+			} catch (Exception e) {
+				System.err.println("Could not read display option on diagram creation, ignoring: " + option);
+			}
+		}
 	}
 		
 }

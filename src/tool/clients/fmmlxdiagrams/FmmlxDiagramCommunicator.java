@@ -94,7 +94,7 @@ public class FmmlxDiagramCommunicator {
 //		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfViews, umlMode);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions, umlMode);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -103,7 +103,7 @@ public class FmmlxDiagramCommunicator {
 			createStage(diagram.getView(), diagramName, this.handle, diagram);	
 			diagrams.add(diagram);
 //			l.countDown();
-			diagram.getDiagramViewToolBarModel().receiveDisplayPropertiesFromXMF();
+//			diagram.getDiagramViewToolBarModel().receiveDisplayPropertiesFromXMF();
 			/*
 //			If you create a new diagram the backend has no ToolBarProperties. If you would save it this way the properties can't be exported to XML.
 //			To avoid this we will send the properties right at the initialization of the model to the backend.
@@ -2505,6 +2505,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public void sendDiagramDisplayOptions(Integer diagramID, HashMap<String, Boolean> map) {
+		System.err.println("send options: " + map);
 		Vector<Value> items = new Vector<>();
 		for(String key : map.keySet()) {
 			items.add(new Value(new Value[] {new Value(key), new Value(map.get(key))}));

@@ -102,7 +102,7 @@ public class ControllerLanguageInterpreter {
 			}
 			
 			fetchEl = underlyingDiagram.getObjectByPath( fetchEl.getOfPath() );
-			if( fetchEl.getOfPath().equals("Root::FMML::MetaClass")) {
+			if( fetchEl.getOfPath().equals("Root::FMMLx::MetaClass")) {
 				break;
 			}
 		}

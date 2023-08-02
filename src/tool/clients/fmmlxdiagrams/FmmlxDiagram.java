@@ -149,6 +149,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = diagramViewToolbar.getModel();
+		diagramViewToolBarModel.setProperties(listOfOptions);
 		
 		this.diagramName = name;
 		splitPane = new SplitPane();
@@ -209,8 +210,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				} catch(Exception e) {
 					return null;
 				}
-			}
-			
+			}			
 		});
 		
 		

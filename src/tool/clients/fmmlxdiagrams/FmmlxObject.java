@@ -386,7 +386,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		try {
 			FmmlxObject of = diagram.getObjectByPath(ofPath); return of.name;
 		} catch (PathNotFoundException e) {
-			if ("Root::FMML::MetaClass".equals(ofPath)) return "MetaClass";
+			if ("Root::FMMLx::MetaClass".equals(ofPath)) return "MetaClass";
 			return ofPath;
 		}
 	}
@@ -537,6 +537,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			try{
 				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
 				if(this.isInstanceOf(classs, this.level) && this.level == c.level) {
+					myConcreteSyntax = c;
+				}
+				if(this.ownPath.equals(c.classPath) && this.level == c.level) {
 					myConcreteSyntax = c;
 				}
 			} catch (Exception e) {}
