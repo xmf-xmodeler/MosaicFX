@@ -132,7 +132,7 @@ public class ObjectContextMenu extends ContextMenu {
 			if(choices.size() > 0) {
 				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel()-1, choices);
 				dialog.setTitle("Edit Concrete Syntax");
-				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + "on which level?" );
+				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + " on which level?" );
 //				dialog.setContentText("Choose level:");
 	
 				// Traditional way to get the response value.

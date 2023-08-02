@@ -16,12 +16,13 @@ public enum XMLAttributes {
 	XX("xx"),
 	TX("tx"),
 	TY("ty"),
+	PATH("path"),
 	HIDDEN("hidden");
 		
     public final String name;
 
     private XMLAttributes(String name) {
-	this.name = name;
+    	this.name = name;
     }
 
 	public String getName() {
