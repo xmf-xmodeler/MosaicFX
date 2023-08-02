@@ -291,12 +291,6 @@ public class DefaultUIGenerator {
 			return null;
 		}
 
-		// TODO Problem bei MLM
-		// parent der ferenz wird auf eine klasse gesetzt, die keine repräsemntation als
-		// referenz hat -> document vs invoice
-		// wie damit umgehen und korrekt mappen? hier auf invoice
-		// durch iterieren, welcher kinder haben eine referenz und da den besten nehmen
-
 		// mapping von parent
 		for (Reference reference : referenceMapping) {
 
@@ -335,6 +329,25 @@ public class DefaultUIGenerator {
 
 			}
 
+			// MLM parent mapping
+			if (!parentSet) {
+				// get all instances of object
+				for (FmmlxObject o : reference.getParent().getObject().getInstancesByLevel(1)) {
+
+					// for every reference
+					for (Reference r : referenceMapping) {
+						// if there is a reference with a lower level instance
+						if (r.getObject().equals(o)) {
+							// set parent
+							if (!parentSet) {
+								reference.setParent(r);
+								parentSet = true;
+							}
+						}
+					}
+				}
+			}
+			
 			if (!parentSet) {
 				System.err.println("kein parent fuer " + reference.getReferenceInstanceName());
 			}

@@ -51,6 +51,7 @@ import tool.clients.fmmlxdiagrams.ControlCenterGUIView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
@@ -366,6 +367,7 @@ public class ControlCenter extends Stage {
 
 		customGuiLV.getItems().clear();
 		
+		System.err.println("gui load");
 		
 		// TODO create new diagram type in xmf
 		// load diagram and keep it
@@ -373,29 +375,54 @@ public class ControlCenter extends Stage {
 		String diagramName = "ControllerMapping"; //to be changed
 		String file = "";
 
-		// 3rd step adding gui items to list view
-		ReturnCall<Vector<FmmlxObject>> onObjectsReturn = objects -> {
-			for (FmmlxObject o : objects) {
-				if (o.getMetaClassName().equals("Root::"+ model + "::UserInterface")) {
-					customGuiLV.getItems().add(o);
-					loadedDiagrams.put(o.getName(), o.getDiagram());
-				}
-			}
-		};
+//		// 3rd step adding gui items to list view
+//		ReturnCall<Object> onUpdate = update -> {
+//			
+//			Vector objects = 
+//			for (FmmlxObject o : ) {
+//				
+//				Vector<FmmlxSlot> slots = o.getAllSlots();
+//				
+//				System.err.println(o.getName());
+//				
+//				if (slots.size()>0) {
+//					System.err.println("slots size is > 0");
+//				}
+//				
+//				if (o.getMetaClassName().equals("Root::"+ model + "::UserInterface")) {
+//					customGuiLV.getItems().add(o);
+//					loadedDiagrams.put(o.getName(), o.getDiagram());
+//				}
+//			}
+//		};
+		
 		
 		// 2nd step get objects from diagram
+		// and filter guis
 		ReturnCall<Integer> onDiagramCreated = onCreated -> {
 			AbstractPackageViewer diagram = new ControlCenterGUIView(FmmlxDiagramCommunicator.getCommunicator(),
 					onCreated, packagePath);
 
-			
-			FmmlxDiagramCommunicator.getCommunicator().getAllObjects(diagram, onObjectsReturn);
+			ReturnCall<Object> onUpdate = update -> {
+				Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
+
+				for (FmmlxObject o : objects) {
+
+					System.err.println(o.getName());
+
+					if (o.getMetaClassName().equals("UserInterface")) {
+						customGuiLV.getItems().add(o);
+						loadedDiagrams.put(o.getName(), o.getDiagram());
+					}
+				}
+			};
+
+			diagram.updateDiagram(onUpdate);
+
 
 		};
 
 		// 1st step create new diagram
-		// TODO führt zu Problemen mit dem Fmmlx Diagram -> alle 
-		// objekte sind hidden und auf 0,0
 		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, diagramName, file,
 				DiagramType.ControlCenter, false, onDiagramCreated);
 		
@@ -429,7 +456,7 @@ public class ControlCenter extends Stage {
 		
 		FmmlxDiagramCommunicator.getCommunicator().fetchAllSlots(diagram, slots, onSlotsFetched);
 		
-		
+		// how to get all other slots?
 		
 		
 		
