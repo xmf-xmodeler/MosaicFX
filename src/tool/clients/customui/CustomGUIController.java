@@ -165,7 +165,12 @@ public class CustomGUIController {
 		   // Fetch controller mapping objects on level 0
 		   String packageOfDiagram = this.customUI.getDiagram().getPackagePath();
 		   String rootPath = packageOfDiagram + "::" + "UIElement";
-		   FmmlxObject rootObjectMapping = this.customUI.getDiagram().getObjectByPath("Root::"+rootPath);
+		   
+		   // if gui is executed via the controlanel "Root::" is missing
+		   if (!rootPath.contains("Root::")) {
+			   rootPath = "Root::"+rootPath;
+		   }
+		   FmmlxObject rootObjectMapping = this.customUI.getDiagram().getObjectByPath(rootPath);
 		   
 		   HashSet<FmmlxObject> subClass = rootObjectMapping.getAllSubclasses();
 		   Vector<FmmlxObject> allObjectsL1 = new Vector<FmmlxObject>();

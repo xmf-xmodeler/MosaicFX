@@ -302,7 +302,7 @@ public class ControlCenter extends Stage {
 			if (selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 				if (selectedModelString != null) {
-					loadCustomGUIS(selectedModelString, selectedDiagramString, modelLV.getItems());
+					loadCustomGUIS(selectedModelString, selectedDiagramString);
 				}
 			}
 		}
@@ -363,43 +363,19 @@ public class ControlCenter extends Stage {
 	}
 	
 	// FH load CustomUIs and display
-	public void loadCustomGUIS(String project, String model, Collection<String> models) {
+	public void loadCustomGUIS(String project, String model) {
 
 		customGuiLV.getItems().clear();
-		
-		System.err.println("gui load");
-		
-		// TODO create new diagram type in xmf
+
 		// load diagram and keep it
-		String packagePath = modelLV.getSelectionModel().getSelectedItem();
-		String diagramName = "ControllerMapping"; //to be changed
+		String packagePath = project;
+		String diagramName = model;
 		String file = "";
 
-//		// 3rd step adding gui items to list view
-//		ReturnCall<Object> onUpdate = update -> {
-//			
-//			Vector objects = 
-//			for (FmmlxObject o : ) {
-//				
-//				Vector<FmmlxSlot> slots = o.getAllSlots();
-//				
-//				System.err.println(o.getName());
-//				
-//				if (slots.size()>0) {
-//					System.err.println("slots size is > 0");
-//				}
-//				
-//				if (o.getMetaClassName().equals("Root::"+ model + "::UserInterface")) {
-//					customGuiLV.getItems().add(o);
-//					loadedDiagrams.put(o.getName(), o.getDiagram());
-//				}
-//			}
-//		};
-		
-		
 		// 2nd step get objects from diagram
 		// and filter guis
 		ReturnCall<Integer> onDiagramCreated = onCreated -> {
+
 			AbstractPackageViewer diagram = new ControlCenterGUIView(FmmlxDiagramCommunicator.getCommunicator(),
 					onCreated, packagePath);
 
@@ -408,25 +384,18 @@ public class ControlCenter extends Stage {
 
 				for (FmmlxObject o : objects) {
 
-					System.err.println(o.getName());
-
 					if (o.getMetaClassName().equals("UserInterface")) {
 						customGuiLV.getItems().add(o);
 						loadedDiagrams.put(o.getName(), o.getDiagram());
 					}
 				}
 			};
-
 			diagram.updateDiagram(onUpdate);
-
-
 		};
 
 		// 1st step create new diagram
 		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, diagramName, file,
 				DiagramType.ControlCenter, false, onDiagramCreated);
-		
-		
 
 	}
 
@@ -435,32 +404,8 @@ public class ControlCenter extends Stage {
 		if (!(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY)) {
 			return;
 		}
-
-		// problem .. slots are not set at this moment
-		// need for ALL slots - not all names are known prrior -> domain slots
 		AbstractPackageViewer diagram = loadedDiagrams.get(gui.getName());
-	
-		HashMap<FmmlxObject, Vector<String>> slots = new HashMap<>();
-		Vector<String> slotNames = new Vector<>();
-		
-		slotNames.add("titleOfUI");
-		slotNames.add("pathToIconOfWindow");
-		slotNames.add("pathToFXML");
-		
-		slots.put(gui, slotNames);
-		
-		
-		ReturnCall<?> onSlotsFetched = onReturnCall ->{
-			CustomUI customUI = new CustomUI(diagram, gui);
-		};
-		
-		FmmlxDiagramCommunicator.getCommunicator().fetchAllSlots(diagram, slots, onSlotsFetched);
-		
-		// how to get all other slots?
-		
-		
-		
-		
+		CustomUI customUI = new CustomUI(diagram, gui);
 	}
 	
 	

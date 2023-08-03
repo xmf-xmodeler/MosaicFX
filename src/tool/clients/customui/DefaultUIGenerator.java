@@ -28,18 +28,21 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 
 public class DefaultUIGenerator {
 
-	AbstractPackageViewer diagram;
-	Vector<FmmlxObject> objects;
-	Vector<FmmlxAssociation> associations;
-	DiagramActions actions;
-	String pathIcon;
-	String pathGUI;
-	String titleGUI;
-	Vector<FmmlxObject> roots;
-	int distance;
-	int height;
+	private AbstractPackageViewer diagram;
+	private Vector<FmmlxObject> objects;
+	private Vector<FmmlxAssociation> associations;
+	private DiagramActions actions;
+	private String pathIcon;
+	private String pathGUI;
+	private String titleGUI;
+	private Vector<FmmlxObject> roots;
+	private int distance;
+	private int height;
 
-	HashMap<String, HashMap<String, String>> customGuiSlots;
+	private HashMap<String, HashMap<String, String>> customGuiSlots;
+
+	private String metaClassName = "Root::FMMLx::MetaClass";
+	private String commonClassName = "CommonClass";
 
 	public DefaultUIGenerator(AbstractPackageViewer diagram, Vector<FmmlxObject> objects,
 			Vector<FmmlxAssociation> associations, DiagramActions actions, String pathIcon, String pathGUI,
@@ -67,42 +70,30 @@ public class DefaultUIGenerator {
 
 		// 2. step: diagram is updated to ensure the instances are available
 		ReturnCall<Vector<Object>> onInstanceCreated = onCreated -> {
+
+			System.err.println(onCreated);
+
 			diagram.updateDiagram(onUpdate);
 		};
 
 		// 1. step: instantiate objects
 		this.customGuiSlots = instantiateGUI(onInstanceCreated);
 
-		/*
-		 * this.customGuiSlots = instantiateGUI();
-		 * 
-		 * this.diagram.updateDiagram();
-		 * 
-		 *
-		 * java.util.Timer().schedule(new java.util.TimerTask() {
-		 * 
-		 * @Override public void run() { addSlotValuesCustomGUI(customGuiSlots); } },
-		 * 2500);
-		 * 
-		 * this.diagram.updateDiagram();
-		 */
-
 	}
 
 	private boolean instanceOfCommonClass(FmmlxObject object) {
 
 		boolean instanceOf = false;
-		
-		if (object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+
+		if (object.getMetaClassName().equals(metaClassName)) {
 			return instanceOf;
 		}
-		
-		FmmlxObject metaClass = this.diagram
-				.getObjectByPath(object.getMetaClassName());
 
-		if (metaClass.getName().equals("CommonClass"))
+		FmmlxObject metaClass = this.diagram.getObjectByPath(object.getMetaClassName());
+
+		if (metaClass.getName().equals(commonClassName))
 			instanceOf = true;
-		while (!instanceOf && !metaClass.getName().equals("Root::FMMLx::MetaClass")) {
+		while (!instanceOf && !metaClass.getName().equals(metaClassName)) {
 			instanceOf = instanceOfCommonClass(metaClass);
 		}
 		return instanceOf;
@@ -111,14 +102,7 @@ public class DefaultUIGenerator {
 	private HashMap<String, HashMap<String, String>> instantiateGUI(ReturnCall<Vector<Object>> onInstanceCreated) {
 
 		if (pathGUI.equals("")) {
-			Alert alert = new Alert(AlertType.CONFIRMATION,
-					"No Path has been set for the GUI. Extraction of GUI is not possible.");
-			alert.showAndWait().ifPresent(response -> {
-				if (response == ButtonType.OK) {
-					return;
-				}
-			});
-			return null;
+			raiseAlert("No Path has been set for the GUI. Extraction of GUI is not possible.");
 		}
 
 		// for the fxml export
@@ -143,6 +127,9 @@ public class DefaultUIGenerator {
 		String multiplicity;
 		char endChar;
 
+		boolean isActionInjection;
+
+		// todo find better solution
 		// Slot Values that can already be determined in this method should be saved for
 		// performance
 		// first String -> instanceName
@@ -188,7 +175,7 @@ public class DefaultUIGenerator {
 			for (FmmlxObject o : objects) {
 				// prüfe ob es eine metaklasse gibt
 				i = 0;
-				while ((height > i || height == -1) && !(o.getMetaClassName().equals("Root::FMMLx::MetaClass"))) {
+				while ((height > i || height == -1) && !(o.getMetaClassName().equals(metaClassName))) {
 					i += 1;
 					o = diagram.getObjectByPath(diagram.getPackagePath() + "::" + o.getMetaClassName());
 					// die eine assoziation hat
@@ -214,8 +201,6 @@ public class DefaultUIGenerator {
 			}
 
 		}
-
-		boolean isActionInjection;
 
 		// check if from commonClass
 		for (FmmlxObject o : objects) {
@@ -281,83 +266,15 @@ public class DefaultUIGenerator {
 		}
 
 		if (!atLeastOneHead) {
-			Alert alert = new Alert(AlertType.CONFIRMATION,
-					"No head of GUI could detected. This configuration is invalid!");
-			alert.showAndWait().ifPresent(response -> {
-				if (response == ButtonType.OK) {
-					return;
-				}
-			});
-			return null;
+			raiseAlert("No head of GUI could detected. This configuration is invalid!");
 		}
 
-		// mapping von parent
-		for (Reference reference : referenceMapping) {
-
-			boolean parentSet = false;
-			if (reference.isHead()) {
-				continue;
-			}
-
-			for (Reference reference2 : referenceMapping) {
-
-				if (reference2.equals(reference)) {
-					continue;
-				}
-
-				// wenn parent auf head verweist
-				if (reference2.getObject().equals(reference.getParent().getObject()) && reference2.getAssoc() == null
-						&& parentSet == false) {
-					reference.setParent(reference2);
-					parentSet = true;
-				}
-			}
-
-			// wenn parent nicht auf head verweist -> mapping auf ein beliebiges mögliches
-			// parent objekt
-			// beliebig klingt drastisch, ist es aber nicht
-			if (!parentSet) {
-				for (Reference reference2 : referenceMapping) {
-					if (reference2.isHead()) {
-						continue;
-					}
-					if (!parentSet && reference2.getObject().equals(reference.getParent().getObject())) {
-						reference.setParent(reference2);
-						parentSet = true;
-					}
-				}
-
-			}
-
-			// MLM parent mapping
-			if (!parentSet) {
-				// get all instances of object
-				for (FmmlxObject o : reference.getParent().getObject().getInstancesByLevel(1)) {
-
-					// for every reference
-					for (Reference r : referenceMapping) {
-						// if there is a reference with a lower level instance
-						if (r.getObject().equals(o)) {
-							// set parent
-							if (!parentSet) {
-								reference.setParent(r);
-								parentSet = true;
-							}
-						}
-					}
-				}
-			}
-			
-			if (!parentSet) {
-				System.err.println("kein parent fuer " + reference.getReferenceInstanceName());
-			}
-
-		}
+		// mpas references with parents
+		referenceMapping = mapReferences(referenceMapping);
 
 		for (Reference reference : referenceMapping) {
 
 			// add attributes to reference
-
 			if (reference.isHead()) {
 				isList = true;
 				isHead = "true";
@@ -382,12 +299,9 @@ public class DefaultUIGenerator {
 			slotValues.put(reference.getReferenceInstanceName(), (HashMap<String, String>) helper.clone());
 			helper.clear();
 
-			// take care of parent child
-
 			// add link "refersToStateOf" -> Reference + CommonClassInstance ANNAHME:
 			// Jede gewählte CommonClass hat mind. 1 Instanz.
 			// TODO: Prio 3 -> Wie damit umgehen, wenn keine Instanz existiert
-			// TODO: Was ist wenn die Instanz nicht den richtigen
 			actions.addAssociation(reference.getReferenceInstanceName(),
 					reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
 
@@ -588,13 +502,79 @@ public class DefaultUIGenerator {
 		return slotValues;
 	}
 
+	private ArrayList<Reference> mapReferences(ArrayList<Reference> referenceMapping) {
+		// mapping von parent
+		for (Reference reference : referenceMapping) {
+
+			boolean parentSet = false;
+			if (reference.isHead()) {
+				continue;
+			}
+
+			for (Reference reference2 : referenceMapping) {
+
+				if (reference2.equals(reference)) {
+					continue;
+				}
+
+				// wenn parent auf head verweist
+				if (reference2.getObject().equals(reference.getParent().getObject()) && reference2.getAssoc() == null
+						&& parentSet == false) {
+					reference.setParent(reference2);
+					parentSet = true;
+				}
+			}
+
+			// wenn parent nicht auf head verweist -> mapping auf ein beliebiges mögliches
+			// parent objekt
+			// beliebig klingt drastisch, ist es aber nicht
+			if (!parentSet) {
+				for (Reference reference2 : referenceMapping) {
+					if (reference2.isHead()) {
+						continue;
+					}
+					if (!parentSet && reference2.getObject().equals(reference.getParent().getObject())) {
+						reference.setParent(reference2);
+						parentSet = true;
+					}
+				}
+
+			}
+
+			// MLM parent mapping
+			if (!parentSet) {
+				// get all instances of object
+				for (FmmlxObject o : reference.getParent().getObject().getInstancesByLevel(1)) {
+
+					// for every reference
+					for (Reference r : referenceMapping) {
+						// if there is a reference with a lower level instance
+						if (r.getObject().equals(o)) {
+							// set parent
+							if (!parentSet) {
+								reference.setParent(r);
+								parentSet = true;
+							}
+						}
+					}
+				}
+			}
+
+			if (!parentSet) {
+				System.err.println("kein parent fuer " + reference.getReferenceInstanceName());
+			}
+
+		}
+		return referenceMapping;
+	}
+
 	// get Operations from meta classes
 	private Vector<FmmlxOperation> getOperationsByHeight(Reference reference, int height) {
 
 		Vector<FmmlxOperation> operations = new Vector<>();
 		FmmlxObject object = reference.getObject();
 		int i = 0;
-		while (i < height && !object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+		while (i < height && !object.getMetaClassName().equals(metaClassName)) {
 			operations.addAll(reference.getObject().getOwnOperations());
 			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
 			i += 1;
@@ -607,7 +587,7 @@ public class DefaultUIGenerator {
 		Vector<FmmlxAttribute> attributes = new Vector<>();
 		FmmlxObject object = reference.getObject();
 		int i = 0;
-		while (i < height && !object.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+		while (i < height && !object.getMetaClassName().equals(metaClassName)) {
 			attributes.addAll(reference.getObject().getOwnAttributes());
 			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
 			i += 1;
@@ -772,6 +752,15 @@ public class DefaultUIGenerator {
 
 		}
 
+	}
+
+	public void raiseAlert(String alertMessage) {
+		Alert alert = new Alert(AlertType.CONFIRMATION, alertMessage);
+		alert.showAndWait().ifPresent(response -> {
+			if (response == ButtonType.OK) {
+				return;
+			}
+		});
 	}
 
 	public class Reference {
