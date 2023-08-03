@@ -31,12 +31,6 @@ public class ObjectContextMenu extends ContextMenu {
 		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
-
-		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
-		MenuItem execUI = new MenuItem("Execute UI");
-		execUI.setOnAction( e -> actions.executeUI(object) );
-		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
-		// End custom UI
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));

@@ -65,10 +65,12 @@ public class ControlCenter extends Stage {
 	private final ListView<String> projectLV = new ListView<String>();
 	private final ListView<String> modelLV = new ListView<String>();
 	private final ListView<String> diagramLV = new ListView<String>();
-	private final ListView<FmmlxObject> customGuiLV = new ListView<FmmlxObject>();
+	private final ListView<String> customGuiLV = new ListView<String>();
 	private MenuBar menuBar;
+	
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
 	private HashMap<String, AbstractPackageViewer> loadedDiagrams = new HashMap<>();
+	private HashMap<String, FmmlxObject> guiPrettyStringMapping = new HashMap<>();
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -297,7 +299,7 @@ public class ControlCenter extends Stage {
 		}
 		
 		// list potential guis
-		if (me.getClickCount() == 2 && me.getButton() == MouseButton.SECONDARY) {
+		if (me.getClickCount() == 1 && me.getButton() == MouseButton.PRIMARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if (selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
@@ -371,6 +373,8 @@ public class ControlCenter extends Stage {
 		String packagePath = project;
 		String diagramName = model;
 		String file = "";
+		
+		
 
 		// 2nd step get objects from diagram
 		// and filter guis
@@ -380,12 +384,15 @@ public class ControlCenter extends Stage {
 					onCreated, packagePath);
 
 			ReturnCall<Object> onUpdate = update -> {
+				String prettyName ="";
 				Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
 
 				for (FmmlxObject o : objects) {
 
 					if (o.getMetaClassName().equals("UserInterface")) {
-						customGuiLV.getItems().add(o);
+						prettyName =  o.getSlot("titleOfUI").getValue();
+						guiPrettyStringMapping.put(prettyName, o);
+						customGuiLV.getItems().add(prettyName);
 						loadedDiagrams.put(o.getName(), o.getDiagram());
 					}
 				}
@@ -400,10 +407,11 @@ public class ControlCenter extends Stage {
 	}
 
 	// FH open CustomUI
-	private void handleClickOnGUIListView(MouseEvent me, FmmlxObject gui) {
+	private void handleClickOnGUIListView(MouseEvent me, String guiName) {
 		if (!(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY)) {
 			return;
 		}
+		FmmlxObject gui = guiPrettyStringMapping.get(guiName);
 		AbstractPackageViewer diagram = loadedDiagrams.get(gui.getName());
 		CustomUI customUI = new CustomUI(diagram, gui);
 	}

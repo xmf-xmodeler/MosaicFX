@@ -70,9 +70,6 @@ public class DefaultUIGenerator {
 
 		// 2. step: diagram is updated to ensure the instances are available
 		ReturnCall<Vector<Object>> onInstanceCreated = onCreated -> {
-
-			System.err.println(onCreated);
-
 			diagram.updateDiagram(onUpdate);
 		};
 
@@ -103,6 +100,12 @@ public class DefaultUIGenerator {
 
 		if (pathGUI.equals("")) {
 			raiseAlert("No Path has been set for the GUI. Extraction of GUI is not possible.");
+			return null;
+		}
+		
+		if (titleGUI.equals("")) {
+			raiseAlert("No title has been set for the GUI. Extraction of GUI cancelled.");
+			return null;
 		}
 
 		// for the fxml export
@@ -129,7 +132,7 @@ public class DefaultUIGenerator {
 
 		boolean isActionInjection;
 
-		// todo find better solution
+		// TODO find better solution
 		// Slot Values that can already be determined in this method should be saved for
 		// performance
 		// first String -> instanceName
@@ -145,9 +148,6 @@ public class DefaultUIGenerator {
 		if (!roots.isEmpty()) {
 			for (FmmlxObject root : roots) {
 				// add recursively by root
-
-				// wenn keine distanz gegeben ist -> head ist relevant für kreise aber nicht um
-				// rekursiv zu suchen
 				if (distance > 0) {
 					objects = this.recurGetObjectsForGUI(objects, root, distance);
 				} else {
@@ -160,9 +160,7 @@ public class DefaultUIGenerator {
 						if (!associations.contains(a)) {
 							associations.add(a);
 						}
-
 					}
-
 				}
 			}
 		}
@@ -171,21 +169,20 @@ public class DefaultUIGenerator {
 
 		// check if height > 0 and additional assocs have to be considered
 		if (height > 0 || height == -1) {
-			// für alle objekte
+			// for all objects ...
 			for (FmmlxObject o : objects) {
-				// prüfe ob es eine metaklasse gibt
+				// check if there is a metaclass ...
 				i = 0;
 				while ((height > i || height == -1) && !(o.getMetaClassName().equals(metaClassName))) {
 					i += 1;
 					o = diagram.getObjectByPath(diagram.getPackagePath() + "::" + o.getMetaClassName());
-					// die eine assoziation hat
+					// that has an association ...
 					for (FmmlxAssociation assoc : o.getAllRelatedAssociations()) {
-						// welche auf level 0 instanziert wird
+						// which is instantiated on level 0
 						if (assoc.getSourceNode().equals(o) && assoc.getLevelSource() == 0) {
 							if (!associations.contains(assoc)) {
 								associations.add(assoc);
 							}
-
 						}
 					}
 				}
@@ -193,13 +190,10 @@ public class DefaultUIGenerator {
 		}
 
 		// check if all objects are included for the needed assocs
-
 		for (FmmlxAssociation assoc : associations) {
-
 			if (!objects.contains(assoc.getTargetNode())) {
 				objects.add(assoc.getTargetNode());
 			}
-
 		}
 
 		// check if from commonClass
@@ -209,17 +203,13 @@ public class DefaultUIGenerator {
 		}
 
 		// get associations that are mapped
-		FmmlxAssociation associationDerivedFrom = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
-		FmmlxAssociation associationComposedOf = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
-		FmmlxAssociation associationRefersToStateOf = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
+		FmmlxAssociation associationDerivedFrom = diagram.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
+		FmmlxAssociation associationComposedOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
+		FmmlxAssociation associationRefersToStateOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
 		FmmlxAssociation associationIsParent = diagram.getAssociationByPath(diagram.getPackagePath() + "::isParent");
 		FmmlxAssociation associationIsChild = diagram.getAssociationByPath(diagram.getPackagePath() + "::isChild");
 		FmmlxAssociation associationUses = diagram.getAssociationByPath(diagram.getPackagePath() + "::uses");
-		FmmlxAssociation associationRepresentedAs = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
+		FmmlxAssociation associationRepresentedAs = diagram.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
 
 		// create standard GUI
 		GridPane rechteSeiteGrid = new GridPane();
@@ -228,13 +218,11 @@ public class DefaultUIGenerator {
 		rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
 
 		// instantiate references and injections for domain classes
-
 		ArrayList<Reference> referenceMapping = new ArrayList<>();
 		Boolean head;
 
 		Boolean atLeastOneHead = false;
 
-		// wenn keine root explizit gegeben -> dann sind alle associationen gegeben
 		// get all needed references
 		for (FmmlxObject o : objectsCommonClass) {
 			head = true;
@@ -242,22 +230,21 @@ public class DefaultUIGenerator {
 				if (assoc.getTargetNode().equals(o)) {
 
 					head = false;
+					// create reference for every object + assoc pair
 					referenceInstanceName = actions.addInstance("Reference",
 							"ref" + UUID.randomUUID().toString().replace("-", ""));
-
-					// referenceInstanceName = actions.addInstance("Reference", "ref" +
-					// assoc.getTargetNode().toString() + " " + o.toString());
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
 			}
 
-			// wenn root -> dann auch head
+			// if root then automatically head
 			if (!head && roots.contains(o)) {
 				head = true;
 			}
 
 			if (head) {
+				// create a reference for head
 				referenceInstanceName = actions.addInstance("Reference",
 						"ref" + UUID.randomUUID().toString().replace("-", ""));
 				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
@@ -267,9 +254,10 @@ public class DefaultUIGenerator {
 
 		if (!atLeastOneHead) {
 			raiseAlert("No head of GUI could detected. This configuration is invalid!");
+			return null;
 		}
 
-		// mpas references with parents
+		// maps references with parents
 		referenceMapping = mapReferences(referenceMapping);
 
 		for (Reference reference : referenceMapping) {
@@ -299,9 +287,10 @@ public class DefaultUIGenerator {
 			slotValues.put(reference.getReferenceInstanceName(), (HashMap<String, String>) helper.clone());
 			helper.clear();
 
-			// add link "refersToStateOf" -> Reference + CommonClassInstance ANNAHME:
-			// Jede gewählte CommonClass hat mind. 1 Instanz.
-			// TODO: Prio 3 -> Wie damit umgehen, wenn keine Instanz existiert
+			// add link "refersToStateOf" -> Reference + CommonClassInstance 
+			
+			// Assumption: Every Instance of CommonClass has at least one instance at level 0
+			// TODO How to work when that is not the case
 			actions.addAssociation(reference.getReferenceInstanceName(),
 					reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
 
@@ -309,13 +298,13 @@ public class DefaultUIGenerator {
 			instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR,
 					Font.getDefault().getSize()));
 
-			// beschreibung der assoziation
+			// description of the association for the standard gui
 			if (!reference.isHead()) {
 				Label assocDesc = new Label("Association: " + reference.getAssoc().getSourceNode().getName().toString()
 						+ " " + reference.getAssoc().getName().toString() + " "
 						+ reference.getAssoc().getTargetNode().toString());
 				rechteSeiteGrid.add(assocDesc, 0, rowCount++);
-			} else { // bezeichnung head hinzufügen
+			} else { // add name for head
 				instancesOfClassLabel.setText(instancesOfClassLabel.getText() + " (head)");
 			}
 
@@ -346,6 +335,7 @@ public class DefaultUIGenerator {
 				attributes = reference.getObject().getAllAttributes();
 				operations = reference.getObject().getAllOperations();
 			} else if (height == 0) {
+				// only own attributes and operations
 				attributes = reference.getObject().getOwnAttributes();
 				operations = reference.getObject().getOwnOperations();
 			} else {
@@ -387,15 +377,15 @@ public class DefaultUIGenerator {
 			// add actionInjections for operations
 			for (FmmlxOperation operation : operations) {
 
-				// if method is monitor than action; otherwise acttionInjection //
+				// if method is monitor than action; otherwise acttionInjection
 				// TODO: maybe find something better more robust approach
 
 				String body = operation.getBody();
-				isActionInjection = body.contains("monitor=true") ? true : false;
-
+				isActionInjection = body.contains("monitor=true") ? true : false;	
+				
 				helper.put("nameOfModelElement", operation.getName());
 
-				// if action
+				// if actionInjection
 				if (isActionInjection) {
 					injectionInstanceName = actions.addInstance("ActionInjection",
 							"actInj" + UUID.randomUUID().toString().replace("-", ""));

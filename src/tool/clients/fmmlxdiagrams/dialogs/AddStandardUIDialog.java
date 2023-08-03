@@ -199,9 +199,9 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		advancedGrid.add(lblDistance, 0, 3, 1, 1);
 		advancedGrid.add(textDistance, 1, 3, 1, 1);
 
-		advancedGrid.add(checkHeight, 0, 4, 2, 1);
-		advancedGrid.add(lblHeight, 0, 5, 1, 1);
-		advancedGrid.add(textHeight, 1, 5, 1, 1);
+		advancedGrid.add(checkHeight, 2, 2, 2, 1);
+		advancedGrid.add(lblHeight, 2, 3, 1, 1);
+		advancedGrid.add(textHeight, 3, 3, 1, 1);
 
 		titledPane.setContent(advancedGrid);
 		grid.add(titledPane, 0, 3, 3, 1);
@@ -213,7 +213,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 		textDistance.setEditable(false);
 		textHeight.setEditable(false);
-		
+
 		// checkmark sets editable
 		checkDistance.selectedProperty().addListener((obs, oldValue, newValue) -> {
 			textDistance.setEditable(newValue);

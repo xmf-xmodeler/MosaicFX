@@ -1046,13 +1046,6 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-	// LM, 07.04.2023, New Action for execution of custom UI
-	public void executeUI(FmmlxObject object) {
-		
-		Platform.runLater(() -> new CustomUI(diagram, object));
-			
-	}
-	// End customUI
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
