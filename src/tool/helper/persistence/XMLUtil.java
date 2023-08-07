@@ -1,6 +1,7 @@
 package tool.helper.persistence;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -92,19 +93,34 @@ public class XMLUtil {
 		return elementList;
 	}
 
-	public static Document getDocumentFromFile(String fileNameWithPath)
-			throws ParserConfigurationException, SAXException, IOException {
+	public static Document getDocumentFromFile(String fileNameWithPath) {
 		Document retVal = null;
 		if (fileNameWithPath != null) {
 			String modifiedInXML = fileNameWithPath.trim();
 			if (modifiedInXML.length() > 0) {
 
-				FileReader inFileReader = new FileReader(modifiedInXML);
+				FileReader inFileReader = null;
+				try {
+					inFileReader = new FileReader(modifiedInXML);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				try {
 					InputSource iSource = new InputSource(inFileReader);
-					retVal = getDocument(iSource);
+					try {
+						retVal = getDocument(iSource);
+					} catch (ParserConfigurationException | SAXException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} finally {
-					inFileReader.close();
+					try {
+						inFileReader.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}

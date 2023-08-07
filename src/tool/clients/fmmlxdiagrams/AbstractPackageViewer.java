@@ -82,7 +82,7 @@ public abstract class AbstractPackageViewer {
 
 	private void sendInitialEdgesPosition() {
 		for(Edge<?> edge : edges){
-			getComm().sendCurrentPositions(getID(), edge);
+			getComm().sendCurrentEdgePositions(getID(), edge);
 		}
 	}
 	
@@ -198,6 +198,11 @@ public abstract class AbstractPackageViewer {
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
+			
+			for (FmmlxObject fmmlxObject : fetchedObjects) {
+				System.err.println(fmmlxObject.getName()+ " "  + fmmlxObject.getX() +" "+ fmmlxObject.getX()); 
+			}
+			
 			objects.addAll(fetchedObjects);
 
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");

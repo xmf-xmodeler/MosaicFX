@@ -1,7 +1,6 @@
 package tool.helper.persistence;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -10,7 +9,6 @@ import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -18,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
-import tool.clients.fmmlxdiagrams.PackageActionsList;
+import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
 public class XMLCreator {
@@ -27,8 +25,7 @@ public class XMLCreator {
 	Element root;
 	private final String exportVersion = "4";
 	String packagePath;
-	Optional<File> saveFile;
-
+	
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
@@ -45,7 +42,7 @@ public class XMLCreator {
 		Stage s = new Stage();
 		s.setAlwaysOnTop(true);
 		s.initModality(Modality.APPLICATION_MODAL);
-		saveFile = Optional.of(chooser.showSaveDialog(s));
+		Optional<File> saveFile = Optional.of(chooser.showSaveDialog(s));
 		//ErrorLoggin in the case the dialog is escaped
 		if (saveFile == null) {
 			System.err.println("XML Export was interrupted");
@@ -64,21 +61,14 @@ public class XMLCreator {
 		comm.getAllDiagramInfos(packagePath, onDiagramInfosReceived);
 	}
 
-	private void appendModelToRoot(Vector<DiagramInfo> diagramInfos, String packagePath,
-			ReturnCall<Object> onDataReceived) {
-		ReturnCall<PackageActionsList> onModelDataReceived = packageContent -> {
-			// TODO name all as addInstance + add level
-			Vector<PackageActionsList> logs = packageContent.getChildren();
+	private void appendModelToRoot(Vector<DiagramInfo> diagramInfos, String packagePath, ReturnCall<Object> onDataReceived) {
+		ReturnCall<ModelActionsList> onModelDataReceived = packageContent -> {
+			Vector<ModelActionsList> logs = packageContent.getChildren();
 			Collections.sort(logs);
 			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName());
-			// TODO Was bringt der root-zusatz, kann nicht einfach nur der name gespeichert
-			// werden?
 			model.setAttribute(XMLAttributes.NAME.getName(), packagePath);
-			for (PackageActionsList logData : logs) {
-				Element log = XMLUtil.createChildElement(model, logData.getName());
-				for (String attName : logData.getAttributes()) {
-					log.setAttribute(attName, logData.getAttributeValue(attName));
-				}
+			for (ModelActionsList logData : logs) {
+				buildModelActionTag(model, logData);
 			}
 			;
 			getDiagramsData(diagramInfos, packagePath, onDataReceived);
@@ -89,13 +79,19 @@ public class XMLCreator {
 				});
 	}
 
-	private void getDiagramsData(Vector<DiagramInfo> diagramInfos, String packagePath,
-			ReturnCall<Object> onDataReceived) {
-		diagramsWaitingForParsing = new Vector<>(diagramInfos);
-		parseNextModel(onDataReceived);
+	private void buildModelActionTag(Element model, ModelActionsList logData) {
+		Element log = XMLUtil.createChildElement(model, logData.getName());
+		for (String attName : logData.getAttributes()) {
+			log.setAttribute(attName, logData.getAttributeValue(attName));
+		}
 	}
 
-	private void parseNextModel(ReturnCall<Object> onDataReceived) {
+	private void getDiagramsData(Vector<DiagramInfo> diagramInfos, String packagePath, ReturnCall<Object> onDataReceived) {
+		diagramsWaitingForParsing = new Vector<>(diagramInfos);
+		buildNextDiagram(onDataReceived);
+	}
+
+	private void buildNextDiagram(ReturnCall<Object> onDataReceived) {
 		if (diagramsWaitingForParsing.isEmpty()) {
 			onDataReceived.run("Resolve ToDoList");
 		} else {
@@ -105,7 +101,7 @@ public class XMLCreator {
 			appendEdgesToDiagram(diagramInfo, diagram);
 			appendObjectInformationToDiagram(diagramInfo, diagram);
 			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagram);
-			// the next function also makes reursive call to resolveToDoList
+			// the next function also makes recursive call to buildNextDiagram
 			appendViewsToDiagram(onDataReceived, diagramInfo, diagram);
 		}
 	}
@@ -123,17 +119,20 @@ public class XMLCreator {
 	}
 
 	private void appendDiagramDisplayPropertiesToDiagrams(DiagramInfo diagramInfo, Element diagram) {
-		Element diagramDisplayProperties = XMLUtil.createChildElement(diagram,
-				XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
+		Element diagramDisplayProperties = XMLUtil.createChildElement(diagram, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
 		ReturnCall<HashMap<String, Boolean>> onDiagramDisplayPropertiesReturn = diagramDisplayPropertiesData -> {
 			for (Entry<String, Boolean> entry : diagramDisplayPropertiesData.entrySet()) {
-				String tagname = entry.getKey();
-				tagname = tagname.substring(0, 1).toUpperCase() + tagname.substring(1);
-				Element element = XMLUtil.createChildElement(diagramDisplayProperties, tagname);
-				element.setTextContent(entry.getValue().toString());
+				appendPropertyToProperties(diagramDisplayProperties, entry);
 			}
 		};
 		comm.getDiagramDisplayProperties(diagramInfo.getId(), onDiagramDisplayPropertiesReturn);
+	}
+
+	private void appendPropertyToProperties(Element diagramDisplayProperties, Entry<String, Boolean> entry) {
+		String tagname = entry.getKey();
+		tagname = tagname.substring(0, 1).toUpperCase() + tagname.substring(1);
+		Element element = XMLUtil.createChildElement(diagramDisplayProperties, tagname);
+		element.setTextContent(entry.getValue().toString());
 	}
 
 	private void appendEdgesToDiagram(DiagramInfo diagramInfo, Element diagram) {
@@ -146,41 +145,43 @@ public class XMLCreator {
 		comm.getAllEdgePositions(diagramInfo.getId(), onAllEdgePositionsReceived);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void appendEdgeToEdges(Element edges, Entry<String, HashMap<String, Object>> edgeData, DiagramInfo diagramInfo) {
-		Element edge = XMLUtil.createChildElement(edges, XMLTags.EDGE.getName());
-		String ref = edgeData.getKey();
-		String edgeName = packagePath + "::" + ref;
-		edge.setAttribute(XMLAttributes.NAME.getName(),edgeName);
-		edge.setAttribute(XMLAttributes.REF.getName(), ref);
-		
+		Element edge = createEdgeElement(edges, edgeData);
 		HashMap<String, Object> attributesMap = edgeData.getValue();
-		setEdgePorts(edge, attributesMap);
-		appendIntermediatePointsToEdge(attributesMap, edge);
-		setEdgeType(edge, edgeData);
+		setEdgePorts(edge, (Vector<Vector<Object>>) attributesMap.get("Ports"));
+		appendIntermediatePointsToEdge((Vector<Vector<Object>>) attributesMap.get("IntermediatePoints"), edge);
 		appendLabelsToEdge(edge, diagramInfo);
+	}
+
+	private Element createEdgeElement(Element edges, Entry<String, HashMap<String, Object>> edgeData) {
+		Element edge = XMLUtil.createChildElement(edges, XMLTags.EDGE.getName());
+		setEdgeType(edge, edgeData);
+		return edge;
 	}
 
 	private void appendLabelsToEdge(Element edge, DiagramInfo diagramInfo) {
 		Element labels = XMLUtil.createChildElement(edge, XMLTags.LABELS.getName());
-		appendLabelToLabels(diagramInfo, labels, edge);
+		requestLabelsData(diagramInfo, labels, edge);
 		
 	}
 
 	private void setEdgeType(Element edge, Entry<String, HashMap<String, Object>> edgeData) {
 		String type = edgeData.getKey().split("Mapping")[0];
 		if (!XMLEdgeTypes.contains(type)) {
-			edge.setAttribute(XMLAttributes.TYPE.getName(), "association");
-			// TODO -> why do this? Should there be a value?
-			edge.setAttribute(XMLAttributes.ATTRIBUTE_PARENT_ASSOCIATION.getName(), "VOID");
+			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
+			String edgePath = packagePath + "::" + edgeData.getKey();
+			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
+			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
+			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
 		} else {
-			edge.setAttribute(XMLAttributes.TYPE.getName(), type);			
+			edge.setAttribute(XMLAttributes.TYPE.getName(), type);
+			edge.setAttribute(XMLAttributes.PATH.getName(), edgeData.getKey());
 		}
 	}
 
-	private void appendIntermediatePointsToEdge(HashMap<String, Object> attributesMap, Element edge) {
+	private void appendIntermediatePointsToEdge(Vector<Vector<Object>> intermediatePointsData, Element edge) {
 		Element intermediatePoints = XMLUtil.createChildElement(edge, XMLTags.INTERMEDIATE_POINTS.getName());
-		@SuppressWarnings("unchecked")
-		Vector<Vector<Object>> intermediatePointsData = (Vector<Vector<Object>>) attributesMap.get("IntermediatePoints");
 		for (Vector<Object> intermediatePointVector : intermediatePointsData) {
 			Element intermediatePoint = XMLUtil.createChildElement(intermediatePoints,XMLTags.INTERMEDIATE_POINT.getName());
 			intermediatePoint.setAttribute(XMLAttributes.X_COORDINATE.getName(), String.valueOf(intermediatePointVector.get(1)));
@@ -188,9 +189,7 @@ public class XMLCreator {
 		}
 	}
 
-	private void setEdgePorts(Element edge, HashMap<String, Object> attributesMap) {
-		@SuppressWarnings("unchecked")
-		Vector<Vector<Object>> ports = (Vector<Vector<Object>>) attributesMap.get("Ports");
+	private void setEdgePorts(Element edge, Vector<Vector<Object>> ports) {
 		for (Vector<Object> portVector : ports) {
 			if (portVector.get(0).equals("startNode")) {
 				edge.setAttribute(XMLAttributes.SOURCE_PORT.getName(), (String) portVector.get(1));
@@ -201,17 +200,21 @@ public class XMLCreator {
 		}
 	}
 
-	private void appendLabelToLabels(DiagramInfo diagramInfo, Element labels, Element edge) {
+	private void requestLabelsData(DiagramInfo diagramInfo, Element labels, Element edge) {
 		ReturnCall<HashMap<String, HashMap<String, Object>>> onAllLabelPositionsReceived = labelsData -> {
 			for (Entry<String, HashMap<String, Object>> labelData : labelsData.entrySet()) {
-				HashMap<String, Object> attributesMap = labelData.getValue();				
-				if (attributesMap.get("ownerID").equals(edge.getAttribute(XMLAttributes.NAME.getName()))) {
-					Element label = XMLUtil.createChildElement(labels, XMLTags.LABEL.getName());
-					setLabelAttributes(attributesMap, label);
+				HashMap<String, Object> attributesMap = labelData.getValue();
+				appendMatchingLabels(attributesMap, labels, edge);
 				}
-			}
 		};
 		comm.getAllLabelPositions(diagramInfo.getId(), onAllLabelPositionsReceived);
+	}		
+
+	private void appendMatchingLabels(HashMap<String, Object> attributesMap, Element labels, Element edge) {
+		if (attributesMap.get("ownerID").equals(edge.getAttribute(XMLAttributes.PATH.getName()))) {
+			Element label = XMLUtil.createChildElement(labels, XMLTags.LABEL.getName());
+			setLabelAttributes(attributesMap, label);
+		}
 	}
 
 	private void setLabelAttributes(HashMap<String, Object> attributesMap, Element label) {
@@ -221,9 +224,6 @@ public class XMLCreator {
 		label.setAttribute(XMLAttributes.Y_COORDINATE.getName(), String.valueOf(attributesMap.get("y")));
 	}
 
-	// TODO store this information until the a fmmlxDiagram object is created. When
-	// the object is created, then assign the values to the fmmlObjekt
-	// would be nicer if i find the operation how to send object positon to xmf
 	private void appendObjectInformationToDiagram(DiagramInfo diagramInfo, Element diagram) {
 		ReturnCall<HashMap<String, HashMap<String, Object>>> onAllObjectPositionsReceived = objectPositions -> {
 			Element objects = XMLUtil.getChildElement(diagram, XMLTags.INSTANCES.getName());
@@ -244,7 +244,7 @@ public class XMLCreator {
 				view.setAttribute(XMLAttributes.TX.getName(), "" + viewData.get(2));
 				view.setAttribute(XMLAttributes.TY.getName(), "" + viewData.get(3));
 			}
-			parseNextModel(onDataReceived);
+			buildNextDiagram(onDataReceived);
 		};
 		comm.getAllViews(diagramInfo.getId(), onAllViewsReceived);
 	}
@@ -252,7 +252,7 @@ public class XMLCreator {
 	private void createObjectElement(Element objects,
 			java.util.Map.Entry<String, HashMap<String, Object>> objectPosition) {
 		Element object = XMLUtil.createChildElement(objects, XMLTags.INSTANCE.getName());
-		object.setAttribute(XMLAttributes.REF.getName(), objectPosition.getKey());
+		object.setAttribute(XMLAttributes.PATH.getName(), objectPosition.getKey());
 		HashMap<String, Object> attributesMap = objectPosition.getValue();
 		object.setAttribute(XMLAttributes.X_COORDINATE.getName(), String.valueOf(attributesMap.get("x")));
 		object.setAttribute(XMLAttributes.Y_COORDINATE.getName(), String.valueOf(attributesMap.get("y")));
@@ -270,7 +270,6 @@ public class XMLCreator {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
 		root.setAttribute(XMLAttributes.VERSION.getName(), exportVersion);
-		// TODO bruacht ein Package einen Path oder nur einen Name?
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
 		return doc;
 	}

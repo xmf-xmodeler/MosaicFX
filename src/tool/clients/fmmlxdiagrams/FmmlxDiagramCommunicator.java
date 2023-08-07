@@ -1892,17 +1892,17 @@ public class FmmlxDiagramCommunicator {
 
     @Deprecated // use async below
     @SuppressWarnings("unchecked")
-    public PackageActionsList getDiagramData(Integer diagramID) throws TimeOutException {
+    public ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		return new PackageActionsList(responseContent);
+		return new ModelActionsList(responseContent);
     }
     
     @SuppressWarnings("unchecked")
-    public void getModelData(Integer diagramID, ReturnCall<PackageActionsList> onModelDataReceived ){
+    public void getModelData(Integer diagramID, ReturnCall<ModelActionsList> onModelDataReceived ){
     	ReturnCall<Vector<Object>> localReturn = (response) -> {
     		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-    		onModelDataReceived.run(new PackageActionsList(responseContent));
+    		onModelDataReceived.run(new ModelActionsList(responseContent));
     	};
     	xmfRequestAsync(handle, diagramID, "getDiagramData", localReturn);
     }

@@ -5,7 +5,8 @@ public enum XMLEdgeTypes {
 	INHERITANCE("Inheritance"),
 	DELEGATION("Delegation"),
 	ROLEFILLER("RoleFiller"),
-	ASSOCIATIONLINK("AssociationLink");
+	ASSOCIATIONLINK("AssociationLink"),
+	ASSOCIATION("Association");
 
 	public final String name;
 

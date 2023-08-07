@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
+
 import org.w3c.dom.Element;
+
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -73,7 +74,7 @@ import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.XModeler;
+import tool.helper.persistence.XMLParser;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -244,10 +245,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         for(Vector<Object> view : listOfViews) {
         	DiagramViewPane dvp = new DiagramViewPane((String) view.get(0), false);
-        	double xx = 1., tx = 0., ty = 0.;
+        	float xx = 1.0f,  tx = 0.0f, ty = 0.0f;
         	try{ xx = (float) view.get(1); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-        	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-        	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+        	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
+        	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
         	dvp.canvasTransform = new Affine(xx, 0, tx, 0, xx, ty);
         	tabPane.getTabs().add(new MyTab(dvp));
         }
@@ -284,6 +285,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.I) {
+					new XMLParser("C:\\Users\\herrt\\Desktop\\University.xml").parseXMLDocument();
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
@@ -503,14 +507,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					o.drop();
-					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
+					comm.sendObjectInformation(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
 					for(Edge<?> e : edges) {
 						if(e.isSourceNode(o) || e.isTargetNode(o)) {
-							comm.sendCurrentPositions(this.getID(), e);
+							comm.sendCurrentEdgePositions(this.getID(), e);
 						}
 					}
 				} else if (s instanceof Edge) {
-					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
+					comm.sendCurrentEdgePositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
 					del.drop();
@@ -773,6 +777,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		triggerOverallReLayout();
 		newFmmlxPalette.update();
 
+		//TODO delete this part
 		if(filePath !=null && filePath.length()>0){
 			if(justLoaded){
 				justLoaded = false;
@@ -789,7 +794,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else {		
 			Issue nextIssue = null;
 			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity()))) nextIssue = issues.get(i);
+				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name()))) nextIssue = issues.get(i);
 			}
 	
 			if(nextIssue != null) {
