@@ -366,24 +366,20 @@ public class ControlCenter extends Stage {
 	
 	// FH load CustomUIs and display
 	public void loadCustomGUIS(String project, String model) {
-
 		customGuiLV.getItems().clear();
-
 		// load diagram and keep it
 		String packagePath = project;
-		String diagramName = model;
-		String file = "";
-		
-		
 
 		// 2nd step get objects from diagram
 		// and filter guis
 		ReturnCall<Integer> onDiagramCreated = onCreated -> {
 
+			// new diagram gets instantiated
 			AbstractPackageViewer diagram = new ControlCenterGUIView(FmmlxDiagramCommunicator.getCommunicator(),
 					onCreated, packagePath);
 
 			ReturnCall<Object> onUpdate = update -> {
+				// guis are listed in control center
 				String prettyName ="";
 				Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
 
@@ -397,11 +393,14 @@ public class ControlCenter extends Stage {
 					}
 				}
 			};
+			// diagram is updated, i.e. filled with its objects 
 			diagram.updateDiagram(onUpdate);
 		};
 
 		// 1st step create new diagram
-		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, diagramName, file,
+		// If the diagram name is set to the actual diagram name, the diagram itself is overridden. 
+		// Therefore, it is necessary to choose a name, which is unlikely to be the name of a real existing diagram.
+		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, "ControlCenterDiagramGUI", "",
 				DiagramType.ControlCenter, false, onDiagramCreated);
 
 	}

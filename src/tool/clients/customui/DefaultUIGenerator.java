@@ -565,7 +565,7 @@ public class DefaultUIGenerator {
 		FmmlxObject object = reference.getObject();
 		int i = 0;
 		while (i < height && !object.getMetaClassName().equals(metaClassName)) {
-			operations.addAll(reference.getObject().getOwnOperations());
+			operations.addAll(object.getOwnOperations());
 			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
 			i += 1;
 		}
@@ -578,7 +578,7 @@ public class DefaultUIGenerator {
 		FmmlxObject object = reference.getObject();
 		int i = 0;
 		while (i < height && !object.getMetaClassName().equals(metaClassName)) {
-			attributes.addAll(reference.getObject().getOwnAttributes());
+			attributes.addAll(object.getOwnAttributes());
 			object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + object.getMetaClassName());
 			i += 1;
 		}
