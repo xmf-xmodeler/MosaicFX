@@ -65,5 +65,16 @@
 	<classpathentry exported="true" kind="lib" path="lib/core-12.54.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jvm-driver-8.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jvm-driver-9.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/neo4j-java-driver-5.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-buffer-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-codec-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-common-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-handler-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-resolver-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-tcnative-classes-2.0.61.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-transport-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/netty-transport-native-unix-common-4.1.93.Final.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/reactive-streams-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/neo4j/reactor-core-3.5.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
