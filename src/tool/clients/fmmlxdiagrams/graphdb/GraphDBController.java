@@ -30,8 +30,7 @@ public class GraphDBController
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
 	private ArrayList<String> nodeConnectionsList = new ArrayList<>();
 	
-	Map <InstanceNode,String> instances = new HashMap<>();
-	
+	private Vector<InstanceNode> instancesList = new Vector<>();
 	private Vector<FmmlxObject> objects = new Vector<>();
 	protected Vector<Edge<?>>     edges = new Vector<>();
 	
@@ -71,23 +70,17 @@ public class GraphDBController
 		this.objects = this.diagram.getObjectsReadOnly();
 		
 		Iterator<FmmlxObject> iterator = this.objects.iterator();
-		int i = 0;
 		while (iterator.hasNext())
 		{
 			c.create(iterator.next());
 			c.nodesAndConnects(nodeList, nodeConnectionsList);
 			InstanceNode instance = c.getInstanceNode();
-			if(instance.getInstanceOf() != null)
-			{
-//				System.err.print("something in Map \n");
-				i++;
-				instances.put(instance, instance.getInstanceOf());
-//				System.err.print(c.getOfPath());
-			}
+			this.instancesList.add(instance);
 			
 			createInDB();
 		}
-		System.err.print("fertig "+i);
+		connectInstances();
+		System.err.print("fertig ");
 	}
 	
 	
@@ -151,12 +144,37 @@ public class GraphDBController
 			connector.sendQuerry(s);
 		}
 		nodeConnectionsList.clear();
-		
-//		TODO das muss höher, momentan wird die nodeList früher geleert.
-		
-		
-		
+			
 //		connector.sendMultipleStatmentQuerry(createConnections);
+	}
+	
+	private void connectInstances()
+	{
+		System.err.print(instancesList.size());
+		
+		Iterator<InstanceNode> instanceIterator = instancesList.iterator();
+		String connectInstancesStatment;
+		while (instanceIterator.hasNext())
+		{
+			InstanceNode instance = instanceIterator.next();
+			if (instance.getInstanceOf() != null)
+			{
+				Iterator<InstanceNode> instanceIterator2 = instancesList.iterator();
+				String instanceOf = instance.getInstanceOf();
+				while (instanceIterator2.hasNext())
+				{
+					InstanceNode secondInstance = instanceIterator2.next();
+					
+					if (instanceOf.equals(secondInstance.getName()))
+					{
+						NodeConnection c = new NodeConnection(connection.OF);
+						String s = c.connectTwoNodes(instance, secondInstance);
+						connector.sendQuerry(s);
+					}
+				}
+			}
+			
+		}
 	}
 	private String clearUpPath(String path, String prefix)
 	{	
