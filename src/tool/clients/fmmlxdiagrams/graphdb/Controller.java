@@ -14,34 +14,48 @@ import tool.clients.fmmlxdiagrams.graphdb.Node.label;
 import tool.clients.fmmlxdiagrams.graphdb.NodeConnection.connection;
 
 
-class Controller {
+public class Controller 
+{
 	private Connector nodeConnector;
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
 	private ArrayList<String> connectionList = new ArrayList<>();
-	private Node InstanceNode;
+	private InstanceNode InstanceNode;
+	private Node diagramNode;
+	private String ofPath;
 	
-	
-	
-	public void setConnector(Connector nodConnector)
+		
+	public Controller(String diagramName) 
 	{
-		this.nodeConnector = nodConnector;
+		this.diagramNode = createAndInsertInList(diagramName, label.DIAGRAMM);
+		
+	}
+
+	
+
+	public void create(FmmlxObject object)
+	{
+		createInstance(object);
+		createAttributes(object);
+		createOperations(object);
+		createConstraints(object);
 	}
 	
-	public void createInstanceNode(FmmlxObject object)
+	private void createInstance(FmmlxObject object)
 	{
 		String 	name 	= object.getName();
 		int		level	= object.getLevel();
 		double 	xCoordinate = object.getCenterX();
 		double 	yCoordinate = object.getCenterY();
 		
-		Node n = new Node(name, Node.label.INSTANCE, xCoordinate, yCoordinate);
+		InstanceNode n = new InstanceNode(object);
 		this.nodeList.add(n);
 		this.InstanceNode = n;
+		
+		connectAndInsertInList(connection.OF, n, diagramNode);
+		
 		Node instanceLevel 				= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE, n);
 		Node slotOfInstanceLevel		= createConnectAndInsert(String.valueOf(level), label.SECONDCLASSATTRIBUTE, instanceLevel);
 		
-		createAttributes(object);
-		createOperations(object);
 	}
 	
 	private void createAttributes(FmmlxObject object)
@@ -58,20 +72,20 @@ class Controller {
 			Multiplicity multiplicity = attribute.getMultiplicity();
 			
 			
-			Node attributeNode 					= createAndInsertInList(name,Node.label.SECONDCLASSATTRIBUTE);
+			Node attributeNode 					= createAndInsertInList(name,label.SECONDCLASSATTRIBUTE);
 			connectAndInsertInList(NodeConnection.connection.OF,attributeNode,this.InstanceNode);
 			
-	        Node levelOfAttributeNode          	= createAndInsertInList("level", Node.label.FIRSTCLASSATTRIBUTE);
-	        Node slotOflevelOfAttributeNode     = createAndInsertInList(String.valueOf(level),Node.label.SLOT);
-	        Node levelOfAttributeTypeNode     	= createAndInsertInList("Root::XCore::Integer",Node.label.SECONDCLASSATTRIBUTE);
+	        Node levelOfAttributeNode          	= createAndInsertInList("level", label.FIRSTCLASSATTRIBUTE);
+	        Node slotOflevelOfAttributeNode     = createAndInsertInList(String.valueOf(level),label.SLOT);
+	        Node levelOfAttributeTypeNode     	= createAndInsertInList("Root::XCore::Integer",label.SECONDCLASSATTRIBUTE);
 	        
 	        connectAndInsertInList(NodeConnection.connection.OF,levelOfAttributeNode,attributeNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,slotOflevelOfAttributeNode,levelOfAttributeNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,levelOfAttributeTypeNode,levelOfAttributeNode);
 
 	        
-	        Node typeOfAttributeNode           	= createAndInsertInList("type", Node.label.FIRSTCLASSATTRIBUTE);
-	        Node slotOfTypeOfAttributeNode      = createAndInsertInList(type,Node.label.SLOT);
+	        Node typeOfAttributeNode           	= createAndInsertInList("type", label.FIRSTCLASSATTRIBUTE);
+	        Node slotOfTypeOfAttributeNode      = createAndInsertInList(type,label.SLOT);
 	        connectAndInsertInList(NodeConnection.connection.OF,typeOfAttributeNode,attributeNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,slotOfTypeOfAttributeNode,typeOfAttributeNode);
 	        
@@ -87,31 +101,31 @@ class Controller {
 		boolean upperLimit = multiplicity.upperLimit;
 		boolean ordered = multiplicity.ordered;
 		
-		Node multiplicityNode 		= createAndInsertInList("multiplicity",Node.label.FIRSTCLASSATTRIBUTE);
+		Node multiplicityNode 		= createAndInsertInList("multiplicity",label.FIRSTCLASSATTRIBUTE);
 		
-		Node minNode				= createAndInsertInList("min",Node.label.FIRSTCLASSATTRIBUTE);
-		Node minValueNode 			= createAndInsertInList(String.valueOf(min),Node.label.SLOT);
+		Node minNode				= createAndInsertInList("min",label.FIRSTCLASSATTRIBUTE);
+		Node minValueNode 			= createAndInsertInList(String.valueOf(min),label.SLOT);
 		connectAndInsertInList(NodeConnection.connection.OF,minNode,multiplicityNode);
 		connectAndInsertInList(NodeConnection.connection.OF,minValueNode,minNode);
 		
 		Node minValueTypeNode 		= createConnectAndInsert("Root::XCore::Integer", label.FIRSTCLASSATTRIBUTE, minValueNode);
 		
-		Node maxNode 				= createAndInsertInList("max",Node.label.FIRSTCLASSATTRIBUTE);
-		Node maxValueNode			= createAndInsertInList(String.valueOf(max),Node.label.SLOT);
+		Node maxNode 				= createAndInsertInList("max",label.FIRSTCLASSATTRIBUTE);
+		Node maxValueNode			= createAndInsertInList(String.valueOf(max),label.SLOT);
 		connectAndInsertInList(NodeConnection.connection.OF,maxNode,multiplicityNode);
 		connectAndInsertInList(NodeConnection.connection.OF,maxValueNode,maxNode);
 		
 		Node maxValueTypeNode		= createConnectAndInsert("Root::XCore::Integer", label.FIRSTCLASSATTRIBUTE, maxValueNode);
 		
-		Node upperlimitNode			= createAndInsertInList("upperlimit",Node.label.FIRSTCLASSATTRIBUTE);
-		Node upperlimitValueNode 	= createAndInsertInList(String.valueOf(upperLimit),Node.label.SLOT);
+		Node upperlimitNode			= createAndInsertInList("upperlimit",label.FIRSTCLASSATTRIBUTE);
+		Node upperlimitValueNode 	= createAndInsertInList(String.valueOf(upperLimit),label.SLOT);
 		connectAndInsertInList(NodeConnection.connection.OF,upperlimitNode,multiplicityNode);
 		connectAndInsertInList(NodeConnection.connection.OF,upperlimitValueNode,upperlimitNode);
 		
 		Node upperlimitValueTypeNode	= createConnectAndInsert("Root::XCore::Boolean", label.FIRSTCLASSATTRIBUTE, upperlimitValueNode);
 		
-		Node orderedNode			= createAndInsertInList("ordered",Node.label.FIRSTCLASSATTRIBUTE);
-		Node orderedValueNode		= createAndInsertInList(String.valueOf(ordered),Node.label.SLOT);
+		Node orderedNode			= createAndInsertInList("ordered",label.FIRSTCLASSATTRIBUTE);
+		Node orderedValueNode		= createAndInsertInList(String.valueOf(ordered),label.SLOT);
 		connectAndInsertInList(NodeConnection.connection.OF,orderedNode,multiplicityNode);
 		connectAndInsertInList(NodeConnection.connection.OF,orderedValueNode,orderedNode);
 		
@@ -141,16 +155,16 @@ class Controller {
 			Node operationNode = createAndInsertInList(name, label.SECONDCLASSATTRIBUTE);
 			connectAndInsertInList(connection.OF, operationNode, this.InstanceNode);
 			
-	        Node levelOfOperationNode          	= createAndInsertInList("level", Node.label.FIRSTCLASSATTRIBUTE);
-	        Node levelOfOperationValueNode     	= createAndInsertInList(String.valueOf(level),Node.label.SLOT);
-	        Node levelOfOperationTypeNode     	= createAndInsertInList("Root::XCore::Integer",Node.label.SECONDCLASSATTRIBUTE);
+	        Node levelOfOperationNode          	= createAndInsertInList("level", label.FIRSTCLASSATTRIBUTE);
+	        Node levelOfOperationValueNode     	= createAndInsertInList(String.valueOf(level),label.SLOT);
+	        Node levelOfOperationTypeNode     	= createAndInsertInList("Root::XCore::Integer",label.SECONDCLASSATTRIBUTE);
 			
 	        connectAndInsertInList(NodeConnection.connection.OF,levelOfOperationNode,operationNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,levelOfOperationValueNode,levelOfOperationNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,levelOfOperationTypeNode,levelOfOperationValueNode);
 
-	        Node typeOfOperationNode           	= createAndInsertInList("type", Node.label.FIRSTCLASSATTRIBUTE);
-	        Node slotOfTypeOfOperationNode      = createAndInsertInList(type,Node.label.SLOT);
+	        Node typeOfOperationNode           	= createAndInsertInList("type", label.FIRSTCLASSATTRIBUTE);
+	        Node slotOfTypeOfOperationNode      = createAndInsertInList(type,label.SLOT);
 	        connectAndInsertInList(NodeConnection.connection.OF,typeOfOperationNode,operationNode);
 	        connectAndInsertInList(NodeConnection.connection.OF,slotOfTypeOfOperationNode,typeOfOperationNode);
 	        
@@ -220,6 +234,7 @@ class Controller {
 		
 	}
 	
+	
 	public void nodesAndConnects(ArrayList<Node> nodeList, ArrayList<String> connectionsList)
 	{
 		nodeList.addAll(this.nodeList);
@@ -227,4 +242,9 @@ class Controller {
 		connectionsList.addAll(this.connectionList);
 		this.connectionList.clear();
 	}
+	
+	
+	public void setConnector(Connector nodConnector){this.nodeConnector = nodConnector;}
+	public InstanceNode getInstanceNode() {return InstanceNode;}
+	public String getOfPath() {return ofPath;}
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 import java.util.Arrays;
 
@@ -57,6 +58,7 @@ import javafx.collections.*;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
+import tool.clients.fmmlxdiagrams.graphdb.UploadConfig;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
@@ -138,7 +140,16 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);		
+			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
+			
+			Menu GraphDB = new Menu("GraphDB");
+			getMenus().add(GraphDB);
+			
+			MenuItem saveModelToGraphDB = new MenuItem("GraphDB Configurations");
+			saveModelToGraphDB.setOnAction(e -> openUploadDialog());
+			
+			GraphDB.getItems().addAll(saveModelToGraphDB);
+
 		}
 		
 		private void openWebpage(String url) {
@@ -461,6 +472,25 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 			diagramLV.getItems().clear();
 			diagramLV.getItems().addAll(vec);
+		});
+	}
+	
+	public void openUploadDialog()
+	{
+		Platform.runLater(() -> 
+		{
+			UploadConfig uc = new UploadConfig();
+			Optional<UploadConfig.Result> result = uc.showAndWait();
+
+			if (result.isPresent()) {
+				final UploadConfig.Result mcdResult = result.get();
+				Preferences userPreferences = Preferences.userRoot(); 
+				userPreferences.put("uri",mcdResult.uri);
+				userPreferences.put("user",mcdResult.user);
+				userPreferences.put("password",mcdResult.password);
+			}
+			
+			
 		});
 	}
 }

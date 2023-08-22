@@ -44,7 +44,9 @@ public class DefaultContextMenu extends ContextMenu {
 		//MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
 		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
 		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
+		MenuItem saveModelToGraphDB = new MenuItem("save Model to Graph...");
+		saveModelToGraphDB.setOnAction(e -> actions.openUploadDialog());
 		
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu);
+		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu,saveModelToGraphDB);
 	}
 }

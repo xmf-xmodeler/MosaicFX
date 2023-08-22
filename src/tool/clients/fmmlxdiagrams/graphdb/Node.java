@@ -3,12 +3,11 @@ package tool.clients.fmmlxdiagrams.graphdb;
 import java.util.UUID;
 
 class Node {
-    private String name;
-    private String nodeType;
-    private final String create;
-    private final UUID uuid;
-    private final double xCoordinate;
-    private final double yCoordinate;
+    protected String name;
+    protected String nodeType;
+    protected String create;
+    protected UUID uuid;
+    
     
     enum label
     {   
@@ -27,28 +26,9 @@ class Node {
         ASSOCIATION,
     }
  
-
-
-    public Node(String name, label label,double xCoordinate, double yCoordinate)
-    {
-        this.name = name;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-
-        this.nodeType = label.toString().toLowerCase();
-        this.uuid = UUID.randomUUID();
-        this.create = "Create(:"+this.nodeType+"{name:'"+this.name+"',"
-        										+ " uuid:'"+this.uuid+"',"
-        										+ " xCoordinate:'"+ this.xCoordinate+"',"
-        										+ " yCoordinate:'"+this.yCoordinate+"'})";
-
-    }
     public Node (String name, label label)
     {
     	this.name = name;
-    	this.xCoordinate = Double.MAX_VALUE;
-        this.yCoordinate = Double.MAX_VALUE;
-    	
     	this.nodeType = label.toString().toLowerCase();
         this.uuid = UUID.randomUUID();
         this.create = "Create(:"+this.nodeType+"{name:'"+this.name+"',"

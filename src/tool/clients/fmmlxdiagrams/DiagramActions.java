@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,6 +43,7 @@ import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
+import tool.clients.fmmlxdiagrams.graphdb.GraphDBController;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
@@ -1011,6 +1013,18 @@ public class DiagramActions {
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
+		});
+	}
+	public void openUploadDialog()
+	{
+		Platform.runLater(() -> 
+		{
+//			UploadConfig uc = new UploadConfig();
+//			Optional<UploadConfig.Result> result = uc.showAndWait();
+			Preferences userPreferences = Preferences.userRoot(); 
+			GraphDBController gdbc = new GraphDBController(this.diagram);
+			gdbc.test();
+			gdbc.connectionMain();
 		});
 	}
 

@@ -1,23 +1,21 @@
 package tool.clients.fmmlxdiagrams.graphdb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.neo4j.driver.Session;
-import org.neo4j.driver.SessionConfig;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Edge;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.graphdb.Node.label;
+import tool.clients.fmmlxdiagrams.graphdb.NodeConnection.connection;
 import tool.clients.serializer.FmmlxSerializer;
 
 public class GraphDBController 
@@ -32,8 +30,11 @@ public class GraphDBController
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
 	private ArrayList<String> nodeConnectionsList = new ArrayList<>();
 	
+	Map <InstanceNode,String> instances = new HashMap<>();
+	
 	private Vector<FmmlxObject> objects = new Vector<>();
 	protected Vector<Edge<?>>     edges = new Vector<>();
+	
 	
 	// Der Konstruktor der Klasse GraphDBController.
 	public GraphDBController (AbstractPackageViewer diagram) {
@@ -42,6 +43,7 @@ public class GraphDBController
 		getObjects();
 		getClass();
 		setConnection();
+		
 	}
 	public void setConnection()
 	{
@@ -60,19 +62,32 @@ public class GraphDBController
 // main Method of this class
 	public void connectionMain()
 	{
+		
 		createConnector();
-		Controller c = new Controller();
+		
+		connector.deleteEverything();
+		
+		Controller c = new Controller(diagramName);
 		this.objects = this.diagram.getObjectsReadOnly();
 		
 		Iterator<FmmlxObject> iterator = this.objects.iterator();
-		
+		int i = 0;
 		while (iterator.hasNext())
 		{
-			c.createInstanceNode(iterator.next());
+			c.create(iterator.next());
 			c.nodesAndConnects(nodeList, nodeConnectionsList);
+			InstanceNode instance = c.getInstanceNode();
+			if(instance.getInstanceOf() != null)
+			{
+//				System.err.print("something in Map \n");
+				i++;
+				instances.put(instance, instance.getInstanceOf());
+//				System.err.print(c.getOfPath());
+			}
+			
 			createInDB();
 		}
-		System.err.print("fertig");
+		System.err.print("fertig "+i);
 	}
 	
 	
@@ -117,6 +132,7 @@ public class GraphDBController
 		String createConnections = "";
 		Iterator<Node> nodeIterator = nodeList.iterator();
 		Iterator<String> connectionIterator = nodeConnectionsList.iterator();
+		
 //	creates an String with all Nodes and send it to the DB
 		while (nodeIterator.hasNext())
 		{
@@ -134,9 +150,10 @@ public class GraphDBController
 			
 			connector.sendQuerry(s);
 		}
-		 
-		 
 		nodeConnectionsList.clear();
+		
+//		TODO das muss höher, momentan wird die nodeList früher geleert.
+		
 		
 		
 //		connector.sendMultipleStatmentQuerry(createConnections);
