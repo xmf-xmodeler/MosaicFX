@@ -59,10 +59,8 @@ public class InstanceNode extends Node {
 		if (!this.ofPath.equals("Root::FMMLx::MetaClass"))
 		{
 			this.instanceOf = this.ofPath.substring(this.ofPath.lastIndexOf(":")+1);
-			
-			System.err.print(this.ofPath + "\n");
-			System.err.print(this.instanceOf + "\n \n");
-			
+//			System.err.print(this.ofPath + "\n");
+//			System.err.print(this.instanceOf + "\n \n");	
 		}
 	}
 	public String getInstanceOf() {

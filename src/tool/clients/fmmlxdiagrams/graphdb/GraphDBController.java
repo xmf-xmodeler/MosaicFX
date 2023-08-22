@@ -61,7 +61,7 @@ public class GraphDBController
 // main Method of this class
 	public void connectionMain()
 	{
-		
+		long start = System.currentTimeMillis();
 		createConnector();
 		
 		connector.deleteEverything();
@@ -81,6 +81,8 @@ public class GraphDBController
 		}
 		connectInstances();
 		System.err.print("fertig ");
+		long end = System.currentTimeMillis() - start;
+		System.err.println("operation took " + end + "milliseconds");
 	}
 	
 	
@@ -137,20 +139,15 @@ public class GraphDBController
 
 		while (connectionIterator.hasNext()) 
 		{	
-//			createConnections += connectionIterator.next() + "; ";
 			String s  =connectionIterator.next();
-//			System.err.print(s +"\n");
-			
 			connector.sendQuerry(s);
 		}
 		nodeConnectionsList.clear();
-			
-//		connector.sendMultipleStatmentQuerry(createConnections);
 	}
 	
 	private void connectInstances()
 	{
-		System.err.print(instancesList.size());
+//		System.err.print(instancesList.size());
 		
 		Iterator<InstanceNode> instanceIterator = instancesList.iterator();
 		String connectInstancesStatment;
