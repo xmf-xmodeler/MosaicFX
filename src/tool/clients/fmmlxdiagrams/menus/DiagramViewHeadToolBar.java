@@ -31,7 +31,7 @@ import tool.xmodeler.ControlCenterClient;
 
 public class DiagramViewHeadToolBar extends VBox {
 	
-	private DiagramDisplayModel model;
+	private DiagramDisplayModel diagramDisplayModel;
 	private FmmlxDiagram fmmlxDiagram;
 	private DiagramActions diagramActions;
 	private Button updateButton;
@@ -40,7 +40,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
 		diagramActions = fmmlxDiagram.getActions();
-		model = new DiagramDisplayModel(this);
+		diagramDisplayModel = new DiagramDisplayModel(this);
 				
 		HBox hBox = new HBox();
 		MenuBar menuBar = new MenuBar();
@@ -119,7 +119,7 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 			
 			private void setText() {
-				if (model.getPropertieValue(property)) {
+				if (diagramDisplayModel.getPropertieValue(property)) {
 					setText(visibleText);
 				} else {
 					setText(invisibleText);
@@ -127,7 +127,7 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 			
 			private void toggleItem() {
-				model.toggleDisplayProperty(property);
+				diagramDisplayModel.toggleDisplayProperty(property);
 				setText();
 				fmmlxDiagram.triggerOverallReLayout();
 				fmmlxDiagram.redraw();
@@ -220,7 +220,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 	
 	 public DiagramDisplayModel getModel() {
-		 return model;
+		 return diagramDisplayModel;
 	 }
 	
 	public void toggleUpdateButton(boolean loading) {

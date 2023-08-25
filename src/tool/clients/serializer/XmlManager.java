@@ -516,7 +516,7 @@ public class XmlManager extends XmlHandler {
                 String className = classPathArray[classPathArray.length-1];
                 String body = logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY);
                 int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-                comm.addOperation2(diagramID, className, level, body);
+                comm.addOperation(diagramID, className, level, body);
                 break;
             }
             case "changeSlotValue" : {
@@ -622,7 +622,7 @@ public class XmlManager extends XmlHandler {
             case "addEnumerationValue" : {
                 String enumName = logElement.getAttribute("enum_name");
                 String itemName = logElement.getAttribute("enum_value_name");
-                comm.addEnumerationItem(diagramID, enumName, itemName);
+                comm.addEnumerationValue(diagramID, enumName, itemName);
                 break;
             }
             case "addConstraint" : {

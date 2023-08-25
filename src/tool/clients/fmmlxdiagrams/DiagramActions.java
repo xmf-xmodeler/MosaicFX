@@ -94,7 +94,7 @@ public class DiagramActions {
 							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
 													
 							if (x > 0 && y > 0) {
-								diagram.getComm().addMetaClass(diagram.getID(), 
+								diagram.getComm().addMetaClassAsync(diagram.getID(), 
 										mcdResult.name, 
 										mcdResult.level, 
 										mcdResult.getParentNames(), 
@@ -109,7 +109,7 @@ public class DiagramActions {
 					};
 					view.getCanvas().addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				} else {
-					diagram.getComm().addMetaClass(diagram.getID(), 
+					diagram.getComm().addMetaClassAsync(diagram.getID(), 
 							mcdResult.name, 
 							mcdResult.level, 
 							mcdResult.getParentNames(),
@@ -514,7 +514,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().addOperation2(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});

@@ -92,40 +92,32 @@ public abstract class AbstractPackageViewer {
 		return fetchingData;
 	}
 
-	protected void fetchDiagramData( ReturnCall<Object> a ) {
-		
+	protected void fetchDiagramData( ReturnCall<Object> onDataFetched ) {
 		final boolean TIMER = false;
 		final long START = System.currentTimeMillis();
 		
-		if(fetchingData) {
+		if (fetchingData) {
 			System.err.println("\talready fetching diagram data");
 			return;
 		}
 		fetchingData = true;
 		setViewerStatus(ViewerStatus.LOADING);
-			if(objects.size()==0){
-				justLoaded = true;
-			}
+		if (objects.size() == 0) {
+			justLoaded = true;
+		}
 		this.clearDiagram();
-				
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
-
-			if(TIMER) System.err.println("Operation values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
-			
-			fetchDiagramDataSpecific();
-			
-			if(TIMER) System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
-	
-			fetchingData = false;
-			
-			fetchDiagramDataSpecific2();
-//			Platform.runLater(()-> {
-//				
-//			});
-			
-			setViewerStatus(ViewerStatus.CLEAN);
-			
-			a.run(null);
+			if (TIMER) {
+				System.err.println("Operation values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
+			}
+				fetchDiagramDataSpecific();
+			if (TIMER) {
+				System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
+			}
+				fetchingData = false;
+				fetchDiagramDataSpecific2();
+				setViewerStatus(ViewerStatus.CLEAN);
+				onDataFetched.run(null);
 		};
 		
 		ReturnCall<Vector<String>> slotsReturn = x2 -> {
@@ -198,11 +190,7 @@ public abstract class AbstractPackageViewer {
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
-			
-			for (FmmlxObject fmmlxObject : fetchedObjects) {
-				System.err.println(fmmlxObject.getName()+ " "  + fmmlxObject.getX() +" "+ fmmlxObject.getX()); 
-			}
-			
+		
 			objects.addAll(fetchedObjects);
 
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
