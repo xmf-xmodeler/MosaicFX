@@ -329,15 +329,6 @@ public class FmmlxDiagramCommunicator {
 		//add at position [0] of new parameterList a combined value of diagramID and requestID
 		newParameterList[0] = new Value(new Value[] {new Value(diagramID), new Value(currentRequestID)});
 		boolean waiting = true;
-		
-		
-		System.err.println("Messag from xmfRequest....");
-		for (int i = 0; i < newParameterList.length; i++) {
-			System.err.println(newParameterList[i]);
-		}
-		System.err.println("Messag end");
-		
-		
 		WorkbenchClient.theClient().send(targetHandle, xmfFunctionName, newParameterList);
 		int attempts = 0;
 		int sleep = 2;
@@ -2666,7 +2657,6 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(listOfViews)
 		};
-		System.err.println(message);
 		sendMessage("sendViewStatusToModel", message);
 	}
 	
