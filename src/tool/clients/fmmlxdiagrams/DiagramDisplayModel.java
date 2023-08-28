@@ -1,87 +1,65 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
-
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import xos.Value;
 
 public class DiagramDisplayModel {
 	
-	DiagramViewHeadToolBar diagramViewHeadToolBar;
-	FmmlxDiagram fmmlxDiagram;
-		
-	boolean showOperations = true;
-	boolean showOperationValues = true;
-	boolean showSlots = true;
-	boolean showGettersAndSetters = true;
-	boolean showDerivedOperations = true;
-	boolean showDerivedAttributes = true;
-	boolean showConstraints = true;
-	boolean showConstraintReports = true;
-	boolean showMetaClassName = false;
-	boolean showConcreteSyntax = true;
-	boolean issueTableVisible = false;
-	
-	Map<DiagramDisplayProperty, Boolean> showPropertiesMap = new LinkedHashMap<>();
-	
+	private final int relatedDiagramID;
+	private Map<DiagramDisplayProperty, Boolean> showPropertiesMap = new HashMap<>();
+
 	public DiagramDisplayModel(DiagramViewHeadToolBar diagramViewToolBar) {
-		this.diagramViewHeadToolBar = diagramViewToolBar;
-		fmmlxDiagram = diagramViewToolBar.getFmmlxDiagram();
-				
-		showPropertiesMap.put(DiagramDisplayProperty.OPERATIONS, showOperations);
-		showPropertiesMap.put(DiagramDisplayProperty.OPERATIONVALUES, showOperationValues);
-		showPropertiesMap.put(DiagramDisplayProperty.SLOTS, showSlots);
-		showPropertiesMap.put(DiagramDisplayProperty.GETTERSANDSETTERS, showGettersAndSetters);
-		showPropertiesMap.put(DiagramDisplayProperty.DERIVEDOPERATIONS, showDerivedOperations);
-		showPropertiesMap.put(DiagramDisplayProperty.DERIVEDATTRIBUTES, showDerivedAttributes);
-		showPropertiesMap.put(DiagramDisplayProperty.CONSTRAINTS, showConstraints);
-		showPropertiesMap.put(DiagramDisplayProperty.CONSTRAINTREPORTS, showConstraintReports);
-		showPropertiesMap.put(DiagramDisplayProperty.METACLASSNAME, showMetaClassName);
-		showPropertiesMap.put(DiagramDisplayProperty.CONCRETESYNTAX, showConcreteSyntax);
-		showPropertiesMap.put(DiagramDisplayProperty.ISSUETABLE, issueTableVisible);
+		relatedDiagramID = diagramViewToolBar.getFmmlxDiagram().getID(); 
+		showPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(relatedDiagramID);
+		//if not all properties contained in the map add the missing with default values
+		for (DiagramDisplayProperty property : DiagramDisplayProperty.values()) {
+			if (!showPropertiesMap.containsKey(property)) {
+				showPropertiesMap.put(property, property.getDefaultValue());
+			}
+		}
+		//if not all values were contained in the map received from XMF, the XMF data now gets updated
 		sendDisplayPropertiesToXMF();
 	}
 
-	public boolean getPropertieValue (DiagramDisplayProperty propertie) {
+	public boolean getPropertieValue(DiagramDisplayProperty propertie) {
 		return showPropertiesMap.get(propertie);
 	}
-	
-	public void setPropertyValue (DiagramDisplayProperty propertie, boolean bool) {
-		showPropertiesMap.replace(propertie, bool); 
-		sendDisplayPropertiesToXMF ();
+
+	public void setPropertyValue(DiagramDisplayProperty propertie, boolean bool) {
+		showPropertiesMap.replace(propertie, bool);
+		sendDisplayPropertiesToXMF();
 	}
-	
-	public boolean toggleDisplayProperty(DiagramDisplayProperty property){
+
+	public boolean toggleDisplayProperty(DiagramDisplayProperty property) {
 		setPropertyValue(property, !getPropertieValue(property));
 		return getPropertieValue(property);
 	}
-	
-	public Map<DiagramDisplayProperty, Boolean> getDisplayPropertiesMap(){
+
+	public Map<DiagramDisplayProperty, Boolean> getDisplayPropertiesMap() {
 		return showPropertiesMap;
 	}
-	
-	public void sendDisplayPropertiesToXMF () {
+
+	public void sendDisplayPropertiesToXMF() {
 		Vector<Value> items = new Vector<>();
 		for (DiagramDisplayProperty propertie : DiagramDisplayProperty.values()) {
-			items.add(new Value(new Value[] {new Value(propertie.name()), 	new Value(getPropertieValue(propertie) )}));
+			items.add(new Value(new Value[] { new Value(propertie.name()), new Value(getPropertieValue(propertie)) }));
 		}
 		Value[] itemArray = new Value[items.size()];
-		for(int i = 0; i < itemArray.length; i++) {
+		for (int i = 0; i < itemArray.length; i++) {
 			itemArray[i] = items.get(i);
 		}
 		Value[] message = new Value[]{
-				FmmlxDiagramCommunicator.getNoReturnExpectedMessageID(diagramViewHeadToolBar.getFmmlxDiagram().getID()),
-				new Value(itemArray)
-		};
-		diagramViewHeadToolBar.getFmmlxDiagram().getComm().sendMessage("sendViewOptions", message);
+				FmmlxDiagramCommunicator.getNoReturnExpectedMessageID(relatedDiagramID),
+				new Value(itemArray) };
+		FmmlxDiagramCommunicator.getCommunicator().sendMessage("sendViewOptions", message);
 	}
 	
-	public void receiveDisplayPropertiesFromXMF () { // used while updating
-		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
+	public void receiveDisplayPropertiesFromXMF (FmmlxDiagramCommunicator communicator) { // used while updating
+//		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
 		ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn = propertyImport -> {
 			if (propertyImport.isEmpty()) {
 				return;
@@ -96,7 +74,7 @@ public class DiagramDisplayModel {
 			}
 		};
 		
-		communicator.getDiagramDisplayProperties(fmmlxDiagram.getID(), onViewOptionsReturn);
+		communicator.getDiagramDisplayProperties(relatedDiagramID, onViewOptionsReturn);
 	}
 
 	public void setProperties(Vector<Vector<Object>> listOfOptions) { // used on diagram Creation

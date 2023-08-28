@@ -2,7 +2,7 @@ package tool.clients.serializer;
 
 import javafx.util.Pair;
 import org.w3c.dom.Element;
-import tool.clients.fmmlxdiagrams.PackageActionsList;
+import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
@@ -140,7 +140,7 @@ public class FmmlxSerializer  {
     
     private void serilizeDiagramDisplayProperties(Integer id) {
     	Element diagramDisplayProperties = xmlManager.getDiagramDisplayPropertiesElement();
-    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
+    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayPropertiesLegacy(id);
     	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
     		diagramDisplayProperties.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
 		}
@@ -205,13 +205,13 @@ public class FmmlxSerializer  {
     public void saveProjectLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         xmlManager.clearLog();
         Element logsElement = xmlManager.getLogs();
-        PackageActionsList protocol = communicator.getDiagramData(diagramID);
+        ModelActionsList protocol = communicator.getDiagramData(diagramID);
         
 //        System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");
 
-        Vector<PackageActionsList> logs = protocol.getChildren();
+        Vector<ModelActionsList> logs = protocol.getChildren();
         Collections.sort(logs);
-        for (PackageActionsList log : logs){
+        for (ModelActionsList log : logs){
             Element newLogElement = xmlManager.createNewLogFromFaXML(log);
             xmlManager.addLog(logsElement, newLogElement);
         }

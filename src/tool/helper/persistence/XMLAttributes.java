@@ -3,21 +3,21 @@ package tool.helper.persistence;
 public enum XMLAttributes {
 
 	VERSION("version"),
-	REF("ref"),
 	TYPE("type"),
 	SOURCE_PORT("sourcePort"),
 	TARGET_PORT("targetPort"),
 	X_COORDINATE("xCoordinate"),
 	Y_COORDINATE("yCoordinate"),
 	NAME("name"),
-	ATTRIBUTE_PARENT_ASSOCIATION("whatsWithThat"),
 	LOCAL_ID("localID"),
 	OWNER_ID("ownerID"),
 	XX("xx"),
 	TX("tx"),
 	TY("ty"),
-	PATH("path"),
-	HIDDEN("hidden");
+	HIDDEN("hidden"),
+	DISPLAYNAME("displayName"),
+	PATH("path") ;
+	
 		
     public final String name;
 

@@ -82,7 +82,7 @@ public abstract class AbstractPackageViewer {
 
 	private void sendInitialEdgesPosition() {
 		for(Edge<?> edge : edges){
-			getComm().sendCurrentPositions(getID(), edge);
+			getComm().sendCurrentEdgePositions(getID(), edge);
 		}
 	}
 	

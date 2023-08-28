@@ -169,7 +169,6 @@ public class CodeBox {
 					}
 					if (styleQueue.size() != 0) {
 						final StyleQueueItem next = styleQueue.remove(0);
-						// System.err.println("request unqueued");
 						Platform.runLater(() -> {
 							addStylesNew(next.start, next.length, next.s);
 						});

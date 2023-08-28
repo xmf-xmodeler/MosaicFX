@@ -98,12 +98,7 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	                super.updateItem(text, empty);
 	                if (text != null) {
 	                	setText(text);
-//	                	System.err.println(getIndex() + " ? " + tableView.getSelectionModel().getSelectedIndices());
-//	                	if(!(tableView.getSelectionModel().getSelectedItem() == tableView.getItems().get(getIndex()))) {
 	                		setStyle(tableView.getItems().get(getIndex()).getColor());
-//	                	} else {
-//	                		System.err.println("none");
-//	                	}
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };

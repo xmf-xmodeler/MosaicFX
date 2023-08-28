@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
-public class PackageActionsList implements Comparable<PackageActionsList>{
+public class ModelActionsList implements Comparable<ModelActionsList>{
 	
 	private final String name;	
-	private final Vector<PackageActionsList> children = new Vector<>();
+	private final Vector<ModelActionsList> children = new Vector<>();
 	private final HashMap<String, String> attributes = new HashMap<>();
 	
-	public PackageActionsList(Vector<Object> content) {
+	public ModelActionsList(Vector<Object> content) {
 //		System.err.println("reading " + content);
 		name = content.get(0).toString();
 		if (name.contains("addOperation2") || name.contains("changeOperationBody")){
@@ -28,7 +28,7 @@ public class PackageActionsList implements Comparable<PackageActionsList>{
 						attributes.put((String)child.get(0),(String)child.get(1));
 					}
 				} else {
-					children.add(new PackageActionsList(child));
+					children.add(new ModelActionsList(child));
 				}
 			}
 		} else {
@@ -42,7 +42,7 @@ public class PackageActionsList implements Comparable<PackageActionsList>{
 					if(child.size() == 2) {
 						System.err.println("wrong type: " + child.get(0) + "/" +child.get(1).getClass().getCanonicalName());
 					}
-					children.add(new PackageActionsList(child));
+					children.add(new ModelActionsList(child));
 				}
 			}
 		}
@@ -53,7 +53,7 @@ public class PackageActionsList implements Comparable<PackageActionsList>{
 	}
 
 	public String getName() { return name; }
-	public Vector<PackageActionsList> getChildren() { return new Vector<>(children); }
+	public Vector<ModelActionsList> getChildren() { return new Vector<>(children); }
 	public Set<String> getAttributes() { return attributes.keySet(); }
 	public String getAttributeValue(String attributeName) { return attributes.get(attributeName); }
 	
@@ -64,12 +64,12 @@ public class PackageActionsList implements Comparable<PackageActionsList>{
 		for(String key : getAttributes()) attString.append(" ").append(key).append("=\"").append(getAttributeValue(key)).append("\"");
 
 		StringBuilder childrenString = new StringBuilder();
-		for(PackageActionsList child : children) childrenString.append(child.toString(prefix + "  "));
+		for(ModelActionsList child : children) childrenString.append(child.toString(prefix + "  "));
 		return prefix + "<" + name + attString + (children.size()>0?(">\n"+childrenString+"</" + name):"/")  + ">\n";
 	}
 	
 	@Override
-	public int compareTo(PackageActionsList that) {
+	public int compareTo(ModelActionsList that) {
 		Integer prio = this.priority().compareTo(that.priority());
 		if(prio != 0) return prio;
 		
