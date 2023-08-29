@@ -91,4 +91,8 @@ public class RequestLog {
 	public void setReturnedMessageVector(Vector<Object> msgAsVec) {
 		this.returnedMessageVector = msgAsVec;
 	}
+	
+	public long calculateXMFProcessingTime() {
+		return callbackExecutionTime - requestTime;
+	}
 }
