@@ -31,12 +31,6 @@ public class ObjectContextMenu extends ContextMenu {
 		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
-
-		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
-		MenuItem execUI = new MenuItem("Execute UI");
-		execUI.setOnAction( e -> actions.executeUI(object) );
-		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
-		// End custom UI
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
@@ -50,19 +44,16 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
 		
+		
+		// menu item for instantiating and mapping custom GUI
+		MenuItem instantiateGUI = new MenuItem("Instantiate Standard GUI");
+		instantiateGUI.setOnAction(e-> actions.showGenerateCustomUIDialog());
+		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
+		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
-		
-//		MenuItem instanceGenerator = new MenuItem("Instance Generator");
-//
-//		instanceGenerator.setOnAction(e -> actions.runInstanceGenerator(object));
-//		if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
-//			instanceGenerator.setDisable(true);
-//		}
-//		getItems().add(instanceGenerator);
-		
-		
+				
 		if(diagram.getSelectedObjects().size() > 1) {
 			boolean classifyPossible = true;
 			Vector<FmmlxObject> objs = new Vector<>();
@@ -131,9 +122,6 @@ public class ObjectContextMenu extends ContextMenu {
 		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
 		levelMergeItem.setDisable(true);
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
-
-		MenuItem assignItem = new MenuItem("Assign to Global Variable");
-		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
@@ -151,12 +139,7 @@ public class ObjectContextMenu extends ContextMenu {
 				Optional<Integer> result = dialog.showAndWait();
 				if (result.isPresent()){
 					ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, object, result.get());
-					try {
-						wizard.start(new Stage());
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					wizard.start(new Stage());
 				}
 			}
 		});
@@ -170,7 +153,6 @@ public class ObjectContextMenu extends ContextMenu {
 				delegationMenu, 
 				slotMenu, 
 				associationInstanceMenu, 
-				assignItem,
 				editConcreteSyntaxItem);
 		
 		addRunMenu();

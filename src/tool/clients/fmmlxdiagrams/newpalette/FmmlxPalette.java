@@ -147,7 +147,7 @@ public class FmmlxPalette {
 			relationships.getChildren().add(link);
 			relationships.getChildren().add(delegation);
 
-			Vector<FmmlxObject> objects = fmmlxDiagram.getObjects();
+			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
 			for (FmmlxObject o : objects) {
 				levelList.add(o.getLevel());

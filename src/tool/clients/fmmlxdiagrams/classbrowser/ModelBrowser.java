@@ -112,8 +112,10 @@ public final class ModelBrowser extends CustomStage {
 		modelListView.getSelectionModel().clearSelection();
 		if (initialModel!=null) {
 			modelListView.getSelectionModel().select(initialModel);
+
 		}
-		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		
+		if(activePackage != null) fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
 		setMaximized(true);
 	}
 
@@ -608,22 +610,32 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
-		communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
-		activePackage.updateDiagram();
+		if(newValue != fmmlxObjectListView.getSelectionModel().getSelectedItem().isAbstract()) {
+			communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
+			activePackage.updateDiagram();
+		}
 	}
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
 		if(!models.containsKey(selectedPath)) {
-			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser);
-			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
-			models.put(selectedPath, tempViewer);
+			ReturnCall<Integer> onDiagramCreated = (newDiagramID) -> {
+				ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
+				models.put(selectedPath, tempViewer);
+				activePackage = models.get(selectedPath);
+				operationCodeArea.setDiagram(activePackage);
+				constraintBodyArea.setDiagram(activePackage);
+				constraintReasonArea.setDiagram(activePackage);
+				activePackage.updateDiagram();
+			};
+			communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
+		} else {
+			activePackage = models.get(selectedPath);
+			operationCodeArea.setDiagram(activePackage);
+			constraintBodyArea.setDiagram(activePackage);
+			constraintReasonArea.setDiagram(activePackage);
+			activePackage.updateDiagram();
 		}
-		activePackage = models.get(selectedPath);
-		operationCodeArea.setDiagram(activePackage);
-		constraintBodyArea.setDiagram(activePackage);
-		constraintReasonArea.setDiagram(activePackage);
-		activePackage.updateDiagram();
 	}	
 
 	private void onAttributeListViewNewValue(FmmlxAttribute oldAtt, FmmlxAttribute newAtt) {
@@ -772,7 +784,7 @@ public final class ModelBrowser extends CustomStage {
 
 	public void notifyModelHasLoaded() {
 		Platform.runLater(() -> {
-			Vector<FmmlxObject> objects = activePackage.getObjects();
+			Vector<FmmlxObject> objects = activePackage.getObjectsReadOnly();
 			levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 			
 			Collections.sort(objects, new Comparator<FmmlxObject>() {
@@ -784,13 +796,14 @@ public final class ModelBrowser extends CustomStage {
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
-
+			
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
 			//set Flag for loaded okay...
 			restoreSelection();
 		});
 	}
+	
 	
 	private transient HashMap<String, String> selection = new HashMap<>();
 	
@@ -904,7 +917,10 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
 				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
-				addNewMenuItem(this, "Instance Generator", e -> actions.runInstanceGenerator(object), NEVER);
+				
+				addNewMenuItem(this, "Instance Wizard...", e -> actions.openInstanceWizard(object, null), () -> {
+					return (object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract();
+				});		
 	
 				getItems().add(new SeparatorMenuItem());
 	
@@ -957,6 +973,7 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this,"Remove Constraint", e -> actions.removeDialog(object,PropertyType.Constraint, constraint),() -> {return constraint != null;});
 		}
 	}
+	
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {
 		MenuItem item = new MenuItem(text);

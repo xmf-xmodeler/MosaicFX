@@ -30,7 +30,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		DialogPane dialog = getDialogPane();
 		this.diagram = diagram;
 		this.selectedObject = object;
-		this.objects = diagram.getObjects();
+		this.objects = diagram.getObjectsReadOnly();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

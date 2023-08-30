@@ -8,12 +8,13 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
+import tool.clients.fmmlxdiagrams.uml.UmlObjectDisplay;
+
 import java.util.*;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
@@ -22,8 +23,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final String ownPath;
 	final String ofPath;
 	private final Vector<String> parentsPaths;
-	
+
 	private final boolean isAbstract;
+	private final boolean isCollective;
 	final int level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
@@ -46,6 +48,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			String ofPath,
 			Vector<String> parentPaths,
 			Boolean isAbstract,
+			Boolean isCollective,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
 		super();
@@ -56,6 +59,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.hidden = hidden;
 		this.level = level;
 		this.isAbstract = isAbstract;
+		this.isCollective = isCollective;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
@@ -187,7 +191,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
-		for (FmmlxObject object : diagram.getObjects()) {
+		for (FmmlxObject object : diagram.getObjectsReadOnly()) {
 			if (object.getOfPath().equals(this.ownPath)) {
 				result.add(object);
 			}
@@ -206,8 +210,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return allClasses;
 	}
-	
+
 	public boolean isAbstract() {return isAbstract;}
+	public boolean isCollective() {return isCollective;}
 
 	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
@@ -338,7 +343,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public HashSet<FmmlxObject> getAllSubclasses() {
 		HashSet<FmmlxObject> subclasses = new HashSet<FmmlxObject>();
 		subclasses.add(this);
-		for (FmmlxObject o : diagram.getObjects()) {
+		for (FmmlxObject o : diagram.getObjectsReadOnly()) {
 			if(o.parentsPaths.contains(this.ownPath)) {
 				subclasses.addAll(o.getAllSubclasses());
 			}
@@ -485,7 +490,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel(), isAbstract, "");
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel(), isAbstract||isCollective, "");
 		return new PaletteItem(tool);
 	}
 
@@ -515,9 +520,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperties, Boolean> diagramToolBarProperties) {
-		if (!diagramToolBarProperties.get(DiagramDisplayProperties.SHOWCONCRETESYNTAX)){
-			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
+			if(diagram.umlMode) {
+				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			} else {
+				new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			}
 			return;
 		}
 		
@@ -536,7 +545,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
 		} else {	
-			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			if(diagram.umlMode) {
+				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			} else {
+				new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			}
 		}
 		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
@@ -571,10 +584,34 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		layout(diagram, diagram.getDiagramViewToolBarModell().getDisplayPropertiesMap());
+		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
 	}
 	
+	private transient Vector<Issue> cachedIssues = null;
 	public Vector<Issue> getIssues() {
-		return diagram.getIssues(this);	
+		if(cachedIssues == null) cachedIssues = diagram.getIssues(this);
+		return cachedIssues;
 	}
+	
+	public static String getRelativePath(String fullPathNameSource, String fullPathNameTarget) { 
+		String[] fromPath = fullPathNameSource.split("::");
+		String[] toPath = fullPathNameTarget.split("::");
+		int i = 0; 
+		while(fromPath.length > i && toPath.length > i && fromPath[i].equals(toPath[i])) i++;
+		String path = "";
+		while(toPath.length > i ) {
+			path += "::" + toPath[i];
+			i++;
+		}
+		return path.substring(2); 
+	}
+	
+	public AbstractPackageViewer getDiagram() {
+		return this.diagram;
+	}
+
+	@Deprecated
+	/* TODO create a new class for non-Fmmlx-Objects */
+	public String type;
+
 }
