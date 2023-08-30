@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.helper.userProperties;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import tool.clients.menus.MenuClient;
+import tool.xmodeler.PropertyManagerStage;
 
 public class PropertyManager {
 	static File userPropertiesFile = new File("user.properties");

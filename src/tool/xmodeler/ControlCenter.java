@@ -57,6 +57,8 @@ import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 
 public class ControlCenter extends Stage {
 	

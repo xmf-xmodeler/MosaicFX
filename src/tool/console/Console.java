@@ -8,7 +8,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import tool.xmodeler.PropertyManager;
+import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class Console {

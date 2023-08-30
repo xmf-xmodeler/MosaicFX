@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.DiagramClient;
-import tool.xmodeler.PropertyManager;
+import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;

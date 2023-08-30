@@ -31,6 +31,8 @@ import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 import xos.OperatingSystem;
 
 import javax.xml.parsers.DocumentBuilder;
