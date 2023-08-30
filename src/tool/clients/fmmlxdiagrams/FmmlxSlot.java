@@ -60,6 +60,10 @@ public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 		throw new RuntimeException("Slot type not found");
 	}
 	
+	public FmmlxObject getOwner() {
+		return owner;
+	}
+
 	@Override public String toString() { return name; }
 
 	@Override

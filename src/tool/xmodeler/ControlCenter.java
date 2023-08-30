@@ -480,14 +480,18 @@ public class ControlCenter extends Stage {
 		Platform.runLater(() -> 
 		{
 			UploadConfig uc = new UploadConfig();
+			uc.setUriTextfield(PropertyManager.getProperty("graphDBUri"));
+			uc.setUserTextfield(PropertyManager.getProperty("graphDBUser"));
 			Optional<UploadConfig.Result> result = uc.showAndWait();
+			
 
 			if (result.isPresent()) {
 				final UploadConfig.Result mcdResult = result.get();
-				Preferences userPreferences = Preferences.userRoot(); 
-				userPreferences.put("uri",mcdResult.uri);
-				userPreferences.put("user",mcdResult.user);
-				userPreferences.put("password",mcdResult.password);
+//				Preferences userPreferences = Preferences.userRoot();
+				PropertyManager.setProperty("graphDBUri", mcdResult.uri);
+				PropertyManager.setProperty("graphDBUser", mcdResult.user);
+				PropertyManager.setProperty("graphDBPassword", mcdResult.password);
+
 			}
 			
 			

@@ -1022,7 +1022,7 @@ public class DiagramActions {
 //			UploadConfig uc = new UploadConfig();
 //			Optional<UploadConfig.Result> result = uc.showAndWait();
 			Preferences userPreferences = Preferences.userRoot(); 
-			GraphDBController gdbc = new GraphDBController(this.diagram);
+			GraphDBController gdbc = new GraphDBController((FmmlxDiagram) this.diagram);
 			gdbc.test();
 			gdbc.connectionMain();
 		});

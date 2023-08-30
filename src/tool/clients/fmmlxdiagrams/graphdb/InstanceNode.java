@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphdb;
 
 import java.util.UUID;
+import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.graphdb.Node.label;
@@ -13,9 +14,9 @@ public class InstanceNode extends Node {
     private final double yCoordinate;
     private String ofPath;
     private String instanceOf;
-
-	
-
+    private Vector<Node> attributes;
+    private Vector<SlotNode> slots;
+    private InstanceNode instanceOfNode;
 
 	public InstanceNode(FmmlxObject object)
     {
@@ -66,4 +67,31 @@ public class InstanceNode extends Node {
 	public String getInstanceOf() {
 		return instanceOf;
 	}
+	public void setAttributes(Vector<Node> attributes) {
+		this.attributes = attributes;
+	}
+
+	public Vector<Node> getAttributes() {
+		return attributes;
+	}
+	
+	public void setSlots(Vector<SlotNode> slots) {
+		this.slots = slots;
+	}
+	
+	public Vector<SlotNode> getSlots() {
+		return slots;
+	}
+
+
+	public void setInstanceOfNode(InstanceNode instanceOfNode) {
+		this.instanceOfNode = instanceOfNode;
+	}
+
+
+	public InstanceNode getInstanceOfNode() {
+		return instanceOfNode;
+	}
+	
+	
 }

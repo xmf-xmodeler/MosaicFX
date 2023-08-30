@@ -5,10 +5,13 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javafx.geometry.NodeOrientation;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Constraint;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.graphdb.Node.label;
 import tool.clients.fmmlxdiagrams.graphdb.NodeConnection.connection;
@@ -21,12 +24,25 @@ public class Controller
 	private ArrayList<String> connectionList = new ArrayList<>();
 	private InstanceNode InstanceNode;
 	private Node diagramNode;
+	private Node packageNode;
 	private String ofPath;
+	private String diagramName;
 	
 		
-	public Controller(String diagramName) 
+	public Controller(FmmlxDiagram diagram) 
 	{
-		this.diagramNode = createAndInsertInList(diagramName, label.DIAGRAMM);
+//		Das nachfolgende ist in wirklichkeit das Project
+//		TODO möglichkeit finden an den Diagram namen zu kommen.
+		String diagramPackage 	= clearUpPath(diagram.getPackagePath(),"Root::");
+		this.packageNode		= createAndInsertInList(diagramPackage, label.PACKAGE);
+		
+		this.diagramName = diagram.getDiagramLabel();
+		this.diagramNode = createConnectAndInsert(diagramName, label.DIAGRAMM,this.packageNode);
+		
+		
+		
+//		System.err.print(diagramPackage + "\n");
+		
 		
 	}
 
@@ -35,7 +51,8 @@ public class Controller
 	public void create(FmmlxObject object)
 	{
 		createInstance(object);
-		createAttributes(object);
+		this.InstanceNode.setAttributes(createAttributes(object));
+		this.InstanceNode.setSlots(createSlots(object));
 		createOperations(object);
 		createConstraints(object);
 	}
@@ -44,24 +61,32 @@ public class Controller
 	{
 		String 	name 	= object.getName();
 		int		level	= object.getLevel();
-		double 	xCoordinate = object.getCenterX();
-		double 	yCoordinate = object.getCenterY();
+		boolean hidden 	= object.isHidden();
 		
-		InstanceNode n = new InstanceNode(object);
-		this.nodeList.add(n);
-		this.InstanceNode = n;
 		
-		connectAndInsertInList(connection.OF, n, diagramNode);
+		InstanceNode instance = new InstanceNode(object);
+		this.nodeList.add(instance);
+		this.InstanceNode = instance;
 		
-		Node instanceLevel 				= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE, n);
-		Node slotOfInstanceLevel		= createConnectAndInsert(String.valueOf(level), label.SECONDCLASSATTRIBUTE, instanceLevel);
+		connectAndInsertInList(connection.OF, instance, diagramNode);
 		
+		Node instanceLevel 				= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE, instance);
+		Node slotOfInstanceLevel		= createConnectAndInsert(String.valueOf(level), label.SLOT, instanceLevel);
+		Node slotOfInstanceLevelType	= createConnectAndInsert("Root::XCore::Integer", label.FIRSTCLASSATTRIBUTE, instanceLevel);
+		
+		Node instanceHidden				= createConnectAndInsert("hidden",label.FIRSTCLASSATTRIBUTE, instance);
+		Node instanceHiddenValue		= createConnectAndInsert(String.valueOf(hidden), label.SLOT, instanceHidden);
+		
+		Node isAbstract					= createConnectAndInsert("isAbstract", label.FIRSTCLASSATTRIBUTE,instance);
+		Node isAbstractSlot				= createConnectAndInsert(String.valueOf(object.isAbstract()), label.SLOT, isAbstract);
 	}
 	
-	private void createAttributes(FmmlxObject object)
+	private Vector<Node> createAttributes(FmmlxObject object)
 	{
-		Vector<FmmlxAttribute> attributes = object.getAllAttributes();
+		Vector<FmmlxAttribute> attributes 			= object.getAllAttributes();
 		Iterator<FmmlxAttribute> attributesIterator = attributes.iterator();
+		
+		Vector<Node> attributeNodes = null;
 		
 		while (attributesIterator.hasNext())
 		{
@@ -76,16 +101,39 @@ public class Controller
 			
 	        Node levelOfAttributeNode          	= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE,attributeNode);
 	        Node slotOflevelOfAttributeNode     = createConnectAndInsert(String.valueOf(level),label.SLOT,levelOfAttributeNode);
-	        Node levelOfAttributeTypeNode     	= createConnectAndInsert("Root::XCore::Integer",label.SECONDCLASSATTRIBUTE,levelOfAttributeNode);
+	        Node levelOfAttributeTypeNode     	= createConnectAndInsert("Root::XCore::Integer",label.FIRSTCLASSATTRIBUTE,levelOfAttributeNode);
 	        
 	        Node typeOfAttributeNode           	= createConnectAndInsert("type", label.FIRSTCLASSATTRIBUTE,attributeNode);
 	        Node slotOfTypeOfAttributeNode      = createConnectAndInsert(type,label.SLOT,typeOfAttributeNode);
 	        
 	        Node multiplicityNode 				= createMultipicityNode(multiplicity);
 	        connectAndInsertInList(NodeConnection.connection.OF,multiplicityNode,attributeNode);
-	        
+	        attributeNodes.add(attributeNode);
 		}
+		
+		return attributeNodes;
 	}
+	
+	private Vector<SlotNode> createSlots(FmmlxObject object)
+	{
+		Vector<FmmlxSlot> slots						= object.getAllSlots();
+		Vector<SlotNode> slotNodes					= null;
+		Iterator<FmmlxSlot> slotsIterator			= slots.iterator();
+
+		while (slotsIterator.hasNext())
+		{
+			FmmlxSlot 	slot = slotsIterator.next();
+			SlotNode 	slotNode 	=	(SlotNode) createConnectAndInsert(String.valueOf(slot.getValue()), label.SLOT, InstanceNode);
+			Node 		slotLabel	=	createConnectAndInsert("Slot", label.FIRSTCLASSATTRIBUTE, slotNode);
+			slotNodes.add(slotNode);
+			slotNode.setOfPath(slot.getOwner());
+			
+			System.err.print(slot.getName() + " " + slot.getOwner().getOfPath() + "\n");
+		}
+		
+		return slotNodes;
+	}
+	
 	private Node createMultipicityNode(Multiplicity multiplicity)
 	{
 		int min = multiplicity.min;
@@ -135,23 +183,25 @@ public class Controller
 			Boolean delegateToClassAllowed = operation.isDelegateToClassAllowed();
 			
 			
-			Node operationNode 						= createConnectAndInsert(name, label.SECONDCLASSATTRIBUTE, this.InstanceNode);
+			Node operationNode 						= createConnectAndInsert(name, label.COMPILEDOPERATION, this.InstanceNode);
 			
 	        Node levelOfOperationNode          		= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE, operationNode);
 	        Node levelOfOperationValueNode     		= createConnectAndInsert(String.valueOf(level),label.SLOT, levelOfOperationNode);
-	        Node levelOfOperationTypeNode     		= createConnectAndInsert("Root::XCore::Integer",label.SECONDCLASSATTRIBUTE,levelOfOperationValueNode);
+	        Node levelOfOperationTypeNode     		= createConnectAndInsert("Root::XCore::Integer",label.FIRSTCLASSATTRIBUTE,levelOfOperationValueNode);
 			
 
 	        Node typeOfOperationNode           		= createConnectAndInsert("type", label.FIRSTCLASSATTRIBUTE,operationNode);
 	        Node slotOfTypeOfOperationNode      	= createConnectAndInsert(type,label.SLOT,typeOfOperationNode);
 	        
 	        Node isMonitoredNode 					= createConnectAndInsert("is Monitored", label.FIRSTCLASSATTRIBUTE, operationNode);
-	        Node slotOfisMonitoredNode				= createConnectAndInsert(String.valueOf(isMonitored), label.SECONDCLASSATTRIBUTE, isMonitoredNode);
+	        Node slotOfisMonitoredNode				= createConnectAndInsert(String.valueOf(isMonitored), label.SLOT, isMonitoredNode);
 	        
 	        Node delegateToClassAllowedNode			= createConnectAndInsert("delegateToClassAllowed", label.FIRSTCLASSATTRIBUTE, operationNode);
 	        Node slotOfdelegateToClassAllowedNode	= createConnectAndInsert(String.valueOf(delegateToClassAllowed), 
-	        																	label.SECONDCLASSATTRIBUTE, delegateToClassAllowedNode);
+	        																	label.SLOT, delegateToClassAllowedNode);
 	        
+	        Node bodyOfOperation					= createConnectAndInsert("body", label.FIRSTCLASSATTRIBUTE, operationNode);
+	        Node slotOfbodyOfOperation				= createConnectAndInsert(body, label.SLOT, bodyOfOperation);
 			
 		}
 	}
@@ -170,18 +220,18 @@ public class Controller
 			String 	body 	= constraint.getBodyRaw();
 			String	reason	= constraint.getReasonRaw();
 			
-			Node constraintNode						= createConnectAndInsert(name, label.FIRSTCLASSATTRIBUTE, this.InstanceNode);
+			Node constraintNode						= createConnectAndInsert(name, label.CONSTRAINT, this.InstanceNode);
 			
 			Node levelOfConstraintNode				= createConnectAndInsert("level", label.FIRSTCLASSATTRIBUTE, constraintNode);
-			Node levelOfConstraintValueNode			= createConnectAndInsert(String.valueOf(level), label.SECONDCLASSATTRIBUTE, levelOfConstraintNode);
+			Node levelOfConstraintValueNode			= createConnectAndInsert(String.valueOf(level), label.SLOT, levelOfConstraintNode);
 			Node levelOfConstraintTypeNode			= createConnectAndInsert("Root::XCore::Integer", label.FIRSTCLASSATTRIBUTE, levelOfConstraintValueNode);
 			
 			Node bodyOfConstraintNode				= createConnectAndInsert("body", label.FIRSTCLASSATTRIBUTE, constraintNode);
-			Node slotOfBodyOfConstraintNode			= createConnectAndInsert(body, label.SECONDCLASSATTRIBUTE, bodyOfConstraintNode);
+			Node slotOfBodyOfConstraintNode			= createConnectAndInsert(body, label.SLOT, bodyOfConstraintNode);
 			Node slotOfBodyOfConstraintTypeNode 	= createConnectAndInsert("Root::XCore::String", label.FIRSTCLASSATTRIBUTE, slotOfBodyOfConstraintNode);
 			
 			Node reasonOfConnstraintNode			= createConnectAndInsert("reason", label.FIRSTCLASSATTRIBUTE, constraintNode);
-			Node slotOfReasonOfConnstraintNode		= createConnectAndInsert(reason, label.SECONDCLASSATTRIBUTE, reasonOfConnstraintNode);
+			Node slotOfReasonOfConnstraintNode		= createConnectAndInsert(reason, label.SLOT, reasonOfConnstraintNode);
 			Node slotOfReasonOfConnstraintTypeNode	= createConnectAndInsert("Root::XCore::String", label.FIRSTCLASSATTRIBUTE, reasonOfConnstraintNode);
 			
 		}
@@ -224,4 +274,9 @@ public class Controller
 	public void setConnector(Connector nodConnector){this.nodeConnector = nodConnector;}
 	public InstanceNode getInstanceNode() {return InstanceNode;}
 	public String getOfPath() {return ofPath;}
+	
+	private String clearUpPath(String path, String prefix)
+	{	
+		return path.substring(prefix.length());
+	}
 }

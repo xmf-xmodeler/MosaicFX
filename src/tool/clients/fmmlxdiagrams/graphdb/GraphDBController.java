@@ -17,14 +17,17 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.graphdb.Node.label;
 import tool.clients.fmmlxdiagrams.graphdb.NodeConnection.connection;
 import tool.clients.serializer.FmmlxSerializer;
+import tool.xmodeler.PropertyManager;
 
 public class GraphDBController 
 {
 	private String uri;
 	private String user;
 	private String password;
-	private final AbstractPackageViewer diagram;
-	private final String diagramName;
+	private final FmmlxDiagram diagram;
+	
+//	private final String diagramName;
+	
 	private Connector connector;
 	
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
@@ -36,9 +39,9 @@ public class GraphDBController
 	
 	
 	// Der Konstruktor der Klasse GraphDBController.
-	public GraphDBController (AbstractPackageViewer diagram) {
+	public GraphDBController (FmmlxDiagram diagram) {
 		this.diagram = diagram;
-		this.diagramName = clearUpPath(this.diagram.getPackagePath(),"Root::");
+		
 		getObjects();
 		getClass();
 		setConnection();
@@ -47,9 +50,10 @@ public class GraphDBController
 	public void setConnection()
 	{
 		Preferences userPreferences = Preferences.userRoot(); 
-		this.uri = userPreferences.get("uri","Error");
-		this.user = userPreferences.get("user","Error");
-		this.password = userPreferences.get("password","Error");
+		this.uri = PropertyManager.getProperty("graphDBUri");
+		this.user = PropertyManager.getProperty("graphDBUser");
+		this.password = PropertyManager.getProperty("graphDBPassword");
+
 	}
 	
 	public void test ()
@@ -66,7 +70,7 @@ public class GraphDBController
 		
 		connector.deleteEverything();
 		
-		Controller c = new Controller(diagramName);
+		Controller c = new Controller(this.diagram);
 		this.objects = this.diagram.getObjectsReadOnly();
 		
 		Iterator<FmmlxObject> iterator = this.objects.iterator();
@@ -80,9 +84,9 @@ public class GraphDBController
 			createInDB();
 		}
 		connectInstances();
-		System.err.print("fertig ");
+		System.err.print("fertig \n");
 		long end = System.currentTimeMillis() - start;
-		System.err.println("operation took " + end + "milliseconds");
+		System.err.println("operation took " + end + " milliseconds");
 	}
 	
 	
@@ -123,19 +127,19 @@ public class GraphDBController
 	
 	private void createInDB()
 	{
-		String createNodes = "Create";
+		StringBuilder createNodes = new StringBuilder();
 		String createConnections = "";
 		Iterator<Node> nodeIterator = nodeList.iterator();
 		Iterator<String> connectionIterator = nodeConnectionsList.iterator();
-		
+		createNodes.append("Create");
 //	creates an String with all Nodes and send it to the DB
 		while (nodeIterator.hasNext())
 		{
-			createNodes += nodeIterator.next().getCreate2() + ",";
+			createNodes.append(nodeIterator.next().getCreate2()+ ",");
 		}
-		createNodes = createNodes.substring(0, createNodes.length()-1);
+		createNodes.delete(createNodes.length()-1, createNodes.length());
 		nodeList.clear();		
-		connector.sendQuerry(createNodes);
+		connector.sendQuerry(createNodes.toString());
 
 		while (connectionIterator.hasNext()) 
 		{	
@@ -144,6 +148,8 @@ public class GraphDBController
 		}
 		nodeConnectionsList.clear();
 	}
+	
+	
 	
 	private void connectInstances()
 	{
@@ -164,6 +170,7 @@ public class GraphDBController
 					
 					if (instanceOf.equals(secondInstance.getName()))
 					{
+						instance.setInstanceOfNode(secondInstance);
 						NodeConnection c = new NodeConnection(connection.OF);
 						String s = c.connectTwoNodes(instance, secondInstance);
 						connector.sendQuerry(s);
@@ -173,8 +180,32 @@ public class GraphDBController
 			
 		}
 	}
-	private String clearUpPath(String path, String prefix)
-	{	
-		return path.substring(prefix.length());
+	
+	private void connectSlots()
+	{
+		Iterator<InstanceNode> instanceIterator = instancesList.iterator();
+		
+		while(instanceIterator.hasNext())
+		{
+			InstanceNode instance1 	= instanceIterator.next();
+			InstanceNode instance2	= instance1.getInstanceOfNode();
+			
+			Vector<SlotNode> slots 	= instance1.getSlots();
+			Vector<Node> attributes = instance2.getAttributes();
+			
+			
+			
+//			while () 
+			
+		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -78,4 +78,17 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 
 		
 	}
+
+	public void setUriTextfield(String uri) {
+		this.uriTextfield.setText(uri);
+	}
+
+	public void setUserTextfield(String user) {
+		this.userTextfield.setText(user);;
+	}
+
+//	public void setPasswordTextfield(String password) {
+//		this.passwordTextfield.setText(password);
+//	}
+	
 }
