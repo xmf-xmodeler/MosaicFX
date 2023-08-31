@@ -84,6 +84,7 @@ public class GraphDBController
 			createInDB();
 		}
 		connectInstances();
+		connectSlots();
 		System.err.print("fertig \n");
 		long end = System.currentTimeMillis() - start;
 		System.err.println("operation took " + end + " milliseconds");
@@ -187,12 +188,36 @@ public class GraphDBController
 		
 		while(instanceIterator.hasNext())
 		{
+			
 			InstanceNode instance1 	= instanceIterator.next();
+			
+			if (instance1.getInstanceOfNode() == null)
+			{
+				continue;
+			}
 			InstanceNode instance2	= instance1.getInstanceOfNode();
 			
 			Vector<SlotNode> slots 	= instance1.getSlots();
 			Vector<Node> attributes = instance2.getAttributes();
 			
+			Iterator<SlotNode> slotIterator = slots.iterator();
+			Iterator<Node> attributesIterator = attributes.iterator();
+			
+			while (slotIterator.hasNext())
+			{
+				SlotNode slot = slotIterator.next();
+				
+				while(attributesIterator.hasNext())
+				{
+					Node attribute = attributesIterator.next();
+					if (slot.getSlotName().equals(attribute.getName()))
+					{
+						NodeConnection c = new NodeConnection (connection.OF);
+						String s = c.connectTwoNodes(slot,attribute);
+						connector.sendQuerry(s);
+					}
+				}
+			}
 			
 			
 //			while () 

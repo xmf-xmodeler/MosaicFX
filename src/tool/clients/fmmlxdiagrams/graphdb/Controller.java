@@ -86,7 +86,7 @@ public class Controller
 		Vector<FmmlxAttribute> attributes 			= object.getAllAttributes();
 		Iterator<FmmlxAttribute> attributesIterator = attributes.iterator();
 		
-		Vector<Node> attributeNodes = null;
+		Vector<Node> attributeNodes = new Vector<Node>();
 		
 		while (attributesIterator.hasNext())
 		{
@@ -117,17 +117,18 @@ public class Controller
 	private Vector<SlotNode> createSlots(FmmlxObject object)
 	{
 		Vector<FmmlxSlot> slots						= object.getAllSlots();
-		Vector<SlotNode> slotNodes					= null;
+		Vector<SlotNode> slotNodes 					= new Vector<SlotNode>();					
 		Iterator<FmmlxSlot> slotsIterator			= slots.iterator();
 
 		while (slotsIterator.hasNext())
 		{
 			FmmlxSlot 	slot = slotsIterator.next();
-			SlotNode 	slotNode 	=	(SlotNode) createConnectAndInsert(String.valueOf(slot.getValue()), label.SLOT, InstanceNode);
+			SlotNode 	slotNode 	=	createConnectAndInsertSlot(String.valueOf(slot.getValue()), label.SLOT, InstanceNode);
 			Node 		slotLabel	=	createConnectAndInsert("Slot", label.FIRSTCLASSATTRIBUTE, slotNode);
 			slotNodes.add(slotNode);
 			slotNode.setOfPath(slot.getOwner());
 			
+			slotNode.setSlotName(slot.getName());
 			System.err.print(slot.getName() + " " + slot.getOwner().getOfPath() + "\n");
 		}
 		
@@ -255,6 +256,16 @@ public class Controller
 	private Node createConnectAndInsert(String name, Node.label label, Node end)
 	{
 		Node n = createAndInsertInList(name, label);
+		connectAndInsertInList(connection.OF, n, end);
+		
+		return n;
+		
+	}
+	
+	private SlotNode createConnectAndInsertSlot(String name, Node.label label, Node end)
+	{
+		SlotNode n = new SlotNode(name,label);
+		nodeList.add(n);		
 		connectAndInsertInList(connection.OF, n, end);
 		
 		return n;
