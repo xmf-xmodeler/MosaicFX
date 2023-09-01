@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.logging;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import xos.Value;
 
 public class RequestLogManager {
@@ -16,11 +17,6 @@ public class RequestLogManager {
 	private static RequestLogManager INSTANCE;
 	private List<RequestLog> logList = new ArrayList<RequestLog>(); 
 	private boolean debugModus;
-	
-	public void setDebugModus() {
-		this.debugModus = true;
-		initLogManagement();
-	}
 
 	private void initLogManagement() {
 		try {
@@ -35,6 +31,11 @@ public class RequestLogManager {
 
 	private RequestLogManager() {
 		super();
+		initLogManagement();
+		boolean diagramCommunicatorDebug = FmmlxDiagramCommunicator.isDebug();
+		if (diagramCommunicatorDebug) {
+			debugModus = true;
+		}
 	}
 	
 	public static RequestLogManager getInstance() {

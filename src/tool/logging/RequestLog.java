@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.logging;
 
 import java.util.Vector;
 
