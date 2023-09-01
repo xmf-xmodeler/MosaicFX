@@ -1,14 +1,12 @@
 package tool.helper.persistence;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,9 +16,8 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
@@ -30,9 +27,7 @@ import tool.helper.userProperties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
 public class XMLParser {
-	
 	FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
-	Document doc;
 	Element root;
 	String projectPath;
 	String projectName;
@@ -47,8 +42,7 @@ public class XMLParser {
 		chooser.setTitle("Choose input location");
 		chooser.getExtensionFilters().add(new ExtensionFilter("XML", "*.xml"));
 		if (PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString()) != null) {
-			String recentlyOpendDirPath = PropertyManager
-					.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString());
+			String recentlyOpendDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString());
 			File recentlyOpendFile = new File(recentlyOpendDirPath);
 			chooser.setInitialDirectory(recentlyOpendFile.getParentFile());
 		}
@@ -91,11 +85,11 @@ public class XMLParser {
 			// Version is not 3 or 2
 		}
 		//TODO TS add logging
-		throw new IllegalArgumentException("InputFiel seems to have wrong Version number");
+		throw new IllegalArgumentException("InputFiel have wrong Version number");
 	}
 
 	private Element initParser(File inputFiel) {
-		doc = XMLUtil.getDocumentFromFile(inputFiel);
+		Document doc = XMLUtil.getDocumentFromFile(inputFiel);
 		Element root = doc.getDocumentElement();
 		return root;
 	}
@@ -120,14 +114,6 @@ public class XMLParser {
         projectName = projectPath.split("::")[1];
 		communicator.createProject(projectName, projectPath);
 	}
-         
-         public static void printTags(Node nodes){
-             if(nodes.hasChildNodes()  || nodes.getNodeType()!=3){
-                 System.err.println(nodes.getNodeName()+" : "+nodes.getTextContent());
-                 NodeList nl=nodes.getChildNodes();
-                 for(int j=0;j<nl.getLength();j++)printTags(nl.item(j));
-             }
-         }
 
 	private void buildModel() {
 			//Creates dummy project that hold the model data.
@@ -192,7 +178,6 @@ public class XMLParser {
 	}
 
 	private void sendDiagramViewStatus(Integer diagramID, Element viewsElement) {
-		
 		SortedMap<String, Affine> views = new TreeMap<String, Affine>();
 		NodeList viewElements =  viewsElement.getChildNodes();
 		for (int i = 0; i < viewElements.getLength(); i++) {
