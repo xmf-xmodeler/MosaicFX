@@ -63,7 +63,6 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.clients.importer.FMMLxImporter;
 import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -1150,8 +1149,9 @@ public class DiagramActions {
 			File file = fc.showOpenDialog(XModeler.getStage());
 
 			if(file!= null){
-				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
-				importer.handleLogs();
+				//if you want to run this, you have to reimplement an FMMLxImporter
+				//FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
+				//importer.handleLogs();
 			}
 			updateDiagram();
 		});

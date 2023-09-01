@@ -33,7 +33,7 @@ public class SvgExporter {
         this.xmlHandler = new XmlHandler(this.filePath);
     }
 
-    public void initUserSVGFile(String file, Bounds bounds, double extraHeight) throws TransformerException, ParserConfigurationException {
+    private void initUserSVGFile(String file, Bounds bounds, double extraHeight) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.createSvg(file, bounds, extraHeight);
     }
@@ -42,10 +42,6 @@ public class SvgExporter {
         this.xmlHandler.flushData();
     }
 
-    public void clearAllData() {
-        xmlHandler.removeAllChildren(xmlHandler.getRoot());
-    }
-    
     public void createSvg(String file, Bounds bounds, double extraHeight) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
         initSvg(document, bounds, extraHeight);
