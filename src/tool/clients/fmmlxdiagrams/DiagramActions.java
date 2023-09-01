@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -13,7 +12,6 @@ import javax.xml.transform.TransformerException;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -21,17 +19,15 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.WritableImage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
@@ -39,13 +35,35 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
-import tool.clients.fmmlxdiagrams.dialogs.*;
-import tool.clients.fmmlxdiagrams.dialogs.shared.*;
+import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeTargetDialog;
+import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
+import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
+import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
-import tool.clients.serializer.FmmlxSerializer;
 import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -996,21 +1014,6 @@ public class DiagramActions {
 		} catch (TimeOutException e) {
 			return new Vector<>(Arrays.asList("Time", "Out", "Exception"));
 		}	
-	}
-
-	public void save() {
-		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
-		Platform.runLater(() -> {
-			try {
-				String filePath = ((FmmlxDiagram) diagram).getFilePath();
-				FmmlxDiagramCommunicator communicator = diagram.getComm();
-				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
-				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
-				serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
-			} catch (TransformerException | ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-		});
 	}
 
 	public void openFindImplementationDialog() {

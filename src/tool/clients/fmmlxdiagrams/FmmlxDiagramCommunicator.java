@@ -8,9 +8,6 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.Vector;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
@@ -25,7 +22,6 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
-import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.logging.RequestLog;
@@ -2163,68 +2159,6 @@ public class FmmlxDiagramCommunicator {
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
 		close(diagram, true);
-	}
-
-
-	public void saveFile(String packageString) {
-		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				try {
-					for(FmmlxDiagram diagram : diagrams){
-						String tmp_packageName = diagram.getPackagePath().split("::")[1];
-						if(packageName.equals(tmp_packageName)){
-							String filePath = diagram.getFilePath();
-							FmmlxDiagramCommunicator communicator = diagram.getComm();
-							String label = diagram.getDiagramLabel();
-							FmmlxSerializer serializer = new FmmlxSerializer(diagram.getFilePath());
-							serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
-						}
-					}
-				} catch (TransformerException | ParserConfigurationException e) {
-					if(e instanceof TransformerException){
-						saveXmlFile2(diagrams.get(0).getPackagePath(), diagrams.get(0).getID());
-					} else {
-						e.printStackTrace();
-					}
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-
-	}
-
-	public void saveXmlFile(String fileName, String packageString) {
-		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-		FmmlxDiagramCommunicator communicator = this;
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() throws TransformerException, ParserConfigurationException {
-				try {
-					String diagramPath = null;
-					String initLabel = null;
-					FmmlxSerializer serializer = new FmmlxSerializer(fileName);
-					serializer.clearAllData();
-					for(FmmlxDiagram diagram : diagrams){
-						String tmp_packageName = diagram.getPackagePath().split("::")[1];
-						if(packageName.equals(tmp_packageName)){
-							diagram.setFilePath(fileName);
-							diagramPath = diagram.packagePath;
-							initLabel = diagram.getDiagramLabel();
-						}
-					}
-					serializer.saveAsXml(diagramPath, initLabel, communicator);
-				} catch (TimeOutException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-		};
-
-		new Thread(task).start();
 	}
 
 	public void saveXmlFile2(String diagramPath, Integer id) {
