@@ -138,8 +138,7 @@ public class ControlCenter extends Stage {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
-			
-			//TODO TS delete load model from xmf side
+
 			Menu xmlMenu = new Menu("XMLFile");
 			getMenus().add(xmlMenu);
 			buildXMLMenu(xmlMenu);

@@ -257,7 +257,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-        	//TODO TS add strg s
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
             	pressedKeys.remove(event.getCode());

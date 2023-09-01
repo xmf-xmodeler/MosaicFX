@@ -167,7 +167,7 @@ public class XMLParser {
 		sendDiagramDisplayproperties(diagramId, diagramsDisplayProperty);
 		Element instances = XMLUtil.getChildElement(diagram, XMLTags.INSTANCES.getName());
 		NodeList instancesList = instances.getChildNodes();
-		//TODO Why is this line important?
+		//TODO TS Why is this line important?
 		System.err.println("xxxxxx   after wait " + 	communicator.getAllObjectPositions(diagramId));
 		for (int i = 0; i < instancesList.getLength(); i++) {
 			Node node = instancesList.item(i);

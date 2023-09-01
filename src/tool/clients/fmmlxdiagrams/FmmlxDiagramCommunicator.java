@@ -32,8 +32,6 @@ public class FmmlxDiagramCommunicator {
 	
 	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
 	
-	//TODO TS delete after new Parser is implemented
-	private boolean silent; // this prevents notification returning from xmf from being displayed
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
@@ -261,16 +259,12 @@ public class FmmlxDiagramCommunicator {
 				} catch(Exception e) {System.err.println("message" + requestID + " returned anyway");}
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
 				if (err != null && err.size() > 0 && err.get(0) != null ) {
-			        if(silent) {
-			        	System.err.println("Error:" + err.get(0));
-			        } else {
-						Platform.runLater(() -> {
-							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-							// alert.showAndWait(); NOPE!!!
-							// Leave this comment here as a warning
-							alert.show();
-						});
-					}
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+						// alert.showAndWait(); NOPE!!!
+						// Leave this comment here as a warning
+						alert.show();
+					});
 				}
 			} else {
 				// if the requestID is not negative, then there should be something waiting 
