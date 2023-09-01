@@ -51,7 +51,9 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.IconGenerator;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.ModelInputTransformer;
+import tool.helper.persistence.StartupModelLoader;
 import tool.helper.persistence.XMLParser;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
@@ -90,9 +92,13 @@ public class ControlCenter extends Stage {
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 				
 		controlCenterClient.getAllProjects();	
-		if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString()))) {
-			new StartupModelLoader().loadModelsFromSavedModelsPath();			
-		}
+		/*
+		 * There is the idea of starting a repository of models by startup. The problem is, that the XML-Parser uses waitForNextRequestReturned(). This can only run on application thread and even Platform.runLater() won´t fix it as long as there is no solution found you can only load the repo by click on the new implemented button.  
+		 * 
+		 * if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.
+		 * LOAD_MODELS_BY_STARTUP.toString()))) { new
+		 * StartupModelLoader().loadModelsFromSavedModelsPath(); }
+		 */
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
@@ -228,7 +234,6 @@ public class ControlCenter extends Stage {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		
-		//build first row
 		Label projectLabel = new Label("Projects");
 		grid.add(projectLabel, 2, 1);
 				
@@ -270,7 +275,6 @@ public class ControlCenter extends Stage {
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
-		//build second column
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
 		TreeItem loading = new TreeItem("Loading");
@@ -288,11 +292,13 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 
-		//build third row
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
 		grid.add(concreteSyntaxWizardStart, 3, 4);
 		grid.add(newDiagram2, 4, 4);
+		
+		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
+		grid.add(loadModelDir, 2, 4);
 		
 		return grid;
 	}

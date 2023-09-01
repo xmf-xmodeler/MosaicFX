@@ -8,8 +8,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
@@ -29,7 +31,6 @@ import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
-import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import tool.xmodeler.XModeler;
@@ -76,7 +77,7 @@ public class FmmlxDiagramCommunicator {
 	private static Vector<ReturnCall<FmmlxDiagramCommunicator>> earlyRequests = new Vector<>();
 	public static void getCommunicatorWhenReady(ReturnCall<FmmlxDiagramCommunicator> onReady) { // this can be called any time, the return call will be invoked either immediately or once it's ready
 		if(self != null) {
-			onReady.run(self);
+			onReady.run(self);	
 		} else {
 			earlyRequests.add(onReady);
 		}
@@ -2767,32 +2768,25 @@ public class FmmlxDiagramCommunicator {
 	// TODO TS rebuild this should be called before the next request, so it is ensured, that the requires can not be faster then the execution of the wait method
 	public void waitForRequestReturnByNumber(int requestID) throws InterruptedException {
 		if (DEBUG) {
-			System.err.println("Try to wait for request " + requestID);	
+			System.err.println("Try to wait for request " + requestID);
 		}
-		
 		long requestTime = System.currentTimeMillis();
-		Runnable r = () -> {
-			while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
-				if (requestTime + 2500 < System.currentTimeMillis()) {
-					//throw new InterruptedException("While waiting for the request " + requestID + ", there was no answer");
-					System.err.println("While waiting for the request \" + requestID + \", there was no answer");
-					return;
-				} else {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} 
-				}	
+		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
+			if (requestTime + 2500 < System.currentTimeMillis()) {
+				//TODOD TS add logging, maybe throw exception
+				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
+				return;
+			} else {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		};
-		Thread t = new Thread(r);
-		t.start();
-		//Problem this part is blocking... how do i get this line of code, that it will not block???
-		t.join();
+		}
 		if (DEBUG) {
-			System.err.println("Request " + requestID + " is returned");				
+			System.err.println("Request " + requestID + " is returned");
 		}
 	}
 	
