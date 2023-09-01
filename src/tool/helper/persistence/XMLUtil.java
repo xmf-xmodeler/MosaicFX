@@ -174,5 +174,11 @@ public class XMLUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
