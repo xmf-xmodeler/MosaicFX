@@ -23,7 +23,7 @@ public class XMLCreator {
 	Vector<DiagramInfo> diagramsWaitingForParsing;
 	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
 	Element root;
-	private final String exportVersion = "4";
+	private static final int exportVersion = 4;
 	String packagePath;
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
@@ -269,8 +269,15 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), exportVersion);
+		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(exportVersion));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
 		return doc;
+	}
+	
+	/**
+	 * @return current used version of XML-Exports
+	 */
+	public static int getExportversion() {
+		return exportVersion;
 	}
 }
