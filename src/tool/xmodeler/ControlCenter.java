@@ -1,28 +1,20 @@
 package tool.xmodeler;
 
 import java.awt.Desktop;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.FloatProperty;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -42,6 +34,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -49,14 +45,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
+import tool.helper.persistence.ModelInputTransformer;
+import tool.helper.persistence.XMLParser;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
 
@@ -97,6 +93,17 @@ public class ControlCenter extends Stage {
 		if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString()))) {
 			new StartupModelLoader().loadModelsFromSavedModelsPath();			
 		}
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {	
+				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
+				if (keyCombinationShiftC.match(event)) {
+					System.err.println("Testing functinality");
+				}		
+			}
+		});
+				
 	}
 	
 	private void showCloseWarningDialog(Event event) {
@@ -124,7 +131,24 @@ public class ControlCenter extends Stage {
 		public ControlCenterMenuBar() {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
+			buildHelpMenu(helpMenu);
 			
+			//TODO TS delete load model from xmf side
+			Menu xmlMenu = new Menu("XMLFile");
+			getMenus().add(xmlMenu);
+			buildXMLMenu(xmlMenu);
+		}
+
+		private void buildXMLMenu(Menu xmlMenu) {
+			MenuItem loadPackage = new MenuItem("Load Package");
+			loadPackage.setOnAction((e) -> {
+				XMLParser parser = new XMLParser();
+		    	parser.parseXMLDocument();
+			});
+			xmlMenu.getItems().add(loadPackage);
+		}
+
+		private void buildHelpMenu(Menu helpMenu) {
 			MenuItem getProjectInformationItem = new MenuItem("Get Project Information");
 			getProjectInformationItem.setOnAction(e->openWebpage("https://le4mm.org/"));
 			
@@ -137,7 +161,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);		
+			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void openWebpage(String url) {
