@@ -1697,16 +1697,6 @@ public class FmmlxDiagramCommunicator {
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
 
-    public void storeLabelInfoFromXml(int diagramId, double relativeX, double relativeY) {
-        Value[] message = new Value[]{
-                new Value(new Value[]{new Value(diagramId), new Value(-1)}),
-                new Value("ownerPath"),
-                new Value("localID"), //TODO ???
-                new Value((float) relativeX),
-                new Value((float) relativeY)};
-        sendMessage("storeLabelInfo", message);
-    }
-
     public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -2161,15 +2151,6 @@ public class FmmlxDiagramCommunicator {
 		close(diagram, true);
 	}
 
-	public void saveXmlFile2(String diagramPath, Integer id) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(id),
-				new Value(diagramPath),
-				new Value(diagramPath.split("::")[1])
-		};
-		sendMessage("saveAsXml", message);
-	}
-
 	private String copyFilePath(String packagePath) {
 		for (FmmlxDiagram diagram: diagrams){
 			if(diagram.getPackagePath().equals(packagePath)){
@@ -2355,29 +2336,6 @@ public class FmmlxDiagramCommunicator {
 		};
 		xmfRequestAsync(handle, -2, "getAllLabelPositions", returnCall, new Value(id));
     }
-
-    //TODO delete this after the new parser has been introduced
-	// this map stored the positions of the nodes and edges of freshly loaded xml-files
-	// until the diagram is opened for the first time
-	private HashMap<Integer, org.w3c.dom.Node> positionInfos = new HashMap<>();
-	
-	public void preparePositionInfo(Integer diagramId, org.w3c.dom.Node diagramNode) {
-		positionInfos.put(diagramId, diagramNode);	
-	}
-
-	public org.w3c.dom.Node getPositionInfo(Integer id) {
-		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
-		return positionInfos;
-	}
-	
-	public void removePositionInfo(Integer id) {
-		this.positionInfos.remove(id);
-	}
-
-	//TODO delete this, not needed anymore because of ne Parser
-	public void setSilent(boolean silent) {
-		this.silent = silent;
-	}
 
 	public void fileSaved(String filePath, Integer id) {
 		Value[] message = new Value[]{
