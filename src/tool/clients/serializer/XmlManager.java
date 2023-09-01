@@ -6,6 +6,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.helper.persistence.SerializerConstant;
+
 import java.util.*;
 
 /*XMLManager extends XMLHandler which is an interface that makes it easy for us to manipulate XML-Document.

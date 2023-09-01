@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.xmlManipulator.XmlCreator;
+import tool.helper.persistence.SerializerConstant;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;

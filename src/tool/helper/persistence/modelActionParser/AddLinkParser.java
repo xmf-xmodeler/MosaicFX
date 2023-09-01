@@ -2,7 +2,7 @@ package tool.helper.persistence.modelActionParser;
 
 import org.w3c.dom.Element;
 
-import tool.clients.serializer.SerializerConstant;
+import tool.helper.persistence.SerializerConstant;
 
 public class AddLinkParser extends ModelActionParser {
 

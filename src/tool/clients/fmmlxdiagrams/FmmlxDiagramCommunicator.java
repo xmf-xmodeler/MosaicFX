@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
 
@@ -26,14 +25,11 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
-import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.XmlManager;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.XModeler;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -2020,36 +2016,6 @@ public class FmmlxDiagramCommunicator {
         sendMessage("loadProjectFromXml", message);
     }
     
-    //TODO TS delete after new Parser is implemented
-    public void openXmlFileOld(String fileName) { 	
-    	
-        FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
-
-        Runnable loadProject = new Runnable() {
-			
-			@Override
-			public void run() {
-				fmmlxDeserializer.loadProject(self);
-			}
-		};
-				
-		Set<Thread> threads = Thread.getAllStackTraces().keySet();
-		for (Thread thread : threads) {
-			//checks if there is already a model loading and waits for the process to finish
-			if (thread.getName().equals("Load Projects")) {
-				try {
-					thread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-        Thread t = new Thread(loadProject);
-        t.setName("Load Projects");
-        t.start(); // Very important. Otherwise assigning diagramID will get stuck
-		XModeler.bringControlCenterToFront();
-	}
-
     public void openPackageBrowser() {
         WorkbenchClient.theClient().send(handle, "openPackageBrowser()");
     }

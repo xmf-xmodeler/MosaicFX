@@ -70,11 +70,8 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
-import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLParser;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -765,37 +762,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	@Override
-	protected void fetchDiagramDataSpecific2() {
-		
+	protected void fetchDiagramDataSpecific2() {		
 		triggerOverallReLayout();
 		newFmmlxPalette.update();
 
-		//TODO delete this part
-		if(filePath !=null && filePath.length()>0){
-			if(justLoaded){
-				justLoaded = false;
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(filePath));
-				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
-				if(positionInfo != null) {
-					getComm().removePositionInfo(getID());
-					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
-					triggerOverallReLayout();
-				}
-				redraw();
-				updateDiagram();
-			}
-		} else {		
-			Issue nextIssue = null;
-			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name()))) nextIssue = issues.get(i);
-			}
-	
-			if(nextIssue != null) {
-				final Issue ISSUE = nextIssue;
-				Platform.runLater(() -> ISSUE.performResolveAction(this));
-			}
+		Issue nextIssue = null;
+		for (int i = 0; i < issues.size() && nextIssue == null; i++) {
+			if (issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name())))
+				nextIssue = issues.get(i);
 		}
-		
+
+		if (nextIssue != null) {
+			final Issue ISSUE = nextIssue;
+			Platform.runLater(() -> ISSUE.performResolveAction(this));
+		}
+
 		tableView.getItems().clear();
 		tableView.refresh();
 		tableView.getItems().addAll(issues);

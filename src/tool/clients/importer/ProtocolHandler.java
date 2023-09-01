@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.SerializerConstant;
+import tool.helper.persistence.SerializerConstant;
 
 import java.util.*;
 
