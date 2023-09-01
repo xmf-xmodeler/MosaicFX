@@ -286,12 +286,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
-						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						if (element instanceof FmmlxObject) {
+							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						}
 					}
 				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.P) {
-					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
-					}
+			
 			}
         });
         tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -303,9 +303,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) &&
-						getPressedKeys().contains(KeyCode.S)) {
-						getComm().saveXmlFile2(packagePath, diagramID);;
+				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
 					}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 						getComm().triggerUpdate();
