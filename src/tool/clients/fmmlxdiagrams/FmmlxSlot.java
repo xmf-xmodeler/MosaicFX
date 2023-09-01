@@ -52,7 +52,7 @@ public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 		}
 
 		for (FmmlxAttribute attribute : allAttributes) {
-			if (attribute.getName().equals(getName()) && attribute.level == owner.level) {
+			if (attribute.getName().equals(getName()) && owner.level.isEqual(attribute.level)) {
 				return attribute.getType();
 			}
 		}

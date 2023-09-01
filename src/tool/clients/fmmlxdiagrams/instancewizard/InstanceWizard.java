@@ -126,7 +126,7 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 	
 	private void generateInstance() {
 		String namePrefix = theClass.getName();
-		if(theClass.getLevel() == 1) namePrefix = namePrefix.substring(0,1).toLowerCase() + namePrefix.substring(1);
+		if(theClass.getLevel().getMinLevel() == 1) namePrefix = namePrefix.substring(0,1).toLowerCase() + namePrefix.substring(1);
 		
 		Vector<Vector<String>> slotValues = new Vector<>();
 		for(Tab t : tabPane.getTabs()) {
@@ -149,7 +149,7 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		diagram.getComm().addGeneratedInstance(
 				diagram,
 				theClass,
-				theClass.getLevel()-1,
+				theClass.getLevel().getMinLevel()-1,
 				namePrefix,
 				slotValues,
 				mandatoryConstraints,

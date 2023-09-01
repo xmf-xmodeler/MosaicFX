@@ -9,6 +9,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 
 public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Result> {
@@ -21,7 +22,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	private Label abstractLabel;
 	private Label parentLabel;
 	private TextField nameTextField;
-	private ComboBox<Integer> levelComboBox;
+	private LevelBox levelComboBox;
 	private ListView<FmmlxObject> parentListView;
 	private CheckBox abstractCheckbox;
 
@@ -56,22 +57,28 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 
 		nameTextField = new TextField();
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
-		levelComboBox = new ComboBox<>(AllValueList.levelList);
-		levelComboBox.setConverter(new IntegerStringConverter());
-		levelComboBox.setEditable(true);
-		levelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+		levelComboBox = new LevelBox();
+//		levelComboBox = new ComboBox<>(AllValueList.levelList);
+//		levelComboBox.setConverter(new IntegerStringConverter());
+//		levelComboBox.setEditable(true);
+		levelComboBox.levelBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				possibleParents = diagram.getAllPossibleParents(newValue);
-				parentListView.setItems(possibleParents);
-				parentListView.setDisable(false);
-				if (possibleParents.size() == 0) {
-					parentListView.setDisable(true);
+				try {
+					possibleParents = diagram.getAllPossibleParents(Level.parseLevel(newValue));
+					parentListView.setItems(possibleParents);
+					parentListView.setDisable(false);
+					if (possibleParents.size() == 0) {
+						parentListView.setDisable(true);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});
 		abstractCheckbox = new CheckBox();
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(nameTextField, 1, 0);
@@ -87,7 +94,9 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(nameTextField.getText(),
-						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), parentListView.getSelectionModel().getSelectedItems());
+						levelComboBox.getLevel(), 
+						abstractCheckbox.isSelected(), 
+						parentListView.getSelectionModel().getSelectedItems());
 			}
 			return null;
 		});
@@ -104,8 +113,13 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
 			errorLabel.setText("Name already used");
 			return false;
-		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
-			errorLabel.setText("Enter level as integer!");
+//		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
+//			errorLabel.setText("Enter level as integer!");
+//			return false;
+		}
+		try { Level.parseLevel(levelComboBox.levelBox.getSelectionModel().getSelectedItem()); }
+		catch(Level.UnparseableException le) {
+			errorLabel.setText(le.getMessage());
 			return false;
 		}
 		return true;
@@ -113,11 +127,11 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	
 	public class Result {
 		public final String name;
-		public final  int level;
-		public final  boolean isAbstract;
-		public final  ObservableList<FmmlxObject> parent;
+		public final Level level;
+		public final boolean isAbstract;
+		public final ObservableList<FmmlxObject> parent;
 
-		public Result(String name, int level, boolean isAbstract, ObservableList<FmmlxObject> parent) {
+		public Result(String name, Level level, boolean isAbstract, ObservableList<FmmlxObject> parent) {
 			this.name = name;
 			this.level = level;
 			this.isAbstract = isAbstract;

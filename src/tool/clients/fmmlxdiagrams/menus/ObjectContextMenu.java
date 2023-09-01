@@ -40,11 +40,11 @@ public class ObjectContextMenu extends ContextMenu {
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
-		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
+		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 
 		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
 		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
-		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(instanceWizardItem);
+		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
@@ -92,7 +92,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
-		if(object.getLevel() > 0) getItems().add(abstractClassItem);
+		if(object.getLevel().isClass()) getItems().add(abstractClassItem);
 
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -126,11 +126,11 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
 			Vector<Integer> choices = new Vector<>();
-			for(Integer i = 0; i < object.getLevel(); i++) {
+			for(Integer i = 0; i < object.getLevel().getMinLevel(); i++) {
 				choices.add(i);
 			}
 			if(choices.size() > 0) {
-				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel()-1, choices);
+				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel().getMinLevel()-1, choices);
 				dialog.setTitle("Edit Concrete Syntax");
 				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + " on which level?" );
 //				dialog.setContentText("Choose level:");

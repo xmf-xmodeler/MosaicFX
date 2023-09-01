@@ -377,13 +377,18 @@ public abstract class AbstractPackageViewer {
 	public final DiagramActions getActions() {
 		return actions;
 	}
-
-	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
+	
+	@Deprecated
+	public ObservableList<FmmlxObject> getAllPossibleParents(int level) {
+		return getAllPossibleParents(new Level(level));
+	}
+	
+	public ObservableList<FmmlxObject> getAllPossibleParents(Level level) {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
-				if (level != 0 && object.getLevel() == level) {
+				if (level.getMinLevel() != 0 && object.getLevel().getMinLevel() == level.getMinLevel()) {
 					objectList.add(object);
 				}
 			}
@@ -452,7 +457,7 @@ public abstract class AbstractPackageViewer {
 		Vector<Integer> result = new Vector<>();
 		for(FmmlxObject obj : objects){
 			if(!result.contains(obj.getLevel())){
-				result.add(obj.getLevel());
+				result.add(obj.getLevel().getMinLevel());
 			}
 		}
 		Collections.sort(result);

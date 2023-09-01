@@ -21,7 +21,7 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 		this.actions = packageViewer.getActions();
 		setAutoHide(true);
 		
-		if(object != null && object.getLevel() >= 1) {
+		if(object != null && object.getLevel().isClass()) {
 			MenuItem addItem = new MenuItem("Add Attribute");
 			addItem.setOnAction(e -> actions.addAttributeDialog(object));
 			getItems().add(addItem);

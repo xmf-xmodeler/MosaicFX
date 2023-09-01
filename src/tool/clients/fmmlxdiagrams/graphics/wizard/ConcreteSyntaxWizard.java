@@ -289,7 +289,7 @@ public class ConcreteSyntaxWizard extends Application {
 				if(oldVal != newVal && newVal != null) {
 					selectedClass = newVal;
 					levelSelectionBox.getItems().clear();
-					for(int i = 0; i < selectedClass.getLevel(); i++) {
+					for(int i = 0; i < selectedClass.getLevel().getMinLevel(); i++) {
 						levelSelectionBox.getItems().add(i);
 					}
 					if(selectedLevel != null && levelSelectionBox.getItems().size() > 0) {

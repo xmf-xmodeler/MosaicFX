@@ -736,7 +736,7 @@ public class DiagramActions {
 				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
 			}
 		}
-		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
+		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level.getMinLevel()-1);
 		diagram.updateDiagram();
 	}
 	
@@ -1210,7 +1210,7 @@ public class DiagramActions {
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
-		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel()-1);
+		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel().getMinLevel()-1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}

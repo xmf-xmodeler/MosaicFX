@@ -266,7 +266,8 @@ public class XmlManager extends XmlHandler {
         return initCoordinate;
     }
 
-    public Element createEdgeXmlElement(Vector<Object> intermediatePoints, String ref, Vector<Object>ports){
+    @SuppressWarnings("unchecked")
+	public Element createEdgeXmlElement(Vector<Object> intermediatePoints, String ref, Vector<Object>ports){
         PortRegion sourcePort = getSourcePort(ports);
         PortRegion targetPort = getTargetPort(ports);
 
@@ -287,7 +288,8 @@ public class XmlManager extends XmlHandler {
         return edgeElement;
     }
 
-    public Element createAssociationXmlElement(String name, String diagramPath, HashMap<String, Object> edgeInfo) {
+    @SuppressWarnings("unchecked")
+	public Element createAssociationXmlElement(String name, String diagramPath, HashMap<String, Object> edgeInfo) {
         String ref = diagramPath+"::"+name;
         String type = SerializerConstant.EdgeType.ASSOCIATION;
 
@@ -298,7 +300,8 @@ public class XmlManager extends XmlHandler {
         return edge ;
     }
 
-    public Element createLinkXmlElement(String ref, HashMap<String, Object> edgeInfo) {
+    @SuppressWarnings("unchecked")
+	public Element createLinkXmlElement(String ref, HashMap<String, Object> edgeInfo) {
         String type = SerializerConstant.EdgeType.LINK;
 
         Element edge = createEdgeXmlElement((Vector<Object>) edgeInfo.get("IntermediatePoints"), ref, (Vector<Object>) edgeInfo.get("Ports"));
@@ -306,7 +309,8 @@ public class XmlManager extends XmlHandler {
         return edge;
     }
 
-    public Element createInheritanceXmlElement(String ref, HashMap<String, Object> edgeInfo) {
+    @SuppressWarnings("unchecked")
+	public Element createInheritanceXmlElement(String ref, HashMap<String, Object> edgeInfo) {
         String type = SerializerConstant.EdgeType.INHERITANCE;
 
         Element edge = createEdgeXmlElement((Vector<Object>) edgeInfo.get("IntermediatePoints"), ref, (Vector<Object>) edgeInfo.get("Ports"));
@@ -314,7 +318,8 @@ public class XmlManager extends XmlHandler {
         return edge;
     }
 
-    public Element createRoleFillerEdgeXmlElement(String ref, HashMap<String, Object> edgeInfo) {
+    @SuppressWarnings("unchecked")
+	public Element createRoleFillerEdgeXmlElement(String ref, HashMap<String, Object> edgeInfo) {
         String type = SerializerConstant.EdgeType.ROLEFILLEREDGE;
 
         Element edge = createEdgeXmlElement((Vector<Object>) edgeInfo.get("IntermediatePoints"), ref, (Vector<Object>) edgeInfo.get("Ports"));
@@ -322,7 +327,8 @@ public class XmlManager extends XmlHandler {
         return edge;
     }
 
-    public Element createDelegationXmlElement(String ref, HashMap<String, Object> edgeInfo) {
+    @SuppressWarnings("unchecked")
+	public Element createDelegationXmlElement(String ref, HashMap<String, Object> edgeInfo) {
         String type = SerializerConstant.EdgeType.DELEGATION;
 
         Element edge = createEdgeXmlElement((Vector<Object>) edgeInfo.get("IntermediatePoints"), ref, (Vector<Object>) edgeInfo.get("Ports"));
@@ -341,7 +347,8 @@ public class XmlManager extends XmlHandler {
         return getChildWithTag(diagramNode, SerializerConstant.TAG_NAME_EDGES);
     }
 
-    private PortRegion getTargetPort(Vector<Object> ports) {
+    @SuppressWarnings("unchecked")
+	private PortRegion getTargetPort(Vector<Object> ports) {
         if(ports!=null && ports.size()>0) {
             for (Object port : ports) {
                 Vector<Object> portInfo = (Vector<Object>) port;
@@ -353,7 +360,8 @@ public class XmlManager extends XmlHandler {
         return null;
     }
 
-    private PortRegion getSourcePort(Vector<Object> ports) {
+    @SuppressWarnings("unchecked")
+	private PortRegion getSourcePort(Vector<Object> ports) {
         if(ports!=null && ports.size()>0){
             for (Object port : ports){
                 Vector<Object> portInfo = (Vector<Object>) port;
@@ -456,7 +464,7 @@ public class XmlManager extends XmlHandler {
 //              try {Boolean.parseBoolean(logElement.getAttribute("collective"));} catch (Exception e) {}
                 int level = -2; // for now: magic number for /not found & not needed, one less theh class by default 
                 try {level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));} catch (Exception e) {}   
-                comm.addNewInstance(diagramID, ofName, name, level, new Vector<String>(), isAbstract, 0, 0, false);
+                comm.addNewInstance(diagramID, ofName, name, new Level(level), new Vector<String>(), isAbstract, 0, 0, false);
                 break;
             }
             case "changeParent" : {

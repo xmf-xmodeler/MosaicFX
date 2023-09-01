@@ -196,7 +196,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	                if (o != null) {
 	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
-	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
+	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel().getMinLevel()));
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };
@@ -628,7 +628,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
+				if (object.getLevel().isClass()) {
 					objectList.add(object);
 				}
 			}
@@ -680,7 +680,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Vector<FmmlxObject> result = new Vector<>();
 
 		for (FmmlxObject object : objects) {
-			if (object.getLevel()==level) {
+			if (object.getLevel().getMinLevel()==level) {
 				result.add(object);
 			}
 		}
@@ -690,7 +690,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Object getAllMetaClass() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : getObjectsReadOnly()) {
-			if (object.getLevel() != 0) {
+			if (object.getLevel().isClass()) {
 				result.add(object);
 			}
 		}
@@ -726,8 +726,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public int getMaxLevel() {
 		int level = 0;
 		for (FmmlxObject tmp : objects) {
-			if(tmp.getLevel()>level) {
-				level=tmp.getLevel();
+			if(tmp.getLevel().getMinLevel()>level) {
+				level=tmp.getLevel().getMinLevel();
 			}
 		}
 		return level;

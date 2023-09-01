@@ -55,7 +55,7 @@ public class ProtocolHandler {
                 for(FmmlxObject object : objects){
                     if(object.getName().equals(name)){
                         //Check level
-                        if(object.getLevel() != level){
+                        if(object.getLevel().getMinLevel() != level){
                             Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_LEVEL);
                             conflict.putIn(ImporterStrings.CLASS_NAME, object.getName());
                             conflicts.add(conflict);

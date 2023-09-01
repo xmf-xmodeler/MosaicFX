@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.serializer.SerializerConstant;
 import tool.xmodeler.ControlCenterClient;
@@ -167,7 +168,7 @@ public class XMLParser {
 				level = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
 			} catch (Exception e) {
 			}
-			comm.addNewInstance(diagramId, ofName, name, level, new Vector<String>(), isAbstract, 0, 0, false);
+			comm.addNewInstance(diagramId, ofName, name, new Level(level), new Vector<String>(), isAbstract, 0, 0, false);
 			break;
 		}
 		case "changeParent": {

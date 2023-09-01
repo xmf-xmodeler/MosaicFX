@@ -319,16 +319,13 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, int diagramID, String message, Value... args) throws TimeOutException {
 		Value[] args2 = new Value[args.length + 1];
 		setNewRequestID();
-//		if (DEBUG) 
-			System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
+		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
 		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(currentRequestID)});
 		boolean waiting = true;
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
-		int attempts = 0;
 		int sleep = 2;
-		while (waiting && sleep < 200 * 100) {
-			attempts++;
+		while (waiting && sleep < 10000) {
 			try {
 				Thread.sleep(sleep);
 				sleep = (int) (sleep * 1.5);
@@ -387,10 +384,12 @@ public class FmmlxDiagramCommunicator {
 				String type = "FMMLX";
 				Boolean isCollective = false;
 				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
-				try{ isCollective = (Boolean) responseObjectList.get(4); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
+				Integer maxLevel = (Integer) responseObjectList.get(3);
+				if(maxLevel == -1) maxLevel = null;
 				FmmlxObject object = new FmmlxObject(
 						(String)  responseObjectList.get(1), // name
-						(Integer) responseObjectList.get(2), // level
+						(Integer) responseObjectList.get(2), // level-min
+						maxLevel, // level-max						
 						(String)  responseObjectList.get(10),// ownPath
 						(String)  responseObjectList.get(11),// ofPath
 						parentListS,                         // parentsPath
@@ -901,6 +900,7 @@ public class FmmlxDiagramCommunicator {
     	Value[] objectSlotList = new Value[slotNames.size()];
     	int count = 0;
     	for(FmmlxObject o : slotNames.keySet()) {
+    		System.err.println("getSlots for " + o.name + ": " + slotNames.get(o));
     		Value[] slotNameArray = createValueArray(slotNames.get(o));
     		Value[] objInfo = new Value[] {new Value(o.getName()), new Value(slotNameArray)};
     		objectSlotList[count] = new Value(objInfo); count++;
@@ -930,6 +930,7 @@ public class FmmlxDiagramCommunicator {
     }
     
 
+	@SuppressWarnings("unchecked")
 	public void checkSyntax(AbstractPackageViewer diagram, String operationBody, ReturnCall<CodeBoxPair.OperationException> result) {
 		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
 			Object response = syntaxCheckResponse.get(0);
@@ -948,6 +949,7 @@ public class FmmlxDiagramCommunicator {
 		xmfRequestAsync(handle, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void evalString(AbstractPackageViewer diagram, String text, ReturnCall<Vector<Object>> result) {
 		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
 			Object response = syntaxCheckResponse.get(0);
@@ -1128,13 +1130,18 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
+	@Deprecated
 	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
+		addMetaClass(diagramID, name, new Level(level), parents, isAbstract, x, y, hidden);
+	}
+	public void addMetaClass(int diagramID, String name, Level level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(name),
-				new Value(level),
+				new Value(level.getMinLevel()),
+				new Value(level.getMaxLevel()),
 				new Value(parentsArray),
 				new Value(isAbstract),
 				new Value(x), new Value(y), new Value(hidden)};
@@ -1144,32 +1151,31 @@ public class FmmlxDiagramCommunicator {
 	public void addNewInstance(int diagramID, 
 			String className, 
 			String name,
-			Integer level, 
-			Vector<String> parents,
-			boolean isAbstract, boolean isCollective,
-			int x, int y, boolean hidden) {
-		Value[] parentsArray = createValueArray(parents);
-
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
-		sendMessage("addInstance", message);
-	}
-	
-	@Deprecated
-	public void addNewInstance(int diagramID, 
-			String className, 
-			String name,
-			Integer level, 
+			Level level, 
 			Vector<String> parents,
 			boolean isAbstract, 
 			int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(false), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level.getMinLevel()), new Value(level.getMaxLevel()),
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	
+//	@Deprecated
+//	public void addNewInstance(int diagramID, 
+//			String className, 
+//			String name,
+//			Integer level, 
+//			Vector<String> parents,
+//			boolean isAbstract, 
+//			int x, int y, boolean hidden) {
+//		Value[] parentsArray = createValueArray(parents);
+//
+//		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
+//				new Value(parentsArray), new Value(isAbstract), new Value(false), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+//		sendMessage("addInstance", message);
+//	}	
 
 	public void addNewInstanceWithSlots(
 			int diagramID, 

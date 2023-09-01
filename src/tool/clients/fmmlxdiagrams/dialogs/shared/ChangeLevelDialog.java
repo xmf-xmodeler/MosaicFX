@@ -324,7 +324,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialog.Result> {
 		objectLevelTextField.setDisable(true);
 
 		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewLevel);
-		currentLevel = object.getLevel();
+		currentLevel = object.getLevel().getMinLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(AllValueList.levelList);
 		newLevelComboBox.setEditable(true);

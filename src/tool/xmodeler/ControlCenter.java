@@ -6,22 +6,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.FloatProperty;
 import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -49,13 +41,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
 
 public class ControlCenter extends Stage {
@@ -247,7 +237,7 @@ public class ControlCenter extends Stage {
 		//build second column
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
-		TreeItem loading = new TreeItem("Loading");
+		TreeItem<String> loading = new TreeItem<String>("Loading");
 		projectTree.setRoot(loading);
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());

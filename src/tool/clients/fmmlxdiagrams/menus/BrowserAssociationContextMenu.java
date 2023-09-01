@@ -21,7 +21,7 @@ public class BrowserAssociationContextMenu extends ContextMenu {
 		this.association=aListView.getSelectionModel().getSelectedItem();
 		setAutoHide(true);
 		
-		if(object != null && object.getLevel() >= 1) {
+		if(object != null && object.isClass()) {
 			MenuItem addItem = new MenuItem("Add Association");
 			addItem.setOnAction(e -> actions.addAssociationDialog(object,null));
 			

@@ -89,7 +89,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		codeBoxPair.getErrorTextArea().setMaxHeight(80);
 		
 		if(oldOp == null) {
-			levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
+			levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel().getMinLevel()));
 			levelComboBox.getSelectionModel().selectLast();
 			codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
 			defaultOperationButton.setOnAction(event -> {

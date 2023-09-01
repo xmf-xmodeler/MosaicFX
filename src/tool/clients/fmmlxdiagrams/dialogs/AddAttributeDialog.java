@@ -153,11 +153,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 //		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
 //		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox = new ComboBox<>();
-		for(int i = selectedObject.getLevel()-1; i >= 0; i--) {
+		for(int i = selectedObject.getLevel().getMinLevel()-1; i >= 0; i--) {
 			levelComboBox.getItems().add(""+i);
 		}
 		levelComboBox.getSelectionModel().selectLast();
-		if(selectedObject.getLevel() == -1) levelComboBox.setEditable(true);
+		if(selectedObject.getLevel().isContingentLevelClass()) levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();

@@ -239,7 +239,7 @@ public final class ModelBrowser extends CustomStage {
 	                    
 	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
-	                    setGraphic(getClassLevelGraphic(o.getLevel()));
+	                    setGraphic(getClassLevelGraphic(o.getLevel().getMinLevel()));
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };
@@ -791,8 +791,8 @@ public final class ModelBrowser extends CustomStage {
 
 				@Override
 				public int compare(FmmlxObject o1, FmmlxObject o2) {
-					if(o1.getLevel() < o2.getLevel()) return 1;
-					if(o1.getLevel() > o2.getLevel()) return -1;
+					if(o1.getLevel().getMinLevel() < o2.getLevel().getMinLevel()) return 1;
+					if(o1.getLevel().getMinLevel() > o2.getLevel().getMinLevel()) return -1;
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
@@ -915,10 +915,10 @@ public final class ModelBrowser extends CustomStage {
 			
 			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
-				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
+				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel().isClass() && !object.isAbstract();});
 				
 				addNewMenuItem(this, "Instance Wizard...", e -> actions.openInstanceWizard(object, null), () -> {
-					return (object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract();
+					return (object.getLevel().isClass()) && !object.isAbstract();
 				});		
 	
 				getItems().add(new SeparatorMenuItem());
@@ -929,12 +929,12 @@ public final class ModelBrowser extends CustomStage {
 						AlertType.INFORMATION, "Really ?", 
 						javafx.scene.control.ButtonType.NO, 
 						javafx.scene.control.ButtonType.CANCEL).showAndWait();}, ALWAYS);
-				addNewMenuItem(this, "Change Superclasses", e -> actions.changeParentsDialog(object), () -> {return object.getLevel() >= 1;});
-				addNewMenuItem(this, "Set Delegation", e -> actions.setDelegation(object, null), () -> {return object.getLevel() >= 1;});
+				addNewMenuItem(this, "Change Superclasses", e -> actions.changeParentsDialog(object), () -> {return object.getLevel().isClass();});
+				addNewMenuItem(this, "Set Delegation", e -> actions.setDelegation(object, null), () -> {return object.getLevel().isClass();});
 				addNewMenuItem(this, "Remove Delegation", e -> actions.removeDelegation(object), () -> {return object.getDelegatesTo(false) != null;});
 				addNewMenuItem(this, "Set RoleFiller", e -> actions.setRoleFiller(object, null), () -> {return object.getDelegatesTo(true)!= null;});
 				addNewMenuItem(this, "Remove RoleFiller", e -> actions.removeRoleFiller(object), () -> {return object.getRoleFiller() != null;});
-				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel() >= 1 && object.getInstances().size() > 0;});
+				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel().isClass() && object.getInstances().size() > 0;});
 			}
 		}
 	}
