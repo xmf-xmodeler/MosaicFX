@@ -1,7 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
@@ -9,7 +11,6 @@ import java.util.Vector;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javafx.application.Platform;
-import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
@@ -28,25 +29,34 @@ import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
+import tool.helper.persistence.XMLParser;
+import tool.logging.RequestLog;
+import tool.logging.RequestLogManager;
 import tool.xmodeler.XModeler;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
+	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
+	
+	//TODO TS delete after new Parser is implemented
 	private boolean silent; // this prevents notification returning from xmf from being displayed
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = true;
 	static TabPane tabPane;
-	private static transient int msgID = -1; private static int nextMsgID() {if(msgID < -10000) msgID=-1; msgID-=1; return msgID;}
+	private static transient int msgID = -1;
+	private static int nextMsgID() {if(msgID < -10000) msgID=-1; msgID-=1; return msgID;}
 	public static Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(nextMsgID())});}
 	private HashMap<Integer, Long> timeMap = new HashMap<>();
 	/*  This class is a singleton. It is created from the xmf
 	 * and therefore does not follow the typical singleton pattern exactly */
 	private static FmmlxDiagramCommunicator self;
 	private int handle; // this is set by xmf and serves as an identifier for the communication
-	private SortedList<RequestLog> requestLogs;
+	
+	public static boolean isDebug() {
+		return DEBUG;
+	}
 	
 	public FmmlxDiagramCommunicator(int handle) { // this is to be called by xmf once
 		if(self != null) throw new IllegalStateException("FmmlxDiagramCommunicator must not be instantiated more than once.");
@@ -76,22 +86,11 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().startFmmlxClient();
 	}
 	
-	
-	
-	
-
-	
-
-	
-
-
 	public static void start(TabPane tabPane) {
 		FmmlxDiagramCommunicator.tabPane = tabPane;
 	}
 
-	
 	/* Setting up new or existing diagrams, as well as closing */
-	
 	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 //		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
@@ -172,6 +171,25 @@ public class FmmlxDiagramCommunicator {
 		newlyCreatedDiagrams.put(packagePath+":::"+diagramName, onDiagramCreated);
 		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
 		new Thread(task).start();
+	}
+    
+    public int createDiagramAsync(String packagePath, String diagramName,	DiagramType type) {
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName),
+				// 2029-08-29 TS i think this is not used
+				new Value(""),
+				new Value(type.toString()),
+				new Value(false)
+		};
+		//TODO TS why can i not pass variables here?
+		List<Integer> list = new ArrayList<Integer>();
+		ReturnCall<Vector<Object>> onDiagramCreated = (fmmlxDiagramId) -> {
+			list.add((int) fmmlxDiagramId.get(0));
+		};
+		xmfRequestAsync(handle, -2, "createDiagramFromJavaUsingAsynchCall", onDiagramCreated, message);
+		waitForNextRequestReturn();
+		return list.get(0);
 	}
 	
 	public void notifyDiagramCreated(String packagePath, String diagramName, Integer newID) {
@@ -279,20 +297,15 @@ public class FmmlxDiagramCommunicator {
 				// If a responds fails to appear or if a response does not match any request
 				// this should run through here unharmed, but ultimately either list will 
 				// accumulate failed communications
-				
-				//These lines are used for logging
-				RequestLogManager.getInstance().getLog(requestID).setReturned();
-				RequestLogManager.getInstance().getLog(requestID).setReturnedMessageVector(msgAsVec);
-				
 				if (returnMap.containsKey(requestID)) {
 					Runnable r = () -> returnMap.remove(requestID).run(msgAsVec);
 					Thread t = new Thread(r);
 					t.setName("RunRequest" + requestID);
+					t.start();
+					RequestLogManager.getInstance().setLogReturned(requestID, msgAsVec);					
 					if (DEBUG) {
 						System.err.println("Start Thread with name: " + t.getName());						
 					}					
-					t.start();
-					RequestLogManager.getInstance().getLog(requestID).setCallbackExecutionTime(System.currentTimeMillis());
 				} else {
 					System.err.println("Old queue still in use:" + requestID + " -> " + msgAsVec);
 					results.put(requestID, msgAsVec);
@@ -363,7 +376,7 @@ public class FmmlxDiagramCommunicator {
 		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(currentRequestID)});
 		returnMap.put(currentRequestID, returnCall);
 		RequestLog log = new RequestLog(currentRequestID, System.currentTimeMillis(), message, targetHandle, args2);
-		RequestLogManager.getInstance().addLog(log);
+		RequestLogManager.getInstance().addLog(log);			
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 	
@@ -2005,8 +2018,10 @@ public class FmmlxDiagramCommunicator {
         };
         sendMessage("loadProjectFromXml", message);
     }
-
-    public void openXmlFile(String fileName) {
+    
+    //TODO TS delete after new Parser is implemented
+    public void openXmlFileOld(String fileName) { 	
+    	
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
 
         Runnable loadProject = new Runnable() {
@@ -2727,7 +2742,7 @@ public class FmmlxDiagramCommunicator {
 			}
 		}
 		
-	public HashMap<DiagramDisplayProperty, Boolean> getDiagramDisplayProperties(Integer diagramID) {
+	public HashMap<DiagramDisplayProperty, Boolean> getDiagramDisplayPropertiesSynchronous(Integer diagramID) {
 		HashMap<DiagramDisplayProperty, Boolean> xmfPropertyValues = new HashMap<DiagramDisplayProperty, Boolean>();
 		ReturnCall<Vector<Object>> onValuesReturned = (valuesVector) -> {
 			@SuppressWarnings("unchecked")
@@ -2749,6 +2764,7 @@ public class FmmlxDiagramCommunicator {
 		return xmfPropertyValues;
 	}
 	
+	// TODO TS rebuild this should be called before the next request, so it is ensured, that the requires can not be faster then the execution of the wait method
 	public void waitForRequestReturnByNumber(int requestID) throws InterruptedException {
 		if (DEBUG) {
 			System.err.println("Try to wait for request " + requestID);	
@@ -2772,36 +2788,12 @@ public class FmmlxDiagramCommunicator {
 			}
 		};
 		Thread t = new Thread(r);
-		t.run();
+		t.start();
 		//Problem this part is blocking... how do i get this line of code, that it will not block???
 		t.join();
-		System.err.println("Request " + requestID + " should be returned");	
-		
-		
-		
-		
-		
-		
-		
-//		Thread threadToWaitForTermination = null;
-//		while (threadToWaitForTermination == null) {
-//			for (Thread t : Thread.getAllStackTraces().keySet()) {
-//				if (t.getName().equals("RunRequest" + requestID)) {
-//					threadToWaitForTermination = t;
-//					if (DEBUG) {
-//						System.err.println("Found thread: " + t.getName() + " after " + (System.currentTimeMillis() - requestTime) + " ms");						
-//					}
-//				}
-//			}
-//			if (requestTime + 2500 < System.currentTimeMillis()) {
-//				throw new InterruptedException("While waiting for the request " + requestID + ", there was no answer");
-//			}
-//		}
-//		try {
-//			threadToWaitForTermination.join();
-//		} catch (InterruptedException e) {
-//			System.err.println("While waiting for a XMF-Request reult, there was no answer");
-//		}
+		if (DEBUG) {
+			System.err.println("Request " + requestID + " is returned");				
+		}
 	}
 	
 	public void waitForNextRequestReturn() {

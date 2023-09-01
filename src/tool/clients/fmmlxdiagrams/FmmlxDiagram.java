@@ -141,11 +141,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramViewToolBarModel;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
-			int diagramID, String name, String packagePath, 
-			Vector<Vector<Object>> listOfViews, 
-			Vector<Vector<Object>> listOfOptions,
-			boolean umlMode) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
+			Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 		super(comm,diagramID,packagePath);
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
@@ -263,7 +260,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-
+        	//TODO TS add strg s
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
             	pressedKeys.remove(event.getCode());
@@ -285,9 +282,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.I) {
-					new XMLParser("C:\\Users\\herrt\\Desktop\\University.xml").parseXMLDocument();
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();

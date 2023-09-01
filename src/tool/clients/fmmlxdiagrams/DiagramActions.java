@@ -46,7 +46,7 @@ import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
-import tool.xmodeler.PropertyManager;
+import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -115,6 +115,7 @@ public class DiagramActions {
 							mcdResult.getParentNames(),
 							mcdResult.isAbstract, 0, 0, true);
 					diagram.updateDiagram();
+					
 				}
 
 			}
@@ -130,7 +131,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final CreateMetaClassDialog.Result mcdResult = result.get();
 
-				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, 
+				diagram.getComm().addMetaClassAsync(diagram.getID(), mcdResult.name, 
 						mcdResult.level, mcdResult.getParentNames(), mcdResult.isAbstract, 
 						(int) (p.getX()+.5), (int) (p.getY()+.5), 
 						false);

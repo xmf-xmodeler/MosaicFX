@@ -13,7 +13,7 @@ public class DiagramDisplayModel {
 
 	public DiagramDisplayModel(DiagramViewHeadToolBar diagramViewToolBar) {
 		relatedDiagramID = diagramViewToolBar.getFmmlxDiagram().getID(); 
-		showPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(relatedDiagramID);
+		showPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayPropertiesSynchronous(relatedDiagramID);
 		//if not all properties contained in the map add the missing with default values
 		for (DiagramDisplayProperty property : DiagramDisplayProperty.values()) {
 			if (!showPropertiesMap.containsKey(property)) {

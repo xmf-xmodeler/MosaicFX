@@ -79,7 +79,7 @@ public class XMLUtil {
 
 	public static List<Element> getChildElements(Element element, String tagName) {
 		Node node = null;
-		List<Element> elementList = new ArrayList();
+		var elementList = new ArrayList<Element>();
 		NodeList nodeList = element.getChildNodes();
 		Element childElm = null;
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -93,35 +93,29 @@ public class XMLUtil {
 		return elementList;
 	}
 
-	public static Document getDocumentFromFile(String fileNameWithPath) {
+	public static Document getDocumentFromFile(File inputFile) {
 		Document retVal = null;
-		if (fileNameWithPath != null) {
-			String modifiedInXML = fileNameWithPath.trim();
-			if (modifiedInXML.length() > 0) {
-
-				FileReader inFileReader = null;
-				try {
-					inFileReader = new FileReader(modifiedInXML);
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					InputSource iSource = new InputSource(inFileReader);
-					try {
-						retVal = getDocument(iSource);
-					} catch (ParserConfigurationException | SAXException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} finally {
-					try {
-						inFileReader.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+		FileReader inFileReader = null;
+		try {
+			inFileReader = new FileReader(inputFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputSource iSource = new InputSource(inFileReader);
+			try {
+				retVal = getDocument(iSource);
+			} catch (ParserConfigurationException | SAXException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} finally {
+			try {
+				inFileReader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		return retVal;
@@ -180,6 +174,5 @@ public class XMLUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 }

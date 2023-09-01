@@ -39,7 +39,7 @@ public class StartupModelLoader {
 			try {
 				Files.walk(path).filter(p -> p.toFile().isFile()).filter(p -> p.toString().endsWith(".xml"))
 						.forEach(p -> {
-							communicator.openXmlFile(p.toString());
+							communicator.openXmlFileOld(p.toString());
 						});
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -23,8 +23,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 
-class PropertyManagerStage extends Stage {
+public class PropertyManagerStage extends Stage {
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();

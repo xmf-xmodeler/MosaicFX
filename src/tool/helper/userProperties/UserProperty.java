@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.helper.userProperties;
 
 public enum UserProperty {
 	TOOL_HEIGHT("toolHeight"),
@@ -7,6 +7,7 @@ public enum UserProperty {
 	TOOL_Y("toolY"),
 	LOAD_MODELS_BY_STARTUP("loadModelsByStartup"),
 	MODELS_DIR("modelsDir"),
+	RECENTLY_LOADED_MODEL_DIR("recentlyLoadedModelDir"),
 	APPLICATION_CLOSING_WARNING("applicationClosingWarning");
 	
 	private String saveName; 
