@@ -8,7 +8,8 @@ public enum UserProperty {
 	LOAD_MODELS_BY_STARTUP("loadModelsByStartup"),
 	MODELS_DIR("modelsDir"),
 	RECENTLY_LOADED_MODEL_DIR("recentlyLoadedModelDir"),
-	APPLICATION_CLOSING_WARNING("applicationClosingWarning");
+	APPLICATION_CLOSING_WARNING("applicationClosingWarning"),
+	RECENTLY_SAVED_MODEL_DIR("recentlySavedModelDir");
 	
 	private String saveName; 
 	

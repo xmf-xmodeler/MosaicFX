@@ -16,6 +16,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
@@ -38,6 +40,11 @@ public class XMLCreator {
 		chooser.setTitle("Choose save location");
 		chooser.setInitialFileName(packagePath.split("::")[1]);
 		chooser.getExtensionFilters().add(new ExtensionFilter("XML", "*.xml"));
+		if (PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString()) != null) {
+			String recentlySavedDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
+			File recentlySavedFile = new File(recentlySavedDirPath);
+			chooser.setInitialDirectory(recentlySavedFile.getParentFile());
+		}
 		Runnable showFileChooserStage = () -> {
 		Stage s = new Stage();
 		s.setAlwaysOnTop(true);
@@ -48,6 +55,7 @@ public class XMLCreator {
 			System.err.println("XML Export was interrupted");
 			return; 
 		}
+		PropertyManager.setProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString(),saveFile.get().getAbsolutePath());
 		XMLUtil.saveDocumentToFile(doc, saveFile.get());		
 		};
 		//Everything that is related to UI can not run on external Thread. Because async methods are answered with an external thread here the function must be wrapped with a Plattform.runLater() 
