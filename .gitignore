@@ -30,4 +30,4 @@
 /.classpath
 
 #ignore log files
-sessionLogs/*
+logs/*
