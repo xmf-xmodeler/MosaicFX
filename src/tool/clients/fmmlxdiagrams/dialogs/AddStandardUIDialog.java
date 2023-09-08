@@ -70,7 +70,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private TextField textPathIcon = new TextField();
 	private Button buttonPathIcon = new Button("Select path");
 
-	private Label lblTitleGUI = new Label("Titel of Standard GUI");
+	private Label lblTitleGUI = new Label("Title of Standard GUI");
 	private TextField textTitleGUI = new TextField();
 
 	private Vector<FmmlxObject> listClasses = new Vector<>();
