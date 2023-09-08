@@ -1,5 +1,6 @@
 package tool.logging;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import xos.Value;
@@ -80,7 +81,7 @@ public class RequestLog {
 	}
 
 	//There is no case where you would set a log to not returned
-	public void setReturned() {
+	void setReturned() {
 		this.returned = true;
 	}
 
@@ -92,7 +93,15 @@ public class RequestLog {
 		this.returnedMessageVector = msgAsVec;
 	}
 	
-	public long calculateXMFProcessingTime() {
+	long calculateXMFProcessingTime() {
 		return callbackExecutionTime - requestTime;
+	}
+
+	@Override
+	public String toString() {
+		return "RequestLog [requestId=" + requestId + ", requestTime=" + requestTime + ", callbackExecutionTime="
+				+ callbackExecutionTime + ", returned=" + returned + ", calledFunction=" + calledFunction + ", handel="
+				+ handel + ", sendeFunctionArgs=" + Arrays.toString(sendeFunctionArgs) + ", returnedMessageVector="
+				+ returnedMessageVector + "]";
 	}
 }
