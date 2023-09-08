@@ -8,8 +8,6 @@ import org.apache.logging.log4j.LogManager;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
-//TODO TS clear list after predefined number of requests
-
 public class RequestLogManager {
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);

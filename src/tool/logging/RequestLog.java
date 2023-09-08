@@ -14,6 +14,7 @@ public class RequestLog {
 	private String calledFunction;
 	private int handel;
 	private Value[] sendeFunctionArgs;
+	private boolean synchron;
 	
 	public String getCalledFunction() {
 		return calledFunction;
@@ -42,8 +43,9 @@ public class RequestLog {
 	private Vector<Object> returnedMessageVector;
 	
 	
-	public RequestLog(int requestId, long requestTime, String calledFunction, int handel, Value[] sendeFunctionArgs) {
+	public RequestLog(int requestId, boolean synchron, long requestTime, String calledFunction, int handel, Value[] sendeFunctionArgs) {
 		super();
+		this.synchron = synchron; 
 		this.requestId = requestId;
 		this.requestTime = requestTime;
 		this.calledFunction = calledFunction;
@@ -96,12 +98,20 @@ public class RequestLog {
 	long calculateXMFProcessingTime() {
 		return callbackExecutionTime - requestTime;
 	}
+	
+	public boolean isSynchron() {
+		return synchron;
+	}
+
+	public void setSynchron(boolean synchron) {
+		this.synchron = synchron;
+	}
 
 	@Override
 	public String toString() {
 		return "RequestLog [requestId=" + requestId + ", requestTime=" + requestTime + ", callbackExecutionTime="
 				+ callbackExecutionTime + ", returned=" + returned + ", calledFunction=" + calledFunction + ", handel="
-				+ handel + ", sendeFunctionArgs=" + Arrays.toString(sendeFunctionArgs) + ", returnedMessageVector="
-				+ returnedMessageVector + "]";
-	}
+				+ handel + ", sendeFunctionArgs=" + Arrays.toString(sendeFunctionArgs) + ", synchron=" + synchron
+				+ ", returnedMessageVector=" + returnedMessageVector + "]";
+	}	
 }

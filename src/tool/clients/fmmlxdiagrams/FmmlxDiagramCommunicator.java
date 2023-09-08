@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.Vector;
 
+import org.apache.logging.log4j.LogManager;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
@@ -31,13 +33,13 @@ import xos.Value;
 public class FmmlxDiagramCommunicator {
 	
 	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
-	
+	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	static TabPane tabPane;
-	private static transient int msgID = -1;
-	private static int nextMsgID() {if(msgID < -10000) msgID=-1; msgID-=1; return msgID;}
+	private static int nonReturningMessageId = -1;
+	private static int nextMsgID() {if(nonReturningMessageId < -10000) nonReturningMessageId=-1; nonReturningMessageId-=1; return nonReturningMessageId;}
 	public static Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(nextMsgID())});}
 	private HashMap<Integer, Long> timeMap = new HashMap<>();
 	/*  This class is a singleton. It is created from the xmf
@@ -329,6 +331,9 @@ public class FmmlxDiagramCommunicator {
 		Value[] newParameterList = new Value[parameterList.length + 1];
 		setNewRequestID();
 		System.err.println(": Sending synchron request " + xmfFunctionName + "(" + currentRequestID + ") handle " + targetHandle);
+		RequestLog log = new  RequestLog(currentRequestID, true, System.currentTimeMillis(), xmfFunctionName, targetHandle, newParameterList);
+		RequestLogManager.getInstance().addLog(log);
+		logger.debug("Send synchron request {}", log);
 		//copy all elements starting by parameterList[0] to new parameterList[1] 
 		System.arraycopy(parameterList, 0, newParameterList, 1, parameterList.length);
 		//add at position [0] of new parameterList a combined value of diagramID and requestID
@@ -352,7 +357,9 @@ public class FmmlxDiagramCommunicator {
 
 		if (waiting)
 			throw new TimeOutException(xmfFunctionName + parameterList);
-		return results.remove(currentRequestID);
+		Vector<Object> functionReturnVector = results.remove(currentRequestID);
+		RequestLogManager.getInstance().setLogReturned(currentRequestID, functionReturnVector);
+		return functionReturnVector;
 	}
 	
 	private void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
@@ -362,8 +369,9 @@ public class FmmlxDiagramCommunicator {
 		System.arraycopy(args, 0, args2, 1, args.length);
 		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(currentRequestID)});
 		returnMap.put(currentRequestID, returnCall);
-		RequestLog log = new RequestLog(currentRequestID, System.currentTimeMillis(), message, targetHandle, args2);
-		RequestLogManager.getInstance().addLog(log);			
+		RequestLog log = new RequestLog(currentRequestID, false, System.currentTimeMillis(), message, targetHandle, args2);
+		RequestLogManager.getInstance().addLog(log);
+		logger.debug("Start asynchron request {}", log);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 	
@@ -2622,11 +2630,13 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Try to wait for request " + requestID);
 		}
+		logger.debug("Try to wait for request " + requestID);
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
 				//TODOD TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
+				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
 				return;
 			} else {
 				try {
@@ -2640,6 +2650,7 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Request " + requestID + " is returned");
 		}
+		logger.debug("Try to wait for request " + requestID);
 	}
 	
 	public void waitForNextRequestReturn() {
