@@ -80,7 +80,12 @@ public class ObjectBrowser {
 		grid.addRow(rowCount,  minLevelGrid);
 		rowCount++;
 		
-		anyClassSelected(metaClass);	
+		if(metaClass.getLevel() == 0) {
+			newInstanceSelected(metaClass);
+		}
+		else {
+			anyClassSelected(metaClass);
+		}		
 	}
 	
 	public void anyClassSelected(FmmlxObject selectedClass)
@@ -107,7 +112,9 @@ public class ObjectBrowser {
 
 	    // Retrieve the names of instances belonging to the selected meta-class
 	    for (FmmlxObject instance : selectedClass.getInstances()) {
-	        instanceNamesOfClass.add(instance.getName());
+	    	if(instance.getLevel() >= minLevel) {
+	    		instanceNamesOfClass.add(instance.getName());
+	    	}
 	    }
 
 	    // Sort the instance names alphabetically
@@ -173,7 +180,9 @@ public class ObjectBrowser {
 
 	    // Retrieve the names of instances belonging to the selected class
 	    for (FmmlxObject instance : selectedClass.getInstances()) {
-	        instanceNamesOfClass.add(instance.getName());
+	    	if(instance.getLevel() >= minLevel) {
+	    		instanceNamesOfClass.add(instance.getName());
+	    	}
 	    }
 
 	    // Sort the instance names alphabetically
@@ -215,25 +224,23 @@ public class ObjectBrowser {
 	 * @param instance The selected FmmlxObject representing the new instance.
 	 */
 	public void newInstanceSelected(FmmlxObject instance) {
-	    // Check if minLevel is 0 (i.e., no minimum level restriction)
-	    if (minLevel == 0) {
-	        visitedObjects.add(instance.getName());
+		visitedObjects.add(instance.getName());
 
-	        // Create a GridPane to display the attributes and methods of the selected instance
-	        GridPane instanceGrid = new GridPane();
-	        instanceGrid.add(getAttributesAndMethods(instance), 0, 0);
-	        instanceGrid.add(getInstanceLinks(instance), 1, 0);
+		// Create a GridPane to display the attributes and methods of the selected
+		// instance
+		GridPane instanceGrid = new GridPane();
+		instanceGrid.add(getAttributesAndMethods(instance), 0, 0);
+		instanceGrid.add(getInstanceLinks(instance), 1, 0);
 
-	        // Create a VBox to hold the GridPane and add a top border to the VBox
-	        VBox vbox = new VBox(instanceGrid);
-	        vbox.getStyleClass().add("top-border-vbox");
-	        String css = ".top-border-vbox { -fx-border-width: 1 0 0 0; -fx-border-color: black; }";
-	        vbox.setStyle(css);
+		// Create a VBox to hold the GridPane and add a top border to the VBox
+		VBox vbox = new VBox(instanceGrid);
+		vbox.getStyleClass().add("top-border-vbox");
+		String css = ".top-border-vbox { -fx-border-width: 1 0 0 0; -fx-border-color: black; }";
+		vbox.setStyle(css);
 
-	        // Add the VBox to the main grid to display the details of the selected instance
-	        grid.add(vbox, 1, rowCount - 1);
-	        rowCount++;
-	    }
+		// Add the VBox to the main grid to display the details of the selected instance
+		grid.add(vbox, 1, rowCount - 1);
+		rowCount++;
 	}
 	
 	/**
@@ -355,8 +362,10 @@ public class ObjectBrowser {
 
 	    // Adding labels for each operation
 	    for (FmmlxOperation operation : getFmmlxObjectByName(instance.getMetaClassName(), diagram).getAllOperations()) {
-	        Label operationName = new Label(operation.getName());
-	        operationNameLabels.add(operationName);
+	    	if(operation.isMonitored()) {
+	    		Label operationName = new Label(operation.getName());
+		        operationNameLabels.add(operationName);
+	    	}  
 	    }
 
 	    // Adding rows for each operation and its corresponding value (if available)
@@ -385,9 +394,9 @@ public class ObjectBrowser {
 
 	    // Adding target or source node names of each link to the objectLinks list
 	    for (FmmlxLink link : allInstanceLinks) {
-	        if (!link.getTargetNode().equals(instance)) {
+	        if (!link.getTargetNode().equals(instance) && link.getTargetNode().getLevel() >= minLevel) {
 	            objectLinks.add(link.getTargetNode().getName());
-	        } else {
+	        } else if (link.getTargetNode().equals(instance) && link.getTargetNode().getLevel() >= minLevel){
 	            objectLinks.add(link.getSourceNode().getName());
 	        }
 	    }
@@ -450,6 +459,7 @@ public class ObjectBrowser {
 	        } else {
 	            minLevel = 0; // Reset minLevel to 0 if no value is entered
 	        }
+	        updateObjectBrowser(visitedClasses, visitedObjects);
 	    });
 
 	    minLevelGrid.addRow(0, minLevelLabel, minLevelTextField, submitButton);
