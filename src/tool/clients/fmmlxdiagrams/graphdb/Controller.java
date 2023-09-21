@@ -21,7 +21,7 @@ public class Controller
 {
 	private Connector nodeConnector;
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
-	private ArrayList<String> connectionList = new ArrayList<>();
+	private ArrayList<NodeConnection> connectionList	= new ArrayList<>();
 	private InstanceNode InstanceNode;
 	private Node diagramNode;
 	private Node packageNode;
@@ -129,7 +129,7 @@ public class Controller
 			slotNode.setOfPath(slot.getOwner());
 			
 			slotNode.setSlotName(slot.getName());
-			System.err.print(slot.getName() + " " + slot.getOwner().getOfPath() + "\n");
+//			System.err.print(slot.getName() + " " + slot.getOwner().getOfPath() + "\n");
 		}
 		
 		return slotNodes;
@@ -247,9 +247,8 @@ public class Controller
 	}
 	private void connectAndInsertInList(NodeConnection.connection connection,Node start,Node end)
 	{
-		NodeConnection nc = new NodeConnection(connection);
-		String connectionStatment = nc.connectTwoNodes(start, end);
-		connectionList.add(connectionStatment);
+		NodeConnection nc1	= new NodeConnection(start, end);
+		connectionList.add(nc1);
 		
 	}
 	
@@ -273,14 +272,17 @@ public class Controller
 	}
 	
 	
-	public void nodesAndConnects(ArrayList<Node> nodeList, ArrayList<String> connectionsList)
+	public void nodes(ArrayList<Node> nodeList)
 	{
 		nodeList.addAll(this.nodeList);
 		this.nodeList.clear();
-		connectionsList.addAll(this.connectionList);
-		this.connectionList.clear();
+		
+		
 	}
-	
+	public ArrayList<NodeConnection> testConnects()
+	{
+		return this.connectionList;
+	}
 	
 	public void setConnector(Connector nodConnector){this.nodeConnector = nodConnector;}
 	public InstanceNode getInstanceNode() {return InstanceNode;}

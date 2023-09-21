@@ -52,16 +52,14 @@ public class InstanceNode extends Node {
 	
 	private void getOfNode()
 	{
-//		TODO ist das wirklich der modelPath oder der ProjectPath ?
 		
 		String modelPath = this.ofPath.substring(this.ofPath.indexOf(":")+2, this.ofPath.lastIndexOf(":")-1);
-//		System.err.print(modelPath + "\n \n");
+
 		
 		if (!this.ofPath.equals("Root::FMMLx::MetaClass"))
 		{
 			this.instanceOf = this.ofPath.substring(this.ofPath.lastIndexOf(":")+1);
-//			System.err.print(this.ofPath + "\n");
-//			System.err.print(this.instanceOf + "\n \n");	
+
 		}
 	}
 	public String getInstanceOf() {

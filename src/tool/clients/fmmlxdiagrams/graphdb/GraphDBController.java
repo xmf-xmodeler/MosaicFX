@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.graphdb;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -32,6 +33,8 @@ public class GraphDBController
 	
 	private ArrayList<Node> nodeList = new ArrayList<Node>();
 	private ArrayList<String> nodeConnectionsList = new ArrayList<>();
+	
+	public ArrayList<NodeConnection> nodeConnectionList = new ArrayList<>();
 	
 	private Vector<InstanceNode> instancesList = new Vector<>();
 	private Vector<FmmlxObject> objects = new Vector<>();
@@ -66,6 +69,7 @@ public class GraphDBController
 	public void connectionMain()
 	{
 		long start = System.currentTimeMillis();
+		
 		createConnector();
 		
 		connector.deleteEverything();
@@ -73,13 +77,19 @@ public class GraphDBController
 		Controller c = new Controller(this.diagram);
 		this.objects = this.diagram.getObjectsReadOnly();
 		
+		this.nodeConnectionList = c.testConnects();
+		
 		Iterator<FmmlxObject> iterator = this.objects.iterator();
 		while (iterator.hasNext())
-		{
+		{	long oneObject = System.currentTimeMillis();
+		
 			c.create(iterator.next());
-			c.nodesAndConnects(nodeList, nodeConnectionsList);
+			c.nodes(nodeList);
 			InstanceNode instance = c.getInstanceNode();
 			this.instancesList.add(instance);
+			
+			long oneObjectEnd = System.currentTimeMillis() - oneObject;
+			System.err.println("one Object operation took " + oneObjectEnd + " milliseconds");
 			
 			createInDB();
 		}
@@ -128,10 +138,11 @@ public class GraphDBController
 	
 	private void createInDB()
 	{
+		long start = System.currentTimeMillis();
+		
 		StringBuilder createNodes = new StringBuilder();
 		String createConnections = "";
 		Iterator<Node> nodeIterator = nodeList.iterator();
-		Iterator<String> connectionIterator = nodeConnectionsList.iterator();
 		createNodes.append("Create");
 //	creates an String with all Nodes and send it to the DB
 		while (nodeIterator.hasNext())
@@ -141,13 +152,47 @@ public class GraphDBController
 		createNodes.delete(createNodes.length()-1, createNodes.length());
 		nodeList.clear();		
 		connector.sendQuerry(createNodes.toString());
+		
+		long nodeSending = System.currentTimeMillis()-start;
+		System.err.print("Creating Nodes took "+ nodeSending + "milliseconds \n");
 
-		while (connectionIterator.hasNext()) 
-		{	
-			String s  =connectionIterator.next();
-			connector.sendQuerry(s);
+//		while (connectionIterator.hasNext()) 
+//		{	
+//			String s  =connectionIterator.next();
+//			connector.sendQuerry(s);
+//		}
+//		connector.test(nodeConnectionsList);
+		batchQuerry();
+		
+		long connectionSending = System.currentTimeMillis()-nodeSending;
+		System.err.print("Creating Connections took "+ connectionSending + "milliseconds \n");
+		
+		nodeConnectionList.clear();
+		long end = System.currentTimeMillis()-start;
+		System.err.print("one createInDB took "+ end + "milliseconds \n");
+	}
+	
+	
+	private void batchQuerry()
+	{
+		StringBuilder batchQuery = new StringBuilder();
+		batchQuery.append("UNWIND $data as row ");
+		batchQuery.append("Match (start " + "{uuid: row.startUuid}) ");
+		batchQuery.append("Match (end " + "{uuid: row.endUuid}) ");
+		batchQuery.append("MERGE (start)-[r:"+String.valueOf(NodeConnection.connection.OF)+" " + "{name: row.connectionName}]->(end) ");
+		
+		List<Map<String, Object>> querryData = new ArrayList<>();
+		Iterator<NodeConnection> it = nodeConnectionList.iterator();
+		while(it.hasNext())
+		{
+			NodeConnection nc = it.next();
+			Map<String, Object> rowData = new HashMap<>();
+			rowData.put("startUuid", String.valueOf(nc.getStart().getUuid()));
+			rowData.put("endUuid", String.valueOf(nc.getEnd().getUuid()));
+			rowData.put("connectionName", nc.getConnectionName());
+			querryData.add(rowData);
 		}
-		nodeConnectionsList.clear();
+		connector.sendBatchQuerry(batchQuery.toString(), querryData);
 	}
 	
 	
@@ -218,10 +263,6 @@ public class GraphDBController
 					}
 				}
 			}
-			
-			
-//			while () 
-			
 		}
 	}
 	

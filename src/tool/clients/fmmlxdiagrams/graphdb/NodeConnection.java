@@ -4,7 +4,9 @@ class NodeConnection
 {
 
     private String  connectionType;
-    private String connectionName;
+    private String 	connectionName;
+    private Node 	start;
+    private Node 	end;
     
     enum connection
     {
@@ -16,6 +18,13 @@ class NodeConnection
     public NodeConnection(connection connection) {
         this.connectionType = connection.toString().toLowerCase();
         this.connectionName = this.connectionType;
+    }
+    
+    public NodeConnection(Node start, Node end)
+    {
+    	this.start 	= start;
+    	this.end 	= end;
+    	this.connectionName = String.valueOf(connection.OF);
     }
 
     public String connectTwoNodes(Node start, Node end)
@@ -32,7 +41,26 @@ class NodeConnection
     	
     	return s;
     }
-    
+	public Node getStart() {
+		return start;
+	}
+
+	public Node getEnd() {
+		return end;
+	}
+
+	public String getConnectionName() {
+		return connectionName;
+	}
     
 
 }
+
+
+
+
+
+
+
+
+

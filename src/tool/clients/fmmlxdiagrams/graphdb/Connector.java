@@ -1,6 +1,11 @@
 package tool.clients.fmmlxdiagrams.graphdb;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.neo4j.driver.*;
 
@@ -30,11 +35,6 @@ class Connector  implements AutoCloseable{
 
     public void sendQuerry(String querry)
     {
-//        try(var session = driver.session())
-//        {
-//            var querry1 = new Query(querry);
-//            session.run(querry1);
-//        }
         this.driver.session().run(querry);
     }
     
@@ -102,4 +102,13 @@ class Connector  implements AutoCloseable{
             session.run(querry);
         }
     }
+    
+    public void sendBatchQuerry(String batchQuery, List<Map<String, Object>> queryData)
+    {
+    	Session session = driver.session();
+    	 session.run(batchQuery, Collections.singletonMap("data", queryData));
+    }
+    
+    
+    
 }
