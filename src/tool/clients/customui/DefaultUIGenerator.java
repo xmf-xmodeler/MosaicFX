@@ -26,6 +26,9 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
+// TODO 
+// generierung des standard modells in separater klasse ausgliedern. ggf. Operationen und Co nicht als String hardcoden
+// Distanz sucht assoziationen in beide rifchutngen nicht nur target source
 public class DefaultUIGenerator {
 
 	private AbstractPackageViewer diagram;
@@ -42,6 +45,7 @@ public class DefaultUIGenerator {
 	private HashMap<String, HashMap<String, String>> customGuiSlots;
 
 	private String metaClassName = "Root::FMMLx::MetaClass";
+	// !! this is not the name of the commonClass but rather the name that is included in commonclass and all neeeded dummy classes
 	private String commonClassName = "CommonClass";
 
 	public DefaultUIGenerator(AbstractPackageViewer diagram, Vector<FmmlxObject> objects,
@@ -58,6 +62,11 @@ public class DefaultUIGenerator {
 		this.distance = distance;
 		this.height = height;
 
+	}
+
+	public DefaultUIGenerator(AbstractPackageViewer diagram, DiagramActions actions) {
+		this.diagram = diagram;
+		this.actions = actions;
 	}
 
 	public void instantiateCustomGUI() {
@@ -88,7 +97,7 @@ public class DefaultUIGenerator {
 
 		FmmlxObject metaClass = this.diagram.getObjectByPath(object.getMetaClassName());
 
-		if (metaClass.getName().equals(commonClassName))
+		if (metaClass.getName().contains(commonClassName))
 			instanceOf = true;
 		while (!instanceOf && !metaClass.getName().equals(metaClassName)) {
 			instanceOf = instanceOfCommonClass(metaClass);
@@ -102,7 +111,7 @@ public class DefaultUIGenerator {
 			raiseAlert("No Path has been set for the GUI. Extraction of GUI is not possible.");
 			return null;
 		}
-		
+
 		if (titleGUI.equals("")) {
 			raiseAlert("No title has been set for the GUI. Extraction of GUI cancelled.");
 			return null;
@@ -203,13 +212,17 @@ public class DefaultUIGenerator {
 		}
 
 		// get associations that are mapped
-		FmmlxAssociation associationDerivedFrom = diagram.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
-		FmmlxAssociation associationComposedOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
-		FmmlxAssociation associationRefersToStateOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
+		FmmlxAssociation associationDerivedFrom = diagram
+				.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
+		FmmlxAssociation associationComposedOf = diagram
+				.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
+		FmmlxAssociation associationRefersToStateOf = diagram
+				.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
 		FmmlxAssociation associationIsParent = diagram.getAssociationByPath(diagram.getPackagePath() + "::isParent");
 		FmmlxAssociation associationIsChild = diagram.getAssociationByPath(diagram.getPackagePath() + "::isChild");
 		FmmlxAssociation associationUses = diagram.getAssociationByPath(diagram.getPackagePath() + "::uses");
-		FmmlxAssociation associationRepresentedAs = diagram.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
+		FmmlxAssociation associationRepresentedAs = diagram
+				.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
 
 		// create standard GUI
 		GridPane rechteSeiteGrid = new GridPane();
@@ -287,9 +300,10 @@ public class DefaultUIGenerator {
 			slotValues.put(reference.getReferenceInstanceName(), (HashMap<String, String>) helper.clone());
 			helper.clear();
 
-			// add link "refersToStateOf" -> Reference + CommonClassInstance 
-			
-			// Assumption: Every Instance of CommonClass has at least one instance at level 0
+			// add link "refersToStateOf" -> Reference + CommonClassInstance
+
+			// Assumption: Every Instance of CommonClass has at least one instance at level
+			// 0
 			// TODO How to work when that is not the case
 			actions.addAssociation(reference.getReferenceInstanceName(),
 					reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
@@ -348,6 +362,13 @@ public class DefaultUIGenerator {
 			}
 
 			for (FmmlxAttribute attribute : attributes) {
+
+				// check if attributes are of correct level, i.e. if UI displays instances at
+				// level 1 no level 0 attributes should be included in the UI
+				if (attribute.getLevel() != reference.getObject().getLevel() - 1) {
+					continue;
+				}
+
 				injectionInstanceName = actions.addInstance("SlotInjection",
 						"slot" + UUID.randomUUID().toString().replace("-", ""));
 
@@ -377,12 +398,17 @@ public class DefaultUIGenerator {
 			// add actionInjections for operations
 			for (FmmlxOperation operation : operations) {
 
+				// if operation is not suitable for the displayed level; skip it
+				if (operation.getLevel() != reference.getObject().getLevel() - 1) {
+					continue;
+				}
+
 				// if method is monitor than action; otherwise acttionInjection
 				// TODO: maybe find something better more robust approach
 
 				String body = operation.getBody();
-				isActionInjection = body.contains("monitor=true") ? true : false;	
-				
+				isActionInjection = body.contains("monitor=true") ? true : false;
+
 				helper.put("nameOfModelElement", operation.getName());
 
 				// if actionInjection
@@ -422,6 +448,7 @@ public class DefaultUIGenerator {
 
 					int paramCounter = 0;
 					Button wertAendern = new Button(operation.getName());
+					wertAendern.setText(operation.getName());
 
 					rechteSeiteGrid.add(wertAendern, 1, rowCount);
 					wertAendern.setId(actionInstanceName);
@@ -752,6 +779,10 @@ public class DefaultUIGenerator {
 			}
 		});
 	}
+
+	// FH generates the UI model to map a new UI when the model consistet only of
+	// domain model before
+	
 
 	public class Reference {
 		private FmmlxObject object;

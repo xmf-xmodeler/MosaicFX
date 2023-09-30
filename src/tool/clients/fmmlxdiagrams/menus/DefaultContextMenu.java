@@ -34,7 +34,7 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
 		
-		MenuItem generateCustomUI = new MenuItem("Generate Custom UI");
+		MenuItem generateCustomUI = new MenuItem("Generate Standard UI");
 		generateCustomUI.setOnAction(e -> actions.showGenerateCustomUIDialog());
 
 		Menu enumerationMenu = new Menu("Enumerations");

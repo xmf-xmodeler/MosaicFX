@@ -25,6 +25,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import tool.clients.customui.DefaultUIGenerator;
+import tool.clients.customui.DefaultUIModelGenerator;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramActions;
@@ -300,7 +302,22 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 
 	private void addOKButtonListener() {
 
-		// TBD: abfangen von fehlerhaften eingaben
+		// TODO: abfangen von fehlerhaften eingaben
+
+		// If model needed for gui is not avaiable instantiate it first
+		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
+		boolean uiNeeded = true;
+
+		for (FmmlxObject o : objects) {
+			if (o.getName().contains("UserInterface")) {
+				uiNeeded = false;
+			}
+		}
+
+		if (uiNeeded) {
+			DefaultUIModelGenerator defaultGenerator = new DefaultUIModelGenerator(diagram);
+			defaultGenerator.generateUIModel();
+		}
 
 		setResultConverter(dialogButton -> {
 			if (dialogButton == okButtonType) {

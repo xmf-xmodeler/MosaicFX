@@ -1285,9 +1285,36 @@ public class DiagramActions {
 	// FH adding instances that can be shown
 	public String addInstance(String className, String instanceName) {
 		Vector<String> parents = new Vector<String>();
+		boolean hidden = true;
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, hidden);
+		return instanceName;
+	}
+	
+	// FH adding instance with parents
+	public String addInstance(String className, String instanceName, Vector<String> parents) {
 		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, true);
 		return instanceName;
 	}
+	
+	// FH adding instance with hidden level and x-y coordinates
+	public String addInstance(String className, String instanceName, boolean hidden, int x, int y) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, x,y, hidden);
+		return instanceName;
+	}
+	
+	// FH adding metaClass
+	public void addMetaClass(String name, int level) {
+		Vector<String> parents = new Vector<String>();
+		boolean hidden = true;
+		diagram.getComm().addMetaClass(this.diagram.getID(), name, level, parents,  false, 0, 0, hidden);
+	}
+	
+	// FH adding metaClass with parents
+		public void addMetaClass(String name, int level, Vector<String> parents) {
+			diagram.getComm().addMetaClass(this.diagram.getID(), name, level, parents,  false, 0, 0, true);
+		}
+		
 		
 	
 	
