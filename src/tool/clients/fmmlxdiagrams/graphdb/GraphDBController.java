@@ -246,12 +246,13 @@ public class GraphDBController
 			Vector<Node> attributes = instance2.getAttributes();
 			
 			Iterator<SlotNode> slotIterator = slots.iterator();
-			Iterator<Node> attributesIterator = attributes.iterator();
+			
 			
 			while (slotIterator.hasNext())
 			{
 				SlotNode slot = slotIterator.next();
 				
+				Iterator<Node> attributesIterator = attributes.iterator();
 				while(attributesIterator.hasNext())
 				{
 					Node attribute = attributesIterator.next();
@@ -260,6 +261,8 @@ public class GraphDBController
 						NodeConnection c = new NodeConnection (connection.OF);
 						String s = c.connectTwoNodes(slot,attribute);
 						connector.sendQuerry(s);
+						System.err.print("Slots connected \n");
+						break;
 					}
 				}
 			}

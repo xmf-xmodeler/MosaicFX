@@ -12,7 +12,7 @@ class NodeConnection
     {
         PACKAGE_OF, DIAGRAMM_OF, CONTAINS_IN,VISUALISED_IN,
         
-        OF,
+        OF,TO,
     }
 
     public NodeConnection(connection connection) {

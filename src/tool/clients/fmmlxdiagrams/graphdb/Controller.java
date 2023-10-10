@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.geometry.NodeOrientation;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Constraint;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -237,6 +238,35 @@ public class Controller
 			
 		}
 		
+	}
+	private void createAssoziation(FmmlxObject object)
+	{
+		Vector<FmmlxAssociation> associations  			= object.getAllRelatedAssociations();
+		Iterator<FmmlxAssociation> associationsIterator	= associations.iterator();
+		
+		while (associationsIterator.hasNext())
+		{
+			FmmlxAssociation association 	= associationsIterator.next();
+			int 	level					= association.getLevelSource();
+			int 	levelTarget				= association.getLevelTarget();
+			boolean isSymmetric 			= association.isSymmetric();
+			boolean isTransitive 			= association.isTransitive();
+			boolean isSoureVisible			= association.isSourceVisible();
+			boolean isTargetVisible			= association.isTargetVisible();
+			String 	associationName			= association.getName();
+			
+			Multiplicity sourceMultiplicity = association.getMultiplicityStartToEnd();
+			Multiplicity targetMultiplicity = association.getMultiplicityEndToStart();
+			
+			
+			Node E1								= createAndInsertInList("E1", label.END);
+			connectAndInsertInList(connection.TO, InstanceNode, E1);
+			
+			
+			
+			
+			
+		}
 	}
 	
 	private Node createAndInsertInList(String name, Node.label label)
