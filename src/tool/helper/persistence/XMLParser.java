@@ -85,11 +85,11 @@ public class XMLParser {
 			// Version is not 3 or 2
 		}
 		//TODO TS add logging
-		throw new IllegalArgumentException("InputFiel have wrong Version number");
+		throw new IllegalArgumentException("InputFile has wrong Version number");
 	}
 
-	private Element initParser(File inputFiel) {
-		Document doc = XMLUtil.getDocumentFromFile(inputFiel);
+	private Element initParser(File inputFile) {
+		Document doc = XMLUtil.getDocumentFromFile(inputFile);
 		Element root = doc.getDocumentElement();
 		return root;
 	}
@@ -97,6 +97,7 @@ public class XMLParser {
 	public void parseXMLDocument() {
 		createProject();
 		buildModel();
+	//	communicator.waitForNextRequestReturn();
 		Element diagrams = XMLUtil.getChildElement(root, XMLTags.DIAGRAMS.getName());
 		NodeList diagramList = diagrams.getChildNodes();
 
@@ -132,7 +133,6 @@ public class XMLParser {
 				parseModelElements(diagramId, modelElement);
 			}
 		}
-		communicator.waitForNextRequestReturn();
 	}
 
 	private void parseModelElements(Integer diagramId, Element modelElement) {
