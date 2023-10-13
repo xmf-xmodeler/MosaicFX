@@ -229,7 +229,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi);
+				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
 			}
 			diagram.updateDiagram();
 		});
@@ -657,8 +657,9 @@ public class DiagramActions {
 						result.source.getName(), result.target.getName(),
 						result.newIdentifierSource, result.newIdentifierTarget,
 						result.newDisplayName,
-						null, result.multTargetToSource, result.multSourceToTarget,
-						result.newInstLevelSource, result.newInstLevelTarget,
+						result.assocType.path, result.multTargetToSource, result.multSourceToTarget,
+						result.newInstLevelSource, result.newInstLevelSource, 
+						result.newInstLevelTarget, result.newInstLevelTarget,
 						result.sourceVisibleFromTarget,  result.targetVisibleFromSource, 
 						result.symmetric, result.transitive
 						);
@@ -804,7 +805,7 @@ public class DiagramActions {
 				//				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(diagram.getID(), source.getName(), target.getName(), association.getName());
+				diagram.getComm().addLink(diagram.getID(), source.getName(), target.getName(), association.getAccessNameStartToEnd());
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -911,7 +912,8 @@ public class DiagramActions {
 			));
 		Optional<Void> result= dialog.showAndWait();
 		if (result.isPresent()) {
-			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
+			diagram.getComm().addLink(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getAccessNameStartToEnd());
+			diagram.updateDiagram();
 		} else {
 			dialog.close();
 		}
@@ -919,7 +921,7 @@ public class DiagramActions {
 	
 	public void removeAssociationInstance(FmmlxLink link) {
 		diagram.getComm().removeAssociationInstance(diagram.getID(), 
-				link.getOfName(), 
+				link.getAssociation().getAccessNameStartToEnd(), 
 				link.getSourceNode().getName(), 
 				link.getTargetNode().getName());
 		diagram.updateDiagram();
@@ -983,7 +985,7 @@ public class DiagramActions {
 				if(solution.get().createNew) {
 					addInstanceDialog(solution.get().selection, diagram.getActiveDiagramViewPane());
 				} else {
-					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
+					diagram.getComm().addLink(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getAccessNameStartToEnd());
 					diagram.updateDiagram();
 				}
 			}
@@ -1240,9 +1242,9 @@ public class DiagramActions {
 		return result;
 	}
 
-	public void removeDelegation(String delegatorPath, String delegateePath) {
-		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
-	}
+//	public void removeDelegation(String delegatorPath, String delegateePath) {
+//		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
+//	}
 	
 	public void undo() {
 		diagram.getComm().undo(diagram.diagramID);	

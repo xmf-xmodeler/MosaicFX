@@ -737,12 +737,14 @@ public class FmmlxDiagramCommunicator {
 					
 					for (Object a : ownAttList) {
 						Vector<Object> attInfo = (Vector<Object>) a;
+//						int minLevel = (Integer) attInfo.get(2);
+//						int maxLevel = (Integer) attInfo.get(3);
 						FmmlxAttribute object = new FmmlxAttribute(
 								(String) attInfo.get(0),
 								(Integer) attInfo.get(2),
 								(String) attInfo.get(1),
-								(String) attInfo.get(4),
-								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+								(String) attInfo.get(7),
+								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(4)));
 						resultOwn.add(object);
 					}
 					for (Object a : otherAttList) {
@@ -751,8 +753,8 @@ public class FmmlxDiagramCommunicator {
 								(String) attInfo.get(0),
 								(Integer) attInfo.get(2),
 								(String) attInfo.get(1),
-								(String) attInfo.get(4),
-								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+								(String) attInfo.get(7),
+								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(4)));
 						resultOther.add(object);
 					}
 					
@@ -799,13 +801,13 @@ public class FmmlxDiagramCommunicator {
 								(String) opInfo.get(0), // name
 								paramNamesS, // paramNames
 								paramTypesS, // paramTypes
-								(Integer) opInfo.get(3), // level
-								(String) opInfo.get(4), // type
-								(String) opInfo.get(5), // body
-								(String) opInfo.get(6), // owner
+								(Integer) opInfo.get(3), // minLevel
+								(String) opInfo.get(5), // type
+								(String) opInfo.get(6), // body
+								(String) opInfo.get(7), // owner
 								null, // multiplicity
-								(Boolean) opInfo.get(8), // isMonitored
-								(Boolean) opInfo.get(9) // delToClass
+								(Boolean) opInfo.get(9), // isMonitored
+								(Boolean) opInfo.get(10) // delToClass
 							);
 						result.add(op);
 						}
@@ -900,7 +902,7 @@ public class FmmlxDiagramCommunicator {
     	Value[] objectSlotList = new Value[slotNames.size()];
     	int count = 0;
     	for(FmmlxObject o : slotNames.keySet()) {
-    		System.err.println("getSlots for " + o.name + ": " + slotNames.get(o));
+    		//System.err.println("getSlots for " + o.name + ": " + slotNames.get(o));
     		Value[] slotNameArray = createValueArray(slotNames.get(o));
     		Value[] objInfo = new Value[] {new Value(o.getName()), new Value(slotNameArray)};
     		objectSlotList[count] = new Value(objInfo); count++;
@@ -1278,14 +1280,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("setAssociationEndVisibility", message);
 	}
 
-	public void addAttribute(int diagramID, String className, String name, int level, String type, Multiplicity multi) {
+	public void addAttribute(int diagramID, String className, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(name),
-				new Value(level),
+				new Value(level.getMinLevel()),
+				new Value(level.getMaxLevel()),
 				new Value(type),
-				new Value(multi.toValue())};
+				new Value(multi.toValue()),
+				new Value(isIntrinsic),
+				new Value(isIncomplete),
+				new Value(isOptional)};
 		sendMessage("addAttribute", message);
 	}
 
@@ -1495,18 +1501,22 @@ public class FmmlxDiagramCommunicator {
     public void addAssociation(int diagramID,
                                String classSourceName, String classTargetName,
                                String accessSourceFromTargetName, String accessTargetFromSourceName,
-                               String fwName, String reverseName,
+                               String fwName, String associationType,
                                Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
-                               Integer instLevelSource, Integer instLevelTarget, boolean sourceVisible, boolean targetVisible,
+                               Integer instLevelSourceMin, Integer instLevelSourceMax, 
+                               Integer instLevelTargetMin, Integer instLevelTargetMax, 
+                               boolean sourceVisible, boolean targetVisible,
                                boolean isSymmetric, boolean isTransitive) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(classSourceName), new Value(classTargetName),
                 new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
-                new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
+                new Value(fwName), 
+                associationType == null ? new Value("Associations::DefaultAssociation") : new Value(associationType),
                 new Value(multTargetToSource.toValue()),
                 new Value(multSourceToTarget.toValue()), // multiplicity,
-                new Value(instLevelSource), new Value(instLevelTarget),
+                new Value(instLevelSourceMin), new Value(instLevelSourceMax), 
+                new Value(instLevelTargetMin), new Value(instLevelTargetMax),
                 new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive)};
         sendMessage("addAssociation", message);
     }
@@ -1552,23 +1562,23 @@ public class FmmlxDiagramCommunicator {
         sendMessage("editAssociation", message);
     }
     
-    public void addAssociationInstance(int diagramID, String object1Name, String object2Name, String associationName) {
+    public void addLink(int diagramID, String object1Name, String object2Name, String role2AccessName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(object1Name),
                 new Value(object2Name),
-                new Value(associationName)};
-        sendMessage("addAssociationInstance", message);
+                new Value(role2AccessName)};
+        sendMessage("addLink", message);
     }
 
-    public void removeAssociationInstance(int diagramID, String assocName, String sourceName, String targetName) {
+    public void removeAssociationInstance(int diagramID, String role2Name, String sourceName, String targetName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(assocName),
+                new Value(role2Name),
                 new Value(sourceName),
                 new Value(targetName)
         };
-        sendMessage("removeAssociationInstance", message);
+        sendMessage("removeLink", message);
     }
 
     public void updateAssociationInstance(int diagramID, String associationInstanceId, String startObjectPath, String endObjectPath) {

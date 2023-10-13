@@ -515,7 +515,7 @@ public class XmlManager extends XmlHandler {
 
                 String[] typePathArray = typePath.split("::");
                 String typeName = typePathArray[typePathArray.length-1];
-                comm.addAttribute(diagramID, className, name, level, typeName, multiplicity);
+                comm.addAttribute(diagramID, className, name, new Level(level), typeName, multiplicity, true, false, false);
                 break;
             }
             case "addOperation": {
@@ -579,8 +579,9 @@ public class XmlManager extends XmlHandler {
                 comm.addAssociation(diagramID, classSourceName, classpath2,
                         accessSourceFromTargetName, accessTargetFromSourceName,
                         fwName, reverseName, multiplicityT2S, multiplicityS2T,
-                        instLevelSource, instLevelTarget, sourceVisibleFromTarget,
-                        targetVisibleFromSource, isSymmetric, isTransitive);
+                        instLevelSource, instLevelSource, instLevelTarget, instLevelTarget, 
+                        sourceVisibleFromTarget, targetVisibleFromSource, 
+                        isSymmetric, isTransitive);
                 break;
             }
             case "addLink" : {
@@ -594,7 +595,7 @@ public class XmlManager extends XmlHandler {
                 String[] classPathArray2 = classpath2.split("::");
                 String className2 = classPathArray2[classPathArray2.length-1];
 
-                comm.addAssociationInstance(diagramID, className1, className2, name);
+                comm.addLink(diagramID, className1, className2, name);
                 break;
             }
             case "addDelegation" : {

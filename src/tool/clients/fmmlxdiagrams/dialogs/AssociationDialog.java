@@ -54,6 +54,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 
 	private Vector<FmmlxAssociation> associations;
 	
+	private ComboBox<AssociationType> associationTypeBox;
+	
 	private ArrayList<Node> labels;
 	private List<Node> sourceNodes;
 	private List<Node> targetNodes;
@@ -236,27 +238,17 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);
 		}
 		
-				
-		
-				
-		
-				
-//				Multiplicity newMultiplicitySource = association.getMultiplicityStartToEnd();
-//				updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
-//				
-//				newDisplayNameTarget.setText(association.getReverseName());
-//				Multiplicity newMultiplicityTarget = association.getMultiplicityEndToStart();
-//				updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
-
-					
-//			}
-//		});
-
-		
+		Vector<AssociationType> assocTypeItems = new Vector<>();
+		assocTypeItems.add(new AssociationType("DefaultAssociation", "Associations::DefaultAssociation"));
+		assocTypeItems.add(new AssociationType("Aggregation", "Associations::Aggregation"));
+		assocTypeItems.add(new AssociationType("Composition", "Associations::Composition"));
+		associationTypeBox = new ComboBox<>(FXCollections.observableList(assocTypeItems));
+		associationTypeBox.getSelectionModel().select(0);
 		labels = new ArrayList<>();
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
-		
+
+		labels.add(new Label("Association Type"));
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
 		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
@@ -268,6 +260,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		labels.add(new Label(LabelAndHeaderTitle.multiplicity));
 		labels.add(new Label("Visibility"));
 		
+		sourceNodes.add(associationTypeBox);
 		sourceNodes.add(newDisplayName);
 		sourceNodes.add(selectedObject);
 		sourceNodes.add(selectAssociationComboBox);
@@ -281,6 +274,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes.add(symmetricBox);
 		sourceNodes.add(transitiveBox);
 		
+		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
@@ -405,6 +399,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 						getComboBoxIntegerValue(newInstLevelSource),
 						getComboBoxIntegerValue(newInstLevelTarget),
 						newDisplayName.getText(),
+						associationTypeBox.getSelectionModel().getSelectedItem(),
 						newIdentifierSource.getText(),
 						newIdentifierTarget.getText(),
 						multTargetToSourceBox.getMultiplicity(),
@@ -427,6 +422,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		public final int newInstLevelSource;
 		public final int newInstLevelTarget;
 		public final String newDisplayName;
+		public final AssociationType assocType;
 		public final String newIdentifierSource;
 		public final String newIdentifierTarget;
 		public final Multiplicity multTargetToSource;
@@ -438,7 +434,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 	public Result(FmmlxAssociation selectedAssociation, FmmlxObject source, FmmlxObject target, 
 			Integer newInstLevelSource, Integer  newInstLevelTarget, 
-			String  newDisplayName,  			
+			String  newDisplayName, AssociationType assocType,		
 			String  newIdentifierSource, String  newIdentifierTarget,		
 			Multiplicity multTargetToSource, Multiplicity multSourceToTarget,		
 			boolean sourceVisibleFromTarget,
@@ -452,6 +448,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			this.newInstLevelSource = newInstLevelSource;
 			this.newInstLevelTarget = newInstLevelTarget;
 			this.newDisplayName = newDisplayName;
+			this.assocType = assocType;
 			this.newIdentifierSource = newIdentifierSource;
 			this.newIdentifierTarget = newIdentifierTarget;
 			this.multTargetToSource = multTargetToSource;

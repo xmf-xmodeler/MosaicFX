@@ -381,9 +381,11 @@ public final class ModelBrowser extends CustomStage {
 
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAssociationListViewNewValue(oldValue,newValue));
-		
+
 		linksListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onLinksListViewNewValue(oldValue, newValue));
+		linkedObjectsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onLinkedObjectsListViewNewValue(oldValue, newValue));
 	}
 
 	protected SplitPane layoutElements() {
@@ -710,6 +712,9 @@ public final class ModelBrowser extends CustomStage {
 			updateIssueTab(null, false, false);
 		}
 	}	
+	private void onLinkedObjectsListViewNewValue(FmmlxObject oldValue, FmmlxObject association) {
+		linkedObjectsListView.setContextMenu(new BrowserLinkedObjectContextMenu());
+	}
 
 	private void onLinksListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
 		linkedObjectsListView.getItems().clear();
@@ -733,7 +738,7 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			
 		}
-		linksListView.setContextMenu(new BrowserLinkedObjectContextMenu());
+		linksListView.setContextMenu(new BrowserLinkContextMenu());
 	}
 
 	
@@ -941,12 +946,36 @@ public final class ModelBrowser extends CustomStage {
 	
 	private class BrowserLinkedObjectContextMenu extends ContextMenu {
 		
+		public BrowserLinkedObjectContextMenu() {
+			setAutoHide(true);
+			final FmmlxObject thisObject = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			final FmmlxObject otherObject = linkedObjectsListView.getSelectionModel().getSelectedItem();
+			final FmmlxAssociation association = linksListView.getSelectionModel().getSelectedItem();
+			final Vector<FmmlxLink> links = thisObject != null ? activePackage.getRelatedLinksByObject(thisObject) : new Vector<>();
+			Vector<FmmlxLink> candidateLinks = new Vector<>();
+			for(FmmlxLink link : links) {
+				if(thisObject == link.getSourceNode() && otherObject == link.getTargetNode() && link.getAssociation() == association) {
+					candidateLinks.add(link);
+				}
+				if(thisObject == link.getTargetNode() && otherObject == link.getSourceNode() && link.getAssociation() == association) {
+					candidateLinks.add(link);
+				}
+			}
+			final FmmlxLink link = candidateLinks.size() == 1 ? candidateLinks.firstElement() : null;
+			if(thisObject != null && otherObject != null && link == null) System.err.println("Link not found");
+			else addNewMenuItem(this, "Remove Link", e -> activePackage.getActions().removeAssociationInstance(link), ALWAYS);
+			
+		}
+	}
+	
+	private class BrowserLinkContextMenu extends ContextMenu {
+		
 		private final FmmlxObject object;
 		//private final FmmxObject target;
 		private final DiagramActions actions;
 		private final FmmlxAssociation association;
 		
-		public BrowserLinkedObjectContextMenu() {
+		public BrowserLinkContextMenu() {
 			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 			this.actions = activePackage.getActions();
 			this.association = linksListView.getSelectionModel().getSelectedItem();

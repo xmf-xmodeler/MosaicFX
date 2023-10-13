@@ -219,7 +219,7 @@ public class XMLParser {
 
 			String[] typePathArray = typePath.split("::");
 			String typeName = typePathArray[typePathArray.length - 1];
-			comm.addAttribute(diagramId, className, name, level, typeName, multiplicity);
+			comm.addAttribute(diagramId, className, name, new Level(level), typeName, multiplicity, true, false, false);
 			break;
 		}
 		case "addOperation": {
@@ -291,8 +291,10 @@ public class XMLParser {
 					.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_TRANSITIVE));
 
 			comm.addAssociation(diagramId, classSourceName, classpath2, accessSourceFromTargetName,
-					accessTargetFromSourceName, fwName, reverseName, multiplicityT2S, multiplicityS2T, instLevelSource,
-					instLevelTarget, sourceVisibleFromTarget, targetVisibleFromSource, isSymmetric, isTransitive);
+					accessTargetFromSourceName, fwName, reverseName, multiplicityT2S, multiplicityS2T, 
+					instLevelSource, instLevelSource,
+					instLevelTarget, instLevelTarget, 
+					sourceVisibleFromTarget, targetVisibleFromSource, isSymmetric, isTransitive);
 			break;
 		}
 		case "addLink": {
@@ -306,7 +308,7 @@ public class XMLParser {
 			String[] classPathArray2 = classpath2.split("::");
 			String className2 = classPathArray2[classPathArray2.length - 1];
 
-			comm.addAssociationInstance(diagramId, className1, className2, name);
+			comm.addLink(diagramId, className1, className2, name);
 			break;
 		}
 		case "addDelegation": {
