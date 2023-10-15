@@ -128,7 +128,12 @@ public class CustomUI {
 				writer.close();
 				writer.flush();
 				fxml = stringWriter.toString();
-
+				
+				
+				// FH refactor diagram to apply changes made to the UI externally
+				DefaultUIGenerator uiGenerator = new DefaultUIGenerator(diagram, diagram.getActions());
+				uiGenerator.refactorModel(fxml, this.customUIobjectName);
+				
 				// Fourth step: Load FXML UI
 				FXMLLoader loader = new FXMLLoader();
 

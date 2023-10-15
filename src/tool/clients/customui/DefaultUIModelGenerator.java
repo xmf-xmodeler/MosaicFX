@@ -262,6 +262,7 @@ public class DefaultUIModelGenerator {
 		actions.addMetaClass("Reference", 1);
 		actions.addMetaClass("UIElement", 2);
 		actions.addMetaClass("UserInterface", 1);
+		
 
 		parents.add("UIElement");
 		actions.addMetaClass("UIControlElement", 2, parents);
@@ -269,15 +270,14 @@ public class DefaultUIModelGenerator {
 
 		actions.addInstance("UIControlElement", "Injection");
 		actions.addInstance("UIElement", "Virtual");
+		actions.addInstance("UIControlElement", "Action");
 
 		parents.add("Injection");
 		actions.addInstance("UIControlElement", "ListInjection", parents);
-		actions.addInstance("UIControlElement", "ActionInjection", parents);
 		actions.addInstance("UIControlElement", "SlotInjection", parents);
-		parents.clear();
-
-		parents.add("ActionInjection");
-		actions.addInstance("UIControlElement", "Action", parents);
+		
+		parents.add("Action");
+		actions.addInstance("UIControlElement", "ActionInjection", parents);
 		parents.clear();
 
 		// add association

@@ -22,12 +22,13 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
 // TODO 
-// generierung des standard modells in separater klasse ausgliedern. ggf. Operationen und Co nicht als String hardcoden
 // Distanz sucht assoziationen in beide rifchutngen nicht nur target source
 public class DefaultUIGenerator {
 
@@ -45,7 +46,8 @@ public class DefaultUIGenerator {
 	private HashMap<String, HashMap<String, String>> customGuiSlots;
 
 	private String metaClassName = "Root::FMMLx::MetaClass";
-	// !! this is not the name of the commonClass but rather the name that is included in commonclass and all neeeded dummy classes
+	// !! this is not the name of the commonClass but rather the name that is
+	// included in commonclass and all neeeded dummy classes
 	private String commonClassName = "CommonClass";
 
 	public DefaultUIGenerator(AbstractPackageViewer diagram, Vector<FmmlxObject> objects,
@@ -99,7 +101,7 @@ public class DefaultUIGenerator {
 
 		if (metaClass.getName().contains(commonClassName))
 			instanceOf = true;
-		while (!instanceOf && !metaClass.getName().equals(metaClassName)) {
+		if (!instanceOf && !metaClass.getName().equals(metaClassName)) {
 			instanceOf = instanceOfCommonClass(metaClass);
 		}
 		return instanceOf;
@@ -141,9 +143,6 @@ public class DefaultUIGenerator {
 
 		boolean isActionInjection;
 
-		// TODO find better solution
-		// Slot Values that can already be determined in this method should be saved for
-		// performance
 		// first String -> instanceName
 		// second String -> slotName
 		// third String -> value
@@ -302,11 +301,17 @@ public class DefaultUIGenerator {
 
 			// add link "refersToStateOf" -> Reference + CommonClassInstance
 
-			// Assumption: Every Instance of CommonClass has at least one instance at level
-			// 0
-			// TODO How to work when that is not the case
-			actions.addAssociation(reference.getReferenceInstanceName(),
-					reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
+			if (reference.getObject().getInstances().size() > 0) {
+				actions.addAssociation(reference.getReferenceInstanceName(),
+						reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
+			} else {
+				raiseAlert("No instances found for " + reference.getObject().getName()
+						+ " . A new instance will be created.");
+				String instanceName = actions.addInstance(reference.getObject().getName(),
+						reference.getObject().getName() + UUID.randomUUID().toString().replace("-", ""));
+				actions.addAssociation(reference.getReferenceInstanceName(), instanceName,
+						associationRefersToStateOf.getName());
+			}
 
 			Label instancesOfClassLabel = new Label("Instance(s) of " + reference.getObject().getName());
 			instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR,
@@ -623,10 +628,9 @@ public class DefaultUIGenerator {
 		if (!vector.contains(root))
 			vector.add(root);
 
-		// can this be done better ? - look in both directions
+		// can this be done better ? - e.g. look in both directions
 		if (root.getAllRelatedAssociations().size() > 0) {
 			for (FmmlxAssociation assoc : root.getAllRelatedAssociations()) {
-				// vector = recurGetObjectsForGUI(vector, assoc.getSourceNode(), depth);
 				if (root.equals(assoc.getSourceNode())) {
 					vector = recurGetObjectsForGUI(vector, assoc.getTargetNode(), depth);
 				}
@@ -782,7 +786,6 @@ public class DefaultUIGenerator {
 
 	// FH generates the UI model to map a new UI when the model consistet only of
 	// domain model before
-	
 
 	public class Reference {
 		private FmmlxObject object;
@@ -840,4 +843,112 @@ public class DefaultUIGenerator {
 
 	}
 
+	// FH objects on level which are linked by links will be returned
+	private Vector<FmmlxObject> findLinkedObjects(Vector<FmmlxObject> objects, FmmlxObject object) {
+
+//		if object ist nicht part der gui dann ignorieren
+
+		if (instanceOfCommonClass(object))
+			return objects;
+		objects.add(object);
+
+		for (FmmlxLink link : diagram.getRelatedLinksByObject(object)) {
+			if (!objects.contains(link.getTargetNode())) {
+				objects = findLinkedObjects(objects, link.getTargetNode());
+			}
+
+			if (!objects.contains(link.getSourceNode())) {
+				objects = findLinkedObjects(objects, link.getSourceNode());
+			}
+
+		}
+
+		return objects;
+
+	}
+
+	// This methods refactors the model seen on the diagram based on the loaded gui
+	public void refactorModel(String fxml, String guiObjectName) {
+		// look up ids in the fxml and check them against the ids in the diagram
+		// if there are ids that are in the fxml but not the diagram -> syserr message
+		// if there are ids that are not in the fxml -> delete in the diagramm with
+		// related objects
+
+		// refereces stay existent to avoid problems with head chidl
+
+		// get ids from diagram
+		String idShort;
+		String helper[] = fxml.split("fx:id=\"");
+
+		ArrayList<String> ids = new ArrayList<>();
+
+		boolean idMatch;
+
+		for (String idLong : helper) {
+			idShort = idLong.split("\"")[0];
+
+			if (idShort.startsWith("<?xml")) {
+				continue;
+			} else {
+				ids.add(idShort);
+			}
+		}
+
+		FmmlxObject guiObject = diagram.getObjectByPath("Root::" + diagram.getPackagePath() + "::" + guiObjectName);
+		Vector<FmmlxObject> objects = new Vector<>();
+
+		objects = findLinkedObjects(objects, guiObject);
+
+		for (FmmlxObject o : objects) {
+
+			idMatch = false;
+
+			// only instances are relevant here
+			if (o.getLevel() != 0)
+				continue;
+
+			for (FmmlxSlot slot : o.getAllSlots()) {
+
+				// get correct slot
+				if (slot.getName().equals("idOfUIElement")) {
+
+					for (String id : ids) {
+						if (slot.getValue().equals(id)) {
+							idMatch = true;
+							// no action necessary - id is in both
+						}
+					}
+
+					if (idMatch == false) {
+
+						// different handling for different object types
+						switch (o.getMetaClassName()) {
+						case ("ListInjection"):
+						case ("ActionInjection"):
+						case ("SlotInjection"):
+						case ("Action"):
+							diagram.getComm().removeClass(diagram.getID(), o.getName(), 0);
+							break;
+
+						case ("Virtual"):
+							// find associated parameters and delete them as well
+							for (FmmlxLink link : diagram.getRelatedLinksByObject(o)) {
+
+								// delete parameters
+								FmmlxObject object = link.getSourceNode();
+								if (object.getMetaClassName().equals("Parameter"))
+									diagram.getComm().removeClass(diagram.getID(), link.getSourceNode().getName(), 0);
+							}
+							break;
+
+						default:
+							System.err.println("Unexpected object with id found");
+							break;
+
+						}
+					}
+				}
+			}
+		}
+	}
 }
