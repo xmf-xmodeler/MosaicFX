@@ -72,6 +72,7 @@ public class ControlCenter extends Stage {
 		return controlCenterClient;
 	}
 
+	//Add this comment
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
