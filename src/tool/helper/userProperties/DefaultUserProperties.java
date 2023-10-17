@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.helper.userProperties;
 
 import java.util.Properties;
 

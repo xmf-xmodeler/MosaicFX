@@ -28,3 +28,6 @@
 
 #wahidClassPath
 /.classpath
+
+#ignore log files
+logs/*

@@ -70,11 +70,8 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
-import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLParser;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -141,16 +138,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramViewToolBarModel;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
-			int diagramID, String name, String packagePath, 
-			Vector<Vector<Object>> listOfViews, 
-			Vector<Vector<Object>> listOfOptions,
-			boolean umlMode) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
+			Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 		super(comm,diagramID,packagePath);
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = diagramViewToolbar.getModel();
-		diagramViewToolBarModel.setProperties(listOfOptions);
+//		diagramViewToolBarModel.setProperties(listOfOptions);
 		
 		this.diagramName = name;
 		splitPane = new SplitPane();
@@ -263,7 +257,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
             	pressedKeys.remove(event.getCode());
@@ -286,18 +279,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
 				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.I) {
-					new XMLParser("C:\\Users\\herrt\\Desktop\\University.xml").parseXMLDocument();
-				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
-						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						if (element instanceof FmmlxObject) {
+							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						}
 					}
 				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.P) {
-					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
-					}
+			
 			}
         });
         tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -309,9 +299,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) &&
-						getPressedKeys().contains(KeyCode.S)) {
-						getComm().saveXmlFile2(packagePath, diagramID);;
+				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
 					}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 						getComm().triggerUpdate();
@@ -772,37 +761,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	@Override
-	protected void fetchDiagramDataSpecific2() {
-		
+	protected void fetchDiagramDataSpecific2() {		
 		triggerOverallReLayout();
 		newFmmlxPalette.update();
 
-		//TODO delete this part
-		if(filePath !=null && filePath.length()>0){
-			if(justLoaded){
-				justLoaded = false;
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(filePath));
-				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
-				if(positionInfo != null) {
-					getComm().removePositionInfo(getID());
-					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
-					triggerOverallReLayout();
-				}
-				redraw();
-				updateDiagram();
-			}
-		} else {		
-			Issue nextIssue = null;
-			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name()))) nextIssue = issues.get(i);
-			}
-	
-			if(nextIssue != null) {
-				final Issue ISSUE = nextIssue;
-				Platform.runLater(() -> ISSUE.performResolveAction(this));
-			}
+		Issue nextIssue = null;
+		for (int i = 0; i < issues.size() && nextIssue == null; i++) {
+			if (issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name())))
+				nextIssue = issues.get(i);
 		}
-		
+
+		if (nextIssue != null) {
+			final Issue ISSUE = nextIssue;
+			Platform.runLater(() -> ISSUE.performResolveAction(this));
+		}
+
 		tableView.getItems().clear();
 		tableView.refresh();
 		tableView.getItems().addAll(issues);

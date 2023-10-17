@@ -16,6 +16,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
@@ -23,7 +25,7 @@ public class XMLCreator {
 	Vector<DiagramInfo> diagramsWaitingForParsing;
 	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
 	Element root;
-	private final String exportVersion = "4";
+	private static final int exportVersion = 4;
 	String packagePath;
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
@@ -38,6 +40,11 @@ public class XMLCreator {
 		chooser.setTitle("Choose save location");
 		chooser.setInitialFileName(packagePath.split("::")[1]);
 		chooser.getExtensionFilters().add(new ExtensionFilter("XML", "*.xml"));
+		if (PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString()) != null) {
+			String recentlySavedDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
+			File recentlySavedFile = new File(recentlySavedDirPath);
+			chooser.setInitialDirectory(recentlySavedFile.getParentFile());
+		}
 		Runnable showFileChooserStage = () -> {
 		Stage s = new Stage();
 		s.setAlwaysOnTop(true);
@@ -48,6 +55,7 @@ public class XMLCreator {
 			System.err.println("XML Export was interrupted");
 			return; 
 		}
+		PropertyManager.setProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString(),saveFile.get().getAbsolutePath());
 		XMLUtil.saveDocumentToFile(doc, saveFile.get());		
 		};
 		//Everything that is related to UI can not run on external Thread. Because async methods are answered with an external thread here the function must be wrapped with a Plattform.runLater() 
@@ -269,8 +277,15 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), exportVersion);
+		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(exportVersion));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
 		return doc;
+	}
+	
+	/**
+	 * @return current used version of XML-Exports
+	 */
+	public static int getExportversion() {
+		return exportVersion;
 	}
 }

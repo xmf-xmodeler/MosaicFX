@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Extra logging related to initialization of Log4j. Set to debug or trace if log4j initialization is failing. -->
+<Configuration status="info">
+	<Appenders>
+		<RollingFile name="ArchiveAtStartup" fileName="logs/debug_current.log" filePattern="logs/debug_archive%i.log">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%-5p] thread='%t' %c{1}:%L - %m%n"/>
+			<Policies>
+				<OnStartupTriggeringPolicy/>
+			</Policies>
+			<DefaultRolloverStrategy max="10"/>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="debug" additivity="false">
+			<AppenderRef ref="ArchiveAtStartup"/>
+		</Root>
+	</Loggers>
+</Configuration>

@@ -1,4 +1,4 @@
-package tool.clients.serializer;
+package tool.helper.persistence;
 
 public class SerializerConstant {
     public static final int SERIALIZER_VERSION = 3;

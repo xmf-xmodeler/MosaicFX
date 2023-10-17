@@ -23,8 +23,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 
-class PropertyManagerStage extends Stage {
+public class PropertyManagerStage extends Stage {
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();
@@ -57,12 +59,13 @@ class PropertyManagerStage extends Stage {
 		GridPane saveTabContentGrid = new GridPane();
 		formatGrid(saveTabContentGrid);
 
-		Label checkboxLabel = new Label("Load Models by StartUp?");
-		CheckBox loadModels = new CheckBox();
-		loadModels.setSelected(Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString())));
-		loadModels.setOnAction(e -> PropertyManager.setProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString(), String.valueOf(loadModels.isSelected())));
+	// currently not needed see comment in Constructor of ControlCenter
+	//	Label checkboxLabel = new Label("Load Models by StartUp?");
+	//	CheckBox loadModels = new CheckBox();
+	//	loadModels.setSelected(Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString())));
+	//	loadModels.setOnAction(e -> PropertyManager.setProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString(), String.valueOf(loadModels.isSelected())));
 		
-		Label saveLabel = new Label("Saved models ");
+		Label saveLabel = new Label("Model Directory ");
 		Label currentFolderPath = new Label((savedModlesPath == null) ? "Choose File" : savedModlesPath);
 		currentFolderPath.setPrefWidth(250);
 		currentFolderPath.setMaxWidth(250);
@@ -86,8 +89,8 @@ class PropertyManagerStage extends Stage {
 			}
 		}, "resources/gif/Package.gif");
 		
-		saveTabContentGrid.add(checkboxLabel, 0, 0, 3, 1);
-		saveTabContentGrid.add(loadModels, 3, 0);
+	//	saveTabContentGrid.add(checkboxLabel, 0, 0, 3, 1);
+	//	saveTabContentGrid.add(loadModels, 3, 0);
 		saveTabContentGrid.add(saveLabel, 0, 1);
 		saveTabContentGrid.add(infoButton, 1, 1);
 		saveTabContentGrid.add(currentFolderPath, 2, 1);

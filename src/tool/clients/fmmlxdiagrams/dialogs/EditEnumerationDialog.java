@@ -220,7 +220,7 @@ public class EditEnumerationDialog extends CustomDialog<Void>{
 //					@Override
 //					protected Void call() {
 //						try { 
-					        diagram.getComm().addEnumerationItem(
+					        diagram.getComm().addEnumerationValue(
 							diagram.getID(), 
 							chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
 							result);

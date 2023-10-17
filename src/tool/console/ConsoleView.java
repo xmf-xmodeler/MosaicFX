@@ -13,7 +13,7 @@ import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.workbench.WorkbenchClient;
-import tool.xmodeler.PropertyManager;
+import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;

@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Vector;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import xos.Value;
@@ -14,7 +13,7 @@ public class DiagramDisplayModel {
 
 	public DiagramDisplayModel(DiagramViewHeadToolBar diagramViewToolBar) {
 		relatedDiagramID = diagramViewToolBar.getFmmlxDiagram().getID(); 
-		showPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(relatedDiagramID);
+		showPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayPropertiesSynchronous(relatedDiagramID);
 		//if not all properties contained in the map add the missing with default values
 		for (DiagramDisplayProperty property : DiagramDisplayProperty.values()) {
 			if (!showPropertiesMap.containsKey(property)) {
@@ -52,45 +51,11 @@ public class DiagramDisplayModel {
 		for (int i = 0; i < itemArray.length; i++) {
 			itemArray[i] = items.get(i);
 		}
-		Value[] message = new Value[]{
+		Value[] message = new Value[] {
 				FmmlxDiagramCommunicator.getNoReturnExpectedMessageID(relatedDiagramID),
 				new Value(itemArray) };
 		FmmlxDiagramCommunicator.getCommunicator().sendMessage("sendViewOptions", message);
 	}
-	
-	public void receiveDisplayPropertiesFromXMF (FmmlxDiagramCommunicator communicator) { // used while updating
-//		FmmlxDiagramCommunicator communicator = fmmlxDiagram.getComm();
-		ReturnCall<HashMap<String, Boolean>> onViewOptionsReturn = propertyImport -> {
-			if (propertyImport.isEmpty()) {
-				return;
-			} else {
-				for (Entry<String, Boolean> entry : propertyImport.entrySet()) {
-					try {
-						setPropertyValue(DiagramDisplayProperty.valueOf(entry.getKey().toUpperCase()),entry.getValue());					
-					} catch (Exception e) {
-						System.err.println("No Enum Value");
-					}			
-				}
-			}
-		};
-		
-		communicator.getDiagramDisplayProperties(relatedDiagramID, onViewOptionsReturn);
-	}
 
-	public void setProperties(Vector<Vector<Object>> listOfOptions) { // used on diagram Creation
-		for(Vector<Object> option : listOfOptions) {
-			try {
-				String name = (String) option.get(0);
-				Boolean b = (Boolean) option.get(1);
-				try {
-					setPropertyValue(DiagramDisplayProperty.valueOf(name.toUpperCase()),b);					
-				} catch (Exception e) {
-					System.err.println("No Enum Value");
-				}
-			} catch (Exception e) {
-				System.err.println("Could not read display option on diagram creation, ignoring: " + option);
-			}
-		}
-	}
-		
+	
 }

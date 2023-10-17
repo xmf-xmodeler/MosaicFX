@@ -1,43 +1,50 @@
-package tool.xmodeler;
+package tool.helper.persistence;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 
 public class StartupModelLoader {
 
 	public void loadModelsFromSavedModelsPath() {
-		
+	
 		ReturnCall<FmmlxDiagramCommunicator> onCommunicatorAvailable = communicator -> {
-			String savedModelsPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
-			if (savedModelsPath == null) {
-				return;
-			}
-			Path dir = Paths.get(savedModelsPath);
-			if (!dir.toFile().exists()) {
-				PropertyManager.deleteProperty(UserProperty.MODELS_DIR.toString());
-				return;
-			}
-			Stream<Path> filesFromSavedModelsPath = getFilesFromSavedModelsPath(dir);
-			loadXmlFilesFromStream(filesFromSavedModelsPath, communicator);
-			Stream<Path> visibleSubfolder = loadListOfVisibleSubfolder(dir);
-			loadXmlFilesFromStream(visibleSubfolder, communicator);
+			Platform.runLater(() -> {
+				String savedModelsPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
+				if (savedModelsPath == null) {
+					return;
+				}
+				Path dir = Paths.get(savedModelsPath);
+				if (!dir.toFile().exists()) {
+					PropertyManager.deleteProperty(UserProperty.MODELS_DIR.toString());
+					return;
+				}
+				Stream<Path> filesFromSavedModelsPath = getFilesFromSavedModelsPath(dir);
+				loadXmlFilesFromStream(filesFromSavedModelsPath, communicator);
+				Stream<Path> visibleSubfolder = loadListOfVisibleSubfolder(dir);
+				loadXmlFilesFromStream(visibleSubfolder, communicator);
+			});
 		};
-		
 		FmmlxDiagramCommunicator.getCommunicatorWhenReady(onCommunicatorAvailable);
 	}
 
-	private void loadXmlFilesFromStream(Stream<Path> stream, FmmlxDiagramCommunicator communicator) {
+	private void loadXmlFilesFromStream(Stream<Path> stream, FmmlxDiagramCommunicator communicator) {		
 		stream.forEach(path -> {
 			try {
 				Files.walk(path).filter(p -> p.toFile().isFile()).filter(p -> p.toString().endsWith(".xml"))
 						.forEach(p -> {
-							communicator.openXmlFile(p.toString());
+							File inputFile = new File(p.toString());
+							XMLParser parser = new XMLParser(inputFile);
+					    	parser.parseXMLDocument();
 						});
 			} catch (IOException e) {
 				e.printStackTrace();

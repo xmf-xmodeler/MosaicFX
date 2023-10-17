@@ -65,5 +65,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/core-12.54.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jvm-driver-8.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jvm-driver-9.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-api-2.20.0.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-core-2.20.0.jar"/>
+	<classpathentry kind="lib" path="lib/xalan-2.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

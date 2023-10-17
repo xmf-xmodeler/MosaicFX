@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import javafx.geometry.Bounds;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
-import tool.clients.serializer.SerializerConstant;
+import tool.helper.persistence.SerializerConstant;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
