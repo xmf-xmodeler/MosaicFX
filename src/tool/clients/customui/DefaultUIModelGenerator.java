@@ -16,6 +16,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 
 /*
  * FH 2023
@@ -53,7 +54,14 @@ public class DefaultUIModelGenerator {
 		// instantiate model
 		instantiateUIModel(commonClassName);
 
-		diagram.updateDiagram();
+		// only return after the diagram has been updated
+		ReturnCall<Object> onUpdate = update -> {
+			System.err.println("Update completed");
+			return;
+		};
+		
+		diagram.updateDiagram(onUpdate);
+		
 	}
 
 	private void changeMetaClassForDiagram() {

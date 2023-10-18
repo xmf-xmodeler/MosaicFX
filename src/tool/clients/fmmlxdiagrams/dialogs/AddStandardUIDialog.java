@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
@@ -14,10 +15,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
@@ -25,13 +22,16 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
-import tool.clients.customui.DefaultUIGenerator;
-import tool.clients.customui.DefaultUIModelGenerator;
+
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.customui.DefaultUIModelGenerator;
 
 // dialog for automatic instantiating standard gui
 public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
@@ -83,6 +83,7 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private int windowWidthCollapsed = 380;
 
 	public AddStandardUIDialog(AbstractPackageViewer diagram, Vector<CanvasElement> selectedObjects) {
+
 		super();
 		this.diagram = diagram;
 
@@ -106,6 +107,15 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 		dialog.setMaxWidth(windowWidthCollapsed);
 		dialog.minWidth(windowWidthCollapsed);
 		dialog.prefWidth(windowWidthCollapsed);
+
+	}
+
+	private void generateUI() {
+		// If model needed for gui is not avaiable instantiate it first
+
+		DefaultUIModelGenerator defaultGenerator = new DefaultUIModelGenerator(diagram);
+		defaultGenerator.generateUIModel();
+
 	}
 
 	private void fillListViews(Vector<CanvasElement> canvasElements) {
@@ -303,21 +313,6 @@ public class AddStandardUIDialog extends Dialog<AddStandardUIDialog.Result> {
 	private void addOKButtonListener() {
 
 		// TODO: abfangen von fehlerhaften eingaben
-
-		// If model needed for gui is not avaiable instantiate it first
-		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
-		boolean uiNeeded = true;
-
-		for (FmmlxObject o : objects) {
-			if (o.getName().contains("UserInterface")) {
-				uiNeeded = false;
-			}
-		}
-
-		if (uiNeeded) {
-			DefaultUIModelGenerator defaultGenerator = new DefaultUIModelGenerator(diagram);
-			defaultGenerator.generateUIModel();
-		}
 
 		setResultConverter(dialogButton -> {
 			if (dialogButton == okButtonType) {

@@ -3,8 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -14,7 +12,6 @@ import javax.xml.transform.TransformerException;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -31,11 +28,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
-import tool.clients.customui.CustomUI;
+
 import tool.clients.customui.DefaultUIGenerator;
+import tool.clients.customui.DefaultUIModelGenerator;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -50,6 +46,7 @@ import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
+
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -1241,7 +1238,29 @@ public class DiagramActions {
 	}	
 	
 	public void showGenerateCustomUIDialog() {
-		new AddStandardUIDialog(this.diagram, this.diagram.getSelectedObjects()).showDialog();
+		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
+		boolean uiNeeded = true;
+
+		for (FmmlxObject o : objects) {
+			if (o.getName().contains("UserInterface")) {
+				uiNeeded = false;
+			}
+		}
+		
+		if (uiNeeded) {
+			DefaultUIModelGenerator defaultGenerator = new DefaultUIModelGenerator(diagram);
+			defaultGenerator.generateUIModel();
+			Alert alert = new Alert(AlertType.CONFIRMATION, "UI Model Generation is needed.\nFor UI Instantiation reselect the Dialog");
+			alert.showAndWait().ifPresent(response -> {
+				if (response == ButtonType.OK) {
+					return;
+				}
+			});
+			return;
+		}else {
+			new AddStandardUIDialog(this.diagram, this.diagram.getSelectedObjects()).showDialog();
+		}
+		
 	}
 	
 	public void instantiateGUI(Optional<Result> r) {
