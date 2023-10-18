@@ -22,6 +22,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 	private ComboBox<FmmlxObject> ofComboBox;
 	private LevelBox levelBox;
 	private CheckBox abstractCheckBox;
+	private CheckBox singletonCheckBox;
 	private ObservableList<FmmlxObject> parentList;
 	private final Vector<FmmlxObject> objects;
 
@@ -53,6 +54,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
+		singletonCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		levelBox = new LevelBox(selectedClass.getLevel().minusOne());
@@ -103,8 +105,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		grid.add(levelBox, 1, 2);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
-		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 4);
-		grid.add(parentListView, 1, 4);
+		grid.add(new Label("Singleton"), 0, 4);
+		grid.add(singletonCheckBox, 1, 4);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 5);
+		grid.add(parentListView, 1, 5);
 	}
 
 	private void setInstanceName(FmmlxObject c) {
@@ -125,8 +129,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		    	Level level = levelBox.getLevel();
 		    	if(level != null) {
 		    		return new Result(nameTextField.getText(), level, 
-					parentListView.getSelectionModel().getSelectedItems(), selectedObject.getName(),
-					abstractCheckBox.isSelected());
+					parentListView.getSelectionModel().getSelectedItems(), 
+					selectedObject.getName(),
+					abstractCheckBox.isSelected(),
+					singletonCheckBox.isSelected());
 		    	}
 			}
 			return null;
@@ -207,14 +213,16 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		public final ObservableList<FmmlxObject> parents;
 		public final String ofName;
 		public final boolean isAbstract;
+		public final boolean isSingleton;
 
 		public Result(String name, Level level, ObservableList<FmmlxObject> parents, String ofName,
-									   boolean isAbstract) {
+									   boolean isAbstract, boolean isSingleton) {
 			this.name = name;
 			this.level = level;
 			this.parents = parents;
 			this.ofName = ofName;
 			this.isAbstract = isAbstract;
+			this.isSingleton = isSingleton;
 		}
 
 		public Vector<String> getParentPaths() {

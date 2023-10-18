@@ -939,7 +939,8 @@ public final class ModelBrowser extends CustomStage {
 				addNewMenuItem(this, "Remove Delegation", e -> actions.removeDelegation(object), () -> {return object.getDelegatesTo(false) != null;});
 				addNewMenuItem(this, "Set RoleFiller", e -> actions.setRoleFiller(object, null), () -> {return object.getDelegatesTo(true)!= null;});
 				addNewMenuItem(this, "Remove RoleFiller", e -> actions.removeRoleFiller(object), () -> {return object.getRoleFiller() != null;});
-				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel().isClass() && object.getInstances().size() > 0;});
+				addNewMenuItem(this, object.isAbstract()?"Make concrete":"Make abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel().isClass() && object.getInstances().size() > 0;});
+				addNewMenuItem(this, object.isSingleton()?"Remove Singleton Property":"Make Singleton", e -> actions.toggleSingleton(object), () -> {return true;}); 
 			}
 		}
 	}

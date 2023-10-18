@@ -17,14 +17,11 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	private AbstractPackageViewer diagram;
 	private ObservableList<FmmlxObject> possibleParents;
 
-	private Label nameLabel;
-	private Label levelLabel;
-	private Label abstractLabel;
-	private Label parentLabel;
 	private TextField nameTextField;
 	private LevelBox levelComboBox;
 	private ListView<FmmlxObject> parentListView;
 	private CheckBox abstractCheckbox;
+	private CheckBox singletonCheckbox;
 
 	public CreateMetaClassDialog(AbstractPackageViewer diagram) {
 		super();
@@ -50,10 +47,11 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	}
 
 	private void layoutContent() {
-		nameLabel = new Label("Name");
-		levelLabel = new Label("Level");
-		abstractLabel = new Label("Abstract");
-		parentLabel = new Label("Parent");
+		Label nameLabel = new Label("Name");
+		Label levelLabel = new Label("Level");
+		Label abstractLabel = new Label("Abstract");
+		Label singletonLabel = new Label("Singleton");
+		Label parentLabel = new Label("Parent");
 
 		nameTextField = new TextField();
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
@@ -76,6 +74,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 			}
 		});
 		abstractCheckbox = new CheckBox();
+		singletonCheckbox = new CheckBox();
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		
@@ -86,8 +85,10 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		grid.add(levelComboBox, 1, 1);
 		grid.add(abstractLabel, 0, 2);
 		grid.add(abstractCheckbox, 1, 2);
-		grid.add(parentLabel, 0, 3);
-		grid.add(parentListView, 1, 3);
+		grid.add(singletonLabel, 0, 3);
+		grid.add(singletonCheckbox, 1, 3);
+		grid.add(parentLabel, 0, 4);
+		grid.add(parentListView, 1, 4);
 	}
 
 	private void setResult() {
@@ -96,6 +97,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 				return new Result(nameTextField.getText(),
 						levelComboBox.getLevel(), 
 						abstractCheckbox.isSelected(), 
+						singletonCheckbox.isSelected(), 
 						parentListView.getSelectionModel().getSelectedItems());
 			}
 			return null;
@@ -129,12 +131,14 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		public final String name;
 		public final Level level;
 		public final boolean isAbstract;
+		public final boolean isSingleton;
 		public final ObservableList<FmmlxObject> parent;
 
-		public Result(String name, Level level, boolean isAbstract, ObservableList<FmmlxObject> parent) {
+		public Result(String name, Level level, boolean isAbstract, boolean isSingleton, ObservableList<FmmlxObject> parent) {
 			this.name = name;
 			this.level = level;
 			this.isAbstract = isAbstract;
+			this.isSingleton = isSingleton;
 			this.parent = parent;
 		}
 

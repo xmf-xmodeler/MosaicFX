@@ -21,6 +21,6 @@ public class AddMetaClassParser extends ModelActionParser {
 		boolean isAbstract = Boolean
 				.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
 		//right now we can not give position information because the position information is saved in an other element
-		communicator.addMetaClass(diagramId, name, new Level(level), new Vector<>(), isAbstract, 0, 0, false);
+		communicator.addMetaClass(diagramId, name, new Level(level), new Vector<>(), isAbstract, false, 0, 0, false);
 	}
 }

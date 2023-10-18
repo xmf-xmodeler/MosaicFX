@@ -117,6 +117,7 @@ public class DiagramActions {
 										mcdResult.level, 
 										mcdResult.getParentNames(), 
 										mcdResult.isAbstract, 
+										mcdResult.isSingleton, 
 										(int) (x+.5), (int) (y+.5), false);
 	
 								view.getCanvas().setCursor(Cursor.DEFAULT);
@@ -131,7 +132,9 @@ public class DiagramActions {
 							mcdResult.name, 
 							mcdResult.level, 
 							mcdResult.getParentNames(),
-							mcdResult.isAbstract, 0, 0, true);
+							mcdResult.isAbstract,
+							mcdResult.isSingleton,
+							0, 0, true);
 					diagram.updateDiagram();
 					
 				}
@@ -150,7 +153,8 @@ public class DiagramActions {
 				final CreateMetaClassDialog.Result mcdResult = result.get();
 
 				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, 
-						mcdResult.level, mcdResult.getParentNames(), mcdResult.isAbstract, 
+						mcdResult.level, mcdResult.getParentNames(), 
+						mcdResult.isAbstract, mcdResult.isSingleton, 
 						(int) (p.getX()+.5), (int) (p.getY()+.5), 
 						false);
 				diagram.updateDiagram();
@@ -176,7 +180,10 @@ public class DiagramActions {
 				if(view == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 							aidResult.name, aidResult.level,
-                            aidResult.getParentNames(), aidResult.isAbstract, 0, 0, true);
+                            aidResult.getParentNames(), 
+                            aidResult.isAbstract, 
+                            aidResult.isSingleton, 
+                            0, 0, true);
 					diagram.updateDiagram();
 				} else {
 					view.getCanvas().setCursor(Cursor.CROSSHAIR);
@@ -196,6 +203,7 @@ public class DiagramActions {
 								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 										aidResult.name, aidResult.level, 
 										aidResult.getParentNames(), aidResult.isAbstract, 
+			                            aidResult.isSingleton, 
 										(int) (x+.5), (int) (y+.5), false);
 	
 								view.getCanvas().setCursor(Cursor.DEFAULT);
@@ -223,6 +231,7 @@ public class DiagramActions {
 						diagram.getID(), aidResult.getOfName(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
+                        aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 				diagram.updateDiagram();
 			}
@@ -519,9 +528,14 @@ public class DiagramActions {
 	public void updateDiagram() {
 		diagram.updateDiagram();
 	}
-	
+
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
+		diagram.updateDiagram();		
+	}
+	
+	public void toggleSingleton(FmmlxObject object) {
+		diagram.getComm().setClassSingleton(diagram.getID(), object.getName(), !object.isSingleton());
 		diagram.updateDiagram();		
 	}
 	

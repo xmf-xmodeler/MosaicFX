@@ -27,7 +27,7 @@ public class AddInstanceParser extends ModelActionParser {
 			level = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
 		} catch (Exception e) {
 		}
-		communicator.addNewInstance(diagramId, ofName, name, new Level(level), new Vector<String>(), isAbstract, 0, 0, false);
+		communicator.addNewInstance(diagramId, ofName, name, new Level(level), new Vector<String>(), isAbstract, false, 0, 0, false);
 	}
 
 }

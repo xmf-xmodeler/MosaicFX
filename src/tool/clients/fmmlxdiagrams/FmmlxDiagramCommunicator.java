@@ -407,7 +407,7 @@ public class FmmlxDiagramCommunicator {
 					parentListS.add((String) o);
 				}
 				String type = "FMMLX";
-				Boolean isCollective = false;
+//				Boolean isSingleton = false;
 				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
 				Integer maxLevel = (Integer) responseObjectList.get(3);
 				if(maxLevel == -1) maxLevel = null;
@@ -419,7 +419,7 @@ public class FmmlxDiagramCommunicator {
 						(String)  responseObjectList.get(11),// ofPath
 						parentListS,                         // parentsPath
 						(Boolean) responseObjectList.get(5), // isAbstract
-						isCollective,                        // isCollective
+						(Boolean) responseObjectList.get(4), // isSingleton
 						(Integer) responseObjectList.get(6), // x-Position
 						(Integer) responseObjectList.get(7), // y-Position 
 						(Boolean) responseObjectList.get(8), // hidden
@@ -743,7 +743,7 @@ public class FmmlxDiagramCommunicator {
 			linksReceivedReturn.run(result);
 		};
 		
-		xmfRequestAsync(handle, diagram.getID(), "getAllAssociationInstances", returnCall);
+		xmfRequestAsync(handle, diagram.getID(), "getAllLinks", returnCall);
 
 	}
 	
@@ -1156,11 +1156,11 @@ public class FmmlxDiagramCommunicator {
 	////////////////////////////////////////////////////
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
-	@Deprecated
-	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
-		addMetaClass(diagramID, name, new Level(level), parents, isAbstract, x, y, hidden);
-	}
-	public void addMetaClass(int diagramID, String name, Level level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
+//	@Deprecated
+//	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
+//		addMetaClass(diagramID, name, new Level(level), parents, isAbstract, x, y, hidden);
+//	}
+	public void addMetaClass(int diagramID, String name, Level level, Vector<String> parents, boolean isAbstract, boolean isSingleton, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -1170,6 +1170,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(level.getMaxLevel()),
 				new Value(parentsArray),
 				new Value(isAbstract),
+				new Value(isSingleton),
 				new Value(x), new Value(y), new Value(hidden)};
 		sendMessage("addMetaClass", message);
 	}
@@ -1192,32 +1193,15 @@ public class FmmlxDiagramCommunicator {
 			Level level, 
 			Vector<String> parents, 
 			boolean isAbstract, 
+			boolean isSingleton, 
 			int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level.getMinLevel()), new Value(level.getMaxLevel()),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+				new Value(parentsArray), new Value(isAbstract), new Value(isSingleton), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
-	
-//	@Deprecated
-//	public void addNewInstanceAsync(int diagramID, String className, String name, Integer level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
-//		Value[] parentsArray = createValueArray(parents);
-//
-//		Value[] message = new Value[] {
-//				new Value(className),
-//				new Value(name),
-//				new Value(level),
-//				new Value(level),
-//				new Value(parentsArray),
-//				new Value(isAbstract),
-//				new Value(x),
-//				new Value(y),
-//				new Value(hidden),
-//				new Value(new Value[] {}) };
-//		xmfRequestAsync(handle, diagramID, "addInstance", (emptyCall) -> {} , message);
-//	}
-	
+		
 	public void addNewInstanceWithSlots(
 			int diagramID, 
 			String className,
@@ -1720,6 +1704,14 @@ public class FmmlxDiagramCommunicator {
                 new Value(className),
                 new Value(isAbstract)};
         sendMessage("setClassAbstract", message);
+    }
+    
+    public void setClassSingleton(int diagramID, String className, boolean isSingleton) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(isSingleton)};
+        sendMessage("setClassSingleton", message);
     }
 
     public void levelRaiseAll(int diagramID) {
