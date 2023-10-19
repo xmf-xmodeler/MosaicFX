@@ -1536,14 +1536,18 @@ public class FmmlxDiagramCommunicator {
     }
 
     public void addAssociation(int diagramID,
-                               String classSourceName, String classTargetName,
-                               String accessSourceFromTargetName, String accessTargetFromSourceName,
-                               String fwName, String associationType,
-                               Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
-                               Integer instLevelSourceMin, Integer instLevelSourceMax, 
-                               Integer instLevelTargetMin, Integer instLevelTargetMax, 
-                               boolean sourceVisible, boolean targetVisible,
-                               boolean isSymmetric, boolean isTransitive) {
+        String classSourceName, String classTargetName,
+        String accessSourceFromTargetName, String accessTargetFromSourceName,
+        String fwName, String associationType,
+        Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
+        Integer instLevelSourceMin, Integer instLevelSourceMax, 
+        Integer instLevelTargetMin, Integer instLevelTargetMax, 
+        boolean sourceVisible, boolean targetVisible,
+        boolean isSymmetric, boolean isTransitive,
+        String sourceGetterName,
+        String sourceSetterName,
+        String targetGetterName, 
+        String targetSetterName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(classSourceName), new Value(classTargetName),
@@ -1554,7 +1558,11 @@ public class FmmlxDiagramCommunicator {
                 new Value(multSourceToTarget.toValue()), // multiplicity,
                 new Value(instLevelSourceMin), new Value(instLevelSourceMax), 
                 new Value(instLevelTargetMin), new Value(instLevelTargetMax),
-                new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive)};
+                new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive),
+                (sourceGetterName==null?new Value(-1):new Value(sourceGetterName)), 
+                (sourceSetterName==null?new Value(-1):new Value(sourceSetterName)), 
+                (targetGetterName==null?new Value(-1):new Value(targetGetterName)), 
+                (targetSetterName==null?new Value(-1):new Value(targetSetterName))};
         sendMessage("addAssociation", message);
     }
 

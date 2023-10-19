@@ -65,6 +65,6 @@ public class AddAssociationParser extends ModelActionParser {
 
 		communicator.addAssociation(diagramId, classSourceName, classpath2, accessSourceFromTargetName,
 				accessTargetFromSourceName, fwName, "Associations::DefaultAssociation", multiplicityT2S, multiplicityS2T, instLevelSource, instLevelSource,
-				instLevelTarget, instLevelTarget,sourceVisibleFromTarget, targetVisibleFromSource, isSymmetric, isTransitive);
+				instLevelTarget, instLevelTarget,sourceVisibleFromTarget, targetVisibleFromSource, isSymmetric, isTransitive, null, null, null, null);
 	}
 }

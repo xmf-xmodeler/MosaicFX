@@ -693,8 +693,9 @@ public class DiagramActions {
 						result.newInstLevelSource, result.newInstLevelSource, 
 						result.newInstLevelTarget, result.newInstLevelTarget,
 						result.sourceVisibleFromTarget,  result.targetVisibleFromSource, 
-						result.symmetric, result.transitive
-						);
+						result.symmetric, result.transitive,
+						result.sourceGetterName, result.sourceSetterName,
+						result.targetGetterName, result.targetSetterName);
 				diagram.updateDiagram();
 			}
 		});
