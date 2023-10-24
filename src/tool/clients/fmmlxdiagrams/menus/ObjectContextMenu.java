@@ -149,9 +149,9 @@ public class ObjectContextMenu extends ContextMenu {
 		});
 		
 		//add all items, that are used for all Objects
-		getItems().addAll(attributeMenu, slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
+		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
 		//add items, that are used only for Objects that are not on level 0
-		if (!object.getLevel().isEqual(0)) getItems().addAll(associationMenu, operationMenu, constraintMenu, delegationMenu);
+		if (!object.getLevel().isEqual(0)) getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
 		
 		addRunMenu();
 		
