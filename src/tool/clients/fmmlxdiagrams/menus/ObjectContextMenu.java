@@ -165,6 +165,9 @@ public class ObjectContextMenu extends ContextMenu {
 		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
 		getItems().add(mergeProperties);
 		
+		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
+		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
+		getItems().add(assignToGlobalVariable);
 	}
 
 	private void addRunMenu() {
