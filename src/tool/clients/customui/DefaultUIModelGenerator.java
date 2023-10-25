@@ -39,10 +39,10 @@ public class DefaultUIModelGenerator {
 
 	public void generateUIModel() {
 
-		// check for naming conflicts before the model can be generated
-		if (!hasNoNamingConflicts()) {
-			return;
-		}
+//		// check for naming conflicts before the model can be generated
+//		if (!hasNoNamingConflicts()) {
+//			return;
+//		}
 
 		Vector<Integer> levels = diagram.getAllObjectLevel();
 		String commonClassName = "CommonClassL" + (levels.get(0) + 1);
@@ -51,17 +51,17 @@ public class DefaultUIModelGenerator {
 		// change from metaClass to CommonClass
 		changeMetaClassForDiagram();
 
-		// instantiate model
-		instantiateUIModel(commonClassName);
+//		// instantiate model
+//		instantiateUIModel(commonClassName);
 
 		// only return after the diagram has been updated
 		ReturnCall<Object> onUpdate = update -> {
 			System.err.println("Update completed");
 			return;
 		};
-		
+
 		diagram.updateDiagram(onUpdate);
-		
+
 	}
 
 	private void changeMetaClassForDiagram() {
@@ -100,11 +100,11 @@ public class DefaultUIModelGenerator {
 
 				Vector<String> parents = new Vector<>();
 				try {
-					if (!o.getParentsPaths().get(0).equals("Root::FMMLx::FmmlxObject")) {
+					if (o.getParentsPaths().size() > 1) {
 						objectsWithParents.add(o);
 					}
 				} catch (Exception e) {
-					System.err.println(e.toString());
+					// no parents have been set
 				}
 
 				int x = (int) Math.round(o.getX());
@@ -131,7 +131,7 @@ public class DefaultUIModelGenerator {
 					// operation gets set at last AFTER associations so getter and setter from
 					// associations can be set first and don't lead to duplications
 
-					for (FmmlxAttribute att : o.getAllAttributes()) {
+					for (FmmlxAttribute att : o.getOwnAttributes()) {
 						diagram.getComm().addAttribute(diagram.getID(), o.getName(), att.getName(), att.getLevel(),
 								att.getType(), att.getMultiplicity());
 					}
@@ -141,83 +141,9 @@ public class DefaultUIModelGenerator {
 								constraint.getLevel(), constraint.getBodyRaw(),
 								"\"" + constraint.getReasonRaw() + "\"");
 					}
-				} else {
-					for (FmmlxSlot slot : o.getAllSlots()) {
-
-						switch (slot.getType(diagram)) {
-
-						case "Boolean", "Integer", "Float":
-							diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(),
-									slot.getValue());
-							break;
-
-						case "String":
-							String stringValue = "\"" + slot.getValue() + "\"";
-							diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(),
-									stringValue);
-							break;
-
-						case "Date":
-							String month = "";
-							String[] dates = slot.getValue().split(" ");
-
-							switch (dates[1]) {
-
-							case "Jan":
-								month = "1";
-								break;
-							case "Feb":
-								month = "2";
-								break;
-							case "Mar":
-								month = "3";
-								break;
-							case "Apr":
-								month = "4";
-								break;
-							case "May":
-								month = "5";
-								break;
-							case "Jun":
-								month = "6";
-								break;
-							case "Jul":
-								month = "7";
-								break;
-							case "Aug":
-								month = "8";
-								break;
-							case "Sep":
-								month = "9";
-								break;
-							case "Oct":
-								month = "10";
-								break;
-							case "Nov":
-								month = "11";
-								break;
-							case "Dec":
-								month = "12";
-								break;
-							default:
-								month = "";
-								raiseAlert("Slot cannot be parsed");
-								break;
-							}
-
-							String dateValue = "Date::createDate(" + dates[2] + "," + month + "," + dates[0] + ")";
-
-							diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(), dateValue);
-							break;
-
-						default:
-							raiseAlert("Parsing of the datatype " + slot.getType(diagram)
-									+ " is not supported at the moment.");
-
-						}
-					}
 				}
 			}
+
 		}
 
 		for (FmmlxObject o : objectsWithParents) {
@@ -227,10 +153,91 @@ public class DefaultUIModelGenerator {
 
 			for (String parent : parentsPath) {
 				String[] helper = parent.split("::");
+				if (helper[2].contains("metaClass") || helper[2].contains("Object"))
+					continue;
 				parents.add(helper[2]);
 			}
 
 			diagram.getComm().changeParent(diagram.getID(), o.getName(), new Vector<String>(), parents);
+		}
+
+		// slots have to be set separately
+		for (FmmlxObject o : objects) {
+			for (FmmlxSlot slot : o.getAllSlots()) {
+
+				switch (slot.getType(diagram)) {
+
+				case "Boolean", "Integer", "Float":
+					diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(), slot.getValue());
+					break;
+
+				case "String":
+					String stringValue = "\"" + slot.getValue() + "\"";
+					diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(), stringValue);
+					break;
+
+				case "Date":
+					String month = "";
+					String[] dates;
+					if (slot.getValue().equals("null")) {
+						break;
+					} else {
+						dates = slot.getValue().split(" ");
+					}
+
+					switch (dates[1]) {
+
+					case "Jan":
+						month = "1";
+						break;
+					case "Feb":
+						month = "2";
+						break;
+					case "Mar":
+						month = "3";
+						break;
+					case "Apr":
+						month = "4";
+						break;
+					case "May":
+						month = "5";
+						break;
+					case "Jun":
+						month = "6";
+						break;
+					case "Jul":
+						month = "7";
+						break;
+					case "Aug":
+						month = "8";
+						break;
+					case "Sep":
+						month = "9";
+						break;
+					case "Oct":
+						month = "10";
+						break;
+					case "Nov":
+						month = "11";
+						break;
+					case "Dec":
+						month = "12";
+						break;
+					default:
+						month = "";
+						raiseAlert("Slot cannot be parsed");
+						break;
+					}
+
+					String dateValue = "Date::createDate(" + dates[2] + "," + month + "," + dates[0] + ")";
+
+					diagram.getComm().changeSlotValue(diagram.getID(), o.getName(), slot.getName(), dateValue);
+					break;
+
+				default:
+					raiseAlert("Parsing of the datatype " + slot.getType(diagram) + " is not supported at the moment.");
+				}
+			}
 		}
 
 		for (FmmlxAssociation assoc : assocs) {
@@ -249,14 +256,39 @@ public class DefaultUIModelGenerator {
 		}
 
 		// operations are added
-		for (FmmlxObject o : objects) {
-			for (FmmlxOperation op : o.getAllOperations()) {
+		// what about getter / setter from assocs?
+		for (FmmlxObject oldObject : objects) {
+			for (FmmlxOperation op : oldObject.getAllOperations()) {
+				boolean added = false;
 
-				// check if operation already exists
-				if (o.getOperationByName(op.getName()) != null) {
-					continue;
+				Vector<FmmlxAttribute> attribute = oldObject.getAllAttributes();
+
+				for (FmmlxAttribute att : attribute) {
+					if (added)
+						continue;
+
+					if (op.getName().toLowerCase().contains(att.getName().toLowerCase())) {
+						// don't add -> is getter für slot
+						added = true;
+					}
+				}
+
+				for (FmmlxAssociation assoc : assocs) {
+					if (added)
+						continue;
+					if (op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase())) {
+						added = true;
+					}
+					if (op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase())) {
+						added = true;
+					}
+
+				}
+
+				if (added) {
 				} else {
-					diagram.getComm().addOperation2(diagram.getID(), o.getName(), op.getLevel(), op.getBody());
+					FmmlxObject newObject = diagram.getObjectByPath(oldObject.getName());
+					diagram.getComm().addOperation2(diagram.getID(), newObject.getName(), op.getLevel(), op.getBody());
 				}
 			}
 		}
@@ -270,7 +302,6 @@ public class DefaultUIModelGenerator {
 		actions.addMetaClass("Reference", 1);
 		actions.addMetaClass("UIElement", 2);
 		actions.addMetaClass("UserInterface", 1);
-		
 
 		parents.add("UIElement");
 		actions.addMetaClass("UIControlElement", 2, parents);
@@ -283,7 +314,7 @@ public class DefaultUIModelGenerator {
 		parents.add("Injection");
 		actions.addInstance("UIControlElement", "ListInjection", parents);
 		actions.addInstance("UIControlElement", "SlotInjection", parents);
-		
+
 		parents.add("Action");
 		actions.addInstance("UIControlElement", "ActionInjection", parents);
 		parents.clear();
