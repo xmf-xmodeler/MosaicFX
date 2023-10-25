@@ -39,10 +39,10 @@ public class DefaultUIModelGenerator {
 
 	public void generateUIModel() {
 
-//		// check for naming conflicts before the model can be generated
-//		if (!hasNoNamingConflicts()) {
-//			return;
-//		}
+		// check for naming conflicts before the model can be generated
+		if (!hasNoNamingConflicts()) {
+			return;
+		}
 
 		Vector<Integer> levels = diagram.getAllObjectLevel();
 		String commonClassName = "CommonClassL" + (levels.get(0) + 1);
@@ -51,8 +51,8 @@ public class DefaultUIModelGenerator {
 		// change from metaClass to CommonClass
 		changeMetaClassForDiagram();
 
-//		// instantiate model
-//		instantiateUIModel(commonClassName);
+		// instantiate model
+		instantiateUIModel(commonClassName);
 
 		// only return after the diagram has been updated
 		ReturnCall<Object> onUpdate = update -> {
@@ -276,10 +276,11 @@ public class DefaultUIModelGenerator {
 				for (FmmlxAssociation assoc : assocs) {
 					if (added)
 						continue;
-					if (op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase())) {
+					// check if name contains get or set AND the the name of an association
+					if ((op.getName().contains("get")||op.getName().contains("set"))&&(op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase()))) {
 						added = true;
 					}
-					if (op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase())) {
+					if ((op.getName().contains("get")||op.getName().contains("set"))&&(op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase()))) {
 						added = true;
 					}
 
