@@ -88,7 +88,8 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 		if (possibleParents.size() == 0) {
 			checkListView.setDisable(true);
 		}
-		checkListView = new CheckListView<>(possibleParents);
+		checkListView = new CheckListView<>(possibleParents.sorted());
+		checkListView.setMaxHeight(150);
 		
 		for (FmmlxObject fmmlxObject : currentParentList) {
 			checkListView.getCheckModel().check(fmmlxObject);
