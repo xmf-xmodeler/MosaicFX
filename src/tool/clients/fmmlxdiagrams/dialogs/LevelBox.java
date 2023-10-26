@@ -1,36 +1,40 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.Level;
 
-public class LevelBox extends HBox {
-	public final ComboBox<String> levelBox = new ComboBox<>(
-			FXCollections.observableArrayList("1", "2", "3", "4", "5"));
-	public final Button levelButton = new Button("...");
-
+class LevelBox extends HBox {
+	final TextField levelTextField = new TextField();
+	private final Button levelButton = new Button("...");
+	private LevelChangedListener levelChangedListener;
+	
 	public LevelBox() {this(null);}
 	
-	public LevelBox(Level oldlevel) {
+	LevelBox(Level oldlevel) {
 		super(3);
-		getChildren().add(levelBox);
+		getChildren().add(levelTextField);
 		getChildren().add(levelButton);
-		levelBox.setEditable(true);
+		levelTextField.setEditable(true);
 		levelButton.setOnAction(e->showExtendedDialog());
-		if(oldlevel != null) levelBox.setValue(oldlevel.toString());
-		HBox.setHgrow(levelBox, Priority.ALWAYS);
-		levelBox.setMaxWidth(Double.POSITIVE_INFINITY);
+		if(oldlevel != null) levelTextField.setText(oldlevel.toString());
+		HBox.setHgrow(levelTextField, Priority.ALWAYS);
+		levelTextField.setMaxWidth(Double.POSITIVE_INFINITY);
+		levelTextField.setOnKeyTyped((e) -> {
+			if (levelChangedListener != null) {
+				levelChangedListener.run(getLevel());
+			}
+		});
 	}
 
 	public Level getLevel() {
 		try{
-			return Level.parseLevel(levelBox.getSelectionModel().getSelectedItem());
+			return Level.parseLevel(levelTextField.getText());
 		} catch (Level.UnparseableException upe) {
 			upe.printStackTrace();
 			return null;
@@ -45,5 +49,14 @@ public class LevelBox extends HBox {
 			+ "n-m for a contingent level class on levels n to m\n"
 			+ "n-? for a contingent level class on levels n or above", 
 		ButtonType.OK).showAndWait();
+	}
+	
+	public void setLevelListener(LevelChangedListener e){
+		this.levelChangedListener = e;
+	}
+	
+	public interface LevelChangedListener
+	{
+		public void run(Level level); 
 	}
 }

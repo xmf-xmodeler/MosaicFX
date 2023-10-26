@@ -6,11 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Level;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 
 public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Result> {
 
@@ -56,21 +54,16 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		nameTextField = new TextField();
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		levelComboBox = new LevelBox();
-//		levelComboBox = new ComboBox<>(AllValueList.levelList);
-//		levelComboBox.setConverter(new IntegerStringConverter());
-//		levelComboBox.setEditable(true);
-		levelComboBox.levelBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				try {
-					possibleParents = diagram.getAllPossibleParents(Level.parseLevel(newValue));
-					parentListView.setItems(possibleParents);
-					parentListView.setDisable(false);
-					if (possibleParents.size() == 0) {
-						parentListView.setDisable(true);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		levelComboBox.setLevelListener(level -> {
+			try {
+				possibleParents = diagram.getAllPossibleParents(level);
+				parentListView.setItems(possibleParents);
+				parentListView.setDisable(false);
+				if (possibleParents.isEmpty()) {
+					parentListView.setDisable(true);
 				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		});
 		abstractCheckbox = new CheckBox();
@@ -119,7 +112,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 //			errorLabel.setText("Enter level as integer!");
 //			return false;
 		}
-		try { Level.parseLevel(levelComboBox.levelBox.getSelectionModel().getSelectedItem()); }
+		try { Level.parseLevel(levelComboBox.levelTextField.getText()); }
 		catch(Level.UnparseableException le) {
 			errorLabel.setText(le.getMessage());
 			return false;
@@ -132,9 +125,9 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		public final Level level;
 		public final boolean isAbstract;
 		public final boolean isSingleton;
-		public final ObservableList<FmmlxObject> parent;
+		private final ObservableList<FmmlxObject> parent;
 
-		public Result(String name, Level level, boolean isAbstract, boolean isSingleton, ObservableList<FmmlxObject> parent) {
+		private Result(String name, Level level, boolean isAbstract, boolean isSingleton, ObservableList<FmmlxObject> parent) {
 			this.name = name;
 			this.level = level;
 			this.isAbstract = isAbstract;
