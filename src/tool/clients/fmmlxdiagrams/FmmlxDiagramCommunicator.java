@@ -94,7 +94,7 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				diagram.setFilePath(copyFilePath(packagePath));
 			}
-			createStage(diagram.getView(), diagramName, this.handle, diagram);	
+			createStage(diagram.getView(), diagramName, packagePath, this.handle, diagram);	
 			diagrams.add(diagram);
 //			l.countDown();
 //			diagram.getDiagramViewToolBarModel().receiveDisplayPropertiesFromXMF();
@@ -2077,22 +2077,21 @@ public class FmmlxDiagramCommunicator {
 
 	// ########################## Tab ### Stage #######################
 		
-	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
+	private void createStage(javafx.scene.Node node, String name, String packagePath, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
 		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);
 		stage.setScene(scene);
-		stage.setTitle(name);
+		String title = packagePath.substring(6) + "::" + name;
+		stage.setTitle(title);
 		
 		//LM, 17.11.2021, resize canvas on maximize
 		// The update can only be achieved in a parallel thread as the actual size of the stage is
 		// not updated at the same time as the attribute "maximized".
 		stage.maximizedProperty().addListener( (observer, x, y) -> {
-			Thread newThread = new Thread(() -> {
-				diagram.redraw();
-			});
+			Thread newThread = new Thread(diagram::redraw);
 			newThread.start();
 		});
 		
