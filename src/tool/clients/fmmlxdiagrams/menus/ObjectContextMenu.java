@@ -79,11 +79,9 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		getItems().add(changeParentItem);
 		
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
 		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
-		getItems().add(browseInstanceItem);
 		
 //		MenuItem changeLevelItem = new MenuItem("Change level");
 //		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
@@ -148,17 +146,11 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		});
 		
-		
-		
-		getItems().addAll(attributeMenu, 
-				associationMenu, 
-				operationMenu, 
-				constraintMenu, 
-				delegationMenu, 
-				slotMenu, 
-				associationInstanceMenu, 
-				editConcreteSyntaxItem);
-		
+		//add all items, that are used for all Objects
+		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
+		//add items, that are used only for Objects that are not on level 0
+		if (!object.getLevel().isEqual(0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
+
 		addRunMenu();
 		
 		addNewMenuItem(this, "Hide", e -> {
@@ -171,6 +163,9 @@ public class ObjectContextMenu extends ContextMenu {
 		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
 		getItems().add(mergeProperties);
 		
+		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
+		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
+		getItems().add(assignToGlobalVariable);
 	}
 
 	private void addRunMenu() {
