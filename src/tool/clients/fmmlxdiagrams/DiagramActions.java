@@ -1271,5 +1271,44 @@ public class DiagramActions {
 	
 	public void redo() {
 		diagram.getComm().redo(diagram.diagramID);
+	}
+
+	public void generateGetter(FmmlxObject object, FmmlxAttribute attribute) {
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
+			dlg.initAttributeSetter(attribute);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.updateDiagram();
+			}
+		});	
 	}	
+	
+	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
+		throw new RuntimeException("Not yet implemented!");
+	}
+
+	public void generateAssocGetter(
+			FmmlxObject object, 
+			FmmlxObject otherObject, 
+			String endName, 
+			Integer endInstLevel,
+			Multiplicity endMult) {
+		
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
+			dlg.initAssociationSetter(endName, endInstLevel, otherObject.ownPath, endMult);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.updateDiagram();
+			}
+		});	
+	}
+
 }

@@ -9,8 +9,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
@@ -162,5 +164,34 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			this.body = body;
 			this.name = name;
 		}
+	}
+
+	public void initAttributeSetter(FmmlxAttribute attribute) {
+		this.levelComboBox.getSelectionModel().select(attribute.getLevel());
+		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
+		
+		codeBoxPair.setBodyText(
+				"@Operation "+name+"[monitor=false]()"+":"+attribute.getType()+"\n" +
+				"  self."+attribute.getName()+"\n" +
+				"end");
+	}
+
+	public void initAssociationSetter(
+			String endName, 
+			Integer endInstLevel,
+			String typeName,
+			Multiplicity endMult) {
+
+		this.levelComboBox.getSelectionModel().select(endInstLevel);
+		String name = "get" + endName.substring(0,1).toUpperCase() + endName.substring(1);
+		if(!(endMult.upperLimit && endMult.max <=1)) name = name + "s";
+		String type = (endMult.upperLimit && endMult.max <=1)?
+				(typeName):
+				("Set("+typeName+")");
+
+		codeBoxPair.setBodyText(
+				"@Operation "+name+"[monitor=false]()"+":"+type+"\n" +
+				"  self."+endName+"\n" +
+				"end");
 	}
 }

@@ -48,6 +48,16 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 				getItems().add(changeMulItem);
 	
 				getItems().add(new SeparatorMenuItem());
+
+				MenuItem genGetterItem = new MenuItem("Generate Getter");
+				genGetterItem.setOnAction(e -> actions.generateGetter(object, attribute));
+				getItems().add(genGetterItem);
+				
+				MenuItem genSetterItem = new MenuItem("Generate Setter");
+				genSetterItem.setOnAction(e -> actions.generateSetter(object, attribute));
+				getItems().add(genSetterItem);
+	
+				getItems().add(new SeparatorMenuItem());
 				
 				MenuItem removeItem = new MenuItem("Remove Attribute");
 				removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Attribute, attribute));

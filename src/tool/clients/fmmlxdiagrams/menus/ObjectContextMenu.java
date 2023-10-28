@@ -201,8 +201,16 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeMulItem = new MenuItem("Change multiplicity");
 		changeMulItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 
+		MenuItem genGetterItem = new MenuItem("Generate Getter");
+		genGetterItem.setOnAction(e -> actions.generateGetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+		MenuItem genSetterItem = new MenuItem("Generate Setter");
+		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+
+		getItems().add(new SeparatorMenuItem());
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeLevelItem, changeMulItem);
+				changeLevelItem, changeMulItem,
+				new SeparatorMenuItem(),
+				genGetterItem, genSetterItem);
 
 		return attributeMenu;
 	}
