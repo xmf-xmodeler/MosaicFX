@@ -13,6 +13,8 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.controlsfx.control.CheckListView;
+
 public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> {
 
 	private final AbstractPackageViewer diagram;
@@ -24,11 +26,11 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 	private Label selectedObjectLabel;
 	private Label currentParentsLabel;
 	private Label newParentLabel;
+	
+	private CheckListView<FmmlxObject> checkListView;
 
 	private TextField selectedObjectTextField;
 	private ListView<FmmlxObject> currentParentsListView;
-	private ListView<FmmlxObject> newParentListView;
-
 
 	public ChangeParentDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
@@ -54,7 +56,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, 
-						new Vector<>(newParentListView.getSelectionModel().getSelectedItems()), 
+						new Vector<>(checkListView.getCheckModel().getCheckedItems()), 
 						new Vector<>(currentParentList));
 			}
 			return null;
@@ -79,18 +81,18 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 		currentParentList = getCurrentParents();
 		currentParentsListView = initializeListView(currentParentList, SelectionMode.MULTIPLE);
 		currentParentsListView.setDisable(true);
-		newParentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		
 		possibleParents = diagram.getAllPossibleParents(object.getLevel().getMinLevel());
 		possibleParents.remove(object);
-		newParentListView.setItems(possibleParents);
-		newParentListView.setDisable(false);
-		if (possibleParents.size() == 0) {
-			newParentListView.setDisable(true);
-		}
 
+		if (possibleParents.size() == 0) {
+			checkListView.setDisable(true);
+		}
+		checkListView = new CheckListView<>(possibleParents.sorted());
+		checkListView.setMaxHeight(150);
+		
 		for (FmmlxObject fmmlxObject : currentParentList) {
-			newParentListView.getSelectionModel().select(fmmlxObject);
+			checkListView.getCheckModel().check(fmmlxObject);
 		}
 		
 		grid.add(selectedObjectLabel, 0, 0);
@@ -98,7 +100,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 		grid.add(currentParentsLabel, 0, 1);
 		grid.add(currentParentsListView, 1, 1);
 		grid.add(newParentLabel, 0, 2);
-		grid.add(newParentListView, 1, 2);
+		grid.add(checkListView, 1, 2);	
 	}
 
 	private ObservableList<FmmlxObject> getCurrentParents() {

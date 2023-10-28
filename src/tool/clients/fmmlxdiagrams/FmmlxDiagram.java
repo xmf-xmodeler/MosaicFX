@@ -1125,11 +1125,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private void handleRightPressed(MouseEvent e) {
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			if (hitObject != null) {
-				if (hitObject instanceof FmmlxObject) {
-					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
-				} else if (hitObject instanceof Edge) {
+				if (hitObject instanceof FmmlxObject || hitObject instanceof Edge || hitObject instanceof InheritanceEdge  ) {
 					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
 				}
+				
 				if (!selectedObjects.contains(hitObject)) {
 					deselectAll();
 					selectedObjects.add(hitObject);
