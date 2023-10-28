@@ -27,7 +27,10 @@ public class BrowserAssociationContextMenu extends ContextMenu {
 			
 			MenuItem editItem = new MenuItem("Edit Association");
 			editItem.setOnAction(e-> actions.editAssociationDialog(association));
-			getItems().addAll(addItem,editItem);
+			
+			MenuItem removeItem = new MenuItem("Remove Association");
+			removeItem.setOnAction(e -> actions.removeAssociation(association));
+			getItems().addAll(addItem, editItem, removeItem);
 		}
 		
 	}

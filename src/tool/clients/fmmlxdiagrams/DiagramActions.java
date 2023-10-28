@@ -335,8 +335,8 @@ public class DiagramActions {
 					case Attribute:
 						diagram.getComm().removeAttribute(diagram.getID(), result.object.getName(), result.property.getName(), 0);
 						break;
-					case Association:
-						diagram.getComm().removeAssociation(diagram.getID(), result.object.getName(), 0);
+					case Association: 
+						diagram.getComm().removeAssociation(diagram.getID(), (FmmlxAssociation) result.property); 
 						break;
 					case Constraint:
 						diagram.getComm().removeConstraint(diagram.getID(), result.object.getPath(), result.property.getName());
@@ -961,7 +961,7 @@ public class DiagramActions {
 	}
 
 	public void removeAssociation(FmmlxAssociation association) {
-		diagram.getComm().removeAssociation(diagram.getID(), association.getName(), -1);
+		diagram.getComm().removeAssociation(diagram.getID(), association);
 		diagram.updateDiagram();
 	}
 

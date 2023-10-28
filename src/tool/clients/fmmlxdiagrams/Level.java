@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 public class Level{
 
-
 	private final Integer minLevel;
 	private final Integer maxLevel;
 
@@ -27,11 +26,11 @@ public class Level{
 	}
 
 	public boolean isContingentLevelClass() {
-		return maxLevel != minLevel;
+		return !(minLevel.equals(maxLevel));
 	}
 
 	public boolean isFixedLevelClass() {
-		return maxLevel != minLevel && minLevel > 0;
+		return minLevel.equals(maxLevel) && minLevel > 0;
 	}
 
 	public boolean isEqual(int level) {

@@ -1287,10 +1287,11 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeClass", message);
 	}
 
-	public void removeAssociation(int diagramID, String associationName, int strategy) {
+	public void removeAssociation(int diagramID, FmmlxAssociation assoc) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationName)};
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd())};
 		sendMessage("removeAssociation", message);
 	}
 
