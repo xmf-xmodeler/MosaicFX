@@ -565,42 +565,6 @@ public class FmmlxDiagramCommunicator {
 		
 	}
 
-	@Deprecated // use async below
-    @SuppressWarnings("unchecked")
-	public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
-		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
-
-		try {
-			Vector<Object> response = xmfRequest(handle, -2, "getAllEdgePositions", new Value(diagramID));
-			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-
-			for(Object contentItem : responseContent) {
-				Vector<Object> contentVector = (Vector<Object>) contentItem;
-				String key = (String) contentVector.get(0);
-				Vector<Object> edgeInfo =  (Vector<Object>) contentVector.get(1);
-
-				Vector<Object> portInfo = new Vector<>();
-				if(edgeInfo.size()>0){
-					portInfo.add(edgeInfo.get(0));
-					portInfo.add(edgeInfo.get(edgeInfo.size()-1));
-				}
-				Vector<Object> intermediatePoints = new Vector<>();
-				for(int i = 1; i< Objects.requireNonNull(edgeInfo).size()-1 ; i++){
-					intermediatePoints.add(edgeInfo.get(i));
-				}
-
-				HashMap<String, Object> edgeInfoMap = new HashMap<>();
-				edgeInfoMap.put("Ports", portInfo);
-				edgeInfoMap.put("IntermediatePoints", intermediatePoints);
-
-				result.put(key, edgeInfoMap);
-			}
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		}
-        return result;
-    }
-
     @SuppressWarnings("unchecked")
 	public void getAllEdgePositions(Integer diagramID, ReturnCall<HashMap<String, HashMap<String, Object>>> onAllEdgePositionsReceived) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
