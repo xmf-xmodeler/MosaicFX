@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -15,6 +17,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.IssueBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
@@ -310,7 +313,17 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				opvY += lineHeight;
 				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
 				opvBox.addNodeElement(opvNameLabel);
-				NodeLabel opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
+				
+				NodeElement opvValueLabel = null;
+				
+				//40 is here defined as the max length that a method return should have. If this is the case the return value is presented in an alert stage
+				if (opv.getValue().length() > 40) {	
+				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + "Double click for value");									
+				NodeElement.Action action = () -> showToLongValue(opv.getValue());
+				((NodeLabel) opvValueLabel).setAction(action);
+				} else {
+					opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
+				}
 				opvBox.addNodeElement(opvValueLabel);
 			}
 		}
@@ -323,6 +336,12 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 //		object.height = (int) currentY;
 
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
+	}
+
+	private void showToLongValue(String value) {
+		Alert a = new Alert(AlertType.INFORMATION);
+		a.setContentText(value);
+		a.showAndWait();
 	}
 
 	private int countOperationsToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
@@ -434,7 +453,9 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		}
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES)) {
 			for (FmmlxOperationValue opValue : object.getAllOperationValues()) {
-				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
+				if (opValue.getValue().length() > 40) {
+					neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + " Double click for value"), neededWidth);
+				} else neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
 		

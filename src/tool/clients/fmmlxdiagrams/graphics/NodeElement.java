@@ -219,4 +219,10 @@ public abstract class NodeElement {
 		if(dragAffine == null) return new Affine(); // HACK
 		return dragAffine;
 	}
+	public void setActionObject(FmmlxProperty actionObject) {
+		this.actionObject = actionObject;
+	}
+	public void setAction(Action action) {
+		this.action = action;
+	}
 }
