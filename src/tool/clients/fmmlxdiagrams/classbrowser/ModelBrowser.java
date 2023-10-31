@@ -1015,5 +1015,9 @@ public final class ModelBrowser extends CustomStage {
 	}
 	
 	private static final Enabler ALWAYS = () -> true; 
-	private static final Enabler NEVER = () -> false; 
+	private static final Enabler NEVER = () -> false;
+	
+	public void setDisabled(boolean value) {
+		this.getScene().getRoot().setDisable(value);
+	}
 }

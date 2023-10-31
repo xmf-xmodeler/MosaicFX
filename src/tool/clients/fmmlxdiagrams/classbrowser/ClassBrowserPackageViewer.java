@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.*;
@@ -51,5 +52,12 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
 		view.setStatusButton(newStatus);		
-	}	
+	}
+	
+	@Override
+	public void updateDiagram() {
+		//Hinders user to do further inputs
+				view.setDisabled(true);
+				updateDiagram((ReturnCall<Object>) e -> Platform.runLater(() -> {view.setDisabled(false);}));
+	}
 }
