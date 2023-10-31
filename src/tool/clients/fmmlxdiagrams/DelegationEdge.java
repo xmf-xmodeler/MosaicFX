@@ -50,7 +50,10 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 		MenuItem deleteDelegationItem = new MenuItem("delete");
 		ContextMenu menu = new ContextMenu();
 		menu.getItems().add(deleteDelegationItem);
-		deleteDelegationItem.setOnAction(e -> actions.removeDelegation(sourceEnd.getNode().getPath(), targetEnd.getNode().getPath()));
+		deleteDelegationItem.setOnAction(e -> {
+			diagram.getComm().removeDelegation(diagram.getID(), sourceEnd.getNode().getName());
+		    diagram.updateDiagram();
+		});
 		return menu;
 	}
 

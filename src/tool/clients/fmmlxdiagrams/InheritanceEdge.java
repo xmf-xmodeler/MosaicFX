@@ -5,6 +5,7 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.menus.InheritanceEdgeContextMenu;
 
 public class InheritanceEdge extends Edge<FmmlxObject> {
 
@@ -27,7 +28,7 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
-		return new ContextMenu();
+		return new InheritanceEdgeContextMenu(diagram, sourceNode, targetNode);
 	}
 
 	protected Color getPrimaryColor() {
