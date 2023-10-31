@@ -17,13 +17,21 @@ public class InheritanceEdgeContextMenu extends ContextMenu {
 	}
 	
 	private void deleteInheritanceRelation(AbstractPackageViewer diagram, FmmlxObject sourceNode, FmmlxObject targetNode) {
-		@SuppressWarnings("unchecked") Vector<String> newParents = (Vector<String>) sourceNode.getParentsPaths().clone();
-		for (int i = 0; i < newParents.size(); i++) {
-			if (newParents.get(i).equals(targetNode.getPath())) {
-				newParents.remove(i);
+		Vector<String> newParentNames = new Vector<>();
+		Vector<String> oldParentNames = new Vector<>();
+		Vector<String> oldParents = sourceNode.getParentsPaths();
+		for (int i = 0; i < oldParents.size(); i++) {
+			if (!oldParents.get(i).equals(targetNode.getPath())) {
+				newParentNames.add(name(oldParents.get(i)));
 			}
-		}		
-		FmmlxDiagramCommunicator.getCommunicator().changeParent(diagram.getID(), sourceNode.getName() , sourceNode.getParentsPaths(), newParents);
+			oldParentNames.add(name(oldParents.get(i)));
+		}	
+		FmmlxDiagramCommunicator.getCommunicator().changeParent(diagram.getID(), sourceNode.getName(), oldParentNames, newParentNames);
 		diagram.updateDiagram();
+	}
+
+	private String name(String s) {
+		int n = s.lastIndexOf("::")+2;
+		return s.substring(n);
 	}
 }
