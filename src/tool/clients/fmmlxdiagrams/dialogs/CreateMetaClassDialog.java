@@ -63,7 +63,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 					parentListView.setDisable(true);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				//ex.printStackTrace();
 			}
 		});
 		abstractCheckbox = new CheckBox();
