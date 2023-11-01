@@ -19,13 +19,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.WritableImage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -44,10 +44,33 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.clients.importer.FMMLxImporter;
-import tool.clients.serializer.FmmlxSerializer;
-
 import tool.xmodeler.PropertyManager;
+import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeTargetDialog;
+import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
+import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
+import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -100,6 +123,7 @@ public class DiagramActions {
 										mcdResult.level, 
 										mcdResult.getParentNames(), 
 										mcdResult.isAbstract, 
+										mcdResult.isSingleton, 
 										(int) (x+.5), (int) (y+.5), false);
 	
 								view.getCanvas().setCursor(Cursor.DEFAULT);
@@ -114,8 +138,11 @@ public class DiagramActions {
 							mcdResult.name, 
 							mcdResult.level, 
 							mcdResult.getParentNames(),
-							mcdResult.isAbstract, 0, 0, true);
+							mcdResult.isAbstract,
+							mcdResult.isSingleton,
+							0, 0, true);
 					diagram.updateDiagram();
+					
 				}
 
 			}
@@ -132,7 +159,8 @@ public class DiagramActions {
 				final CreateMetaClassDialog.Result mcdResult = result.get();
 
 				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, 
-						mcdResult.level, mcdResult.getParentNames(), mcdResult.isAbstract, 
+						mcdResult.level, mcdResult.getParentNames(), 
+						mcdResult.isAbstract, mcdResult.isSingleton, 
 						(int) (p.getX()+.5), (int) (p.getY()+.5), 
 						false);
 				diagram.updateDiagram();
@@ -158,7 +186,10 @@ public class DiagramActions {
 				if(view == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 							aidResult.name, aidResult.level,
-                            aidResult.getParentNames(), aidResult.isAbstract, 0, 0, true);
+                            aidResult.getParentNames(), 
+                            aidResult.isAbstract, 
+                            aidResult.isSingleton, 
+                            0, 0, true);
 					diagram.updateDiagram();
 				} else {
 					view.getCanvas().setCursor(Cursor.CROSSHAIR);
@@ -178,6 +209,7 @@ public class DiagramActions {
 								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 										aidResult.name, aidResult.level, 
 										aidResult.getParentNames(), aidResult.isAbstract, 
+			                            aidResult.isSingleton, 
 										(int) (x+.5), (int) (y+.5), false);
 	
 								view.getCanvas().setCursor(Cursor.DEFAULT);
@@ -205,6 +237,7 @@ public class DiagramActions {
 						diagram.getID(), aidResult.getOfName(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
+                        aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 				diagram.updateDiagram();
 			}
@@ -229,7 +262,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi);
+				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
 			}
 			diagram.updateDiagram();
 		});
@@ -308,8 +341,8 @@ public class DiagramActions {
 					case Attribute:
 						diagram.getComm().removeAttribute(diagram.getID(), result.object.getName(), result.property.getName(), 0);
 						break;
-					case Association:
-						diagram.getComm().removeAssociation(diagram.getID(), result.object.getName(), 0);
+					case Association: 
+						diagram.getComm().removeAssociation(diagram.getID(), (FmmlxAssociation) result.property); 
 						break;
 					case Constraint:
 						diagram.getComm().removeConstraint(diagram.getID(), result.object.getPath(), result.property.getName());
@@ -501,9 +534,14 @@ public class DiagramActions {
 	public void updateDiagram() {
 		diagram.updateDiagram();
 	}
-	
+
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
+		diagram.updateDiagram();		
+	}
+	
+	public void toggleSingleton(FmmlxObject object) {
+		diagram.getComm().setClassSingleton(diagram.getID(), object.getName(), !object.isSingleton());
 		diagram.updateDiagram();		
 	}
 	
@@ -515,7 +553,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().addOperation2(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});
@@ -657,11 +695,13 @@ public class DiagramActions {
 						result.source.getName(), result.target.getName(),
 						result.newIdentifierSource, result.newIdentifierTarget,
 						result.newDisplayName,
-						null, result.multTargetToSource, result.multSourceToTarget,
-						result.newInstLevelSource, result.newInstLevelTarget,
+						result.assocType.path, result.multTargetToSource, result.multSourceToTarget,
+						result.newInstLevelSource, result.newInstLevelSource, 
+						result.newInstLevelTarget, result.newInstLevelTarget,
 						result.sourceVisibleFromTarget,  result.targetVisibleFromSource, 
-						result.symmetric, result.transitive
-						);
+						result.symmetric, result.transitive,
+						result.sourceGetterName, result.sourceSetterName,
+						result.targetGetterName, result.targetSetterName);
 				diagram.updateDiagram();
 			}
 		});
@@ -736,7 +776,7 @@ public class DiagramActions {
 				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
 			}
 		}
-		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
+		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level.getMinLevel()-1);
 		diagram.updateDiagram();
 	}
 	
@@ -804,7 +844,7 @@ public class DiagramActions {
 				//				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(diagram.getID(), source.getName(), target.getName(), association.getName());
+				diagram.getComm().addLink(diagram.getID(), source.getName(), target.getName(), association.getAccessNameStartToEnd());
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -911,7 +951,8 @@ public class DiagramActions {
 			));
 		Optional<Void> result= dialog.showAndWait();
 		if (result.isPresent()) {
-			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
+			diagram.getComm().addLink(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getAccessNameStartToEnd());
+			diagram.updateDiagram();
 		} else {
 			dialog.close();
 		}
@@ -919,14 +960,14 @@ public class DiagramActions {
 	
 	public void removeAssociationInstance(FmmlxLink link) {
 		diagram.getComm().removeAssociationInstance(diagram.getID(), 
-				link.getOfName(), 
+				link.getAssociation().getAccessNameStartToEnd(), 
 				link.getSourceNode().getName(), 
 				link.getTargetNode().getName());
 		diagram.updateDiagram();
 	}
 
 	public void removeAssociation(FmmlxAssociation association) {
-		diagram.getComm().removeAssociation(diagram.getID(), association.getName(), -1);
+		diagram.getComm().removeAssociation(diagram.getID(), association);
 		diagram.updateDiagram();
 	}
 
@@ -984,7 +1025,7 @@ public class DiagramActions {
 				if(solution.get().createNew) {
 					addInstanceDialog(solution.get().selection, diagram.getActiveDiagramViewPane());
 				} else {
-					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
+					diagram.getComm().addLink(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getAccessNameStartToEnd());
 					diagram.updateDiagram();
 				}
 			}
@@ -997,21 +1038,6 @@ public class DiagramActions {
 		} catch (TimeOutException e) {
 			return new Vector<>(Arrays.asList("Time", "Out", "Exception"));
 		}	
-	}
-
-	public void save() {
-		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
-		Platform.runLater(() -> {
-			try {
-				String filePath = ((FmmlxDiagram) diagram).getFilePath();
-				FmmlxDiagramCommunicator communicator = diagram.getComm();
-				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
-				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
-				serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
-			} catch (TransformerException | ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-		});
 	}
 
 	public void openFindImplementationDialog() {
@@ -1043,11 +1069,8 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-		
 	public void showObjectBrowser(FmmlxObject object) {
-			
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
-			
 	}
 
 	public void exportSvg() {
@@ -1149,8 +1172,9 @@ public class DiagramActions {
 			File file = fc.showOpenDialog(XModeler.getStage());
 
 			if(file!= null){
-				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
-				importer.handleLogs();
+				//if you want to run this, you have to reimplement an FMMLxImporter
+				//FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
+				//importer.handleLogs();
 			}
 			updateDiagram();
 		});
@@ -1203,7 +1227,7 @@ public class DiagramActions {
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
-		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel()-1);
+		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel().getMinLevel()-1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}
@@ -1233,8 +1257,30 @@ public class DiagramActions {
 		return result;
 	}
 
-	public void removeDelegation(String delegatorPath, String delegateePath) {
-		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
+//	public void removeDelegation(String delegatorPath, String delegateePath) {
+//		diagram.getComm().removeDelegation(diagram.diagramID, delegatorPath);
+//	}
+	
+	public void undo() {
+		diagram.getComm().undo(diagram.diagramID);	
+	}
+	
+	public void redo() {
+		diagram.getComm().redo(diagram.diagramID);
+	}
+
+	public void generateGetter(FmmlxObject object, FmmlxAttribute attribute) {
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
+			dlg.initAttributeSetter(attribute);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.updateDiagram();
+			}
+		});	
 	}	
 	
 	public void showGenerateCustomUIDialog() {
@@ -1335,6 +1381,28 @@ public class DiagramActions {
 		}
 		
 		
-	
-	
+	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
+		throw new RuntimeException("Not yet implemented!");
+	}
+
+	public void generateAssocGetter(
+			FmmlxObject object, 
+			FmmlxObject otherObject, 
+			String endName, 
+			Integer endInstLevel,
+			Multiplicity endMult) {
+		
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
+			dlg.initAssociationSetter(endName, endInstLevel, otherObject.ownPath, endMult);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.updateDiagram();
+			}
+		});	
+	}
+
 }

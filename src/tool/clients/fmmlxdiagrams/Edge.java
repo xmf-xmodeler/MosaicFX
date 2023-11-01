@@ -627,7 +627,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		storeLatestValidPointConfiguration();
 
 		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {
-				diagram.getComm().sendCurrentPositions(diagram.getID(), this);
+				diagram.getComm().sendCurrentEdgePositions(diagram.getID(), this);
 		}
 		 
 		pointToBeMoved = -1;

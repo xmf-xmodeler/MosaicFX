@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
@@ -22,11 +23,17 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private Label typeLabel;
 	private Label multiplicityLabel;
 	private Label displayMultiplicityLabel;
+	private Label isIntrinsicLabel;
+	private Label isIncompleteLabel;
+	private Label isOptionalLabel;
 
 	private TextField nameTextField;
 	private TextField classTextField;
-	private ComboBox<String> levelComboBox;
+	private LevelBox levelComboBox;
 	private ComboBox<String> typeComboBox;
+	private CheckBox isIntrinsicBox;
+	private CheckBox isIncompleteBox;
+	private CheckBox isOptionalBox;
 
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
@@ -48,7 +55,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		addElementToGrid();
+		layout();
 
 		dialogPane.setContent(flow);
 
@@ -69,9 +76,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 				return new Result(
 						selectedObject.getName(),
 						nameTextField.getText(),
-						getIntLevel(),
+						levelComboBox.getLevel(),
 						getComboBoxStringValue(typeComboBox),
-						multiplicity);
+						multiplicity,
+						isIntrinsicBox.isSelected(),
+						isIncompleteBox.isSelected(),
+						isOptionalBox.isSelected());
 			}
 			return null;
 		});
@@ -79,13 +89,13 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	}
 
 
-	private Integer getIntLevel() {
-		try{
-			return Integer.parseInt(levelComboBox.getSelectionModel().getSelectedItem());
-		} catch (Exception e) {
-			return null;
-		}
-	}
+//	private Integer getIntLevel() {
+//		try{
+//			return Integer.parseInt(levelComboBox.getSelectionModel().getSelectedItem());
+//		} catch (Exception e) {
+//			return null;
+//		}
+//	}
 
 	private boolean validateUserInput() {
 		if (!validateName()) {
@@ -112,7 +122,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
 		
-		if (getIntLevel() == null) {
+		if (levelComboBox.getLevel() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		}
@@ -137,12 +147,15 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		}
 	}
 
-	private void addElementToGrid() {
+	private void layout() {
 		nameLabel = new Label(StringValue.LabelAndHeaderTitle.name);
 		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
+		isIntrinsicLabel = new Label("intrinsic");
+		isIncompleteLabel = new Label("incomplete");
+		isOptionalLabel = new Label("optional");
 
 		ObservableList<String> typeList = FXCollections.observableArrayList(types);
 
@@ -152,12 +165,13 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		classTextField.setDisable(true);
 //		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
 //		levelComboBox.setConverter(new IntegerStringConverter());
-		levelComboBox = new ComboBox<>();
-		for(int i = selectedObject.getLevel()-1; i >= 0; i--) {
-			levelComboBox.getItems().add(""+i);
-		}
-		levelComboBox.getSelectionModel().selectLast();
-		if(selectedObject.getLevel() == -1) levelComboBox.setEditable(true);
+		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel()-1));
+//		levelComboBox = new ComboBox<>();
+//		for(int i = selectedObject.getLevel().getMinLevel()-1; i >= 0; i--) {
+//			levelComboBox.getItems().add(""+i);
+//		}
+//		levelComboBox.getSelectionModel().selectLast();
+//		if(selectedObject.getLevel().isContingentLevelClass()) levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
@@ -166,30 +180,56 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			showMultiplicityDialog();
 		});
 		displayMultiplicityLabel = new Label(multiplicity.toString());
+		
 
 		classTextField.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
+
+		isIntrinsicBox = new CheckBox();
+		isIntrinsicBox.setSelected(true);
+		isIncompleteBox = new CheckBox();
+		isOptionalBox = new CheckBox();
+
+		grid.add(nameLabel, 0, 0);
+		grid.add(classLabel, 0, 1);
+		grid.add(levelLabel, 0, 2);
+		grid.add(typeLabel, 0, 3);
+		grid.add(multiplicityLabel, 0, 4);
+		grid.add(isIntrinsicLabel, 0, 6);
+		grid.add(isIncompleteLabel, 0, 7);
+		grid.add(isOptionalLabel, 0, 8);
 		
-		List<Node> labelNode = new ArrayList<Node>();
-		List<Node> editorNode = new ArrayList<Node>();
+		grid.add(nameTextField, 1, 0);
+		grid.add(classTextField, 1, 1);
+		grid.add(levelComboBox, 1, 2);
+		grid.add(typeComboBox, 1, 3);
+		grid.add(multiplicityButton, 1, 4);
+		grid.add(displayMultiplicityLabel, 1, 5);
+		grid.add(isIntrinsicBox, 1, 6);
+		grid.add(isIncompleteBox, 1, 7);
+		grid.add(isOptionalBox, 1, 8);
 		
-		labelNode.add(nameLabel);
-		labelNode.add(classLabel);
-		labelNode.add(levelLabel);
-		labelNode.add(typeLabel);
-		labelNode.add(multiplicityLabel);
 		
-		editorNode.add(nameTextField);
-		editorNode.add(classTextField);
-		editorNode.add(levelComboBox);
-		editorNode.add(typeComboBox);
-		editorNode.add(multiplicityButton);
-		editorNode.add(displayMultiplicityLabel);
-		
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(editorNode, 1);
+//		List<Node> labelNode = new ArrayList<Node>();
+//		List<Node> editorNode = new ArrayList<Node>();
+//		
+//		labelNode.add(nameLabel);
+//		labelNode.add(classLabel);
+//		labelNode.add(levelLabel);
+//		labelNode.add(typeLabel);
+//		labelNode.add(multiplicityLabel);
+//		
+//		editorNode.add(nameTextField);
+//		editorNode.add(classTextField);
+//		editorNode.add(levelComboBox);
+//		editorNode.add(typeComboBox);
+//		editorNode.add(multiplicityButton);
+//		editorNode.add(displayMultiplicityLabel);
+//		
+//		addNodesToGrid(labelNode, 0);
+//		addNodesToGrid(editorNode, 1);
 		
 	}
 
@@ -208,16 +248,25 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		
 		public final String name;
 		public final String type;
-		public final int level;
+		public final Level level;
 		public final String className;
 		public final Multiplicity multi;
+		public final boolean isIntrinsic;
+		public final boolean isIncomplete;
+		public final boolean isOptional;
+		
 
-		private Result(String className, String name, int level, String type, Multiplicity multi) {
+		private Result(String className, String name, Level level, String type, Multiplicity multi, 
+				boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
 			this.className= className;
 			this.name = name;
 			this.level = level;
-			this.type =type;
-			this.multi=multi;
+			this.type = type;
+			this.multi = multi;
+			this.isIntrinsic = isIntrinsic;
+			this.isIncomplete = isIncomplete;
+			this.isOptional = isOptional;
+				
 		}
 	}
 }

@@ -21,7 +21,7 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 		this.actions = packageViewer.getActions();
 		setAutoHide(true);
 		
-		if(object != null && object.getLevel() >= 1) {
+		if(object != null && object.getLevel().isClass()) {
 			MenuItem addItem = new MenuItem("Add Attribute");
 			addItem.setOnAction(e -> actions.addAttributeDialog(object));
 			getItems().add(addItem);
@@ -46,6 +46,16 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 				MenuItem changeMulItem = new MenuItem("Change multiplicity");
 				changeMulItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute, attribute));
 				getItems().add(changeMulItem);
+	
+				getItems().add(new SeparatorMenuItem());
+
+				MenuItem genGetterItem = new MenuItem("Generate Getter");
+				genGetterItem.setOnAction(e -> actions.generateGetter(object, attribute));
+				getItems().add(genGetterItem);
+				
+				MenuItem genSetterItem = new MenuItem("Generate Setter");
+				genSetterItem.setOnAction(e -> actions.generateSetter(object, attribute));
+				getItems().add(genSetterItem);
 	
 				getItems().add(new SeparatorMenuItem());
 				

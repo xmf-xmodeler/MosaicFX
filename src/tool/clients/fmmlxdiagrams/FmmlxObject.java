@@ -25,8 +25,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private final Vector<String> parentsPaths;
 
 	private final boolean isAbstract;
-	private final boolean isCollective;
-	final int level;
+	private final boolean isSingleton;
+	final Level level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
 	Vector<FmmlxOperationValue> operationValues = new Vector<>();
@@ -43,12 +43,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public FmmlxObject(
 			String name, 
-			int level, 
+			Integer minlevel, 
+			Integer maxLevel, 
 			String ownPath,
 			String ofPath,
 			Vector<String> parentPaths,
 			Boolean isAbstract,
-			Boolean isCollective,
+			Boolean isSingleton,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
 		super();
@@ -57,9 +58,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.x = lastKnownX;
 		this.y = lastKnownY;
 		this.hidden = hidden;
-		this.level = level;
+		this.level = new Level(minlevel, maxLevel);
 		this.isAbstract = isAbstract;
-		this.isCollective = isCollective;
+		this.isSingleton = isSingleton;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
@@ -75,7 +76,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxAttribute> getOwnAttributes() { return new Vector<>(ownAttributes); }
 	public Vector<FmmlxAttribute> getOtherAttributes() { return new Vector<>(otherAttributes); }	
 	public String getName() { return name; }
-	public int getLevel() { return level; }
+	public Level getLevel() { return level; }
 	public String getOfPath() { return ofPath; }
 	public Vector<FmmlxAssociation> getAllRelatedAssociations() { return diagram.getRelatedAssociationByObject(this); }
 	@Override public PropertyType getPropertyType() { return PropertyType.Class; }
@@ -91,8 +92,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxAssociation> findAssociationsForLinks(){
 		Vector<FmmlxAssociation> associationForLinks = new Vector<>();
 		for (FmmlxAssociation asso : diagram.getAssociations()) {
-			if (this.level == asso.getLevelSource() && this.isInstanceOf(asso.sourceNode, this.level) || 
-				this.level == asso.getLevelTarget() && this.isInstanceOf(asso.targetNode, this.level)) {
+			if (this.level.getMinLevel() == asso.getLevelSource() && this.isInstanceOf(asso.sourceNode, this.level.getMinLevel()) || 
+				this.level.getMinLevel() == asso.getLevelTarget() && this.isInstanceOf(asso.targetNode, this.level.getMinLevel())) {
 				associationForLinks.add(asso);
 			}
 		}
@@ -110,7 +111,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			Vector<FmmlxOperation> opsFromAncestors = ancestor.getDelegatedOperations();
 			for(FmmlxOperation o : opsFromAncestors) {
 
-				if(o.getLevel() < level &&! delegatedOperations.contains(o)) delegatedOperations.add(o);
+				if(o.getLevel() < level.getMinLevel() &&! delegatedOperations.contains(o)) delegatedOperations.add(o);
 			}
 		}
 		return delegatedOperations;
@@ -125,7 +126,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			ofOps.addAll(of.getDelegatedOperations());
 			
 			for(FmmlxOperation o : ofOps) {
-				if(o.isDelegateToClassAllowed() && o.getLevel() == this.level) {
+				if(o.isDelegateToClassAllowed() && o.getLevel() == this.level.getMinLevel()) {
 					delelegateToClassOperations.add(o);
 				}
 			}
@@ -201,7 +202,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public HashSet<FmmlxObject> getInstancesByLevel(Integer level) {
 		HashSet<FmmlxObject> allClasses = this.getAllSubclasses();
-		while (allClasses.size()>0 && allClasses.iterator().next().level>level) {
+		while (allClasses.size()>0 && allClasses.iterator().next().level.getMinLevel()>level) {
 			HashSet<FmmlxObject> allInstances = new HashSet<FmmlxObject>();
 			for (FmmlxObject classs : allClasses) {
 				allInstances.addAll(classs.getInstances());
@@ -212,7 +213,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public boolean isAbstract() {return isAbstract;}
-	public boolean isCollective() {return isCollective;}
+	public boolean isSingleton() {return isSingleton;}
 
 	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
@@ -220,7 +221,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		ancestors.add(this);
 		for (FmmlxObject ancestor : ancestors) {
 			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
-				if (attribute.level == this.level && !slotNames.contains(attribute.name)) {
+				if (attribute.level == this.level.getMinLevel() && !slotNames.contains(attribute.name)) {
 					slotNames.add(attribute.name);
 				}
 			}
@@ -242,7 +243,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			ops.addAll(ancestor.getAllOperations());
 			ops.addAll(ancestor.getDelegatedOperations());
 			for (FmmlxOperation operation : ops) {
-				if (operation.getLevel() == this.level && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
+				if (operation.getLevel() == this.level.getMinLevel() && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
 					monitorNames.add(operation.getName());
 				}
 			}
@@ -257,7 +258,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			ops.addAll(ancestor.getAllOperations());
 			ops.addAll(ancestor.getDelegatedOperations());
 			for (FmmlxOperation operation : ops) {
-				if (operation.getLevel() == this.level && !availableNames.contains(operation.getName()) && operation.getParamNames().size() == 0) {
+				if (operation.getLevel() == this.level.getMinLevel() && !availableNames.contains(operation.getName()) && operation.getParamNames().size() == 0) {
 					availableNames.add(operation.getName());
 				}
 			}
@@ -278,7 +279,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			catch(PathNotFoundException e) {} // if(parent==null){}
 		}
 		Vector<FmmlxObject> result2 = new Vector<>(result1);
-		for (FmmlxObject o : result1) if (o.level != -1) {
+		for (FmmlxObject o : result1) if (o.level.isFixedLevelClass()) {
 			result2.addAll(o.getAllAncestors());
 		}
 		return result2;
@@ -312,14 +313,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public boolean isInstanceOf(FmmlxObject theClass, Integer myLevel) {
 		// -1 is allowed for contingent level associations
-		if (myLevel != level && myLevel != -1) return false;
+		if (myLevel != level.getMinLevel() && myLevel != -1) return false;
 		return this.getAllAncestors().contains(theClass);
 	}
 
 
 	public String getAvailableInstanceName() {
 		String s = name;
-		if (level == 1) {
+		if (level.getMinLevel() == 1) {
 			s = s.substring(0, 1).toLowerCase() + s.substring(1);
 		}
 		int i = 1;
@@ -386,7 +387,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		try {
 			FmmlxObject of = diagram.getObjectByPath(ofPath); return of.name;
 		} catch (PathNotFoundException e) {
-			if ("Root::FMML::MetaClass".equals(ofPath)) return "MetaClass";
+			if ("Root::FMMLx::MetaClass".equals(ofPath)) return "MetaClass";
 			return ofPath;
 		}
 	}
@@ -490,15 +491,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel(), isAbstract||isCollective, "");
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
 		return new PaletteItem(tool);
 	}
 
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
-		if(this.getLevel()>anotherObject.getLevel()) {
+		if(this.getLevel().getMinLevel()>anotherObject.getLevel().getMinLevel()) {
 			return -1;
-		} else if (this.getLevel()<anotherObject.getLevel()) {
+		} else if (this.getLevel().getMinLevel()<anotherObject.getLevel().getMinLevel()) {
 			return 1;
 		} else {
 			return this.name.compareTo(anotherObject.getName());
@@ -536,7 +537,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
 			try{
 				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
-				if(this.isInstanceOf(classs, this.level) && this.level == c.level) {
+				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level) {
+					myConcreteSyntax = c;
+				}
+				if(this.ownPath.equals(c.classPath) && this.level.getMinLevel() == c.level) {
 					myConcreteSyntax = c;
 				}
 			} catch (Exception e) {}
@@ -613,5 +617,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	@Deprecated
 	/* TODO create a new class for non-Fmmlx-Objects */
 	public String type;
+
+	public boolean isClass() {
+		return level.isClass();
+	}
 
 }

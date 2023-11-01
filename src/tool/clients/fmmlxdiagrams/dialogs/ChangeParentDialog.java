@@ -81,7 +81,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> 
 		currentParentsListView.setDisable(true);
 		newParentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		
-		possibleParents = diagram.getAllPossibleParents(object.getLevel());
+		possibleParents = diagram.getAllPossibleParents(object.getLevel().getMinLevel());
 		possibleParents.remove(object);
 		newParentListView.setItems(possibleParents);
 		newParentListView.setDisable(false);

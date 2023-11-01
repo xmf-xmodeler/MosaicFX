@@ -36,7 +36,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		setTitle("Add constraint to " + object.getName());
 		init(object,diagram);
 		nameField.setText("enterConstraintNameHere");
-		levelField.setText((object.getLevel() - 1) + "");
+		levelField.setText((object.getLevel().getMinLevel() - 1) + "");
 		bodyBox.setBodyText("false");
 		reasonBox.setBodyText("\"This constraint always fails.\"");
 	}

@@ -1,7 +1,6 @@
 package tool.xmodeler;
 
 import java.awt.Desktop;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +15,7 @@ import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,6 +35,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -57,6 +61,12 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.IconGenerator;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.helper.persistence.ModelInputTransformer;
+import tool.helper.persistence.StartupModelLoader;
+import tool.helper.persistence.XMLParser;
+import tool.helper.userProperties.PropertyManager;
+import tool.helper.userProperties.UserProperty;
 
 public class ControlCenter extends Stage {
 	
@@ -96,9 +106,24 @@ public class ControlCenter extends Stage {
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 				
 		controlCenterClient.getAllProjects();	
-		if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.LOAD_MODELS_BY_STARTUP.toString()))) {
-			new StartupModelLoader().loadModelsFromSavedModelsPath();			
-		}
+		/*
+		 * There is the idea of starting a repository of models by startup. The problem is, that the XML-Parser uses waitForNextRequestReturned(). This can only run on application thread and even Platform.runLater() won´t fix it as long as there is no solution found you can only load the repo by click on the new implemented button.  
+		 * 
+		 * if (Boolean.valueOf(PropertyManager.getProperty(UserProperty.
+		 * LOAD_MODELS_BY_STARTUP.toString()))) { new
+		 * StartupModelLoader().loadModelsFromSavedModelsPath(); }
+		 */
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {	
+				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
+				if (keyCombinationShiftC.match(event)) {
+					System.err.println("Testing functinality");
+				}		
+			}
+		});
+				
 	}
 	
 	private void showCloseWarningDialog(Event event) {
@@ -126,7 +151,23 @@ public class ControlCenter extends Stage {
 		public ControlCenterMenuBar() {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
-			
+			buildHelpMenu(helpMenu);
+
+			Menu xmlMenu = new Menu("XMLFile");
+			getMenus().add(xmlMenu);
+			buildXMLMenu(xmlMenu);
+		}
+
+		private void buildXMLMenu(Menu xmlMenu) {
+			MenuItem loadPackage = new MenuItem("Load Package");
+			loadPackage.setOnAction((e) -> {
+				XMLParser parser = new XMLParser();
+		    	parser.parseXMLDocument();
+			});
+			xmlMenu.getItems().add(loadPackage);
+		}
+
+		private void buildHelpMenu(Menu helpMenu) {
 			MenuItem getProjectInformationItem = new MenuItem("Get Project Information");
 			getProjectInformationItem.setOnAction(e->openWebpage("https://le4mm.org/"));
 			
@@ -139,7 +180,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);		
+			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void openWebpage(String url) {
@@ -206,7 +247,6 @@ public class ControlCenter extends Stage {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		
-		//build first row
 		Label projectLabel = new Label("Projects");
 		grid.add(projectLabel, 2, 1);
 				
@@ -255,7 +295,7 @@ public class ControlCenter extends Stage {
 		//build second row
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
-		TreeItem loading = new TreeItem("Loading");
+		TreeItem<String> loading = new TreeItem<String>("Loading");
 		projectTree.setRoot(loading);
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
@@ -275,11 +315,13 @@ public class ControlCenter extends Stage {
 		customGuiLV.setPrefSize(250, 150);
 		grid.add(customGuiLV, 5, 2);
 
-		//build third row
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
 		grid.add(concreteSyntaxWizardStart, 3, 4);
 		grid.add(newDiagram2, 4, 4);
+		
+		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
+		grid.add(loadModelDir, 2, 4);
 		
 		return grid;
 	}

@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.menus;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 
@@ -20,7 +21,26 @@ public class AssociationContextMenu extends ContextMenu {
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeAssociation(association));
+		
+		MenuItem genSource2TargetGetterItem = new MenuItem("Generate Getter Source->Target");
+		genSource2TargetGetterItem.setOnAction(e -> actions.generateAssocGetter(
+			association.sourceEnd.getNode(),
+			association.targetEnd.getNode(),
+			association.getAccessNameStartToEnd(),
+			association.getLevelSource(),
+			association.getMultiplicityStartToEnd()));
+		
+		MenuItem genTarget2SourceGetterItem = new MenuItem("Generate Getter Target->Source");
+		genTarget2SourceGetterItem.setOnAction(e -> actions.generateAssocGetter(
+			association.targetEnd.getNode(),
+			association.sourceEnd.getNode(),
+			association.getAccessNameEndToStart(),
+			association.getLevelTarget(),
+			association.getMultiplicityEndToStart()));
+		genTarget2SourceGetterItem.setDisable(!association.isSourceVisible());
 
-		getItems().addAll(editItem, removeItem);
+		getItems().addAll(editItem, removeItem,
+				new SeparatorMenuItem(),
+				genSource2TargetGetterItem, genTarget2SourceGetterItem);
 	}
 }

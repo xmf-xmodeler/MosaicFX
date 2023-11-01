@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::Devices::Printer" level="1">
+  <Import path="printerSymbol.xml" id="symbol"/>  
+  <Group tx="-76.00000000000001" ty="-59.75" xx="1.3" xy="0.0" yx="0.0" yy="1.3">
+    <SVG id="svg1" path="../ITML/ITML_Multi23/Color1.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+    <SVG id="svg2" path="../ITML/ITML_Multi23/BlackWhite.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  </Group>
+  <Import path="wifiSymbol.xml" id="wifi" tx="41.86865723583058" ty="-62.88794480314737" xx="1.5459692495035373" xy="0.0" yx="0.0" yy="1.5459692495035373"/>  
+  <Label align="CENTER" bgColor="0x00000000" color="0x334db3ff" id="label0" tx="-1.1266625443787497" ty="94.13581964439238" xx="1.866065983073614" xy="0.0" yx="0.0" yy="1.866065983073614"/>
+  <Modification>
+    <Condition slotName="color" type="BooleanSlotCondition"/>
+    <Affected id="svg1" localId="svg1"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="color" type="BooleanSlotCondition"/>
+    <Affected id="svg2" localId="svg2"/>
+    <Consequence type="SHOW_IF_NOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="wifi" type="BooleanSlotCondition"/>
+    <Affected id="wifi" localId="wifi"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="modelName" type="ReadFromSlot"/>
+    <Affected id="label0" localId="label0"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

@@ -135,6 +135,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		grid.add(newNameTextField, 1, 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void changeAttributeName() {
 		Vector<FmmlxAttribute> attributes = object.getAllAttributes();
 
@@ -154,6 +155,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		grid.add(newNameTextField, 1, 2);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void changeAssociationName() {
 		//insert Association List to Combobox;
 		Vector<FmmlxAssociation> associations = object.getAllRelatedAssociations();
@@ -177,6 +179,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		grid.add(newNameTextField, 1, 2);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void changeOperationName() {
 		Vector<FmmlxOperation> operations = object.getAllOperations();
 

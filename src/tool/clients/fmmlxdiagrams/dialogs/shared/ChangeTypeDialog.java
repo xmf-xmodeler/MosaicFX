@@ -51,8 +51,6 @@ public class ChangeTypeDialog<Property
 		this.selectedItem = selectedItem;
 		this.propertyItems = propertyItems;
 		
-//		System.err.println("Object: " + object + " Type: " + type + " Selected Item: " + selectedItem + " PropertyItems: " + propertyItems);
-
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(type);

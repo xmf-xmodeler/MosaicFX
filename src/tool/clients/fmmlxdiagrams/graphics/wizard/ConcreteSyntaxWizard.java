@@ -61,12 +61,12 @@ public class ConcreteSyntaxWizard extends Application {
 	private DirectoryChooser directoryChooser;
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
-	private PreviewGrid<AbstractSyntax> syntaxGrid;
-	private Vector<AbstractSyntax> syntaxes = new Vector<>();
+	private PreviewGrid<ConcreteSyntaxPattern> syntaxGrid;
+	private Vector<ConcreteSyntaxPattern> syntaxes = new Vector<>();
 	private AbstractPackageViewer model;
 	private NodeElement selectedNodeElement = null;
 	
-	private AbstractSyntax selectedSyntax;
+	private ConcreteSyntaxPattern selectedSyntax;
 	private FmmlxObject selectedClass;	
 	private Integer selectedLevel;
 	
@@ -216,7 +216,7 @@ public class ConcreteSyntaxWizard extends Application {
 		Label labelListView = new Label("ListView");
 		leftControl.getChildren().add(labelListView);
 			
-		syntaxGrid = new PreviewGrid<AbstractSyntax>(syntaxes);
+		syntaxGrid = new PreviewGrid<ConcreteSyntaxPattern>(syntaxes);
 		syntaxGrid.setOnSelectionChanged(newSelection -> newSyntaxSelectedInPreview(newSelection));
         syntaxScrollGrid = new ScrollPane(syntaxGrid);
         syntaxScrollGrid.setMaxHeight(300);
@@ -289,7 +289,7 @@ public class ConcreteSyntaxWizard extends Application {
 				if(oldVal != newVal && newVal != null) {
 					selectedClass = newVal;
 					levelSelectionBox.getItems().clear();
-					for(int i = 0; i < selectedClass.getLevel(); i++) {
+					for(int i = 0; i < selectedClass.getLevel().getMinLevel(); i++) {
 						levelSelectionBox.getItems().add(i);
 					}
 					if(selectedLevel != null && levelSelectionBox.getItems().size() > 0) {
@@ -329,7 +329,7 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.show();
 	}	
 
-	private void newSyntaxSelectedInPreview(AbstractSyntax selectedGroup) {
+	private void newSyntaxSelectedInPreview(ConcreteSyntaxPattern selectedGroup) {
 		if(editMode == EditMode.MODEL_NO_CLASS && selectedGroup instanceof ConcreteSyntax) {
 			ConcreteSyntax cs = (ConcreteSyntax) selectedGroup;
 			boolean found = false;
@@ -383,7 +383,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private void checkNewButtonStatus() {
 		boolean found = false;
 		
-		for(AbstractSyntax syntax : syntaxes) {
+		for(ConcreteSyntaxPattern syntax : syntaxes) {
 			if(syntax instanceof ConcreteSyntax) {
 				ConcreteSyntax cs = (ConcreteSyntax) syntax;
 				if(cs.classPath.equals(selectedClass.getPath()) 
@@ -397,7 +397,7 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	private void selectConcreteSyntaxInPreviewList() {
-		for(AbstractSyntax syntax : syntaxes) {
+		for(ConcreteSyntaxPattern syntax : syntaxes) {
 			if(syntax instanceof ConcreteSyntax) {
 				ConcreteSyntax cs = (ConcreteSyntax) syntax;
 				if(cs.classPath.equals(selectedClass.getPath()) 
@@ -486,7 +486,7 @@ public class ConcreteSyntaxWizard extends Application {
 		
 	}
 	
-	private void setSelectedSyntax(AbstractSyntax group) {
+	private void setSelectedSyntax(ConcreteSyntaxPattern group) {
 		selectedSyntax = null;		
 		try {
 			selectedSyntax = group;
@@ -515,7 +515,7 @@ public class ConcreteSyntaxWizard extends Application {
 					if(file.isDirectory()) directories.add(file); else
 					if(file.getName().endsWith(".xml")) {
 						try {
-							AbstractSyntax group = AbstractSyntax.load(file);
+							ConcreteSyntaxPattern group = ConcreteSyntaxPattern.load(file);
 							syntaxes.add(group);
 						} catch (Exception e) {
 							e.printStackTrace();

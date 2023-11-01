@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
@@ -19,8 +20,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
 	private ComboBox<FmmlxObject> ofComboBox;
-	private ComboBox<String> levelBox;
+	private LevelBox levelBox;
 	private CheckBox abstractCheckBox;
+	private CheckBox singletonCheckBox;
 	private ObservableList<FmmlxObject> parentList;
 	private final Vector<FmmlxObject> objects;
 
@@ -52,10 +54,12 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
+		singletonCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
-		levelBox = new ComboBox<>();
-		
+		levelBox = new LevelBox(selectedClass.getLevel().minusOne());
+		levelBox.levelTextField.setEditable(selectedClass.getLevel().isContingentLevelClass());
+
 		ofComboBox = (ComboBox<FmmlxObject>) initializeComboBox(ofList);
 		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
@@ -65,21 +69,22 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		});
 
 		ofComboBox.getSelectionModel().selectedItemProperty().addListener((a,b,newClass) -> {
-			int level = newClass.getLevel();
-			if(level > 0) {
-				levelBox.getItems().clear();
-				Integer newLevel = level - 1;
-				levelBox.getItems().add(""+newLevel);
-				levelBox.getSelectionModel().select(0);
-				levelBox.setEditable(false);
-			} else if(level == -1){
-				levelBox.getItems().clear();
-				levelBox.getItems().add("-1");
-				levelBox.setEditable(true);
-			} else {
-				levelBox.getItems().clear();
-				levelBox.setEditable(false);
-			}
+			levelBox.levelTextField.setText(newClass.getLevel().minusOne().toString());
+			levelBox.levelTextField.setEditable(newClass.getLevel().isContingentLevelClass());
+//			if(level.isContingentLevelClass()) {
+//				levelBox.getItems().clear();
+//				Integer newLevel = level.getMinLevel() - 1;
+//				levelBox.getItems().add(""+newLevel);
+//				levelBox.getSelectionModel().select(0);
+//				levelBox.setEditable(false);
+//			} else if(level.isFixedLevelClass()){
+//				levelBox.getItems().clear();
+//				levelBox.getItems().add("-1");
+//				levelBox.setEditable(true);
+//			} else {
+//				levelBox.getItems().clear();
+//				levelBox.setEditable(false);
+//			}
 		});
 		
 		if (selectedClass != null) {
@@ -100,8 +105,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		grid.add(levelBox, 1, 2);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
-		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 4);
-		grid.add(parentListView, 1, 4);
+		grid.add(new Label("Singleton"), 0, 4);
+		grid.add(singletonCheckBox, 1, 4);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 5);
+		grid.add(parentListView, 1, 5);
 	}
 
 	private void setInstanceName(FmmlxObject c) {
@@ -111,7 +118,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 
 	private void createAndSetParentList() {
 		if (selectedObject != null) {
-			parentList = diagram.getAllPossibleParents(selectedObject.getLevel() - 1);
+			parentList = diagram.getAllPossibleParents(selectedObject.getLevel().getMinLevel() - 1);
 			parentListView.setItems(parentList);
 		}
 	}
@@ -119,11 +126,14 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				Integer level = -1;
-				try{level = Integer.parseInt(levelBox.getSelectionModel().getSelectedItem()); } catch (Exception e) {}
-				return new Result(nameTextField.getText(), level, 
-						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getName(),
-						abstractCheckBox.isSelected());
+		    	Level level = levelBox.getLevel();
+		    	if(level != null) {
+		    		return new Result(nameTextField.getText(), level, 
+					parentListView.getSelectionModel().getSelectedItems(), 
+					selectedObject.getName(),
+					abstractCheckBox.isSelected(),
+					singletonCheckBox.isSelected());
+		    	}
 			}
 			return null;
 		});
@@ -133,7 +143,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		ArrayList<FmmlxObject> resultOf = new ArrayList<>();
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
+				if (object.isClass()) {
 					resultOf.add(object);
 				}
 			}
@@ -170,9 +180,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 	}
 
 	private boolean ofSelected() {
+//		if(ofComboBox.isDisabled()) return true;
 		Label errorLabel = getErrorLabel();
 
-		if (ofComboBox.getSelectionModel().getSelectedIndex() == -1) {
+//		if (ofComboBox.getSelectionModel().getSelectedIndex() == -1) {
+		if(this.selectedObject == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectOf);
 			return false;
 		}
@@ -197,18 +209,20 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 	public class Result {
 
 		public final String name;
-		public final int level;
+		public final Level level;
 		public final ObservableList<FmmlxObject> parents;
 		public final String ofName;
 		public final boolean isAbstract;
+		public final boolean isSingleton;
 
-		public Result(String name, int level, ObservableList<FmmlxObject> parents, String ofName,
-									   boolean isAbstract) {
+		public Result(String name, Level level, ObservableList<FmmlxObject> parents, String ofName,
+									   boolean isAbstract, boolean isSingleton) {
 			this.name = name;
 			this.level = level;
 			this.parents = parents;
 			this.ofName = ofName;
 			this.isAbstract = isAbstract;
+			this.isSingleton = isSingleton;
 		}
 
 		public Vector<String> getParentPaths() {

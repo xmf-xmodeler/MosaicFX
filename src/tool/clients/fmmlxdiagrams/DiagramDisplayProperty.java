@@ -1,25 +1,31 @@
 package tool.clients.fmmlxdiagrams;
 
 public enum DiagramDisplayProperty {
-	OPERATIONS("Operations"),
-	OPERATIONVALUES("Operation Values"),
-	SLOTS("Slots"),
-	GETTERSANDSETTERS("Getter & Setter"),
-	DERIVEDOPERATIONS("Derived Operations"),
-	DERIVEDATTRIBUTES("Derived Attributes"),
-	CONSTRAINTS("Constraints"),
-	CONSTRAINTREPORTS("Constraint Reports"),
-	METACLASSNAME("Metaclass name"),
-	CONCRETESYNTAX("Concrete Syntax"),
-	ISSUETABLE("Issue Table");
+	OPERATIONS("Operations", true),
+	OPERATIONVALUES("Operation Values", true),
+	SLOTS("Slots", true),
+	GETTERSANDSETTERS("Getter & Setter", true),
+	DERIVEDOPERATIONS("Derived Operations", true),
+	DERIVEDATTRIBUTES("Derived Attributes", true),
+	CONSTRAINTS("Constraints", true),
+	CONSTRAINTREPORTS("Constraint Reports", true),
+	METACLASSNAME("Metaclass name", false),
+	CONCRETESYNTAX("Concrete Syntax", true),
+	ISSUETABLE("Issue Table", false);
 	
-	 public final String label;
+	 private final String label;
+	 private final boolean defaultValue;
 
-    private DiagramDisplayProperty(String label) {
+    private DiagramDisplayProperty(String label, boolean defaultValue) {
         this.label = label;
+		this.defaultValue = defaultValue;
     }
 
 	public String getLabel() {
 		return label;
+	}
+	
+	public boolean getDefaultValue() {
+		return defaultValue;
 	}
 }

@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
@@ -64,8 +64,8 @@ public class PreviewGrid<NodeElementType extends NodeGroup> extends GridPane {
 			
 			getChildren().add(canvas);
 			getChildren().add(new Label(group.toString()));
-			if(group instanceof AbstractSyntax) {
-				getChildren().add(new Label(((AbstractSyntax)group).getFile().getName()));
+			if(group instanceof ConcreteSyntaxPattern) {
+				getChildren().add(new Label(((ConcreteSyntaxPattern)group).getFile().getName()));
 			}
 			group.paintOn(canvas, false);
 			

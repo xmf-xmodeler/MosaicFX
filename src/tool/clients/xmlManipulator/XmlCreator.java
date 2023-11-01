@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import javafx.geometry.Bounds;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
-import tool.clients.serializer.SerializerConstant;
+import tool.helper.persistence.SerializerConstant;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +38,7 @@ public class XmlCreator {
     }
 
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store FMMLXDiagram data.*/
-    private void initXML(Document document) {
+    public static void initXML(Document document) {
         Element root = document.createElement(SerializerConstant.TAG_NAME_ROOT);
         document.appendChild(root);
 

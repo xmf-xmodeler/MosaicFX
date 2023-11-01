@@ -34,7 +34,7 @@ public class PaletteGroupClass extends PaletteGroup {
 		Collections.reverse(objects);
 		
 		for (FmmlxObject tmp : objects) {
-			if(tmp.getLevel()>0){
+			if(tmp.getLevel().isClass()){
 				items.add(tmp.toPaletteItem(fmmlxDiagram));
 			}
 		}		

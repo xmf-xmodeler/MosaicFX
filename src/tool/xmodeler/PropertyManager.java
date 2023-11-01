@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import tool.clients.menus.MenuClient;
+import tool.helper.userProperties.DefaultUserProperties;
 
 public class PropertyManager {
 	static File userPropertiesFile = new File("user.properties");
@@ -20,6 +21,8 @@ public class PropertyManager {
 	private void loadProperties() {
 		try {
 			properties.load(new FileInputStream(userPropertiesFile));
+		} catch (FileNotFoundException e) {
+			System.err.println("No user.properties found. Will be created once you change some preferences.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

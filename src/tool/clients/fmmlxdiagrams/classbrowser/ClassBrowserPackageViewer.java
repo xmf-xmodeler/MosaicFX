@@ -28,7 +28,7 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
+				if (object.getLevel().isClass()) {
 					objectList.add(object);
 				}
 			}

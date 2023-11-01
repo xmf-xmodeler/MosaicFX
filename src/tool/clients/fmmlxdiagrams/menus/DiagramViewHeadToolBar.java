@@ -27,11 +27,12 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
+import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.ControlCenterClient;
 
 public class DiagramViewHeadToolBar extends VBox {
 	
-	private DiagramDisplayModel model;
+	private DiagramDisplayModel diagramDisplayModel;
 	private FmmlxDiagram fmmlxDiagram;
 	private DiagramActions diagramActions;
 	private Button updateButton;
@@ -40,7 +41,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
 		diagramActions = fmmlxDiagram.getActions();
-		model = new DiagramDisplayModel(this);
+		diagramDisplayModel = new DiagramDisplayModel(this);
 				
 		HBox hBox = new HBox();
 		MenuBar menuBar = new MenuBar();
@@ -74,6 +75,12 @@ public class DiagramViewHeadToolBar extends VBox {
 	private ToolBar buildToolBar() {
 		ToolBar toolBar = new ToolBar();		
 		
+		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.undo(); fmmlxDiagram.updateDiagram();}, "resources/png/undo.24.png");
+		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.redo();fmmlxDiagram.updateDiagram();}, "resources/png/redo.24.png");
+		
+		JavaFxTooltipAuxilary.addTooltip(undoButton, "Undo last action(Strg + Z)");
+		JavaFxTooltipAuxilary.addTooltip(redoButton, "Redo last action(Strg + Y)");
+		
 		Button zoomInButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomIn(), "resources/png/magnifier+.24.png");
 		Button zoomOneButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOne(), "resources/png/magnifier1.24.png");
 		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
@@ -83,10 +90,10 @@ public class DiagramViewHeadToolBar extends VBox {
 		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F");
-		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getComm().saveXmlFile2(fmmlxDiagram.getPackagePath(), fmmlxDiagram.getID()), "resources/png/save.24.png");
+		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()), "resources/png/save.24.png");
 		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 		
-		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
+		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
 		return toolBar;
 	}
 		
@@ -113,7 +120,7 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 			
 			private void setText() {
-				if (model.getPropertieValue(property)) {
+				if (diagramDisplayModel.getPropertieValue(property)) {
 					setText(visibleText);
 				} else {
 					setText(invisibleText);
@@ -121,7 +128,7 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 			
 			private void toggleItem() {
-				model.toggleDisplayProperty(property);
+				diagramDisplayModel.toggleDisplayProperty(property);
 				setText();
 				fmmlxDiagram.triggerOverallReLayout();
 				fmmlxDiagram.redraw();
@@ -169,7 +176,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildModelMenu(Menu modelMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> fmmlxDiagram.getComm().saveXmlFile2(fmmlxDiagram.getPackagePath(), fmmlxDiagram.getID()));
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()));
 		modelMenu.getItems().add(new SeparatorMenuItem());
 				
 		Menu enumMenu = new Menu("Enumeration");
@@ -200,6 +207,8 @@ public class DiagramViewHeadToolBar extends VBox {
 				+ "Strg + S: Save Diagram\n"
 				+ "Strg + A: Select all Elements\n"
 				+ "Strg + F: Find Objects\n"
+				+ "Strg + Z: Undo\n"
+				+ "Strg + Y: Redo\n"
 				+ "\n"
 				+ "Mouse ombinations:\n"
 				+ "Mouse + Space or Alt: Move Canvas";
@@ -212,7 +221,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 	
 	 public DiagramDisplayModel getModel() {
-		 return model;
+		 return diagramDisplayModel;
 	 }
 	
 	public void toggleUpdateButton(boolean loading) {

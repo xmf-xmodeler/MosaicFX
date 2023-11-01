@@ -12,7 +12,7 @@ public class AllValueList {
 	public static final ObservableList<String> booleanList = FXCollections.observableArrayList("true", "false");
 	
 	public static final ObservableList<Integer> getLevelInterval(FmmlxObject object) {
-		int maxLevel = object.getLevel();
+		int maxLevel = object.getLevel().getMinLevel();// != null?object.getLevel().getMinLevel():2;
 		int startInt = 0;
 		
 		ArrayList<Integer> levelArrayList = new ArrayList<Integer>();

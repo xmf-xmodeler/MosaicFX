@@ -150,7 +150,7 @@ public class FmmlxPalette {
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
 			for (FmmlxObject o : objects) {
-				levelList.add(o.getLevel());
+				levelList.add(o.getLevel().getMinLevel());
 			}
 			Set<Integer> levelSet = new LinkedHashSet<Integer>(levelList);
 			levelList = new ArrayList<Integer>(levelSet);
@@ -166,8 +166,8 @@ public class FmmlxPalette {
 			}
 			Collections.sort(objects);
 			for(final FmmlxObject o : objects) {
-				if (o.getLevel() > 0 && !o.isAbstract()) {
-					TreeItem<AbstractTreeType> levelGroup = levels.get(o.getLevel());
+				if (o.getLevel().getMinLevel() > 0 && !o.isAbstract()) {
+					TreeItem<AbstractTreeType> levelGroup = levels.get(o.getLevel().getMinLevel());
 					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(new InstanceTool(o, p -> fmmlxDiagram.setNodeCreationType(o.getPath())));
 					levelGroup.getChildren().add(classItem);
 				}
@@ -239,7 +239,7 @@ public class FmmlxPalette {
 		}
 
 		protected int getLevel() {
-			return object.getLevel();
+			return object.getLevel().getMinLevel();
 		}
 
 	}

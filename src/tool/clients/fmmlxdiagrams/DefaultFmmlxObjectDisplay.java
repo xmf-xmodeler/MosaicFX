@@ -39,14 +39,16 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {
 		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
 			        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
-			        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
-		return diagram.levelColorScheme.getLevelBgColor(level);
+			        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
+			        	(this.object.level.isContingentLevelClass()?LevelColorScheme.LEVEL_CONTINGENT_CLASS:this.object.level.getMinLevel());
+        return diagram.levelColorScheme.getLevelBgColor(level);
 	}
 
 	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {
 		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
 	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
-	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:this.object.level;
+	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
+	        (this.object.level.isContingentLevelClass()?LevelColorScheme.LEVEL_CONTINGENT_CLASS:this.object.level.getMinLevel());
 		return diagram.levelColorScheme.getLevelFgColor(level, opacity);
 	}
 
@@ -74,8 +76,16 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (object.level.toString()), FontPosture.REGULAR, FontWeight.BOLD, 2.);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		
+		if(object.isSingleton()) {
+			NodeBox singletonBar = new NodeBox(neededWidth/3., currentY, neededWidth/3., textHeight * headerLines + EXTRA_Y_PER_LINE, 
+					diagram.levelColorScheme.getLevelBgColor(0), new Color(0.,0.,0.,0.), 
+					(x) -> 0., PropertyType.Class);
+			header.addNodeElement(singletonBar);
+		}
+		
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(levelLabel);
 		header.addNodeElement(nameLabel);
@@ -134,7 +144,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Attribute);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level == -1 ? " " : att.level + "");
 			attBox.addNodeElement(attLevelLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {

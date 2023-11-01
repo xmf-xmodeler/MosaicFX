@@ -204,7 +204,7 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 							setText("(" + o.getName() + " ^" + o.getMetaClassName() + "^ " + ")");
 						else
 							setText(o.getName() + " ^" + o.getMetaClassName() + "^");
-						setGraphic(getClassLevelGraphic(o.getLevel()));
+						setGraphic(getClassLevelGraphic(o.getLevel().getMinLevel()));
 					} else {
 						setText("");
 						setGraphic(null);
@@ -232,9 +232,9 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 		Vector<FmmlxObject> v = new Vector<>(listView.getItems());
 		Collections.sort(v, new Comparator<FmmlxObject>() {
 			public int compare(FmmlxObject thisObject, FmmlxObject anotherObject) {
-				if (thisObject.getLevel() > anotherObject.getLevel()) {
+				if (thisObject.getLevel().getMinLevel() > anotherObject.getLevel().getMinLevel()) {
 					return -1;
-				} else if (thisObject.getLevel() < anotherObject.getLevel()) {
+				} else if (thisObject.getLevel().getMinLevel() < anotherObject.getLevel().getMinLevel()) {
 					return 1;
 				} else {
 					return thisObject.getName().compareTo(anotherObject.getName());

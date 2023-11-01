@@ -34,11 +34,11 @@ public class ObjectContextMenu extends ContextMenu {
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
-		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
+		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 
 		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
 		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
-		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(instanceWizardItem);
+		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
@@ -79,11 +79,9 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		getItems().add(changeParentItem);
 		
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
 		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
-		getItems().add(browseInstanceItem);
 		
 //		MenuItem changeLevelItem = new MenuItem("Change level");
 //		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
@@ -92,8 +90,12 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
-		if(object.getLevel() > 0) getItems().add(abstractClassItem);
-
+		if(object.getLevel().isClass()) getItems().add(abstractClassItem);
+		
+		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
+		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
+		if(object.getLevel().isClass()) getItems().add(singletonClassItem);
+	
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
 		Menu operationMenu = createOperationSubMenu();
@@ -126,13 +128,13 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
 			Vector<Integer> choices = new Vector<>();
-			for(Integer i = 0; i < object.getLevel(); i++) {
+			for(Integer i = 0; i < object.getLevel().getMinLevel(); i++) {
 				choices.add(i);
 			}
 			if(choices.size() > 0) {
-				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel()-1, choices);
+				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel().getMinLevel()-1, choices);
 				dialog.setTitle("Edit Concrete Syntax");
-				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + "on which level?" );
+				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + " on which level?" );
 //				dialog.setContentText("Choose level:");
 	
 				// Traditional way to get the response value.
@@ -144,17 +146,11 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		});
 		
-		
-		
-		getItems().addAll(attributeMenu, 
-				associationMenu, 
-				operationMenu, 
-				constraintMenu, 
-				delegationMenu, 
-				slotMenu, 
-				associationInstanceMenu, 
-				editConcreteSyntaxItem);
-		
+		//add all items, that are used for all Objects
+		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
+		//add items, that are used only for Objects that are not on level 0
+		if (!object.getLevel().isEqual(0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
+
 		addRunMenu();
 		
 		addNewMenuItem(this, "Hide", e -> {
@@ -167,6 +163,9 @@ public class ObjectContextMenu extends ContextMenu {
 		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
 		getItems().add(mergeProperties);
 		
+		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
+		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
+		getItems().add(assignToGlobalVariable);
 	}
 
 	private void addRunMenu() {
@@ -202,8 +201,16 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeMulItem = new MenuItem("Change multiplicity");
 		changeMulItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 
+		MenuItem genGetterItem = new MenuItem("Generate Getter");
+		genGetterItem.setOnAction(e -> actions.generateGetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+		MenuItem genSetterItem = new MenuItem("Generate Setter");
+		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+
+		getItems().add(new SeparatorMenuItem());
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeLevelItem, changeMulItem);
+				changeLevelItem, changeMulItem,
+				new SeparatorMenuItem(),
+				genGetterItem, genSetterItem);
 
 		return attributeMenu;
 	}

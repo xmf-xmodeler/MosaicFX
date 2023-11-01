@@ -239,7 +239,7 @@ public final class ModelBrowser extends CustomStage {
 	                    
 	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
-	                    setGraphic(getClassLevelGraphic(o.getLevel()));
+	                    setGraphic(getClassLevelGraphic(o.getLevel().getMinLevel()));
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };
@@ -381,9 +381,11 @@ public final class ModelBrowser extends CustomStage {
 
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAssociationListViewNewValue(oldValue,newValue));
-		
+
 		linksListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onLinksListViewNewValue(oldValue, newValue));
+		linkedObjectsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onLinkedObjectsListViewNewValue(oldValue, newValue));
 	}
 
 	protected SplitPane layoutElements() {
@@ -710,6 +712,9 @@ public final class ModelBrowser extends CustomStage {
 			updateIssueTab(null, false, false);
 		}
 	}	
+	private void onLinkedObjectsListViewNewValue(FmmlxObject oldValue, FmmlxObject association) {
+		linkedObjectsListView.setContextMenu(new BrowserLinkedObjectContextMenu());
+	}
 
 	private void onLinksListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
 		linkedObjectsListView.getItems().clear();
@@ -733,7 +738,7 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			
 		}
-		linksListView.setContextMenu(new BrowserLinkedObjectContextMenu());
+		linksListView.setContextMenu(new BrowserLinkContextMenu());
 	}
 
 	
@@ -791,8 +796,8 @@ public final class ModelBrowser extends CustomStage {
 
 				@Override
 				public int compare(FmmlxObject o1, FmmlxObject o2) {
-					if(o1.getLevel() < o2.getLevel()) return 1;
-					if(o1.getLevel() > o2.getLevel()) return -1;
+					if(o1.getLevel().getMinLevel() < o2.getLevel().getMinLevel()) return 1;
+					if(o1.getLevel().getMinLevel() > o2.getLevel().getMinLevel()) return -1;
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
@@ -916,10 +921,10 @@ public final class ModelBrowser extends CustomStage {
 			
 			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
-				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
+				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel().isClass() && !object.isAbstract();});
 				
 				addNewMenuItem(this, "Instance Wizard...", e -> actions.openInstanceWizard(object, null), () -> {
-					return (object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract();
+					return (object.getLevel().isClass()) && !object.isAbstract();
 				});		
 	
 				getItems().add(new SeparatorMenuItem());
@@ -930,24 +935,49 @@ public final class ModelBrowser extends CustomStage {
 						AlertType.INFORMATION, "Really ?", 
 						javafx.scene.control.ButtonType.NO, 
 						javafx.scene.control.ButtonType.CANCEL).showAndWait();}, ALWAYS);
-				addNewMenuItem(this, "Change Superclasses", e -> actions.changeParentsDialog(object), () -> {return object.getLevel() >= 1;});
-				addNewMenuItem(this, "Set Delegation", e -> actions.setDelegation(object, null), () -> {return object.getLevel() >= 1;});
+				addNewMenuItem(this, "Change Superclasses", e -> actions.changeParentsDialog(object), () -> {return object.getLevel().isClass();});
+				addNewMenuItem(this, "Set Delegation", e -> actions.setDelegation(object, null), () -> {return object.getLevel().isClass();});
 				addNewMenuItem(this, "Remove Delegation", e -> actions.removeDelegation(object), () -> {return object.getDelegatesTo(false) != null;});
 				addNewMenuItem(this, "Set RoleFiller", e -> actions.setRoleFiller(object, null), () -> {return object.getDelegatesTo(true)!= null;});
 				addNewMenuItem(this, "Remove RoleFiller", e -> actions.removeRoleFiller(object), () -> {return object.getRoleFiller() != null;});
-				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel() >= 1 && object.getInstances().size() > 0;});
+				addNewMenuItem(this, object.isAbstract()?"Make concrete":"Make abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel().isClass() && object.getInstances().size() > 0;});
+				addNewMenuItem(this, object.isSingleton()?"Remove Singleton Property":"Make Singleton", e -> actions.toggleSingleton(object), () -> {return true;}); 
 			}
 		}
 	}
 	
 	private class BrowserLinkedObjectContextMenu extends ContextMenu {
 		
+		public BrowserLinkedObjectContextMenu() {
+			setAutoHide(true);
+			final FmmlxObject thisObject = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			final FmmlxObject otherObject = linkedObjectsListView.getSelectionModel().getSelectedItem();
+			final FmmlxAssociation association = linksListView.getSelectionModel().getSelectedItem();
+			final Vector<FmmlxLink> links = thisObject != null ? activePackage.getRelatedLinksByObject(thisObject) : new Vector<>();
+			Vector<FmmlxLink> candidateLinks = new Vector<>();
+			for(FmmlxLink link : links) {
+				if(thisObject == link.getSourceNode() && otherObject == link.getTargetNode() && link.getAssociation() == association) {
+					candidateLinks.add(link);
+				}
+				if(thisObject == link.getTargetNode() && otherObject == link.getSourceNode() && link.getAssociation() == association) {
+					candidateLinks.add(link);
+				}
+			}
+			final FmmlxLink link = candidateLinks.size() == 1 ? candidateLinks.firstElement() : null;
+			if(thisObject != null && otherObject != null && link == null) System.err.println("Link not found");
+			else addNewMenuItem(this, "Remove Link", e -> activePackage.getActions().removeAssociationInstance(link), ALWAYS);
+			
+		}
+	}
+	
+	private class BrowserLinkContextMenu extends ContextMenu {
+		
 		private final FmmlxObject object;
 		//private final FmmxObject target;
 		private final DiagramActions actions;
 		private final FmmlxAssociation association;
 		
-		public BrowserLinkedObjectContextMenu() {
+		public BrowserLinkContextMenu() {
 			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 			this.actions = activePackage.getActions();
 			this.association = linksListView.getSelectionModel().getSelectedItem();

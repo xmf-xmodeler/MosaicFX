@@ -147,8 +147,12 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		} else if (mode==Mode.DATE) {
 			grid.add(datePicker, 1, 3);
 			if (!initialSlot.getValue().equals("null")) {
-				LocalDate currentDateValue = XDate.parseStringToLocalDate(initialSlot.getValue(),"dd LLL yyyy");
-				datePicker.setValue(currentDateValue);
+				try{
+					LocalDate currentDateValue = XDate.parseStringToLocalDate(initialSlot.getValue(),"dd MMM yyyy");
+					datePicker.setValue(currentDateValue);
+				} catch (Exception e) {
+					System.err.println("Date unparseable!");
+				}				
 			}
 		} else if (mode==Mode.BOOLEAN) {
 			trueButton.setToggleGroup(toggleGroup);
@@ -166,7 +170,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 			GridPane.setHalignment(falseButton, HPos.RIGHT);
 		} else if (mode==Mode.MONEY) {
 			currency.setEditable(true);
-			currency.getItems().addAll("USD","EUR","GBP","AUD","NZD");
+			currency.getItems().addAll("USD","EUR","GBP","AUD","NZD","SEK");
 			HBox moneyHBox = new HBox(money,currency);
 			grid.add(moneyHBox, 1, 3);
 		} else {

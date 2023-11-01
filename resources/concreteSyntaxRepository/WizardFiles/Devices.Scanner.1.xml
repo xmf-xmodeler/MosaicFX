@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::Devices::Scanner" level="1">
+  <Import path="scannerSymbol.xml" id="scanner"/>  
+  <Label align="CENTER" bgColor="0x00000000" color="0x334db3ff" id="label0" tx="-1.1266625443787497" ty="107" xx="1.866065983073614" xy="0.0" yx="0.0" yy="1.866065983073614"/>
+  <Import path="wifiSymbol.xml" id="wifi" tx="-73" ty="-57" xx="1.5459692495035373" xy="0.0" yx="0.0" yy="1.5459692495035373"/>  
+  <SVG id="email" path="../ITML/ITML_Multi23/Email.svg" xx="1.6" yy="1.6" tx="-20.0" ty="-55.0"/>
+  <Modification>
+    <Condition slotName="modelName" type="ReadFromSlot"/>
+    <Affected id="label0" localId="label0"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="wifi" type="BooleanSlotCondition"/>
+    <Affected id="wifi" localId="wifi"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="sendToEmail" type="BooleanSlotCondition"/>
+    <Affected id="email" localId="email"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+</ConcreteSyntax>

@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
+
 import org.w3c.dom.Element;
+
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -61,7 +62,7 @@ import javafx.scene.transform.Translate;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -69,9 +70,8 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
-import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.helper.persistence.XMLCreator;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -138,15 +138,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramViewToolBarModel;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
-			int diagramID, String name, String packagePath, 
-			Vector<Vector<Object>> listOfViews, 
-			Vector<Vector<Object>> listOfOptions,
-			boolean umlMode) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
+			Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 		super(comm,diagramID,packagePath);
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = diagramViewToolbar.getModel();
+//		diagramViewToolBarModel.setProperties(listOfOptions);
 		
 		this.diagramName = name;
 		splitPane = new SplitPane();
@@ -192,7 +190,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	                if (o != null) {
 	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
-	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
+	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel().getMinLevel()));
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };
@@ -207,8 +205,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				} catch(Exception e) {
 					return null;
 				}
-			}
-			
+			}			
 		});
 		
 		
@@ -242,10 +239,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         for(Vector<Object> view : listOfViews) {
         	DiagramViewPane dvp = new DiagramViewPane((String) view.get(0), false);
-        	double xx = 1., tx = 0., ty = 0.;
+        	float xx = 1.0f,  tx = 0.0f, ty = 0.0f;
         	try{ xx = (float) view.get(1); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-        	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-        	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+        	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
+        	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
         	dvp.canvasTransform = new Affine(xx, 0, tx, 0, xx, ty);
         	tabPane.getTabs().add(new MyTab(dvp));
         }
@@ -260,7 +257,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
             	pressedKeys.remove(event.getCode());
@@ -277,12 +273,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
 					actions.centerViewOnObject();
 				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Z) {
+					actions.undo();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
+					actions.redo();
+				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
-						if(element instanceof FmmlxObject) new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						if (element instanceof FmmlxObject) {
+							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+						}
 					}
 				}
+			
 			}
         });
         tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -294,9 +299,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) &&
-						getPressedKeys().contains(KeyCode.S)) {
-						getComm().saveXmlFile2(packagePath, diagramID);;
+				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
 					}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 						getComm().triggerUpdate();
@@ -363,7 +367,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			for (File file : files) {
 				try {
-					AbstractSyntax group = AbstractSyntax.load(file);
+					ConcreteSyntaxPattern group = ConcreteSyntaxPattern.load(file);
 					if(group instanceof ConcreteSyntax) {
 						ConcreteSyntax c = ((ConcreteSyntax) group);
 						syntaxes.put(c.classPath + "@" + c.level, c);
@@ -492,14 +496,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					o.drop();
-					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
+					comm.sendObjectInformation(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
 					for(Edge<?> e : edges) {
 						if(e.isSourceNode(o) || e.isTargetNode(o)) {
-							comm.sendCurrentPositions(this.getID(), e);
+							comm.sendCurrentEdgePositions(this.getID(), e);
 						}
 					}
 				} else if (s instanceof Edge) {
-					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
+					comm.sendCurrentEdgePositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
 					del.drop();
@@ -613,7 +617,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
+				if (object.getLevel().isClass()) {
 					objectList.add(object);
 				}
 			}
@@ -665,7 +669,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Vector<FmmlxObject> result = new Vector<>();
 
 		for (FmmlxObject object : objects) {
-			if (object.getLevel()==level) {
+			if (object.getLevel().getMinLevel()==level) {
 				result.add(object);
 			}
 		}
@@ -675,7 +679,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Object getAllMetaClass() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : getObjectsReadOnly()) {
-			if (object.getLevel() != 0) {
+			if (object.getLevel().isClass()) {
 				result.add(object);
 			}
 		}
@@ -711,8 +715,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public int getMaxLevel() {
 		int level = 0;
 		for (FmmlxObject tmp : objects) {
-			if(tmp.getLevel()>level) {
-				level=tmp.getLevel();
+			if(tmp.getLevel().getMinLevel()>level) {
+				level=tmp.getLevel().getMinLevel();
 			}
 		}
 		return level;
@@ -757,36 +761,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	@Override
-	protected void fetchDiagramDataSpecific2() {
-		
+	protected void fetchDiagramDataSpecific2() {		
 		triggerOverallReLayout();
 		newFmmlxPalette.update();
 
-		if(filePath !=null && filePath.length()>0){
-			if(justLoaded){
-				justLoaded = false;
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(filePath));
-				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
-				if(positionInfo != null) {
-					getComm().removePositionInfo(getID());
-					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
-					triggerOverallReLayout();
-				}
-				redraw();
-				updateDiagram();
-			}
-		} else {		
-			Issue nextIssue = null;
-			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity()))) nextIssue = issues.get(i);
-			}
-	
-			if(nextIssue != null) {
-				final Issue ISSUE = nextIssue;
-				Platform.runLater(() -> ISSUE.performResolveAction(this));
-			}
+		Issue nextIssue = null;
+		for (int i = 0; i < issues.size() && nextIssue == null; i++) {
+			if (issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name())))
+				nextIssue = issues.get(i);
 		}
-		
+
+		if (nextIssue != null) {
+			final Issue ISSUE = nextIssue;
+			Platform.runLater(() -> ISSUE.performResolveAction(this));
+		}
+
 		tableView.getItems().clear();
 		tableView.refresh();
 		tableView.getItems().addAll(issues);
@@ -1136,11 +1125,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private void handleRightPressed(MouseEvent e) {
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			if (hitObject != null) {
-				if (hitObject instanceof FmmlxObject) {
-					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
-				} else if (hitObject instanceof Edge) {
+				if (hitObject instanceof FmmlxObject || hitObject instanceof Edge || hitObject instanceof InheritanceEdge  ) {
 					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
 				}
+				
 				if (!selectedObjects.contains(hitObject)) {
 					deselectAll();
 					selectedObjects.add(hitObject);
