@@ -279,6 +279,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
 				}
+
+				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
+						getActiveDiagramViewPane().escapeLinkCreationMode();	
+				}
+				
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
@@ -1123,6 +1128,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleRightPressed(MouseEvent e) {
+			if (mouseMode == MouseMode.DRAW_EDGE) {
+				escapeLinkCreationMode();
+				return;
+			}
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			if (hitObject != null) {
 				if (hitObject instanceof FmmlxObject || hitObject instanceof Edge || hitObject instanceof InheritanceEdge  ) {
@@ -1513,7 +1522,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				e.printStackTrace();
 			}
 			redraw();
-		}		
+		}
+		/**
+		 * If a user chooses to add a link but then decides that he does not need it, the canvas can be reset to normal by this function call.
+		 */
+		public void escapeLinkCreationMode() {
+			mouseMode = MouseMode.STANDARD;
+			redraw();
+		}
 	}
 
 	private class MyTab extends Tab {
