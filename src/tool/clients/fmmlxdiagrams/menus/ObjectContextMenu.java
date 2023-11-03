@@ -122,6 +122,9 @@ public class ObjectContextMenu extends ContextMenu {
 		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
 		levelMergeItem.setDisable(true);
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
+
+		MenuItem assignItem = new MenuItem("Assign to Global Variable");
+		assignItem.setOnAction(e -> actions.assignToGlobalVariable(object));
 		
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
@@ -153,6 +156,7 @@ public class ObjectContextMenu extends ContextMenu {
 				delegationMenu, 
 				slotMenu, 
 				associationInstanceMenu, 
+				assignItem,
 				editConcreteSyntaxItem);
 		
 		addRunMenu();
