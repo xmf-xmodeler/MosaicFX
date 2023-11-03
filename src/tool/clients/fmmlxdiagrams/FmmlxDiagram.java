@@ -279,11 +279,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
 				}
-
 				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
 						getActiveDiagramViewPane().escapeLinkCreationMode();	
 				}
-				
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
@@ -474,7 +472,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		long start = System.currentTimeMillis();
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
-			for(FmmlxObject o : new Vector<>(objects)) {
+			for(FmmlxObject o : getVisibleObjectsReadOnly()) {
 				o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 //				System.err.println("layout node " + o.name + ":"+ i + "->" +(System.currentTimeMillis()-start));
 			}
@@ -621,7 +619,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Vector<FmmlxObject> objectList = new Vector<>();
 
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
+			for (FmmlxObject object : objects.values()) {
 				if (object.getLevel().isClass()) {
 					objectList.add(object);
 				}
@@ -673,7 +671,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Vector<FmmlxObject> getObjectsByLevel(int level){
 		Vector<FmmlxObject> result = new Vector<>();
 
-		for (FmmlxObject object : objects) {
+		for (FmmlxObject object : objects.values()) {
 			if (object.getLevel().getMinLevel()==level) {
 				result.add(object);
 			}
@@ -719,7 +717,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public int getMaxLevel() {
 		int level = 0;
-		for (FmmlxObject tmp : objects) {
+		for (FmmlxObject tmp : objects.values()) {
 			if(tmp.getLevel().getMinLevel()>level) {
 				level=tmp.getLevel().getMinLevel();
 			}
@@ -760,7 +758,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void fetchDiagramDataSpecific() {
-		for(FmmlxObject o : objects) {
+		for(FmmlxObject o : objects.values()) {
 			o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 		}
 	}
@@ -789,11 +787,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void paintToSvg(XmlHandler xmlHandler, double extraHeight){
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
-		objectsToBePainted.addAll(objects);
+		objectsToBePainted.addAll(objects.values());
 		objectsToBePainted.addAll(labels);
 		objectsToBePainted.addAll(edges);
 		Collections.reverse(objectsToBePainted);
-		for (FmmlxObject o : objects) {
+		for (FmmlxObject o : objects.values()) {
 			o.updatePortOrder();
 		}
 		for(CanvasElement c : objectsToBePainted){
@@ -830,7 +828,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		boolean valid = false;
 		
 		Vector<CanvasElement> elements = new Vector<CanvasElement>();
-		elements.addAll(objects);
+		elements.addAll(objects.values());
 		elements.addAll(edges);
 		
 		for(CanvasElement cE : elements) if (!cE.isHidden()) {
@@ -948,7 +946,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			CanvasElement elementUnderMouse = getElementAt(e.getX(), e.getY());
 			if(elementUnderMouse != lastElementUnderMouse) {
 				lastElementUnderMouse = elementUnderMouse;
-				for (FmmlxObject o : objects)
+				for (FmmlxObject o : objects.values())
 					o.unHighlight();
 				for (Edge<?> edge : edges)
 					edge.unHighlight();
@@ -1265,7 +1263,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 	    private void highlightElementAt(CanvasElement hitObject, Point2D mouse) {
-			for (CanvasElement object : objects) {
+			for (CanvasElement object : objects.values()) {
 				object.highlightElementAt(null, canvasTransform);
 			}
 			for (Edge<?> edge : edges) {
@@ -1285,7 +1283,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				g.setStroke(Color.ROYALBLUE);
 				g.setLineWidth(2.5);
 				g.setFill(Color.WHITE);
-				for(FmmlxObject o : objects) if (!o.hidden) {
+				for(FmmlxObject o : objects.values()) if (!o.hidden) {
 					Point2D p = canvasTransform.transform(o.getCenterX(), o.getCenterY());
 					g.strokeLine(canvas.getWidth()/2, canvas.getHeight()/2, p.getX(), p.getY()); 
 				}
@@ -1330,14 +1328,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 			// otherwise gather (first-level) objects to be painted
 			Vector<CanvasElement> objectsToBePainted = new Vector<>();
-			objectsToBePainted.addAll(objects);
+			objectsToBePainted.addAll(objects.values());
 			objectsToBePainted.addAll(labels);
 			objectsToBePainted.addAll(edges);
 			//reverse so that those first in the list are painted last
 			Collections.reverse(objectsToBePainted);
 			
 			// Cleanup ports (to be moved somewhere else)
-			for (FmmlxObject o : objects) {
+			for (FmmlxObject o : objects.values()) {
 				o.updatePortOrder();
 			}	
 			
@@ -1368,7 +1366,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			double maxY = Double.NEGATIVE_INFINITY;	
 			boolean valid = false;
 			
-			for(FmmlxObject o : new Vector<>(objects)) if (!o.hidden) {
+			for(FmmlxObject o : new Vector<>(objects.values())) if (!o.hidden) {
 				if(o.getLeftX()   < minX) minX = o.getLeftX();
 				if(o.getRightX()  > maxX) maxX = o.getRightX();
 				if(o.getTopY()    < minY) minY = o.getTopY();
@@ -1393,7 +1391,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			double maxRight = 1;
 			double maxBottom = 1;
 
-			for (FmmlxObject object : objects) {
+			for (FmmlxObject object : objects.values()) {
 				maxRight = Math.max(maxRight, object.getRightX());
 				maxBottom = Math.max(maxBottom, object.getBottomY());
 			}
@@ -1416,7 +1414,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private CanvasElement getElementAt(double x, double y) {
-			for (FmmlxObject o : new Vector<>(objects))
+			for (FmmlxObject o : new Vector<>(objects.values()))
 				if (o.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
 					return o;
 			for (Edge<?> e : new Vector<>(edges))
@@ -1495,7 +1493,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			Rectangle rec = new Rectangle(x, y, w, h);
 			deselectAll();
-			for (FmmlxObject o : objects) {
+			for (FmmlxObject o : objects.values()) {
 				if (isObjectContained(rec, o)) {
 					select(o);
 				}
