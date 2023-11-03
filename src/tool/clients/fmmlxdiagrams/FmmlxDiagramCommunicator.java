@@ -1259,10 +1259,11 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociation", message);
 	}
 
-	public void setAssociationEndVisibility(int diagramID, String assocName, boolean targetEnd, boolean newVisbility) {
+	public void setAssociationEndVisibility(int diagramID, FmmlxAssociation assoc, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(assocName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
 				new Value(targetEnd),
 				new Value(newVisbility)};
 		sendMessage("setAssociationEndVisibility", message);
@@ -1282,20 +1283,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(isOptional)};
 		sendMessage("addAttribute", message);
 	}
-	
-//	public void addAttributeAsync(int diagramID, String className, String name, int level, String type, Multiplicity multi) {
-//		Value[] message = new Value[]{
-//				new Value(className),
-//				new Value(name),
-//				new Value(level),
-//				new Value(level),
-//				new Value(type),
-//				new Value(multi.toValue()),
-//				new Value(true),
-//				new Value(false),
-//				new Value(false)};
-//		xmfRequestAsync(handle, diagramID, "addAttribute", (emptyCall) -> {}, message);
-//	}
 	
 	public void changeAttributeName(int diagramID, String className, String oldName, String newName) {
 		Value[] message = new Value[]{
@@ -1345,7 +1332,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldType),
 				new Value(newType)};
 		sendMessage("changeAttributeType", message);
-
 	}
 
 	public void removeAttribute(int diagramID, String className, String name, int strategy) {
@@ -1607,10 +1593,11 @@ public class FmmlxDiagramCommunicator {
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
 
-    public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
+    public void changeAssociationForwardName(int diagramID, FmmlxAssociation assoc, String newFwName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newFwName)};
         sendMessage("changeAssociationForwardName", message);
     }
@@ -1623,50 +1610,56 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeDelegationLevel", message);
     }
     
-    public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
+    public void changeAssociationStart2EndLevel(int diagramID, FmmlxAssociation assoc, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newLevel)};
         sendMessage("changeAssociationStart2EndLevel", message);
     }
 
-    public void changeAssociationEnd2StartLevel(int diagramID, String associationName, Integer newLevel) {
+    public void changeAssociationEnd2StartLevel(int diagramID, FmmlxAssociation assoc, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newLevel)};
         sendMessage("changeAssociationEnd2StartLevel", message);
     }
 
-    public void changeAssociationStart2EndAccessName(int diagramID, String associationName, String newName) {
+    public void changeAssociationStart2EndAccessName(int diagramID, FmmlxAssociation assoc, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newName)};
         sendMessage("changeAssociationStart2EndAccessName", message);
     }
 
-    public void changeAssociationEnd2StartAccessName(int diagramID, String associationName, String newName) {
+    public void changeAssociationEnd2StartAccessName(int diagramID, FmmlxAssociation assoc, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newName)};
         sendMessage("changeAssociationEnd2StartAccessName", message);
     }
 
-    public void changeAssociationStart2EndMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+    public void changeAssociationStart2EndMultiplicity(int diagramID, FmmlxAssociation assoc, Multiplicity newMultiplicity) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newMultiplicity.toValue())};
         sendMessage("changeAssociationStart2EndMultiplicity", message);
     }
 
-    public void changeAssociationEnd2StartMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+    public void changeAssociationEnd2StartMultiplicity(int diagramID, FmmlxAssociation assoc, Multiplicity newMultiplicity) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newMultiplicity.toValue())};
         sendMessage("changeAssociationEnd2StartMultiplicity", message);
     }
