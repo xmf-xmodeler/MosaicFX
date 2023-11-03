@@ -18,6 +18,7 @@ Please include a summary of the changes and the related issue. Please also inclu
 - [ ] I performed tests that cover the acceptance criteria
 - [ ] I documented my work in the ticket system
 - [ ] The ticket was labeled with testing. Test were performed and no bugs were found 
+- [ ] XMF needs to be updated
 
 ---
 ## Release Notes 
