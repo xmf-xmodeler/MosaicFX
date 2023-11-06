@@ -2608,23 +2608,39 @@ public class FmmlxDiagramCommunicator {
 			boolean isAbstract, boolean isCollective,
 			int x, int y, boolean hidden, ReturnCall<Vector<Object>> onInstanceCreated) {
     	
-		Value[] parentsArray = createValueArray(parents);
-		
-		String command = "addInstanceAsync";
-		
-		// the idCounter could in theory cycle through all int. But as -1 is reserved the cycle has to be cut short.
-		if(idCounter > 10000) idCounter = 0;
-		int requestID = idCounter++;
-		if (DEBUG) System.err.println(": Sending request " + command + "(" + requestID + ") handle" + handle);
-				
-		// so the request id can be returned properly
-		Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
-		
-		Value[] message = new Value[]{new Value(arr), getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
-
-		returnMap.put(requestID, onInstanceCreated);
-		WorkbenchClient.theClient().send(handle, command, message);
+    	
+//    	old version:
+//		Value[] parentsArray = createValueArray(parents);
+//		
+//		String command = "addInstanceAsync";
+//		
+//		// the idCounter could in theory cycle through all int. But as -1 is reserved the cycle has to be cut short.
+//		if(idCounter > 10000) idCounter = 0;
+//		int requestID = idCounter++;
+//		if (DEBUG) System.err.println(": Sending request " + command + "(" + requestID + ") handle" + handle);
+//				
+//		// so the request id can be returned properly
+//		Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
+//		
+//		Value[] message = new Value[]{new Value(arr), getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
+//				new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+//
+//		
+//		
+//		
+//		returnMap.put(requestID, onInstanceCreated);
+//		WorkbenchClient.theClient().send(handle, command, message);
+    	
+    	
+    	
+//    	new version:
+    	this.setNewRequestID();
+    	int requestID = this.getcurrentRequestID();
+    	Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
+    	Value[] parentsArray = createValueArray(parents);
+    	Value[] message = new Value[]{new Value(arr), getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level), new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+    	
+    	xmfRequestAsync(handle, diagramID, "addInstanceAsync", onInstanceCreated, message);
 		
 	}
 

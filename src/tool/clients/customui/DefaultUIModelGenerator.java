@@ -15,8 +15,10 @@ import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import xos.Value;
 
 /*
  * FH 2023
@@ -89,7 +91,7 @@ public class DefaultUIModelGenerator {
 				}
 
 				// only generate the objects of the current level
-				if (level != o.getLevel()) {
+				if (!o.getLevel().isEqual(level)) {
 					continue;
 				}
 
@@ -115,24 +117,25 @@ public class DefaultUIModelGenerator {
 					// the canvas
 					diagram.getComm().removeClass(diagram.getID(), o.getName(), 0);
 
-					String commonClassName = "CommonClassL" + (o.getLevel() + 1);
+					String commonClassName = "CommonClassL" + (o.getLevel().getMaxLevel() + 1);
 					// instances of meta class must be regenerated as instances of the corresponding
 					// commonclass
 					diagram.getComm().addNewInstance(diagram.getID(), commonClassName, o.getName(), o.getLevel(),
-							parents, o.isAbstract(), o.isCollective(), x, y, o.isHidden());
+							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				} else {
 					// instances of other classes must not be deleted but regenerated
 					diagram.getComm().addNewInstance(diagram.getID(), o.getMetaClassName(), o.getName(), o.getLevel(),
-							parents, o.isAbstract(), o.isCollective(), x, y, o.isHidden());
+							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				}
 
-				if (o.getLevel() > 0) {
+				if (o.getLevel().getMaxLevel() > 0) {
 
 					// operation gets set at last AFTER associations so getter and setter from
 					// associations can be set first and don't lead to duplications
 
+//					
 					for (FmmlxAttribute att : o.getOwnAttributes()) {
-						diagram.getComm().addAttribute(diagram.getID(), o.getName(), att.getName(), att.getLevel(),
+						diagram.getComm().mergeAttribute(diagram.getID(), o.getName(), att.getName(), att.getLevel(),
 								att.getType(), att.getMultiplicity());
 					}
 
@@ -244,15 +247,16 @@ public class DefaultUIModelGenerator {
 			// add associations
 			diagram.getComm().addAssociation(diagram.getID(), assoc.getSourceNode().getName(),
 					assoc.getTargetNode().getName(), assoc.getAccessNameEndToStart(), assoc.getAccessNameStartToEnd(),
-					assoc.getName(), "", assoc.getMultiplicityEndToStart(), assoc.getMultiplicityStartToEnd(),
-					assoc.getLevelSource(), assoc.getLevelTarget(), assoc.isSourceVisible(), assoc.isTargetVisible(),
-					assoc.isSymmetric(), assoc.isTransitive());
+					assoc.getName(), null, assoc.getMultiplicityEndToStart(), assoc.getMultiplicityStartToEnd(),
+					assoc.getLevelSource(), assoc.getLevelSource(), assoc.getLevelTarget(), assoc.getLevelTarget(),
+					assoc.isSourceVisible(), assoc.isTargetVisible(), assoc.isSymmetric(), assoc.isTransitive(), null,
+					null, null, null);
 
 		}
 
 		for (FmmlxLink link : links) {
-			diagram.getComm().addAssociationInstance(diagram.getID(), link.getSourceNode().getName(),
-					link.getTargetNode().getName(), link.getAssociation().getName());
+			diagram.getComm().addLink(diagram.getID(), link.getSourceNode().getName(), link.getTargetNode().getName(),
+					link.getAssociation().getName());
 		}
 
 		// operations are added
@@ -277,10 +281,12 @@ public class DefaultUIModelGenerator {
 					if (added)
 						continue;
 					// check if name contains get or set AND the the name of an association
-					if ((op.getName().contains("get")||op.getName().contains("set"))&&(op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase()))) {
+					if ((op.getName().contains("get") || op.getName().contains("set"))
+							&& (op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase()))) {
 						added = true;
 					}
-					if ((op.getName().contains("get")||op.getName().contains("set"))&&(op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase()))) {
+					if ((op.getName().contains("get") || op.getName().contains("set"))
+							&& (op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase()))) {
 						added = true;
 					}
 
@@ -289,7 +295,7 @@ public class DefaultUIModelGenerator {
 				if (added) {
 				} else {
 					FmmlxObject newObject = diagram.getObjectByPath(oldObject.getName());
-					diagram.getComm().addOperation2(diagram.getID(), newObject.getName(), op.getLevel(), op.getBody());
+					diagram.getComm().addOperation(diagram.getID(), newObject.getName(), op.getLevel(), op.getBody());
 				}
 			}
 		}
@@ -320,56 +326,64 @@ public class DefaultUIModelGenerator {
 		actions.addInstance("UIControlElement", "ActionInjection", parents);
 		parents.clear();
 
+		
+
+
+
+
 		// add association
 		diagram.getComm().addAssociation(diagram.getID(), "UserInterface", "UIElement", "customUserInterface",
 				"uIElement", "composedOf", null, new Multiplicity(0, 1, true, false, false),
-				new Multiplicity(0, 2147483647, false, false, false), 0, 0, true, true, false, false);
+				new Multiplicity(0, 2147483647, false, false, false), 0, 0,0,0, true, true, false, false, null, null, null, null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Parameter", "UIElement", "parameter", "uIElement",
 				"representedAs", null, new Multiplicity(0, 1, true, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0, true, true, false, false);
+				new Multiplicity(1, 1, true, false, true), 0, 0,0,0, true, true, false, false,null,null,null,null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Action", "Parameter", "action", "parameter", "uses", null,
 				new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(0, 2147483647, false, false, true), 0, 0, true, true, false, false);
+				new Multiplicity(0, 2147483647, false, false, true), 0,0,0, 0, true, true, false, false,null,null,null,null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "UIControlElement", "Reference", "controlElement",
 				"reference", "derivedFrom", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0, true, true, false, false);
+				new Multiplicity(1, 1, true, false, true), 0,0,0, 0, true, true, false, false,null,null,null,null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "parent", "parent", "isParent",
 				null, new Multiplicity(0, 2147483647, false, false, true), new Multiplicity(0, 1, true, false, true), 0,
-				0, false, true, false, false);
+				0,0,0, false, true, false, false,null,null,null,null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "child", "child", "isChild", null,
-				new Multiplicity(0, 1, true, false, true), new Multiplicity(0, 2147483647, false, false, true), 0, 0,
-				false, true, false, false);
+				new Multiplicity(0, 1, true, false, true), new Multiplicity(0, 2147483647, false, false, true), 0, 0,0,0,
+				false, true, false, false,null,null,null,null);
 
+		// max level for objects of commonClass is here set to 5 .... not sure whether a higher value is better
+		// TBD: What side effects are possible
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", commomClassName, "reference", "commonClass",
 				"refersToStateOf", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, -1, false, true, false, false);
+				new Multiplicity(1, 1, true, false, true), 0,0,0, 5, false, true, false, false, null,null,null,null);
 
 		// add Attributes
 		Multiplicity multOne = new Multiplicity(1, 1, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), "UserInterface", "pathToFXML", 0, "String", multOne);
-		diagram.getComm().addAttribute(diagram.getID(), "UserInterface", "pathToIconOfWindow", 0, "String", multOne);
-		diagram.getComm().addAttribute(diagram.getID(), "UserInterface", "titleOfUI", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "UserInterface", "pathToFXML", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "UserInterface", "pathToIconOfWindow", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "UserInterface", "titleOfUI", 0, "String", multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "UIElement", "idOfUIElement", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "UIElement", "idOfUIElement", 0, "String", multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "Parameter", "dataType", 0, "String", multOne);
-		diagram.getComm().addAttribute(diagram.getID(), "Parameter", "orderNo", 0, "Integer", multOne);
-		diagram.getComm().addAttribute(diagram.getID(), "Parameter", "value", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Parameter", "dataType", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Parameter", "orderNo", 0, "Integer", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Parameter", "value", 0, "String", multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "Action", "eventName", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Action", "eventName", 0, "String", multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "ListInjection", "isListView", 0, "Boolean", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "ListInjection", "isListView", 0, "Boolean", multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "UIControlElement", "nameOfModelElement", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "UIControlElement", "nameOfModelElement", 0, "String",
+				multOne);
 
-		diagram.getComm().addAttribute(diagram.getID(), "Reference", "associationName", 0, "String", multOne);
-		diagram.getComm().addAttribute(diagram.getID(), "Reference", "isHead", 0, "Boolean", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Reference", "associationName", 0, "String", multOne);
+		diagram.getComm().mergeAttribute(diagram.getID(), "Reference", "isHead", 0, "Boolean", multOne);
 
 		// add functions
 		String bodyRunAction = "@Operation runAction[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
@@ -496,29 +510,29 @@ public class DefaultUIModelGenerator {
 				+ "  then self.getOperationValue()\r\n" + "  elseif self.of().name().toString() = \"ListInjection\"\r\n"
 				+ "  then self.getInstanceNamesList()\r\n" + "  else false\r\n" + "  end \r\n" + "end";
 
-		diagram.getComm().addOperation2(diagram.getID(), "Action", 0, bodyRunAction);
+		diagram.getComm().addOperation(diagram.getID(), "Action", 0, bodyRunAction);
 
-		diagram.getComm().addOperation2(diagram.getID(), "Reference", 0, bodyChangeCommonClass);
-		diagram.getComm().addOperation2(diagram.getID(), "Reference", 0, bodyCheckCommonClass);
-		diagram.getComm().addOperation2(diagram.getID(), "Reference", 0, bodyGetOf);
-		diagram.getComm().addOperation2(diagram.getID(), "Reference", 0, bodyGetAssociatons);
+		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyChangeCommonClass);
+		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyCheckCommonClass);
+		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyGetOf);
+		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyGetAssociatons);
 
-		diagram.getComm().addOperation2(diagram.getID(), "UIControlElement", 1, bodySelectNewInstance);
-		diagram.getComm().addOperation2(diagram.getID(), "UIControlElement", 1, bodySendMessage);
+		diagram.getComm().addOperation(diagram.getID(), "UIControlElement", 1, bodySelectNewInstance);
+		diagram.getComm().addOperation(diagram.getID(), "UIControlElement", 1, bodySendMessage);
 
-		diagram.getComm().addOperation2(diagram.getID(), "UIElement", 1, bodyGetInstanceByID);
-		diagram.getComm().addOperation2(diagram.getID(), "UIElement", 1, bodySetParameterValue);
+		diagram.getComm().addOperation(diagram.getID(), "UIElement", 1, bodyGetInstanceByID);
+		diagram.getComm().addOperation(diagram.getID(), "UIElement", 1, bodySetParameterValue);
 
-		diagram.getComm().addOperation2(diagram.getID(), "Action", 0, bodyGetParamValuesAsList);
+		diagram.getComm().addOperation(diagram.getID(), "Action", 0, bodyGetParamValuesAsList);
 
-		diagram.getComm().addOperation2(diagram.getID(), "ListInjection", 0, bodyGetInstanceList);
-		diagram.getComm().addOperation2(diagram.getID(), "ListInjection", 0, bodyGetInstanceNamesList);
+		diagram.getComm().addOperation(diagram.getID(), "ListInjection", 0, bodyGetInstanceList);
+		diagram.getComm().addOperation(diagram.getID(), "ListInjection", 0, bodyGetInstanceNamesList);
 
-		diagram.getComm().addOperation2(diagram.getID(), "ActionInjection", 0, bodyGetOperationValue);
+		diagram.getComm().addOperation(diagram.getID(), "ActionInjection", 0, bodyGetOperationValue);
 
-		diagram.getComm().addOperation2(diagram.getID(), "SlotInjection", 0, bodyGetSlotValue);
+		diagram.getComm().addOperation(diagram.getID(), "SlotInjection", 0, bodyGetSlotValue);
 
-		diagram.getComm().addOperation2(diagram.getID(), "Injection", 0, bodyGetInjection);
+		diagram.getComm().addOperation(diagram.getID(), "Injection", 0, bodyGetInjection);
 
 		// add constraints
 

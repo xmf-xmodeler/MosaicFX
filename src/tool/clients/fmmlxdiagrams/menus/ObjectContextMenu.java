@@ -48,7 +48,7 @@ public class ObjectContextMenu extends ContextMenu {
 		// menu item for instantiating and mapping custom GUI
 		MenuItem instantiateGUI = new MenuItem("Instantiate Standard GUI");
 		instantiateGUI.setOnAction(e-> actions.showGenerateCustomUIDialog());
-		if ((object.getLevel() == 1 && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
+		if ((object.getLevel().isEqual(1) && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
 		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));

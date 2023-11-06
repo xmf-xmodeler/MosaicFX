@@ -370,7 +370,7 @@ public class DefaultUIGenerator {
 
 				// check if attributes are of correct level, i.e. if UI displays instances at
 				// level 1 no level 0 attributes should be included in the UI
-				if (attribute.getLevel() != reference.getObject().getLevel() - 1) {
+				if (reference.getObject().getLevel().isEqual(attribute.getLevel() + 1)) {
 					continue;
 				}
 
@@ -404,7 +404,7 @@ public class DefaultUIGenerator {
 			for (FmmlxOperation operation : operations) {
 
 				// if operation is not suitable for the displayed level; skip it
-				if (operation.getLevel() != reference.getObject().getLevel() - 1) {
+				if (reference.getObject().getLevel().isEqual(operation.getLevel()+1)) {
 					continue;
 				}
 
@@ -904,7 +904,7 @@ public class DefaultUIGenerator {
 			idMatch = false;
 
 			// only instances are relevant here
-			if (o.getLevel() != 0)
+			if (!o.getLevel().isEqual(0))
 				continue;
 
 			for (FmmlxSlot slot : o.getAllSlots()) {

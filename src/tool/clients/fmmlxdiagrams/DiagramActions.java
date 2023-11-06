@@ -72,6 +72,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
 import tool.xmodeler.XModeler;
+import xos.Value;
 
 public class DiagramActions {
 
@@ -1332,7 +1333,7 @@ public class DiagramActions {
 	// FH addAssociation
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName != null && instance2Name != null && assocName != null) {
-			this.diagram.comm.addAssociationInstance(this.diagram.diagramID, instanceName, instance2Name, assocName);
+			this.diagram.comm.addLink(this.diagram.diagramID, instanceName, instance2Name, assocName);
 		} else {
 			System.err.println("Association cannot be instantiated, because one of the parameters is null");
 		}
@@ -1351,20 +1352,20 @@ public class DiagramActions {
 	public String addInstance(String className, String instanceName) {
 		Vector<String> parents = new Vector<String>();
 		boolean hidden = true;
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, hidden);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, 0, 0, hidden);
 		return instanceName;
 	}
 	
 	// FH adding instance with parents
 	public String addInstance(String className, String instanceName, Vector<String> parents) {
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, true);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, 0, 0, true);
 		return instanceName;
 	}
 	
 	// FH adding instance with hidden level and x-y coordinates
 	public String addInstance(String className, String instanceName, boolean hidden, int x, int y) {
 		Vector<String> parents = new Vector<String>();
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, x,y, hidden);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, x,y, hidden);
 		return instanceName;
 	}
 	
@@ -1372,13 +1373,13 @@ public class DiagramActions {
 	public void addMetaClass(String name, int level) {
 		Vector<String> parents = new Vector<String>();
 		boolean hidden = true;
-		diagram.getComm().addMetaClass(this.diagram.getID(), name, level, parents,  false, 0, 0, hidden);
+		diagram.getComm().addMetaClass(this.diagram.getID(), name, new Level(level), parents, false, false, 0, 0, hidden);
 	}
 	
 	// FH adding metaClass with parents
-		public void addMetaClass(String name, int level, Vector<String> parents) {
-			diagram.getComm().addMetaClass(this.diagram.getID(), name, level, parents,  false, 0, 0, true);
-		}
+	public void addMetaClass(String name, int level, Vector<String> parents) {
+		diagram.getComm().addMetaClass(this.diagram.getID(), name, new Level(level), parents, false, false, 0, 0, true);
+	}
 		
 		
 	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
