@@ -14,7 +14,7 @@ import tool.clients.fmmlxdiagrams.graphics.View;
 
 public abstract class AbstractPackageViewer {
 	
-	protected Vector<FmmlxObject> objects = new Vector<>();
+	protected HashMap<String, FmmlxObject> objects = new HashMap<>();
 	protected Vector<FmmlxEnum>   enums = new Vector<>();
 	protected Vector<String>      auxTypes = new Vector<>();
 	protected Vector<Edge<?>>     edges = new Vector<>();
@@ -48,7 +48,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public Vector<FmmlxObject> getObjectsReadOnly() {
-		return new Vector<>(objects);
+		return new Vector<>(objects.values());
 	}
 	
 	public Vector<FmmlxObject> getVisibleObjectsReadOnly() {
@@ -123,7 +123,7 @@ public abstract class AbstractPackageViewer {
 		ReturnCall<Vector<String>> slotsReturn = x2 -> {
 			if(TIMER) System.err.println("Slot values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 			HashMap<FmmlxObject, Vector<String>> opValNames = new HashMap<>();
-			for(FmmlxObject o : objects) {
+			for(FmmlxObject o : objects.values()) {
 				opValNames.put(o, o.getMonitoredOperationsNames());
 			}
 			comm.fetchAllOperationValues(this, opValNames, opValReturn);
@@ -132,7 +132,7 @@ public abstract class AbstractPackageViewer {
 		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
 			auxTypes = fetchedAuxTypes;
 			HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
-			for(FmmlxObject o : objects) {
+			for(FmmlxObject o : objects.values()) {
 				slotNames.put(o, o.getSlotNames());
 			}
 			comm.fetchAllSlots(this, slotNames, slotsReturn);
@@ -190,15 +190,16 @@ public abstract class AbstractPackageViewer {
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
-			objects.addAll(fetchedObjects);
-
+			objects.clear();
+			for(FmmlxObject o : fetchedObjects) objects.put(o.ownPath, o);
+			
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
 					
 			Vector<FmmlxObject> visibleObjects = new Vector<>();
 			if (loadOnlyVisibleObjects()) {
-				for(FmmlxObject o : objects)
+				for(FmmlxObject o : objects.values())
 					if(!o.hidden) visibleObjects.add(o); }
-				else visibleObjects = objects;
+				else visibleObjects = new Vector<>(objects.values());
 			
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
@@ -320,7 +321,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public final boolean isNameAvailable(String t) {
-		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		for (FmmlxObject o : objects.values()) if (o.getName().equals(t)) return false;
 		return true;
 	}
 	
@@ -329,22 +330,14 @@ public abstract class AbstractPackageViewer {
 
 		public PathNotFoundException(String message) {
 			super(message);
-		}
-		
+		}		
 	}
 	
 	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
-		for(FmmlxObject obj : getObjectsReadOnly()) {
-			if (obj.getPath().equals(path)){
-				return obj;
-			}
-		}
-		for(FmmlxObject obj : getObjectsReadOnly()) {
-			if (obj.getName().equals(path)){
-				return obj;
-			}
-		}
-		throw new PathNotFoundException("path " + path + " not found");
+		if(objects.containsKey(path))
+			return objects.get(path);
+		else
+			throw new PathNotFoundException("path " + path + " not found");
 	}
 	
 	public final FmmlxAssociation getAssociationByPath(String path) {
@@ -379,7 +372,7 @@ public abstract class AbstractPackageViewer {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
+			for (FmmlxObject object : objects.values()) {
 				if (level.getMinLevel() != 0 && object.getLevel().getMinLevel() == level.getMinLevel()) {
 					objectList.add(object);
 				}
@@ -447,7 +440,7 @@ public abstract class AbstractPackageViewer {
 
 	public Vector<Integer> getAllObjectLevel() {
 		Vector<Integer> result = new Vector<>();
-		for(FmmlxObject obj : objects){
+		for(FmmlxObject obj : objects.values()){
 			if(!result.contains(obj.getLevel())){
 				result.add(obj.getLevel().getMinLevel());
 			}

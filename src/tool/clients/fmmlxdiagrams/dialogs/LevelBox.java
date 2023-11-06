@@ -25,7 +25,7 @@ class LevelBox extends HBox {
 		if(oldlevel != null) levelTextField.setText(oldlevel.toString());
 		HBox.setHgrow(levelTextField, Priority.ALWAYS);
 		levelTextField.setMaxWidth(Double.POSITIVE_INFINITY);
-		levelTextField.setOnKeyTyped((e) -> {
+		levelTextField.setOnKeyReleased((e) -> {
 			if (levelChangedListener != null) {
 				levelChangedListener.run(getLevel());
 			}
@@ -36,7 +36,7 @@ class LevelBox extends HBox {
 		try{
 			return Level.parseLevel(levelTextField.getText());
 		} catch (Level.UnparseableException upe) {
-			upe.printStackTrace();
+//			upe.printStackTrace();
 			return null;
 		}
 	}

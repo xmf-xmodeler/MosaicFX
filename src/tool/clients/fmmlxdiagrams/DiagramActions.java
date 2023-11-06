@@ -717,40 +717,40 @@ public class DiagramActions {
 				final AssociationDialog.Result result = opt.get();
 				
 				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), false, result.sourceVisibleFromTarget);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation, false, result.sourceVisibleFromTarget);				
 				}
 				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), true, result.targetVisibleFromSource);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation, true, result.targetVisibleFromSource);				
 				}
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierSource);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierTarget);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
 					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation, result.newInstLevelSource);
 				}
 				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
 					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
-					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation, result.newInstLevelTarget);
 				}
 				
 				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multTargetToSource);
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), result.selectedAssociation, result.multTargetToSource);
 				}
 				if(!result.selectedAssociation.getMultiplicityStartToEnd().equals(result.multSourceToTarget)) {
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multSourceToTarget);
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), result.selectedAssociation, result.multSourceToTarget);
 				}
 				
 				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
 					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
-					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
+					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation, result.newDisplayName);
 				}
 					
 				diagram.updateDiagram();
