@@ -54,7 +54,7 @@ public class DefaultUIModelGenerator {
 		changeMetaClassForDiagram();
 
 		// instantiate model
-		instantiateUIModel(commonClassName);
+//		instantiateUIModel(commonClassName);
 
 		// only return after the diagram has been updated
 		ReturnCall<Object> onUpdate = update -> {
@@ -82,7 +82,7 @@ public class DefaultUIModelGenerator {
 
 			// create dummy class for level > 0
 			if (level > 0)
-				actions.addInstance("CommonClassL" + (level + 1), "CommonClassL" + level);
+				actions.addInstance("CommonClassL" + (level + 1), "CommonClassL" + level, level);
 
 			for (FmmlxObject o : objects) {
 
@@ -112,7 +112,7 @@ public class DefaultUIModelGenerator {
 				int x = (int) Math.round(o.getX());
 				int y = (int) Math.round(o.getY());
 
-				if (o.getMetaClassName().equals("Root::FMMLx::MetaClass")) {
+				if (o.getMetaClassName().contains("MetaClass")) {
 					// if the class is on an instance of metaclass than it needs to be removed from
 					// the canvas
 					diagram.getComm().removeClass(diagram.getID(), o.getName(), 0);
@@ -314,53 +314,54 @@ public class DefaultUIModelGenerator {
 		actions.addMetaClass("UIControlElement", 2, parents);
 		parents.clear();
 
-		actions.addInstance("UIControlElement", "Injection");
-		actions.addInstance("UIElement", "Virtual");
-		actions.addInstance("UIControlElement", "Action");
+		actions.addInstance("UIControlElement", "Injection", 1);
+		actions.addInstance("UIElement", "Virtual", 1);
+		actions.addInstance("UIControlElement", "Action", 1);
 
 		parents.add("Injection");
-		actions.addInstance("UIControlElement", "ListInjection", parents);
-		actions.addInstance("UIControlElement", "SlotInjection", parents);
+		actions.addInstance("UIControlElement", "ListInjection", 1, parents);
+		actions.addInstance("UIControlElement", "SlotInjection", 1, parents);
 
 		parents.add("Action");
-		actions.addInstance("UIControlElement", "ActionInjection", parents);
+		actions.addInstance("UIControlElement", "ActionInjection", 1, parents);
 		parents.clear();
-
-		
-
-
-
 
 		// add association
 		diagram.getComm().addAssociation(diagram.getID(), "UserInterface", "UIElement", "customUserInterface",
 				"uIElement", "composedOf", null, new Multiplicity(0, 1, true, false, false),
-				new Multiplicity(0, 2147483647, false, false, false), 0, 0,0,0, true, true, false, false, null, null, null, null);
+				new Multiplicity(0, 2147483647, false, false, false), 0, 0, 0, 0, true, true, false, false, null, null,
+				null, null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Parameter", "UIElement", "parameter", "uIElement",
 				"representedAs", null, new Multiplicity(0, 1, true, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0,0,0, true, true, false, false,null,null,null,null);
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, null, null, null,
+				null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Action", "Parameter", "action", "parameter", "uses", null,
 				new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(0, 2147483647, false, false, true), 0,0,0, 0, true, true, false, false,null,null,null,null);
+				new Multiplicity(0, 2147483647, false, false, true), 0, 0, 0, 0, true, true, false, false, null, null,
+				null, null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "UIControlElement", "Reference", "controlElement",
 				"reference", "derivedFrom", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0,0,0, 0, true, true, false, false,null,null,null,null);
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, null, null, null,
+				null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "parent", "parent", "isParent",
 				null, new Multiplicity(0, 2147483647, false, false, true), new Multiplicity(0, 1, true, false, true), 0,
-				0,0,0, false, true, false, false,null,null,null,null);
+				0, 0, 0, false, true, false, false, null, null, null, null);
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "child", "child", "isChild", null,
-				new Multiplicity(0, 1, true, false, true), new Multiplicity(0, 2147483647, false, false, true), 0, 0,0,0,
-				false, true, false, false,null,null,null,null);
+				new Multiplicity(0, 1, true, false, true), new Multiplicity(0, 2147483647, false, false, true), 0, 0, 0,
+				0, false, true, false, false, null, null, null, null);
 
-		// max level for objects of commonClass is here set to 5 .... not sure whether a higher value is better
+		// max level for objects of commonClass is here set to 5 .... not sure whether a
+		// higher value is better
 		// TBD: What side effects are possible
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", commomClassName, "reference", "commonClass",
 				"refersToStateOf", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0,0,0, 5, false, true, false, false, null,null,null,null);
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 5, false, true, false, false, null, null, null,
+				null);
 
 		// add Attributes
 		Multiplicity multOne = new Multiplicity(1, 1, true, false, false);

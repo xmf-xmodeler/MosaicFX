@@ -1349,23 +1349,23 @@ public class DiagramActions {
 	}
 	
 	// FH adding instances that can be shown
-	public String addInstance(String className, String instanceName) {
+	public String addInstance(String className, String instanceName, int level) {
 		Vector<String> parents = new Vector<String>();
 		boolean hidden = true;
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, 0, 0, hidden);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, 0, 0, hidden);
 		return instanceName;
 	}
 	
 	// FH adding instance with parents
-	public String addInstance(String className, String instanceName, Vector<String> parents) {
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, 0, 0, true);
+	public String addInstance(String className, String instanceName, int level, Vector<String> parents) {
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, 0, 0, true);
 		return instanceName;
 	}
 	
 	// FH adding instance with hidden level and x-y coordinates
-	public String addInstance(String className, String instanceName, boolean hidden, int x, int y) {
+	public String addInstance(String className, String instanceName, int level, boolean hidden, int x, int y) {
 		Vector<String> parents = new Vector<String>();
-		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(0), parents, false, false, x,y, hidden);
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, x,y, hidden);
 		return instanceName;
 	}
 	

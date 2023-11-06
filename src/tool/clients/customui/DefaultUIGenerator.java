@@ -244,7 +244,7 @@ public class DefaultUIGenerator {
 					head = false;
 					// create reference for every object + assoc pair
 					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + UUID.randomUUID().toString().replace("-", ""));
+							"ref" + UUID.randomUUID().toString().replace("-", ""),0);
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
@@ -258,7 +258,7 @@ public class DefaultUIGenerator {
 			if (head) {
 				// create a reference for head
 				referenceInstanceName = actions.addInstance("Reference",
-						"ref" + UUID.randomUUID().toString().replace("-", ""));
+						"ref" + UUID.randomUUID().toString().replace("-", ""),0);
 				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
 				atLeastOneHead = true;
 			}
@@ -308,7 +308,7 @@ public class DefaultUIGenerator {
 				raiseAlert("No instances found for " + reference.getObject().getName()
 						+ " . A new instance will be created.");
 				String instanceName = actions.addInstance(reference.getObject().getName(),
-						reference.getObject().getName() + UUID.randomUUID().toString().replace("-", ""));
+						reference.getObject().getName() + UUID.randomUUID().toString().replace("-", ""),0);
 				actions.addAssociation(reference.getReferenceInstanceName(), instanceName,
 						associationRefersToStateOf.getName());
 			}
@@ -331,7 +331,7 @@ public class DefaultUIGenerator {
 
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
-						"list" + UUID.randomUUID().toString().replace("-", ""));
+						"list" + UUID.randomUUID().toString().replace("-", ""),0);
 
 				actions.addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
 				actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
@@ -375,7 +375,7 @@ public class DefaultUIGenerator {
 				}
 
 				injectionInstanceName = actions.addInstance("SlotInjection",
-						"slot" + UUID.randomUUID().toString().replace("-", ""));
+						"slot" + UUID.randomUUID().toString().replace("-", ""),0);
 
 				helper.put("idOfUIElement", injectionInstanceName);
 				helper.put("nameOfModelElement", attribute.getName());
@@ -419,7 +419,7 @@ public class DefaultUIGenerator {
 				// if actionInjection
 				if (isActionInjection) {
 					injectionInstanceName = actions.addInstance("ActionInjection",
-							"actInj" + UUID.randomUUID().toString().replace("-", ""));
+							"actInj" + UUID.randomUUID().toString().replace("-", ""),0);
 					helper.put("idOfUIElement", injectionInstanceName);
 
 					slotValues.put(injectionInstanceName, (HashMap<String, String>) helper.clone());
@@ -440,8 +440,7 @@ public class DefaultUIGenerator {
 
 				} else {
 					actionInstanceName = actions.addInstance("Action", "act" +
-
-							UUID.randomUUID().toString().replace("-", ""));
+							UUID.randomUUID().toString().replace("-", ""),0);
 					helper.put("idOfUIElement", actionInstanceName);
 
 					slotValues.put(actionInstanceName, (HashMap<String, String>) helper.clone());
@@ -465,7 +464,7 @@ public class DefaultUIGenerator {
 					for (String paramType : operation.getParamTypes()) {
 						paramCounter++;
 						parameterInstanceName = actions.addInstance("Parameter",
-								"par" + UUID.randomUUID().toString().replace("-", ""));
+								"par" + UUID.randomUUID().toString().replace("-", ""),0);
 						actions.addAssociation(parameterInstanceName, actionInstanceName, associationUses.getName());
 
 						paramType = paramType.substring(paramType.lastIndexOf("::") + 2);
@@ -478,7 +477,7 @@ public class DefaultUIGenerator {
 
 						// virtual for every parameter
 						virtualInstanceName = actions.addInstance("Virtual",
-								"vir" + UUID.randomUUID().toString().replace("-", ""));
+								"vir" + UUID.randomUUID().toString().replace("-", ""),0);
 						helper.put("idOfUIElement", virtualInstanceName);
 						slotValues.put(virtualInstanceName, (HashMap<String, String>) helper.clone());
 						helper.clear();
