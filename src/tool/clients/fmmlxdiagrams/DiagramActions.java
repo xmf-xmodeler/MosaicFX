@@ -819,7 +819,7 @@ public class DiagramActions {
 					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
 				}
 			}
-			diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller_Local.getName());
+			diagram.getComm().setRoleFiller(diagram.getID(), role.getPath(), roleFiller_Local.getPath());
 			diagram.updateDiagram();
 		});
 	}
