@@ -74,6 +74,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		});
 		group.addNodeElement(header);
 		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+		if(ofName.equals("FMMLx::MetaClass")) ofName = "MetaClass";
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (object.level.toString()), FontPosture.REGULAR, FontWeight.BOLD, 2.);

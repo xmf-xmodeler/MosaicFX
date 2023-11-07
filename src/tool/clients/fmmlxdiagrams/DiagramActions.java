@@ -425,13 +425,13 @@ public class DiagramActions {
 				final ChangeLevelDialog.Result result = opt.get();
 				switch (result.type) {
 					case Class:
-						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
+						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectPath(), result.newLevel);
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());

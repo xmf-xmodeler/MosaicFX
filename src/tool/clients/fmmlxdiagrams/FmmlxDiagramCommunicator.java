@@ -1293,13 +1293,13 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAttributeName", message);
 	}
 
-	public void changeAttributeLevel(int diagramID, String objectName, String attName, int oldLevel, int newLevel) {
+	public void changeAttributeLevel(int diagramID, String objectName, String attName, Level oldLevel, Level newLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attName),
-				new Value(oldLevel),
-				new Value(newLevel)};
+				new Value(oldLevel.getMinLevel()),
+				new Value(newLevel.getMinLevel())};
 		sendMessage("changeAttributeLevel", message);
 	}
 
@@ -1350,7 +1350,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(level),
                 new Value(body)
         };
-        sendMessage("addOperation2", message);
+        sendMessage("addOperation", message);
     }
 
     public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
@@ -1362,13 +1362,13 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeOperationName", message);
     }
 
-    public void changeOperationLevel(int diagramID, String objectName, String opName, int oldLevel, int newLevel) {
+    public void changeOperationLevel(int diagramID, String objectName, String opName, Level oldLevel, Level newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(objectName),
                 new Value(opName),
-                new Value(oldLevel),
-                new Value(newLevel)};
+                new Value(oldLevel.getMinLevel()),
+                new Value(newLevel.getMinLevel())};
         sendMessage("changeOperationLevel", message);
     }
 
@@ -1419,11 +1419,12 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassName", message);
     }
 
-    public void changeClassLevel(int diagramID, String objectName, int newLevel) {
+    public void changeClassLevel(int diagramID, String objectPath, Level newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
-                new Value(newLevel)};
+                new Value(objectPath),
+                new Value(newLevel.getMinLevel()),
+                new Value(newLevel.getMaxLevel())};
         sendMessage("changeClassLevel", message);
     }
 
