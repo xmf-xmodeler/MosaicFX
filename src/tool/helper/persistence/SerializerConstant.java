@@ -38,6 +38,7 @@ public class SerializerConstant {
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
     public static final String ATTRIBUTE_LEVEL = "level";
+    public static final String ATTRIBUTE_MAX_LEVEL = "maxLevel";
     public static final String ATTRIBUTE_PARENTS = "parents";
     public static final String ATTRIBUTE_TYPE = "type";
     public static final String ATTRIBUTE_LEVEL_TARGET = "level_target";
@@ -50,6 +51,7 @@ public class SerializerConstant {
     public static final String ATTRIBUTE_PARENT_ASSOCIATION = "parent_association";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
     public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
+    public static final String ATTRIBUTE_IS_SINGLETON = "singleton";
     public static final String ATTRIBUTE_BODY = "body";
     public static final String ATTRIBUTE_CLASS = "class";
     public static final String ATTRIBUTE_OLD_NAME = "oldName";
