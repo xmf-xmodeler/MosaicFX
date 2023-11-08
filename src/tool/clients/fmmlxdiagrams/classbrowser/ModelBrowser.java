@@ -27,6 +27,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
@@ -86,9 +87,7 @@ public final class ModelBrowser extends CustomStage {
 		operationCodeArea = new CodeBoxPair(activePackage,e->{
 			opCodeButton.setDisable(
 					!operationCodeArea.getCheckPassed()||
-					fmmlxOperationListView.getSelectionModel().getSelectedItem()==null||
-					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("set")||
-					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("get")
+					fmmlxOperationListView.getSelectionModel().getSelectedItem()==null
 					);}, false);
 		ActionListener checkActionForSyntax = e -> {
 			conCodeButton.setDisable(!constraintBodyArea.getCheckPassed()||!constraintReasonArea.getCheckPassed());
@@ -112,7 +111,6 @@ public final class ModelBrowser extends CustomStage {
 		modelListView.getSelectionModel().clearSelection();
 		if (initialModel!=null) {
 			modelListView.getSelectionModel().select(initialModel);
-
 		}
 		
 		if(activePackage != null) fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
@@ -648,7 +646,11 @@ public final class ModelBrowser extends CustomStage {
 	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation newOp) {
 		if (newOp!=null) {
 			selection.put("OPE", newOp.getName());
-			updateOperationTab(newOp, activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem(), true);
+			boolean editable = false;
+			try{
+				editable = activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			} catch (PathNotFoundException pnfe) {}
+			updateOperationTab(newOp, editable, true);
 			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
 			opCodeButton.setOnAction(e -> {
 				activePackage.getComm().changeOperationBody(
