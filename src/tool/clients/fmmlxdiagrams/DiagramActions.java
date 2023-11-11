@@ -43,6 +43,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
@@ -1309,6 +1310,30 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 		});	
+	}
+
+	public void associationTypeDialog(AssociationType oldType) {
+		Platform.runLater(() -> {
+			AssociationTypeDialog atd = new AssociationTypeDialog(oldType);
+			Optional<AssociationType> opt = atd.showAndWait();
+			
+			if (opt.isPresent()) {
+				final AssociationType result = opt.get();
+				diagram.getComm().addAssociationType(diagram.getID(),
+						result.displayName,
+						result.color,
+						result.strokeWidth,
+						result.dashArray,
+						result.startDeco, result.endDeco,
+						result.colorLink,
+						result.strokeWidthLink,
+						result.dashArrayLink,
+						result.startDecoLink, result.endDecoLink,
+						result.sourcePath, result.targetPath
+						);
+				diagram.updateDiagram();
+			}
+		});
 	}
 
 }

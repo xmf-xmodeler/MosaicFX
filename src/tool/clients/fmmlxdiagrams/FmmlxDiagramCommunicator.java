@@ -429,9 +429,46 @@ public class FmmlxDiagramCommunicator {
 			}
 			objectsReceivedReturn.run(result);
 		};
-		
 		xmfRequestAsync(handle, diagram.getID(), "getAllObjects", localReturn);
-		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void getAssociationTypes(AbstractPackageViewer diagram,
+			ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<AssociationType> result = new Vector<>();
+			
+			for (Object responseItem : responseContent) {
+				Vector<Object> responseItemList = (Vector<Object>) (responseItem);
+				System.err.println(responseItemList);
+				AssociationType aType = new AssociationType(
+						(String)  responseItemList.get(0), // name
+						(String)  responseItemList.get(1), // path
+						(String)  responseItemList.get(2), // color
+						(Integer) responseItemList.get(3), // strokeWidth
+						(String)  responseItemList.get(4), // dashArray
+						(String)  responseItemList.get(5), // startDeco
+						(String)  responseItemList.get(6),  // endDeco
+						(String)  responseItemList.get(13), // colorLink
+						(Integer) responseItemList.get(14), // strokeWidthLink
+						(String)  responseItemList.get(15), // dashArrayLink
+						(String)  responseItemList.get(16), // startDecoLink
+						(String)  responseItemList.get(17),  // endDecoLink
+						(String)  responseItemList.get(7),  // sourcePath
+						(String)  responseItemList.get(8),  // targetPath
+						(String)  responseItemList.get(9),  // sourceLevel
+						(String)  responseItemList.get(10), // targetLevel
+						(String)  responseItemList.get(11), // sourceMult
+						(String)  responseItemList.get(12)  // targetMult
+
+						);
+				result.add(aType);
+			}
+			
+			associationTypesReceivedReturn.run(result);
+		};
+		xmfRequestAsync(handle, diagram.getID(), "getAssociationTypes", localReturn);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -635,8 +672,8 @@ public class FmmlxDiagramCommunicator {
 						(Integer) edgeInfoAsList.get(3), // parentId
 						listOfPoints, // points
 						startRegion, endRegion,
-						(String) edgeInfoAsList.get(5), // name 1
-						(String) edgeInfoAsList.get(6), // name 2
+						(String) edgeInfoAsList.get(5), // name
+						(String) edgeInfoAsList.get(6), // type
 						(String) edgeInfoAsList.get(7), // name source->target
 						(String) edgeInfoAsList.get(8), // name target->source
 						(Integer) edgeInfoAsList.get(9), // level source
@@ -1485,6 +1522,33 @@ public class FmmlxDiagramCommunicator {
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(roleName)};
         sendMessage("removeRoleFiller", message);
+    }
+    
+    public void addAssociationType(int diagramID,
+    	String typeName,
+    	String color,
+    	Integer strokeWitdh,
+    	String dashArray,
+    	String startDeco, String endDeco,
+    	String colorLink,
+    	Integer strokeWitdhLink,
+    	String dashArrayLink,
+    	String startDecoLink, String endDecoLink,
+    	String sourcePath, String targetPath) {
+        
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(typeName), 
+                new Value(color),
+                new Value(strokeWitdh),
+                new Value(dashArray),
+                new Value(startDeco), new Value(endDeco), 
+                new Value(colorLink),
+                new Value(strokeWitdhLink),
+                new Value(dashArrayLink),
+                new Value(startDecoLink), new Value(endDecoLink),
+                new Value(sourcePath), new Value(targetPath)};
+        sendMessage("addAssociationType", message);
     }
 
     public void addAssociation(int diagramID,

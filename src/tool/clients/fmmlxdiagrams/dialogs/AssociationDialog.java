@@ -17,6 +17,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.AssociationType;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
@@ -256,9 +257,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		}
 		
 		Vector<AssociationType> assocTypeItems = new Vector<>();
-		assocTypeItems.add(new AssociationType("DefaultAssociation", "Associations::DefaultAssociation"));
-		assocTypeItems.add(new AssociationType("Aggregation", "Associations::Aggregation"));
-		assocTypeItems.add(new AssociationType("Composition", "Associations::Composition"));
+		assocTypeItems.addAll(diagram.getAssociationTypes());
 		associationTypeBox = new ComboBox<>(FXCollections.observableList(assocTypeItems));
 		associationTypeBox.getSelectionModel().select(0);
 		labels = new ArrayList<>();

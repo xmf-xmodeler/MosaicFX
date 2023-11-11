@@ -60,21 +60,52 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 			}	
 		}
 	}
-	
+
 	@Override
 	protected Color getPrimaryColor() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			String s = type.colorLink;
+			return Color.web(s);
+		} catch (Exception e) {
+//		  System.err.println("getPrimaryColor FAIL: " + e.getMessage());
+		}
 		return Color.GRAY;
 	}
 
 	@Override
-	protected Double getLineDashes() {
-		return 10d;
+	protected double getStrokeWidth() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			return 1. * type.strokeWidthLink;
+		} catch (Exception e) {
+//		  System.err.println("getStrokeWidth FAIL: " + e.getMessage());
+		}
+		return 1.;
+	}
+
+	@Override
+	protected double[] getLineDashes() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			if("".equals(type.dashArray)) return new double[]{};
+			String[] dashesS = type.dashArrayLink.split(",");
+			double[] dashes = new double[dashesS.length];
+			for(int i = 0; i < dashesS.length; i++) {
+				dashes[i] = Double.parseDouble(dashesS[i]);
+			}
+			return dashes;
+		} catch (Exception e) {
+//			System.err.println("getLineDashes FAIL: " + e.getMessage());
+			return new double[] {10.,10.};
+		}
 	}
 
 	@Override
 	protected String getSvgDashes() {
 		return "10";
 	}
+	
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {

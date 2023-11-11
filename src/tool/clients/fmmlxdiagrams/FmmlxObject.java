@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -532,19 +533,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		
 		// try to find concrete syntax:
-		ConcreteSyntax myConcreteSyntax = null;
-		
-		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
-			try{
-				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
-				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level) {
-					myConcreteSyntax = c;
-				}
-				if(this.ownPath.equals(c.classPath) && this.level.getMinLevel() == c.level) {
-					myConcreteSyntax = c;
-				}
-			} catch (Exception e) {}
-		}
+		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax(diagram,0);
 		
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
@@ -557,6 +546,22 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
+	}
+
+	private ConcreteSyntax findMyConcreteSyntax(FmmlxDiagram diagram, int levelDiff) {
+		ConcreteSyntax myConcreteSyntax = null;
+		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
+			try{
+				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
+				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level+levelDiff) {
+					myConcreteSyntax = c;
+				}
+				if(this.ownPath.equals(c.classPath) && this.level.getMinLevel() == c.level+levelDiff) {
+					myConcreteSyntax = c;
+				}
+			} catch (Exception e) {}
+		}
+		return myConcreteSyntax;
 	}
 
 	public void dragTo(Affine dragAffine) {
@@ -616,6 +621,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public boolean isClass() {
 		return level.isClass();
+	}
+
+	public javafx.scene.Node getConcreteSyntaxIcon(int size) {
+		if(!(diagram instanceof FmmlxDiagram)) return null;
+		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax((FmmlxDiagram)diagram, 1);
+		if(myConcreteSyntax == null) return null;
+		return new ConcreteSyntaxIcon(myConcreteSyntax, size);
 	}
 
 }
