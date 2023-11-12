@@ -441,7 +441,6 @@ public class FmmlxDiagramCommunicator {
 			
 			for (Object responseItem : responseContent) {
 				Vector<Object> responseItemList = (Vector<Object>) (responseItem);
-				System.err.println(responseItemList);
 				AssociationType aType = new AssociationType(
 						(String)  responseItemList.get(0), // name
 						(String)  responseItemList.get(1), // path
@@ -1525,30 +1524,36 @@ public class FmmlxDiagramCommunicator {
     }
     
     public void addAssociationType(int diagramID,
-    	String typeName,
-    	String color,
-    	Integer strokeWitdh,
-    	String dashArray,
-    	String startDeco, String endDeco,
-    	String colorLink,
-    	Integer strokeWitdhLink,
-    	String dashArrayLink,
-    	String startDecoLink, String endDecoLink,
-    	String sourcePath, String targetPath) {
+        AssociationType aType,
+        ReturnCall<AssociationType> onXmfReturn) {
+    	
+    	ReturnCall<Vector<Object>> localReturn = (msgAsVec) -> {
+    		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
+			if (err != null && err.size() > 0 && err.get(0) != null ) {
+				Platform.runLater(() -> {
+//					Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+//					alert.show();
+					aType._error_Mgs_ = err.get(0) + "";
+					onXmfReturn.run(aType);
+				});
+			} else {
+				onXmfReturn.run(null);
+			}
+    	};
         
         Value[] message = new Value[]{
-                getNoReturnExpectedMessageID(diagramID),
-                new Value(typeName), 
-                new Value(color),
-                new Value(strokeWitdh),
-                new Value(dashArray),
-                new Value(startDeco), new Value(endDeco), 
-                new Value(colorLink),
-                new Value(strokeWitdhLink),
-                new Value(dashArrayLink),
-                new Value(startDecoLink), new Value(endDecoLink),
-                new Value(sourcePath), new Value(targetPath)};
-        sendMessage("addAssociationType", message);
+                new Value(aType.displayName), 
+                new Value(aType.color),
+                new Value(aType.strokeWidth),
+                new Value(aType.dashArray),
+                new Value(aType.startDeco), new Value(aType.endDeco), 
+                new Value(aType.colorLink),
+                new Value(aType.strokeWidthLink),
+                new Value(aType.dashArrayLink),
+                new Value(aType.startDecoLink), new Value(aType.endDecoLink),
+                new Value(aType.sourcePath), new Value(aType.targetPath)};
+//        sendMessage("addAssociationType", message);
+        xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
     }
 
     public void addAssociation(int diagramID,

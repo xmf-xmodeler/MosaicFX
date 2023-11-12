@@ -1320,18 +1320,14 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final AssociationType result = opt.get();
 				diagram.getComm().addAssociationType(diagram.getID(),
-						result.displayName,
-						result.color,
-						result.strokeWidth,
-						result.dashArray,
-						result.startDeco, result.endDeco,
-						result.colorLink,
-						result.strokeWidthLink,
-						result.dashArrayLink,
-						result.startDecoLink, result.endDecoLink,
-						result.sourcePath, result.targetPath
-						);
-				diagram.updateDiagram();
+					result,
+					xmfReturn -> {
+						if(xmfReturn == null) {
+							diagram.updateDiagram();
+						} else {
+							associationTypeDialog(xmfReturn);
+						}						
+					});
 			}
 		});
 	}

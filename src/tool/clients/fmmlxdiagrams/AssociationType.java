@@ -58,10 +58,7 @@ public class AssociationType {
 		this.sourceLevel = sourceLevel;
 		this.targetLevel = targetLevel;
 		this.sourceMult = sourceMult;
-		this.targetMult = targetMult;
-		
-		System.err.println("AssocType added: " + this);
-		
+		this.targetMult = targetMult;		
 	}
 
 //	@Override
@@ -74,5 +71,7 @@ public class AssociationType {
 	public String toString() {
 		return displayName + "(" + color + "/" + strokeWidth + "/" + dashArray + ")";
 	}
+	
+	public transient String _error_Mgs_;
 
 }
