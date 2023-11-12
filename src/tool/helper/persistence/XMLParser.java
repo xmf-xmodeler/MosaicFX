@@ -31,6 +31,7 @@ public class XMLParser {
 	Element root;
 	String projectPath;
 	String projectName;
+	private static final boolean DEBUG = true;
 
 	public XMLParser() {
 		this(getInputFile());
@@ -90,6 +91,9 @@ public class XMLParser {
 
 	private Element initParser(File inputFile) {
 		Document doc = XMLUtil.getDocumentFromFile(inputFile);
+		if (DEBUG == true) {
+			XMLUtil.saveDocumentToFile(doc, new File("testXMLImport.xml"));
+		}
 		Element root = doc.getDocumentElement();
 		return root;
 	}

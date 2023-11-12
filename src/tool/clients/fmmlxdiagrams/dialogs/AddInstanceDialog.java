@@ -54,7 +54,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
+		
 		singletonCheckBox = new CheckBox();
+		if (selectedClass.getLevel().getMaxLevel() == 1) {
+		singletonCheckBox.setDisable(true);	
+		}
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		levelBox = new LevelBox(selectedClass.getLevel().minusOne());
