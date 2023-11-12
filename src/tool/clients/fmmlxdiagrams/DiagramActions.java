@@ -719,11 +719,11 @@ public class DiagramActions {
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
