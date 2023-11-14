@@ -128,7 +128,7 @@ public class FmmlxPalette {
 			DefaultTool metaClassTool = 
 					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 			DefaultTool noteTool = 
-					new DefaultTool("Note", "resources/png/note.16.png", point -> System.err.println("create node"));
+					new DefaultTool("Note", "resources/png/note.16.png", point -> fmmlxDiagram.activateNoteCreationMode());
 			
 			
 

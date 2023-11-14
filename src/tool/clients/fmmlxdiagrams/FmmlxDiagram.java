@@ -23,6 +23,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
@@ -40,6 +41,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -279,9 +281,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
 				}
-				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
-						getActiveDiagramViewPane().escapeLinkCreationMode();	
-				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
@@ -347,6 +346,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane.getItems().addAll(splitPane2, mainView);
 		SplitPane.setResizableWithParent(splitPane2, false);
 		
+		splitPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
+			@Override
+			public void handle(javafx.scene.input.KeyEvent event) {
+				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+					getActiveDiagramViewPane().escapeCreationMode();	
+				}
+
+			}
+		});
+		
 		switchTableOnAndOffForIssues();
 		Thread t = new Thread( () -> {
 			this.fetchDiagramData( a -> { } );
@@ -385,6 +394,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
+		// if the palette is not updated no new actions could be performed
+		getPalette().update();
 	}
 	
 	public FmmlxPalette getPalette() {
@@ -401,6 +412,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
 		// TODO getCanvas().setCursor(Cursor.CROSSHAIR);
+	}
+	
+	public void activateNoteCreationMode() {
+		setNodeCreationType("Note");
+		Image noteImage = new Image(new File("resources/png/note.16.png").toURI().toString());
+		Cursor noteCursor = new ImageCursor(noteImage);
+		setPaneCursor(noteCursor);
 	}
 	
 	public String getEdgeCreationType() {
@@ -689,7 +707,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}
 
-	public void setCursor(Cursor c) {
+	public void setPaneCursor(Cursor c) {
 		getActiveDiagramViewPane().canvas.setCursor(c);
 	}
 
@@ -849,6 +867,43 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return new BoundingBox(0,0,100,100);
 	}
 		
+	public void switchTableOnAndOffForIssues() {
+		mainView.getChildren().clear();
+		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
+			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
+	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
+			splitPane3 = new SplitPane(tabPane, scrollPane);
+			splitPane3.setOrientation(Orientation.VERTICAL);
+			mainView.getChildren().addAll(diagramViewToolbar, splitPane3);
+		} else {
+			mainView.getChildren().addAll(diagramViewToolbar, tabPane);
+		}
+		Thread t = new Thread(() -> {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			redraw();
+		});
+		t.start();
+	}
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		switch(newStatus) {
+		case LOADING:
+		case DIRTY:	
+			diagramViewToolbar.toggleUpdateButton(true);
+			break;
+	
+		default:
+			diagramViewToolbar.toggleUpdateButton(false);
+			break;
+		}
+		
+	}
+
 	public class DiagramViewPane extends Pane implements View {
 		
 		Canvas canvas;
@@ -1095,6 +1150,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						canvas.setCursor(Cursor.DEFAULT);
 					}
 				}
+			} else if (nodeCreationType.equals("Note")) {
+				System.err.println("Create Note");
+				canvas.setCursor(Cursor.DEFAULT);
+				deselectPalette();
 			} else {
 				if (nodeCreationType.equals("MetaClass")) {
 					actions.addMetaClassDialog(unTransformedPoint);
@@ -1126,8 +1185,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleRightPressed(MouseEvent e) {
-			if (mouseMode == MouseMode.DRAW_EDGE) {
-				escapeLinkCreationMode();
+			if (mouseMode == MouseMode.DRAW_EDGE || "Note".equals(nodeCreationType)) {
+				escapeCreationMode();
 				return;
 			}
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
@@ -1522,10 +1581,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			redraw();
 		}
 		/**
-		 * If a user chooses to add a link but then decides that he does not need it, the canvas can be reset to normal by this function call.
+		 * If a user chooses to create something but then decides that he does not need it, the canvas can be reset to normal by this function call.
 		 */
-		public void escapeLinkCreationMode() {
-			mouseMode = MouseMode.STANDARD;
+		public void escapeCreationMode() {
+			mouseMode = MouseMode.STANDARD;			
+			setPaneCursor(Cursor.DEFAULT);
+			deselectPalette();
 			redraw();
 		}
 	}
@@ -1593,44 +1654,5 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			setCloseListener();
 			
 		}		
-	
-	
-	}
-
-	public void switchTableOnAndOffForIssues() {
-		mainView.getChildren().clear();
-		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
-			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
-	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
-			splitPane3 = new SplitPane(tabPane, scrollPane);
-			splitPane3.setOrientation(Orientation.VERTICAL);
-			mainView.getChildren().addAll(diagramViewToolbar, splitPane3);
-		} else {
-			mainView.getChildren().addAll(diagramViewToolbar, tabPane);
-		}
-		Thread t = new Thread(() -> {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			redraw();
-		});
-		t.start();
-	}
-
-	@Override
-	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
-		switch(newStatus) {
-		case LOADING:
-		case DIRTY:	
-			diagramViewToolbar.toggleUpdateButton(true);
-			break;
-
-		default:
-			diagramViewToolbar.toggleUpdateButton(false);
-			break;
-		}
-		
 	}	
 }
