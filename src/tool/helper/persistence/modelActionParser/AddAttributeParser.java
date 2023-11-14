@@ -15,9 +15,9 @@ public class AddAttributeParser extends ModelActionParser {
 	@Override
 	public void parse(Element modelElement) {
 		String name = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-		String classpath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-		String[] classPathArray = classpath.split("::");
-		String className = classPathArray[classPathArray.length - 1];
+		String classPath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
+//		String[] classPathArray = classpath.split("::");
+//		String className = classPathArray[classPathArray.length - 1];
 		int level = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
 		String typePath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
 		String multiplicityString = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
@@ -31,6 +31,6 @@ public class AddAttributeParser extends ModelActionParser {
 
 		String[] typePathArray = typePath.split("::");
 		String typeName = typePathArray[typePathArray.length - 1];
-		communicator.addAttribute(diagramId, className, name, new Level(level), typeName, multiplicity, true, false, false);
+		communicator.addAttribute(diagramId, classPath, name, new Level(level), typeName, multiplicity, true, false, false);
 	}
 }

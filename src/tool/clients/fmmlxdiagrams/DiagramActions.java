@@ -179,7 +179,7 @@ public class DiagramActions {
 				final AddInstanceDialog.Result aidResult = result.get();
 
 				if(view == null) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 							aidResult.name, aidResult.level,
                             aidResult.getParentNames(), 
                             aidResult.isAbstract, 
@@ -201,7 +201,7 @@ public class DiagramActions {
 							
 	
 							if (x > 0 && y > 0) {
-								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 										aidResult.name, aidResult.level, 
 										aidResult.getParentNames(), aidResult.isAbstract, 
 			                            aidResult.isSingleton, 
@@ -229,7 +229,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
 				diagram.getComm().addNewInstance(
-						diagram.getID(), aidResult.getOfName(), aidResult.name,
+						diagram.getID(), aidResult.getOfPath(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         aidResult.isSingleton, 
@@ -257,7 +257,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
+				diagram.getComm().addAttribute(diagram.getID(), aad.classPath, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
 			}
 			diagram.updateDiagram();
 		});
@@ -548,7 +548,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.getComm().addOperation(diagram.getID(), result.object.getPath(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});

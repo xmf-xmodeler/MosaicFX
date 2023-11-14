@@ -550,7 +550,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	private ConcreteSyntax findMyConcreteSyntax(FmmlxDiagram diagram, int levelDiff) {
 		ConcreteSyntax myConcreteSyntax = null;
-		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
+		for(ConcreteSyntax c : new Vector<>(diagram.syntaxes.values())) if(myConcreteSyntax == null) {
 			try{
 				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
 				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level+levelDiff) {
@@ -628,6 +628,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax((FmmlxDiagram)diagram, 1);
 		if(myConcreteSyntax == null) return null;
 		return new ConcreteSyntaxIcon(myConcreteSyntax, size);
+	}
+
+	public String getRelativeName() {
+		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
 	}
 
 }

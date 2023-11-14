@@ -74,7 +74,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 
 				return new Result(
-						selectedObject.getName(),
+						selectedObject.getPath(),
 						nameTextField.getText(),
 						levelComboBox.getLevel(),
 						getComboBoxStringValue(typeComboBox),
@@ -249,16 +249,16 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		public final String name;
 		public final String type;
 		public final Level level;
-		public final String className;
+		public final String classPath;
 		public final Multiplicity multi;
 		public final boolean isIntrinsic;
 		public final boolean isIncomplete;
 		public final boolean isOptional;
 		
 
-		private Result(String className, String name, Level level, String type, Multiplicity multi, 
+		private Result(String classPath, String name, Level level, String type, Multiplicity multi, 
 				boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
-			this.className= className;
+			this.classPath= classPath;
 			this.name = name;
 			this.level = level;
 			this.type = type;

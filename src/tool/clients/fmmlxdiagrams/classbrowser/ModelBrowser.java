@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -113,7 +112,11 @@ public final class ModelBrowser extends CustomStage {
 			modelListView.getSelectionModel().select(initialModel);
 		}
 		
-		if(activePackage != null) fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		if(activePackage != null) {
+			fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		} else {
+			fmmlxObjectListView.setContextMenu(new ContextMenu(new MenuItem("not yet initialized...")));
+		}
 		setMaximized(true);
 	}
 
@@ -540,7 +543,7 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
-		
+		System.err.println("onObjectListViewNewValue");
 		boolean noObject = selectedObject == null;
 		
 		fmmlxAttributeListView.getItems().clear();

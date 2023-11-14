@@ -31,7 +31,7 @@ public class XMLParser {
 	Element root;
 	String projectPath;
 	String projectName;
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	public XMLParser() {
 		this(getInputFile());

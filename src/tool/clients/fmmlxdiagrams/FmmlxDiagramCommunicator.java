@@ -809,6 +809,7 @@ public class FmmlxDiagramCommunicator {
 						if(opInfo==null) {
 							System.err.println("NULL"); 
 						} else {
+//							System.err.println(opInfo.get(1)); 
 						Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
 						Vector<String> paramNamesS = new Vector<>();
 						for (Object O : paramNamesO) {
@@ -1305,10 +1306,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("setAssociationEndVisibility", message);
 	}
 
-	public void addAttribute(int diagramID, String className, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
+	public void addAttribute(int diagramID, String classPath, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(className),
+				new Value(classPath),
 				new Value(name),
 				new Value(level.getMinLevel()),
 				new Value(level.getMaxLevel()),
@@ -1379,48 +1380,48 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAttribute", message);
 	}
 
-    public void addOperation(int diagramID, String objectName, int level, String body) {
+    public void addOperation(int diagramID, String classPath, int level, String body) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(level),
                 new Value(body)
         };
         sendMessage("addOperation", message);
     }
 
-    public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
+    public void changeOperationName(int diagramID, String classPath, String oldName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(oldName),
                 new Value(newName)};
         sendMessage("changeOperationName", message);
     }
 
-    public void changeOperationLevel(int diagramID, String objectName, String opName, Level oldLevel, Level newLevel) {
+    public void changeOperationLevel(int diagramID, String classPath, String opName, Level oldLevel, Level newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(opName),
                 new Value(oldLevel.getMinLevel()),
                 new Value(newLevel.getMinLevel())};
         sendMessage("changeOperationLevel", message);
     }
 
-    public void changeOperationOwner(int diagramID, String objectName, String name, String newOwnerName) {
+    public void changeOperationOwner(int diagramID, String classPath, String name, String newOwnerName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(name),
                 new Value(newOwnerName)};
         sendMessage("changeOperationOwner", message);
     }
 
-    public void changeOperationType(int diagramID, String objectName, String operationName, String newType) {
+    public void changeOperationType(int diagramID, String classPath, String operationName, String newType) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(operationName),
                 new Value(newType)};
         sendMessage("changeOperationType", message);
