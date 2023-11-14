@@ -118,16 +118,7 @@ public class FmmlxPalette {
 			treeView.setShowRoot(false);
 			root.getChildren().add(relationships);
 			root.getChildren().add(elements);
-
-//			DefaultTool associationTool = new DefaultTool("Association", "resources/gif/Association.gif",
-//					point -> fmmlxDiagram.setEdgeCreationType("association"));
-//			DefaultTool linkTool = new DefaultTool("Link", "resources/gif/Association.gif",
-//					point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
-//			DefaultTool delegationTool = new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png",
-//					point -> fmmlxDiagram.setEdgeCreationType("delegation"));
-//			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif",
-//					point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
-//			
+			
 			DefaultTool associationTool = 
 					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
 			DefaultTool linkTool = 
@@ -136,17 +127,20 @@ public class FmmlxPalette {
 					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
 			DefaultTool metaClassTool = 
 					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+			DefaultTool noteTool = 
+					new DefaultTool("Note", "resources/png/note.16.png", point -> System.err.println("create node"));
+			
+			
 
 			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
 			TreeItem<AbstractTreeType> delegation = new TreeItem<AbstractTreeType>(delegationTool);
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
+			TreeItem<AbstractTreeType> note = new TreeItem<AbstractTreeType>(noteTool);
 
 			elements.getChildren().add(metaClass);
-			relationships.getChildren().add(association);
-			relationships.getChildren().add(link);
-			relationships.getChildren().add(delegation);
-
+			relationships.getChildren().addAll(association, link, delegation, note);
+	
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
 			for (FmmlxObject o : objects) {
