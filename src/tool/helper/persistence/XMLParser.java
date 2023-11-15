@@ -27,11 +27,11 @@ import tool.helper.userProperties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
 public class XMLParser {
-	FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
-	Element root;
-	String projectPath;
-	String projectName;
+	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
+	private Element root;
+	private String projectPath;
 	private static final boolean DEBUG = false;
+
 
 	public XMLParser() {
 		this(getInputFile());
@@ -59,7 +59,7 @@ public class XMLParser {
 		return inputFile.get();
 	}
 
-	public XMLParser(File inputFile) {
+	XMLParser(File inputFile) {
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
 			//overrride importFile with transformed Version
@@ -91,15 +91,18 @@ public class XMLParser {
 
 	private Element initParser(File inputFile) {
 		Document doc = XMLUtil.getDocumentFromFile(inputFile);
+
 		if (DEBUG == true) {
 			XMLUtil.saveDocumentToFile(doc, new File("testXMLImport.xml"));
 		}
-		Element root = doc.getDocumentElement();
-		return root;
+		return doc.getDocumentElement();
 	}
 
 	public void parseXMLDocument() {
 		createProject();
+		
+		//i am unsure where it needs to be, you can move it.
+		checkImports();
 		
 		communicator.createDiagram(projectPath, "projectImporter", "", DiagramType.ModelBrowser, false, 
 			localID -> {
@@ -117,15 +120,28 @@ public class XMLParser {
 				ControlCenterClient.getClient().getAllProjects();
 			});
 
-		
-//		buildModel();
-	//	communicator.waitForNextRequestReturn();
-
 	}
 	
+	/**
+	 * This function proves if the referenced packages of the new imported package are already loaded.
+	 * Add Info about what happens when the package is not found.
+	 */
+	private void checkImports() {
+		//Only imports version 4 or higher contains Imports. If Import-Tag is not found an empty element is returned (see getChildElement()) and because this has no children no action is performed.
+		Element importElement = XMLUtil.getChildElement(root, XMLTags.IMPORTS.getName());
+		NodeList importList  = importElement.getChildNodes();
+		for (int i = 0; i < importList.getLength() - 1; i++) {
+			Node node = importList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.PACKAGE_IMPORT.getName()) ) {
+				//add your needed action for an import here
+				System.err.println(node.getTextContent());
+			}
+		}
+	}
+
 	private void createProject() {
 		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
-        projectName = projectPath.split("::")[1];
+        String projectName = projectPath.split("::")[1];
 		communicator.createProject(projectName, projectPath);
 	}
 
@@ -193,7 +209,7 @@ public class XMLParser {
 	}
 
 	private void sendDiagramViewStatus(Integer diagramID, Element viewsElement) {
-		SortedMap<String, Affine> views = new TreeMap<String, Affine>();
+		SortedMap<String, Affine> views = new TreeMap<>();
 		NodeList viewElements =  viewsElement.getChildNodes();
 		for (int i = 0; i < viewElements.getLength(); i++) {
 			if (viewElements.item(i).getNodeType() != Node.ELEMENT_NODE) {
@@ -240,9 +256,9 @@ public class XMLParser {
 	}
 
 	private void sendObjectInformation(Integer diagramId, Element object) {
-         int x = Integer.valueOf(object.getAttribute(XMLAttributes.X_COORDINATE.getName()));
+         int x = Integer.parseInt(object.getAttribute(XMLAttributes.X_COORDINATE.getName()));
          int y = Integer.valueOf(object.getAttribute(XMLAttributes.Y_COORDINATE.getName()));
-         boolean hidden = Boolean.valueOf(object.getAttribute(XMLAttributes.HIDDEN.getName()));
+         boolean hidden = Boolean.parseBoolean(object.getAttribute(XMLAttributes.HIDDEN.getName()));
          String ref = object.getAttribute(XMLAttributes.PATH.getName());
          XMLInstanceStub stub = new XMLInstanceStub(ref, hidden, x, y);
          communicator.sendObjectInformation(diagramId, stub);
