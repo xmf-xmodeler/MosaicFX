@@ -1236,7 +1236,7 @@ public class FmmlxDiagramCommunicator {
 			String namePrefix, 
 			Vector<Vector<String>> slotValues,
 			Vector<String> mandatoryConstraints, 
-			ReturnCall<Boolean> wizardReturn) {
+			ReturnCall<Vector> wizardReturn) {
 
 		int i = 0;
 		Value[] slotList = new Value[slotValues.size()];
@@ -1257,8 +1257,7 @@ public class FmmlxDiagramCommunicator {
 		
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
 			System.err.println("Instance Generator response from XMF: "+ response);
-			Boolean success = (Boolean) response.get(0);
-			wizardReturn.run(success);
+			wizardReturn.run(response);
 		};
 		
 		xmfRequestAsync(handle, diagram.getID(), "addGeneratedInstance", localReturn, 
