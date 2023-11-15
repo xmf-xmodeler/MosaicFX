@@ -26,6 +26,7 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
+import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import xos.Value;
@@ -2661,4 +2662,16 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
+      
+    
+    /**
+     * This function gets called from Menu-Item "Load Package" in ControlCenter.
+     * This Menu-Item calls a function in XMF which is forwarded to this function.
+     */
+    public void openXmlFile() {
+    	Platform.runLater(()->{
+    		XMLParser parser = new XMLParser();
+    		parser.parseXMLDocument();   		
+    	});
+    }   
 }
