@@ -43,6 +43,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
@@ -178,7 +179,7 @@ public class DiagramActions {
 				final AddInstanceDialog.Result aidResult = result.get();
 
 				if(view == null) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 							aidResult.name, aidResult.level,
                             aidResult.getParentNames(), 
                             aidResult.isAbstract, 
@@ -200,7 +201,7 @@ public class DiagramActions {
 							
 	
 							if (x > 0 && y > 0) {
-								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 										aidResult.name, aidResult.level, 
 										aidResult.getParentNames(), aidResult.isAbstract, 
 			                            aidResult.isSingleton, 
@@ -228,7 +229,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
 				diagram.getComm().addNewInstance(
-						diagram.getID(), aidResult.getOfName(), aidResult.name,
+						diagram.getID(), aidResult.getOfPath(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         aidResult.isSingleton, 
@@ -256,7 +257,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
+				diagram.getComm().addAttribute(diagram.getID(), aad.classPath, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
 			}
 			diagram.updateDiagram();
 		});
@@ -425,13 +426,13 @@ public class DiagramActions {
 				final ChangeLevelDialog.Result result = opt.get();
 				switch (result.type) {
 					case Class:
-						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
+						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectPath(), result.newLevel);
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
@@ -547,7 +548,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.getComm().addOperation(diagram.getID(), result.object.getPath(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});
@@ -718,11 +719,11 @@ public class DiagramActions {
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
@@ -819,7 +820,7 @@ public class DiagramActions {
 					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
 				}
 			}
-			diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller_Local.getName());
+			diagram.getComm().setRoleFiller(diagram.getID(), role.getPath(), roleFiller_Local.getPath());
 			diagram.updateDiagram();
 		});
 	}
@@ -1309,6 +1310,26 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 		});	
+	}
+
+	public void associationTypeDialog(AssociationType oldType) {
+		Platform.runLater(() -> {
+			AssociationTypeDialog atd = new AssociationTypeDialog(oldType);
+			Optional<AssociationType> opt = atd.showAndWait();
+			
+			if (opt.isPresent()) {
+				final AssociationType result = opt.get();
+				diagram.getComm().addAssociationType(diagram.getID(),
+					result,
+					xmfReturn -> {
+						if(xmfReturn == null) {
+							diagram.updateDiagram();
+						} else {
+							associationTypeDialog(xmfReturn);
+						}						
+					});
+			}
+		});
 	}
 
 }

@@ -169,6 +169,22 @@ public abstract class NodeElement {
 	                         0, zoom, -zoom*(minY + maxY)/2 + canvas.getHeight()/2);
 	}
 	
+	public Affine getZoomViewTransform(int w, int h) {
+		updateBounds();
+		if(getBounds() == null) return new Affine();
+		double minX = getBounds().getMinX();
+		double minY = getBounds().getMinY();
+		double maxX = getBounds().getMaxX();
+		double maxY = getBounds().getMaxY();
+
+		double xZoom = w / (maxX - minX); 
+		double yZoom = h / (maxY - minY);
+		double zoom = Math.min(xZoom, yZoom) * 0.7;
+
+		return new Affine(zoom,    0, -zoom*(minX + maxX)/2 + w/2,
+	                         0, zoom, -zoom*(minY + maxY)/2 + h/2);
+	}
+	
 	public static String color2Web(Color c) {
 		String r = Integer.toHexString((int)(c.getRed()*255));
 		String g = Integer.toHexString((int)(c.getGreen()*255));

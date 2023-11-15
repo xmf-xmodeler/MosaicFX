@@ -11,16 +11,28 @@ public class AddMetaClassParser extends ModelActionParser {
 
 	public AddMetaClassParser(int diagramId) {
 		super(diagramId);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void parse(Element modelElement) {
+		Level level = defineLevel(modelElement); 
 		String name = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-		int level = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-		boolean isAbstract = Boolean
-				.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
+		boolean isAbstract = Boolean.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
+		boolean isSingleton = Boolean.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SINGLETON)); 
+		
 		//right now we can not give position information because the position information is saved in an other element
-		communicator.addMetaClass(diagramId, name, new Level(level), new Vector<>(), isAbstract, false, 0, 0, false);
+		communicator.addMetaClass(diagramId, name, level, new Vector<>(), isAbstract, isSingleton, 0, 0, false);
+	}
+
+	private Level defineLevel(Element modelElement) {
+		int minLevel = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
+		if (!modelElement.hasAttribute("maxLevel")) {
+			return new Level(minLevel);
+		}
+		if ("none".equals(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_MAX_LEVEL))) {
+			return new Level(minLevel, null);
+		}
+		int maxLevel = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_MAX_LEVEL));
+		return new Level(minLevel, maxLevel);
 	}
 }

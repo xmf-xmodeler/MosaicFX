@@ -74,10 +74,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		});
 		group.addNodeElement(header);
 		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+		if(ofName.equals("FMMLx::MetaClass")) ofName = "MetaClass";
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (object.level.toString()), FontPosture.REGULAR, FontWeight.BOLD, 2.);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		
 		if(object.isSingleton()) {
 			NodeBox singletonBar = new NodeBox(neededWidth/3., currentY, neededWidth/3., textHeight * headerLines + EXTRA_Y_PER_LINE, 
@@ -366,10 +367,10 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		double neededWidth = FmmlxDiagram.calculateTextWidth(object.name); 
+		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 
 
 		try {
-			String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+			String ofName = FmmlxObject.getRelativePath(diagram.packagePath, object.getOfPath());
 //			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {

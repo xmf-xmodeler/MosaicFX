@@ -54,7 +54,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
+		
 		singletonCheckBox = new CheckBox();
+		if (selectedClass != null && selectedClass.getLevel().getMaxLevel() == 1) {
+		singletonCheckBox.setDisable(true);	
+		}
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		levelBox = new LevelBox(selectedClass.getLevel().minusOne());
@@ -130,7 +134,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		    	if(level != null) {
 		    		return new Result(nameTextField.getText(), level, 
 					parentListView.getSelectionModel().getSelectedItems(), 
-					selectedObject.getName(),
+					selectedObject.getPath(),
 					abstractCheckBox.isSelected(),
 					singletonCheckBox.isSelected());
 		    	}
@@ -211,16 +215,16 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		public final String name;
 		public final Level level;
 		public final ObservableList<FmmlxObject> parents;
-		public final String ofName;
+		public final String ofPath;
 		public final boolean isAbstract;
 		public final boolean isSingleton;
 
-		public Result(String name, Level level, ObservableList<FmmlxObject> parents, String ofName,
+		public Result(String name, Level level, ObservableList<FmmlxObject> parents, String ofPath,
 									   boolean isAbstract, boolean isSingleton) {
 			this.name = name;
 			this.level = level;
 			this.parents = parents;
-			this.ofName = ofName;
+			this.ofPath = ofPath;
 			this.isAbstract = isAbstract;
 			this.isSingleton = isSingleton;
 		}
@@ -236,8 +240,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 			return parentPaths;
 		}
 
-		public String getOfName() {
-			return ofName;
+		public String getOfPath() {
+			return ofPath;
 		}
 
 		public Vector<String> getParentNames() {

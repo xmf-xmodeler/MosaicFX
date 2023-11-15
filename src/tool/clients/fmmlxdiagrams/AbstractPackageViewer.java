@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public abstract class AbstractPackageViewer {
 	protected Vector<String>      auxTypes = new Vector<>();
 	protected Vector<Edge<?>>     edges = new Vector<>();
 	protected Vector<Issue>       issues = new Vector<>();
+	protected Vector<AssociationType> associationTypes = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
 	protected DiagramActions actions;
@@ -204,9 +206,13 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
 		
-		if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
-		comm.getAllObjects(this, allObjectsReturn);
-
+		ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn = associationTypes -> {
+			this.associationTypes = associationTypes;
+			if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
+			comm.getAllObjects(this, allObjectsReturn);
+		};
+		
+		comm.getAssociationTypes(this, associationTypesReceivedReturn);
 	}
 	
 	protected abstract boolean loadOnlyVisibleObjects();
@@ -451,5 +457,9 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public View getActiveDiagramViewPane() {return null;}
+
+	public Vector<AssociationType> getAssociationTypes() {
+		return new Vector<>(associationTypes);
+	}
 	
 }

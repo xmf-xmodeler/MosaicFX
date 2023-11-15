@@ -9,14 +9,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.Level;
 
-class LevelBox extends HBox {
+public class LevelBox extends HBox {
 	final TextField levelTextField = new TextField();
 	private final Button levelButton = new Button("...");
 	private LevelChangedListener levelChangedListener;
 	
 	public LevelBox() {this(null);}
 	
-	LevelBox(Level oldlevel) {
+	public LevelBox(Level oldlevel) {
 		super(3);
 		getChildren().add(levelTextField);
 		getChildren().add(levelButton);
@@ -32,6 +32,10 @@ class LevelBox extends HBox {
 		});
 	}
 
+	public void setLevel(Level l) {
+		levelTextField.setText(l.toString());
+	}
+	
 	public Level getLevel() {
 		try{
 			return Level.parseLevel(levelTextField.getText());

@@ -30,6 +30,8 @@ public class XMLParser {
 	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
 	private Element root;
 	private String projectPath;
+	private static final boolean DEBUG = false;
+
 
 	public XMLParser() {
 		this(getInputFile());
@@ -89,6 +91,10 @@ public class XMLParser {
 
 	private Element initParser(File inputFile) {
 		Document doc = XMLUtil.getDocumentFromFile(inputFile);
+
+		if (DEBUG == true) {
+			XMLUtil.saveDocumentToFile(doc, new File("testXMLImport.xml"));
+		}
 		return doc.getDocumentElement();
 	}
 
