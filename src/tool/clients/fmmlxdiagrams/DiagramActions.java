@@ -53,6 +53,7 @@ import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
@@ -234,6 +235,22 @@ public class DiagramActions {
                         aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 				diagram.updateDiagram();
+			}
+		});
+	}
+	
+	public void addNote(Point2D canvasPosition) {
+		Platform.runLater(() -> {
+			NoteCreationDialog dialog = new NoteCreationDialog();	
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent()) {
+				final NoteCreationDialog.Result noteResult = result.get();
+				
+				System.err.println(noteResult.getContent());
+				System.err.println(noteResult.getColor().toString());
+				System.err.println((canvasPosition.getX()));
+				System.err.println((canvasPosition.getY()));	
+			//	diagram.updateDiagram();
 			}
 		});
 	}

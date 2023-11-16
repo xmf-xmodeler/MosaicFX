@@ -347,6 +347,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		SplitPane.setResizableWithParent(splitPane2, false);
 		
 		splitPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
+			/**
+			 * Handles KeyEvent on the hole Stage
+			 * @param event KeyEvent that is handled
+			 */
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
 				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
@@ -1151,7 +1155,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					}
 				}
 			} else if (nodeCreationType.equals("Note")) {
-				System.err.println("Create Note");
+				actions.addNote(unTransformedPoint);
 				canvas.setCursor(Cursor.DEFAULT);
 				deselectPalette();
 			} else {
