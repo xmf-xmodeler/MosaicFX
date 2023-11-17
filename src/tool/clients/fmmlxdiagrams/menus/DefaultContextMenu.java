@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
@@ -47,7 +48,10 @@ public class DefaultContextMenu extends ContextMenu {
 		//MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
 		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
 		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
+
+		MenuItem addAssocType = new MenuItem("Add Association Type...");
+		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
-		getItems().addAll(addMenu, searchMenu, unhideItem, generateCustomUI, enumerationMenu);
+		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
 	}
 }

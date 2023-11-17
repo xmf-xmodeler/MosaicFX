@@ -1,8 +1,10 @@
 package tool.helper.persistence;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Vector;
@@ -22,11 +24,11 @@ import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
 public class XMLCreator {
-	Vector<DiagramInfo> diagramsWaitingForParsing;
-	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
-	Element root;
-	private static final int exportVersion = 4;
-	String packagePath;
+	private Vector<DiagramInfo> diagramsWaitingForParsing;
+	private FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+	private Element root;
+	private static final int EXPORT_VERSION = 4;
+	private String packagePath;
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
@@ -63,14 +65,19 @@ public class XMLCreator {
 	}
 
 	private void getData(String packagePath, ReturnCall<Object> onDataReceived) {
-		ReturnCall<Vector<DiagramInfo>> onDiagramInfosReceived = diagramInfo -> {
-			appendModelToRoot(diagramInfo, packagePath, onDataReceived);
-		};
+		ReturnCall<Vector<DiagramInfo>> onDiagramInfosReceived = diagramInfo -> appendModelToRoot(diagramInfo, packagePath, onDataReceived);
 		comm.getAllDiagramInfos(packagePath, onDiagramInfosReceived);
 	}
 
 	private void appendModelToRoot(Vector<DiagramInfo> diagramInfos, String packagePath, ReturnCall<Object> onDataReceived) {
 		ReturnCall<ModelActionsList> onModelDataReceived = packageContent -> {
+	
+			//Only used for test. Package data could hold this List.. If you want to send the data via another callback you could just move the function
+			ArrayList<String> imports = new ArrayList();
+			imports.add("Import1");
+			imports.add("Import2");		
+			exportPackageImports(imports);
+			
 			Vector<ModelActionsList> logs = packageContent.getChildren();
 			Collections.sort(logs);
 			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName());
@@ -78,13 +85,24 @@ public class XMLCreator {
 			for (ModelActionsList logData : logs) {
 				buildModelActionTag(model, logData);
 			}
-			;
 			getDiagramsData(diagramInfos, packagePath, onDataReceived);
 		};
 		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false,
 				diagramId -> {
 					comm.getModelData(diagramId, onModelDataReceived);
 				});
+	}
+
+	/**
+	 * This function exports all packages that are imported by the package that the user exports.
+	 * @param imports a string list that holds the imported package names
+	 */
+	private void exportPackageImports(List<String> imports) {
+		Element importsElement = XMLUtil.createChildElement(root, XMLTags.IMPORTS.getName());
+		for (String importName : imports) {
+			Element importElement = XMLUtil.createChildElement(importsElement, XMLTags.PACKAGE_IMPORT.getName());
+			importElement.setTextContent(importName);
+		}		
 	}
 
 	private void buildModelActionTag(Element model, ModelActionsList logData) {
@@ -118,12 +136,10 @@ public class XMLCreator {
 		NodeList nodes = root.getElementsByTagName(XMLTags.DIAGRAMS.getName());
 		// if diagrams do not exist append new tag to document
 		if (nodes.getLength() == 0) {
-			Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
-			return diagrams;
+			return XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
 		}
 		// if diagram exists return existing diagrams tag
-		Element diagrams = (Element) nodes.item(0);
-		return diagrams;
+		return (Element) nodes.item(0);
 	}
 
 	private void appendDiagramDisplayPropertiesToDiagrams(DiagramInfo diagramInfo, Element diagram) {
@@ -277,7 +293,7 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(exportVersion));
+		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(EXPORT_VERSION));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
 		return doc;
 	}
@@ -286,6 +302,6 @@ public class XMLCreator {
 	 * @return current used version of XML-Exports
 	 */
 	public static int getExportversion() {
-		return exportVersion;
+		return EXPORT_VERSION;
 	}
 }

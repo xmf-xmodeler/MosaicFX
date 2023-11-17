@@ -83,10 +83,10 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
 		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
 		
-//		MenuItem changeLevelItem = new MenuItem("Change level");
-//		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
+		MenuItem changeLevelItem = new MenuItem("Change level");
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 //		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-//		getItems().add(changeLevelItem);
+		getItems().add(changeLevelItem);
 		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
@@ -149,7 +149,7 @@ public class ObjectContextMenu extends ContextMenu {
 		//add all items, that are used for all Objects
 		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
 		//add items, that are used only for Objects that are not on level 0
-		if (!object.getLevel().isEqual(0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
+		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
 
 		addRunMenu();
 		

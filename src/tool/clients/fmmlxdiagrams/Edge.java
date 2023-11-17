@@ -165,7 +165,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 			// normal
 			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
-			g.setLineWidth(isSelected() ? 3 : 1);
+			g.setLineWidth(getStrokeWidth() + (isSelected() ? 2 : 0));
 			g.setLineDashes(getLineDashes());
 
 			for (int i = 0; i < points.size() - 1; i++) {
@@ -281,6 +281,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 					sourceNode.getPointForEdge(sourceEnd, true));
 
 		}
+	}
+
+	protected double getStrokeWidth() {
+		return 1.;
 	}
 
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
@@ -403,8 +407,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return Color.BLACK;
 	}
 
-	protected Double getLineDashes() {
-		return (double) 0;
+	protected double[] getLineDashes() {
+		return new double[]{};
 	}
 
 	protected String getSvgDashes() {

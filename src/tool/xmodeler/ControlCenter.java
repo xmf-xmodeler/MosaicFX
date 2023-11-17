@@ -152,19 +152,6 @@ public class ControlCenter extends Stage {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
-
-			Menu xmlMenu = new Menu("XMLFile");
-			getMenus().add(xmlMenu);
-			buildXMLMenu(xmlMenu);
-		}
-
-		private void buildXMLMenu(Menu xmlMenu) {
-			MenuItem loadPackage = new MenuItem("Load Package");
-			loadPackage.setOnAction((e) -> {
-				XMLParser parser = new XMLParser();
-		    	parser.parseXMLDocument();
-			});
-			xmlMenu.getItems().add(loadPackage);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {

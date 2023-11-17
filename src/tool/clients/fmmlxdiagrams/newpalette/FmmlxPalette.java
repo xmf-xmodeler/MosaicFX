@@ -235,7 +235,7 @@ public class FmmlxPalette {
 
 		@Override
 		protected Node getIcon() {
-			return null;
+			return object.getConcreteSyntaxIcon(48);
 		}
 
 		protected int getLevel() {

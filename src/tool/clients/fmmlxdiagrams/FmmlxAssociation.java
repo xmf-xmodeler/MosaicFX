@@ -15,7 +15,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
-	private final String reverseName;
+	private final String typePath;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
 	private Integer levelStart;
@@ -42,7 +42,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 			Vector<Point2D> points,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			String name,
-			String reverseName,
+			String typePath,
 			String accessNameStartToEnd,
 			String accessNameEndToStart,
 			int levelStart,
@@ -60,7 +60,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 
 		this.name = name;
 		this.parentAssociationId = parentAssociationId;
-		this.reverseName = reverseName;
+		this.typePath = typePath;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
 		this.levelStart = levelStart;
@@ -98,8 +98,11 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		return name;
 	}
 
-	public String getReverseName() {
-		return reverseName;
+	public AssociationType getAssociationType() {
+		for(AssociationType type : diagram.associationTypes) {
+			if(this.typePath.equals(type.path)) return type;
+		}
+		return null;
 	}
 
 	@Override
@@ -155,10 +158,45 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationContextMenu(this, actions);
 	}
+	
+	@Override
+	protected Color getPrimaryColor() {
+		try{
+			AssociationType type = getAssociationType();
+			String s = type.color;
+			return Color.web(s);
+		} catch (Exception e) {
+//		  System.err.println("getPrimaryColor FAIL: " + e.getMessage());
+		}
+		return Color.BLACK;
+	}
 
 	@Override
-	protected Double getLineDashes() {
-		return (double) 0;
+	protected double getStrokeWidth() {
+		try{
+			AssociationType type = getAssociationType();
+			return 1. * type.strokeWidth;
+		} catch (Exception e) {
+//		  System.err.println("getStrokeWidth FAIL: " + e.getMessage());
+		}
+		return 1.;
+	}
+
+	@Override
+	protected double[] getLineDashes() {
+		try{
+			AssociationType type = getAssociationType();
+			if("".equals(type.dashArray)) return new double[]{};
+			String[] dashesS = type.dashArray.split(",");
+			double[] dashes = new double[dashesS.length];
+			for(int i = 0; i < dashesS.length; i++) {
+				dashes[i] = Double.parseDouble(dashesS[i]);
+			}
+			return dashes;
+		} catch (Exception e) {
+//			System.err.println("getLineDashes FAIL: " + e.getMessage());
+			return new double[]{};
+		}
 	}
 
 	private final Runnable showChangeFwNameDialog = () -> {
