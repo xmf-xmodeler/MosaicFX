@@ -44,6 +44,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -241,11 +242,27 @@ public class DiagramActions {
 	
 	public void addNote(Point2D canvasPosition) {
 		Platform.runLater(() -> {
-			NoteCreationDialog dialog = new NoteCreationDialog();	
+			NoteCreationDialog dialog = new NoteCreationDialog();
 			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
-			if (result.isPresent()) {
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
 				Note note = new Note((FmmlxDiagram) diagram, canvasPosition, result.get());
 				Note.addNoteToDiagram((FmmlxDiagram) diagram, note);
+			}
+		});
+	}
+
+	public void editNote(Note note) {
+		Platform.runLater(() -> {
+			ChangeNoteDialog dialog = new ChangeNoteDialog(note);
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				note.setNoteColor(result.get().getColor());
+				note.setContent(result.get().getContent());
+				diagram.updateDiagram();
 			}
 		});
 	}
@@ -1322,5 +1339,4 @@ public class DiagramActions {
 			}
 		});	
 	}
-
 }
