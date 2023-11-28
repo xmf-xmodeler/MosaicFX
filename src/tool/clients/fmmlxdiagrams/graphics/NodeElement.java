@@ -219,4 +219,11 @@ public abstract class NodeElement {
 		if(dragAffine == null) return new Affine(); // HACK
 		return dragAffine;
 	}
+	
+	public void setPosition(double x, double y) {
+		myTransform = new Affine(1,0,x,0,1,y);
+	}
+	public void setAction(Action action) {
+		this.action = action;
+	}
 }
