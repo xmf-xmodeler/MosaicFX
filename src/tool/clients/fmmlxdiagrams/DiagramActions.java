@@ -244,13 +244,8 @@ public class DiagramActions {
 			NoteCreationDialog dialog = new NoteCreationDialog();	
 			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
 			if (result.isPresent()) {
-				final NoteCreationDialog.Result noteResult = result.get();
-				
-				System.err.println(noteResult.getContent());
-				System.err.println(noteResult.getColor().toString());
-				System.err.println((canvasPosition.getX()));
-				System.err.println((canvasPosition.getY()));	
-			//	diagram.updateDiagram();
+				Note note = new Note((FmmlxDiagram) diagram, canvasPosition, result.get());
+				Note.addNoteToDiagram((FmmlxDiagram) diagram, note);
 			}
 		});
 	}
