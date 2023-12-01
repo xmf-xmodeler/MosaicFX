@@ -165,10 +165,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addInstanceDialog(View view) {
-		addInstanceDialog(null, view);
-	}
-
 	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
