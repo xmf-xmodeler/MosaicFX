@@ -128,4 +128,8 @@ public class NodeBox extends NodeGroup{
 	public void setLineWidth(LineWidthGetter lineWidth) {
 		this.lineWidth = lineWidth;
 	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
 }

@@ -1,9 +1,11 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
@@ -64,8 +66,8 @@ import javafx.scene.transform.Translate;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
@@ -128,7 +130,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	//@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
-		
+	private final ArrayList<Note> notes = new ArrayList<>();
 	
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -598,19 +600,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			((DiagramViewPane) getActiveDiagramViewPane()).highlightElementAt(object,
 					new Point2D(object.getCenterX(), object.getCenterY()));
 		}
+		for (Note note : notes) {
+			select(note);
+		}
 		redraw(); 
 	}
 
-	public void setSelectedObject(FmmlxObject source) {
+	public void setSelectedObject(CanvasElement source) {
 		deselectAll();
 		selectedObjects.add(source);
 	}
 
 	@Override public void setSelectedObjectAndProperty(FmmlxObject o, FmmlxProperty p) { setSelectedObject(o); }
 
-	private void select(FmmlxObject o) {
-		if (!selectedObjects.contains(o)) {
-			selectedObjects.add(o);
+	private void select(Node node) {
+		if (!selectedObjects.contains(node)) {
+			selectedObjects.add(node);
 		}
 	}
 	
@@ -907,6 +912,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 	}
+	
+	public List<Note> getNotes() {
+		return notes;
+	}
+	
+	public static Font getFont() {
+		return FONT;
+	}
 
 	public class DiagramViewPane extends Pane implements View {
 		
@@ -1070,7 +1083,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
 					o.dragTo(dragAffine);
-				} else { // must be edge
+				} else if (s instanceof Note note) {
+					//TODO Why does this not work smooth?
+					note.rootNodeElement.dragTo(dragAffine);
+				}
+				else { // must be edge
 					Edge<?> e = (Edge<?>) s;
 					e.moveTo(p.getX(), p.getY(), this);
 				}
@@ -1185,6 +1202,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				l.performAction();
 			} else if (hitObject instanceof FmmlxAssociation) {
 				actions.editAssociationDialog((FmmlxAssociation) hitObject);
+			} else if (hitObject instanceof Note note) {
+				actions.editNote(note);
 			}
 		}
 
@@ -1195,7 +1214,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			if (hitObject != null) {
-				if (hitObject instanceof FmmlxObject || hitObject instanceof Edge || hitObject instanceof InheritanceEdge  ) {
+				if (hitObject instanceof FmmlxObject || hitObject instanceof Edge || hitObject instanceof InheritanceEdge || hitObject instanceof Note) {
 					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
 				}
 				
@@ -1269,6 +1288,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //						highlightElementAt(hitObject, p);
 					}
 				}
+				//Only implemented for FmmlxObject
 				handlePressedOnNodeElement(p, hitObject);
 
 				if (e.getClickCount() == 2) {
@@ -1386,7 +1406,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				canvasTransform = newTransform;
 				
 			}
-								
+			//this must stay before the next if otherwise notes are not printed if there are no objects							
+			for (Note note : notes) {	
+				note.paintOn(g, canvasTransform, getActiveDiagramViewPane());
+			}
+
 			if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
 			
 			// otherwise gather (first-level) objects to be painted
@@ -1477,15 +1501,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private CanvasElement getElementAt(double x, double y) {
-			for (FmmlxObject o : new Vector<>(objects.values()))
-				if (o.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-					return o;
-			for (Edge<?> e : new Vector<>(edges))
-				if (e.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-					return e;
-			for (DiagramEdgeLabel<?> l : new Vector<>(labels))
-				if (l.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-					return l;
+			Vector<CanvasElement> all = new Vector();
+			all.addAll(new Vector<>(objects.values()));
+			all.addAll(new Vector<>(edges));
+			all.addAll(new Vector<>(labels));
+			all.addAll(new Vector<>(notes));
+			
+			for (CanvasElement canvasElement : all) {
+				if (canvasElement.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
+					return canvasElement ;
+			}
 			return null;
 		}
 		
@@ -1561,12 +1586,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					select(o);
 				}
 			}
-
+			for (Note note : notes) {
+				if (isObjectContained(rec, note)) {
+					select(note);
+				}
+			}
 			mouseMode = MouseMode.STANDARD;
 		}
 		
-		private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
-			Bounds bounds = object.rootNodeElement.getBounds();
+		private boolean isObjectContained(Rectangle rec, Node node) {
+			Bounds bounds = node.rootNodeElement.getBounds();
 			if(bounds == null) return false;
 			Point2D p1 = new Point2D(bounds.getMinX(), bounds.getMinY());
 			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());

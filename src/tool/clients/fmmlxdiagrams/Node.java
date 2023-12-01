@@ -138,8 +138,6 @@ public abstract class Node implements CanvasElement {
 		port.sortAllPorts();
 	}
 
-	public abstract String getName();
-
 	public Affine getOwnAndDragTransform() {
 		Affine a = new Affine(rootNodeElement.getMyTransform());
 		a.append(rootNodeElement.getDragAffine());		

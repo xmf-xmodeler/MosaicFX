@@ -254,4 +254,7 @@ public class NodeGroup extends NodeElement {
 		this.action=action;
 	}
 
+	public Vector<NodeElement> getNodeElements() {
+		return nodeElements;
+	}
 }

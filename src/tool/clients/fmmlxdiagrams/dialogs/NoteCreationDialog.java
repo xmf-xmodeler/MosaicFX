@@ -10,14 +10,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
-public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> {
-	//TODO TS handle cancel of dialog
-	
-	 
-	private ColorPicker colorPicker; 
+public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> {	 
+	protected ColorPicker colorPicker; 
 	private Result result;
+	//is used in the child class
+	protected TextArea contentTextField;
 
-	
 	public NoteCreationDialog() {
 		super();
 		layoutDialog();
@@ -34,13 +32,19 @@ public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> 
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.setOnAction(e -> {
-            setResult(result);
+			result.setButtonType(ButtonType.OK);
+			setResult(result);
+            close();
+        });
+		final Button cancelButton = (Button) getDialogPane().lookupButton(ButtonType.CANCEL);
+		cancelButton.setOnAction(e -> {
+			result.setButtonType(ButtonType.CANCEL);
+			setResult(result);
             close();
         });
 	}
 
 	private void layoutContent() {
-		TextArea contentTextField;
 		Label contentLabel = new Label("Content:");
 		contentTextField = new TextArea();
 		contentTextField.setWrapText(true);
@@ -50,6 +54,7 @@ public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> 
 		
 		Label colorLabel = new Label("Choose note color:");
 		colorPicker = new ColorPicker();
+		colorPicker.setValue(javafx.scene.paint.Color.valueOf("#F9EC72"));
 		colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> result.setColor(newValue));
 		
 		grid.add(contentLabel, 0, 0);
@@ -61,8 +66,10 @@ public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> 
 		}
 		
 	public final class Result {
-		private String content;
+		//If user does not provide input there will be no null-pointer exception
+		private String content = "";
 		private Color color;
+		private ButtonType buttonType;
 		
 		public Result() {
 			color = colorPicker.getValue();
@@ -78,6 +85,12 @@ public class NoteCreationDialog extends CustomDialog<NoteCreationDialog.Result> 
 		}
 		public void setColor(Color color) {
 			this.color = color;
+		}
+		public ButtonType getButtonType() {
+			return buttonType;
+		}
+		public void setButtonType(ButtonType buttonType) {
+			this.buttonType = buttonType;
 		} 
 	}
 }
