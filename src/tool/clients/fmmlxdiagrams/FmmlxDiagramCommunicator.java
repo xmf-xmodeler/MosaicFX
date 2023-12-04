@@ -1663,6 +1663,15 @@ public class FmmlxDiagramCommunicator {
         sendMessage("storeLabelInfo", l.getInfo4XMF());
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
+    
+    public void storeLabelInfo(int diagramID, String ownerPath, int localID, float x, float y) {
+    	sendMessage("storeLabelInfo", new Value[]{ new Value(
+				new Value[] {new Value(diagramID), new Value(-1)}),
+				new Value(ownerPath),
+				new Value(localID),
+				new Value(x),
+				new Value(y)});
+    }
 
     public void changeAssociationForwardName(int diagramID, FmmlxAssociation assoc, String newFwName) {
         Value[] message = new Value[]{

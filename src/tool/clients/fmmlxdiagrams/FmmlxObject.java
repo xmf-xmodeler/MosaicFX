@@ -482,15 +482,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return hitLabel;
 	}
 
-	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
-		if(p == null) return;
-		NodeElement.Action action = null;
-		if(rootNodeElement != null) if(action == null) {
-			action = rootNodeElement.getAction(p, g, currentTransform, view);
-		}
-		if(action != null) action.perform();
-	}
-
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
 		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
 		return new PaletteItem(tool);

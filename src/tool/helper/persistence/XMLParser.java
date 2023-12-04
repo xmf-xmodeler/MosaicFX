@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,11 +14,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
@@ -206,7 +210,102 @@ public class XMLParser {
 				sendObjectInformation(diagramId, (Element) node);
 			}
 		}
+		Element edges = XMLUtil.getChildElement(diagram, XMLTags.EDGES.getName());
+		_ALIGN_EDGES(edges, diagramId);
+//		_ALIGN_LABELS(edges, diagramId);
 	}
+	/*
+    public void _ALIGN_LABELS(Element edgesNode, Integer diagramId) {
+    	FmmlxDiagram diagram = FmmlxDiagramCommunicator.getDiagram(diagramId);
+        Vector<DiagramEdgeLabel<?>>labels = diagram.getLabels();
+        for(DiagramEdgeLabel<?> label : labels){
+            Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
+            Point2D coordinate = getLabelCoordinate(edgesNode, label, initCoordinate);
+            if(validateLabelName(label.getText())){
+
+                label.setRelativePosition(coordinate.getX(), coordinate.getY());
+                label.getOwner().updatePosition(label);
+                fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
+            }
+
+            label.getOwner().updatePosition(label);
+            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
+        }
+        fmmlxDiagram.objectsMoved = true;
+    }
+    
+    private Point2D getLabelCoordinate(Element edgesNode, DiagramEdgeLabel<?> label, Point2D initCoordinate) {
+//        Element labelsElement = getLabelsElement(diagramElement);
+    	Vector<Element> label
+        NodeList labelList_XML = labelsElement.getChildNodes();
+
+        for (int i = 0 ; i < labelList_XML.getLength() ; i++){
+            if (labelList_XML.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element label_xml_element = (Element) labelList_XML.item(i);
+                if(label_xml_element.getAttribute("ownerID").equals(label.getOwner().path) &&
+                   label_xml_element.getAttribute("localID").equals(label.localID+"")) {
+                    double x = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                    double y = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
+                    return new Point2D(x, y);
+                }
+            }
+        }
+        return initCoordinate;
+    }*/
+    
+    private void _ALIGN_EDGES(Element edgesNode, int diagramID) {
+
+        NodeList edgeList = edgesNode.getChildNodes();
+
+        for(int i = 0 ; i < edgeList.getLength(); i++){
+            if(edgeList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element edgeElement = (Element) edgeList.item(i);
+                String edgePath = edgeElement.getAttribute("path");
+                String sourcePort = edgeElement.getAttribute("sourcePort");
+                String targetPort = edgeElement.getAttribute("targetPort");
+                Node intermediatePointsNode = XMLUtil.getChildElement(edgeElement, "IntermediatePoints");
+                NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
+
+                Vector<Point2D> intermediatePoints = new Vector<>();
+                for(int k = 0 ; k<intermediatePointList.getLength(); k++){
+                    if(intermediatePointList.item(k).getNodeType()==Node.ELEMENT_NODE){
+                        Element intermediatePointElement = (Element) intermediatePointList.item(k);
+                        double x = 0;
+                        double y = 0;
+                        try{
+                        	x = Double.parseDouble(intermediatePointElement.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                        } catch (Exception e) {
+                        	x = Double.parseDouble(intermediatePointElement.getAttribute("xCoordinate"));
+                        }
+                        try{
+                        	y = Double.parseDouble(intermediatePointElement.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
+                        } catch (Exception e) {
+                        	y = Double.parseDouble(intermediatePointElement.getAttribute("yCoordinate"));
+                        }
+                        Point2D point2D = new Point2D(x, y);
+                        intermediatePoints.add(point2D);
+                    }
+                }
+                if(intermediatePointList.getLength()>0 || !sourcePort.equals("null") || !targetPort.equals("null")) {
+//                    System.err.println(edgePath + intermediatePoints);
+                	communicator.sendEdgePositionsFromXml(diagramID, edgePath, intermediatePoints, sourcePort, targetPort);
+                }
+                NodeList labelsNodeList = XMLUtil.getChildElement(edgeElement, "Labels").getChildNodes();
+                for(int j = 0; j < labelsNodeList.getLength(); j++) if(labelsNodeList.item(j).getNodeType()==Node.ELEMENT_NODE){
+                	try{
+	                	Element labelE = (Element) labelsNodeList.item(j);
+	                	int id = Integer.parseInt(labelE.getAttribute("localID"));
+	                    float x = Float.parseFloat(labelE.getAttribute("xCoordinate"));
+	                    float y = Float.parseFloat(labelE.getAttribute("yCoordinate"));
+	
+	                	communicator.storeLabelInfo(diagramID, edgePath, id, x, y);
+                	} catch (Exception e) {
+                		System.err.println("Label cannot be read: " + e.getMessage());
+                	}
+                }                
+            }
+        }
+    }
 
 	private void sendDiagramViewStatus(Integer diagramID, Element viewsElement) {
 		SortedMap<String, Affine> views = new TreeMap<>();
