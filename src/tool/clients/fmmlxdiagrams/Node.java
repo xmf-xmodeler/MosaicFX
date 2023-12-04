@@ -17,6 +17,14 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement {
 	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
 	protected boolean hidden;
 	protected double x;
 	protected double y;
@@ -129,8 +137,6 @@ public abstract class Node implements CanvasElement {
 	public void updatePortOrder() {
 		port.sortAllPorts();
 	}
-
-	public abstract String getName();
 
 	public Affine getOwnAndDragTransform() {
 		Affine a = new Affine(rootNodeElement.getMyTransform());

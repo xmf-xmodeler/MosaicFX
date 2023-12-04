@@ -45,6 +45,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -54,6 +55,7 @@ import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
@@ -164,10 +166,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addInstanceDialog(View view) {
-		addInstanceDialog(null, view);
-	}
-
 	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
@@ -234,6 +232,33 @@ public class DiagramActions {
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
+				diagram.updateDiagram();
+			}
+		});
+	}
+	
+	public void addNote(Point2D canvasPosition) {
+		Platform.runLater(() -> {
+			NoteCreationDialog dialog = new NoteCreationDialog();
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				Note note = new Note((FmmlxDiagram) diagram, canvasPosition, result.get());
+				Note.addNoteToDiagram((FmmlxDiagram) diagram, note);
+			}
+		});
+	}
+
+	public void editNote(Note note) {
+		Platform.runLater(() -> {
+			ChangeNoteDialog dialog = new ChangeNoteDialog(note);
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				note.setNoteColor(result.get().getColor());
+				note.setContent(result.get().getContent());
 				diagram.updateDiagram();
 			}
 		});

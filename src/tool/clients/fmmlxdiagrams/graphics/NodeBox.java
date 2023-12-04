@@ -34,7 +34,17 @@ public class NodeBox extends NodeGroup{
 		this.lineWidth = lineWidth;
 		this.propertyType = propertyType;
 	}
-
+	
+	/**
+	 * Returns default NodeBox. Please use setter for customization.
+	 */
+	public NodeBox() {
+		super(new Affine(1,0,0,0,1,0));
+		setLineWidth(x -> 1.);
+		setBgColor(Color.TRANSPARENT);
+		setFgColor(Color.BLACK);
+	}
+	
 	@Override
 	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
@@ -101,4 +111,25 @@ public class NodeBox extends NodeGroup{
 		    max.getX() - min.getX(), max.getY() - min.getY()); 
 	}
 
+	public void setSize(double width, double height) {
+		this.width = width;
+		this.height = height;
+		
+	}
+
+	public void setBgColor(Color bgColor) {
+		this.bgColor = bgColor;
+	}
+
+	public void setFgColor(Color fgColor) {
+		this.fgColor = fgColor;
+	}
+
+	public void setLineWidth(LineWidthGetter lineWidth) {
+		this.lineWidth = lineWidth;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
 }

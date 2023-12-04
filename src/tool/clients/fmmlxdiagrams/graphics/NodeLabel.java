@@ -24,13 +24,13 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeLabel extends NodeBaseElement {
 	
 	private Pos alignment;
-	private final FontWeight fontWeight;
+	private FontWeight fontWeight;
 	private final FontPosture fontPosture;
 	private final int fontSize = 14;
 	private final double fontScale;
 	private Color fgColor;
 	private Color bgColor;
-	private String text;
+	protected String text;
 	private double textWidth;
 	private double textHeight;
 	private final static int Y_BASELINE_DIFF = 4;
@@ -79,6 +79,19 @@ public class NodeLabel extends NodeBaseElement {
 		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
 	}
 	
+	/**
+	 * Returns default NodeLabel. For default variable values see method body. The object then can be adjusted by the getter and setter of the class.
+	 */
+	public NodeLabel(String text) {
+		super();
+		this.fontWeight = FontWeight.NORMAL;
+		this.fontPosture = FontPosture.REGULAR;
+		this.fontScale = 1;
+		setBgColor(Color.TRANSPARENT);
+		setFgColor(Color.BLACK);
+		this.text = text;
+	}
+	
 	private Affine getBoxTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -90,7 +103,7 @@ public class NodeLabel extends NodeBaseElement {
 		return total;
 	}
 	
-	private Affine getTextTransform(Affine canvasTransform) {
+	protected Affine getTextTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -276,5 +289,11 @@ public class NodeLabel extends NodeBaseElement {
 		this.bgColor = bgColor;
 	}
 
+	public void setFontWeight(FontWeight fontWeight) {
+		this.fontWeight = fontWeight;
+	}
 
+	public double getTextHeight() {
+		return textHeight;
+	}
 }
