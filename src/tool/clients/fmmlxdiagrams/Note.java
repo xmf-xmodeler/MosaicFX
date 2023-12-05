@@ -62,9 +62,9 @@ public class Note extends Node implements CanvasElement {
 
 		NodeLabel header = layoutHeader();
 
-		WrapedNodeLabelFactory factory = new WrapedNodeLabelFactory();
-		NodeGroup wrapedNodeLabel = factory.create(content, MAX_WIDTH, false);
-		wrapedNodeLabel.setPosition(0, VERTICAL_OFFSET_CONTENT_TO_HEADER);
+		WrappedNodeLabelFactory factory = new WrappedNodeLabelFactory();
+		NodeGroup wrappedNodeLabel = factory.create(content, MAX_WIDTH, false);
+		wrappedNodeLabel.setPosition(0, VERTICAL_OFFSET_CONTENT_TO_HEADER);
 
 		// build nodeBox, that serves as frame for the note
 		NodeBox box = new NodeBox();
@@ -89,7 +89,7 @@ public class Note extends Node implements CanvasElement {
 		// added before
 		group.addNodeElement(box);
 		group.addNodeElement(header);
-		group.addNodeElement(wrapedNodeLabel);
+		group.addNodeElement(wrappedNodeLabel);
 	}
 
 	private NodeLabel layoutHeader() {

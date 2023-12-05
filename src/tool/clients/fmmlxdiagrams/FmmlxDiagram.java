@@ -536,6 +536,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					del.drop();
 					del.owner.updatePosition(del);
 					comm.storeLabelInfo(this, del);
+				} else if (s instanceof Note note) {
+					note.drop();
 				}
 		}
 		objectsMoved = false;
@@ -1085,7 +1087,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					o.dragTo(dragAffine);
 				} else if (s instanceof Note note) {
 					//TODO Why does this not work smooth?
-					note.rootNodeElement.dragTo(dragAffine);
+					note.dragTo(dragAffine);
 				}
 				else { // must be edge
 					Edge<?> e = (Edge<?>) s;

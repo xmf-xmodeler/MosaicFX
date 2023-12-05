@@ -564,16 +564,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return myConcreteSyntax;
 	}
 
-	public void dragTo(Affine dragAffine) {
-		rootNodeElement.dragTo(dragAffine);
-	}
-
-	public void drop() {
-		rootNodeElement.drop();
-		this.x = rootNodeElement.getMyTransform().getTx();
-		this.y = rootNodeElement.getMyTransform().getTy();
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 		if(o==null) return false;

@@ -143,4 +143,14 @@ public abstract class Node implements CanvasElement {
 		a.append(rootNodeElement.getDragAffine());		
 		return a;
 	}
+	
+	public void dragTo(Affine dragAffine) {
+		rootNodeElement.dragTo(dragAffine);
+	}
+
+	public void drop() {
+		rootNodeElement.drop();
+		this.x = rootNodeElement.getMyTransform().getTx();
+		this.y = rootNodeElement.getMyTransform().getTy();
+	}
 }

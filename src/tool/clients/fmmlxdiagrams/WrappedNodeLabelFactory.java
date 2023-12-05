@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 
-class WrapedNodeLabelFactory {
+class WrappedNodeLabelFactory {
 	
 	private NodeGroup group = new NodeGroup();
 	private double latestY = -1;
@@ -14,7 +14,7 @@ class WrapedNodeLabelFactory {
 	private NodeBox box;
 
 	
-	 public WrapedNodeLabelFactory() {
+	 public WrappedNodeLabelFactory() {
 		    super();		    
 		  }
 
