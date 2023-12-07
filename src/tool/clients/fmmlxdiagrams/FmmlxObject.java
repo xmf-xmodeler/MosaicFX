@@ -422,6 +422,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<Constraint> getConstraints() {
 		return new Vector<>(constraints);
 	}
+	
+	public Vector<Constraint> getAllConstraints() {
+		HashSet<Constraint> allConstraints = new HashSet<>(constraints);
+		for(FmmlxObject o : getAllAncestors()) {
+			allConstraints.addAll(o.getConstraints());
+		}
+		return new Vector<>(allConstraints);
+	}
 
 	/// Setters
 
@@ -623,6 +631,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public String getRelativeName() {
 		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
+	}
+
+	public boolean hasIssue(String constraintName) {
+		for(Issue i : getIssues()) {
+			if(i.getName().equals(constraintName)) return true;
+		}
+		return false;
 	}
 
 }

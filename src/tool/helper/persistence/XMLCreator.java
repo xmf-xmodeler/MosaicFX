@@ -71,13 +71,6 @@ public class XMLCreator {
 
 	private void appendModelToRoot(Vector<DiagramInfo> diagramInfos, String packagePath, ReturnCall<Object> onDataReceived) {
 		ReturnCall<ModelActionsList> onModelDataReceived = packageContent -> {
-	
-			//Only used for test. Package data could hold this List.. If you want to send the data via another callback you could just move the function
-			ArrayList<String> imports = new ArrayList();
-			imports.add("Import1");
-			imports.add("Import2");		
-			exportPackageImports(imports);
-			
 			Vector<ModelActionsList> logs = packageContent.getChildren();
 			Collections.sort(logs);
 			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName());
@@ -87,10 +80,15 @@ public class XMLCreator {
 			}
 			getDiagramsData(diagramInfos, packagePath, onDataReceived);
 		};
-		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false,
-				diagramId -> {
-					comm.getModelData(diagramId, onModelDataReceived);
-				});
+		
+		ReturnCall<Integer> onDiagramCreated = diagramId -> {
+			ReturnCall<Vector<String>> importedPackagesReturn = importedPackages -> {
+				exportPackageImports(importedPackages);
+				comm.getModelData(diagramId, onModelDataReceived);
+			};			
+			comm.getImportedPackages(diagramId, importedPackagesReturn);
+		};				
+		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
 	}
 
 	/**

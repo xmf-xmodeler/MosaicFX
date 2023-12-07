@@ -293,7 +293,7 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 				}						
 			});
 			MenuItem boolConItem = new MenuItem("Depends on Constraint");
-			boolConItem.setDisable(true);//parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
+			boolConItem.setDisable(parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
 			boolConItem.setOnAction(event -> {
 				DefaultModificationDialog dmd = new DefaultModificationDialog(parent.getSelectedClass(), parent.getSelectedLevel(), Condition.BooleanConstraintCondition.class, item);
 				Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
@@ -316,9 +316,58 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 				}						
 			});
 			MenuItem numSlotItem = new MenuItem("Depends on Attribute (Number Range)");
-			numSlotItem.setDisable(true);
+			numSlotItem.setDisable(parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
+			numSlotItem.setOnAction(event -> {
+				DefaultModificationDialog dmd = new DefaultModificationDialog(parent.getSelectedClass(), parent.getSelectedLevel(), Condition.NumCompareSlotCondition.class, item);
+				Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+				
+				if(result.isPresent()) {
+					Consequence consequence = result.get().consequence;
+					
+					if(result.get().property != null  && consequence != null) {
+						Condition<Boolean> condition = new Condition.NumCompareSlotCondition(
+								result.get().getPropertyName(), 
+								result.get().getNumMin(), 
+								result.get().getNumMax());
+						Modification mod = new Modification(
+								condition, 
+								consequence, 
+								item.getID(), 
+								item.getID());							
+						
+						((ConcreteSyntax) item.getRoot()).addModification(mod);
+
+						parent.updateUI(item);
+					}
+				}			
+			});
 			MenuItem numOpValItem = new MenuItem("Depends on Operation (Number Range)");
-			numOpValItem.setDisable(true);
+			numOpValItem.setDisable(parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
+			numOpValItem.setOnAction(event -> {
+				DefaultModificationDialog dmd = new DefaultModificationDialog(parent.getSelectedClass(), parent.getSelectedLevel(), Condition.NumCompareOpValCondition.class, item);
+				Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+				
+				if(result.isPresent()) {
+					Consequence consequence = result.get().consequence;
+					
+					if(result.get().property != null  && consequence != null) {
+						Condition<Boolean> condition = new Condition.NumCompareOpValCondition(
+								result.get().getPropertyName(), 
+								result.get().getNumMin(), 
+								result.get().getNumMax());
+						Modification mod = new Modification(
+								condition, 
+								consequence, 
+								item.getID(), 
+								item.getID());							
+						
+						((ConcreteSyntax) item.getRoot()).addModification(mod);
+
+						parent.updateUI(item);
+					}
+				}			
+			});
+			
 			modMenu.getItems().addAll(boolSlotItem, boolOpValItem, boolConItem, numSlotItem, numOpValItem);
 		}
 		if(item instanceof NodePath) {

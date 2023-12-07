@@ -434,6 +434,20 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public void getImportedPackages(Integer diagramId,
+			ReturnCall<Vector<String>> importedPackagesReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<String> result = new Vector<>();
+			for (Object responseItem : responseContent) {
+				result.add((String)responseItem);
+			}
+			importedPackagesReturn.run(result);
+		};
+		xmfRequestAsync(handle, diagramId, "getImportedPackages", localReturn);
+	} 
+	
+	@SuppressWarnings("unchecked")
 	public void getAssociationTypes(AbstractPackageViewer diagram,
 			ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn) {
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
@@ -499,18 +513,24 @@ public class FmmlxDiagramCommunicator {
 					}
 				}
 	
-				InheritanceEdge object = new InheritanceEdge(
-						(String) edgeInfoAsList.get(0), // id
-						(String) edgeInfoAsList.get(1), //TODO startId
-						(String) edgeInfoAsList.get(2), //TODO endId
-						listOfPoints, // points
-						startRegion, endRegion,
-						diagram);
-	
-				result.add(object);
+				try{
+					InheritanceEdge object = new InheritanceEdge(
+							(String) edgeInfoAsList.get(0), // id
+							(String) edgeInfoAsList.get(1), //TODO startId
+							(String) edgeInfoAsList.get(2), //TODO endId
+							listOfPoints, // points
+							startRegion, endRegion,
+							diagram);
+		
+					result.add(object);
+				} catch (Exception e) {
+//					System.err.println("Inheritance edge "+edgeInfoAsList.get(1)+"->"+edgeInfoAsList.get(2)+" ignored, probably external.");
+				}
 			}
+			System.err.println("getAllInheritanceEdges End");
 			inheritanceEdgeReceivedReturn.run(result);
 		};
+		System.err.println("getAllInheritanceEdges Start");
 		xmfRequestAsync(handle, diagram.getID(), "getAllInheritanceEdges", localReturn);		
 	}
 	
@@ -808,7 +828,7 @@ public class FmmlxDiagramCommunicator {
 					for (Object o : ownOpList) {
 						Vector<Object> opInfo = (Vector<Object>) o;
 						if(opInfo==null) {
-							System.err.println("NULL"); 
+							System.err.println("operation info not found -> to be investigated"); 
 						} else {
 //							System.err.println(opInfo.get(1)); 
 						Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
@@ -2681,5 +2701,5 @@ public class FmmlxDiagramCommunicator {
     		XMLParser parser = new XMLParser();
     		parser.parseXMLDocument();   		
     	});
-    }   
+    }  
 }

@@ -84,12 +84,12 @@ public abstract class Condition<ReturnType>{
 		}
 	}
 
-	public static class SlotNumCompareCondition extends Condition<Boolean> {
+	public static class NumCompareSlotCondition extends Condition<Boolean> {
 		private String slotName;
 		private Double low;
 		private Double high;
 		
-		public SlotNumCompareCondition(String slotName, Double low, Double high) {
+		public NumCompareSlotCondition(String slotName, Double low, Double high) {
 			super();
 			this.slotName = slotName;
 			this.low = low;
@@ -111,13 +111,55 @@ public abstract class Condition<ReturnType>{
 
 		@Override
 		public void save(Element conditionElement) {
-			 conditionElement.setAttribute("type", "BooleanSlotCondition");
+			 conditionElement.setAttribute("type", "NumCompareSlotCondition");
 			 conditionElement.setAttribute("slotName", slotName);		
+			 conditionElement.setAttribute("lowBound", low+"");		
+			 conditionElement.setAttribute("highBound", high+"");		
 		}
 
 		@Override 
 		public String toString() {
 			return "if slot " + slotName + " is between " + low + " and " + high;
+		}
+	}
+	
+
+	public static class NumCompareOpValCondition extends Condition<Boolean> {
+		private String opName;
+		private Double low;
+		private Double high;
+		
+		public NumCompareOpValCondition(String opName, Double low, Double high) {
+			super();
+			this.opName = opName;
+			this.low = low;
+			this.high = high;
+		}
+
+		@Override
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxOperationValue opVal = object.getOperationValue(opName);
+			if (opVal == null) {
+				throw new SlotNotFoundException();
+			}
+			try{
+				double value = Double.parseDouble(opVal.getValue());
+				return this.low <= value && value <= this.high;
+			} catch(Exception e) {}
+			return false;
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			 conditionElement.setAttribute("type", "NumCompareOpValCondition");
+			 conditionElement.setAttribute("opName", opName);			
+			 conditionElement.setAttribute("lowBound", low+"");		
+			 conditionElement.setAttribute("highBound", high+"");		
+		}
+
+		@Override 
+		public String toString() {
+			return "if operation " + opName + " returns between " + low + " and " + high;
 		}
 	}
 	
@@ -159,13 +201,14 @@ public abstract class Condition<ReturnType>{
 		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 //			Vector<Issue> issues = object.getIssues();
 //			issues.get(0).getConstraintName();
-			throw new RuntimeException("Not yet implemented!");
+//			throw new RuntimeException("Not yet implemented!");
+			return !object.hasIssue(constraintName);
 		}
 
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "BooleanConstraintCondition");
-			conditionElement.setAttribute("opName", constraintName);
+			conditionElement.setAttribute("conName", constraintName);
 			
 		}
 
