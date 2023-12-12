@@ -38,7 +38,7 @@ public class RequestLogManager {
 	}
 
 	public RequestLog getLog(int requestId) {
-		for (RequestLog requestLog : logList) {
+		for (RequestLog requestLog : new Vector<>(logList)) {
 			if (requestLog.getRequestId() == requestId) {
 				return requestLog;
 			}

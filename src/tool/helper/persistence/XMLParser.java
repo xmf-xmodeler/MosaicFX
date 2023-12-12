@@ -20,8 +20,6 @@ import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
@@ -263,6 +261,12 @@ public class XMLParser {
                 String edgePath = edgeElement.getAttribute("path");
                 String sourcePort = edgeElement.getAttribute("sourcePort");
                 String targetPort = edgeElement.getAttribute("targetPort");
+                
+                /////////QUICKFIX/////////
+                if(sourcePort == null || "".equals(sourcePort)) sourcePort = edgeElement.getAttribute("source_port");
+                if(targetPort == null || "".equals(targetPort)) targetPort = edgeElement.getAttribute("target_port");                
+                //////////////////////////
+                
                 Node intermediatePointsNode = XMLUtil.getChildElement(edgeElement, "IntermediatePoints");
                 NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
@@ -355,11 +359,12 @@ public class XMLParser {
 	}
 
 	private void sendObjectInformation(Integer diagramId, Element object) {
-         int x = Integer.parseInt(object.getAttribute(XMLAttributes.X_COORDINATE.getName()));
-         int y = Integer.valueOf(object.getAttribute(XMLAttributes.Y_COORDINATE.getName()));
-         boolean hidden = Boolean.parseBoolean(object.getAttribute(XMLAttributes.HIDDEN.getName()));
-         String ref = object.getAttribute(XMLAttributes.PATH.getName());
-         XMLInstanceStub stub = new XMLInstanceStub(ref, hidden, x, y);
-         communicator.sendObjectInformation(diagramId, stub);
+        int x = Integer.parseInt(object.getAttribute(XMLAttributes.X_COORDINATE.getName()));
+        int y = Integer.valueOf(object.getAttribute(XMLAttributes.Y_COORDINATE.getName()));
+        boolean hidden = Boolean.parseBoolean(object.getAttribute(XMLAttributes.HIDDEN.getName()));
+        String ref = object.getAttribute(XMLAttributes.PATH.getName());
+        XMLInstanceStub stub = new XMLInstanceStub(ref, hidden, x, y);
+
+        communicator.sendObjectInformation(diagramId, stub);
 	}
 }

@@ -16,8 +16,8 @@ public class AssociationType {
 	public String  endDecoLink;
 	public String  sourcePath;
 	public String  targetPath;
-	public String  sourceLevel;
-	public String  targetLevel;
+	public Level  sourceLevel;
+	public Level  targetLevel;
 	public String  sourceMult;
 	public String  targetMult;
 
@@ -36,8 +36,8 @@ public class AssociationType {
 			String  endDecoLink,
 			String  sourcePath,
 			String  targetPath,
-			String  sourceLevel,
-			String  targetLevel,
+			Level   sourceLevel,
+			Level   targetLevel,
 			String  sourceMult,
 			String  targetMult) {
 

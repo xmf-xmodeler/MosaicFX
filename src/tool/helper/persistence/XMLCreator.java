@@ -190,16 +190,16 @@ public class XMLCreator {
 
 	private void setEdgeType(Element edge, Entry<String, HashMap<String, Object>> edgeData) {
 		String type = edgeData.getKey().split("Mapping")[0];
-		if (!XMLEdgeTypes.contains(type)) {
-			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
-			String edgePath = packagePath + "::" + edgeData.getKey();
-			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
-			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
-			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
-		} else {
+//		if (!XMLEdgeTypes.contains(type)) {
+//			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
+//			String edgePath = packagePath + "::" + edgeData.getKey();
+//			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
+//			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
+//			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
+//		} else {
 			edge.setAttribute(XMLAttributes.TYPE.getName(), type);
 			edge.setAttribute(XMLAttributes.PATH.getName(), edgeData.getKey());
-		}
+//		}
 	}
 
 	private void appendIntermediatePointsToEdge(Vector<Vector<Object>> intermediatePointsData, Element edge) {

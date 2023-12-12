@@ -456,6 +456,10 @@ public class FmmlxDiagramCommunicator {
 			
 			for (Object responseItem : responseContent) {
 				Vector<Object> responseItemList = (Vector<Object>) (responseItem);
+				Integer sMax = (Integer) responseItemList.get(10);
+				Level sLevel = new Level((Integer) responseItemList.get(9), sMax == -1 ? null : sMax);
+				Integer tMax = (Integer) responseItemList.get(12);
+				Level tLevel = new Level((Integer) responseItemList.get(11), tMax == -1 ? null : tMax);
 				AssociationType aType = new AssociationType(
 						(String)  responseItemList.get(0), // name
 						(String)  responseItemList.get(1), // path
@@ -464,17 +468,17 @@ public class FmmlxDiagramCommunicator {
 						(String)  responseItemList.get(4), // dashArray
 						(String)  responseItemList.get(5), // startDeco
 						(String)  responseItemList.get(6),  // endDeco
-						(String)  responseItemList.get(13), // colorLink
-						(Integer) responseItemList.get(14), // strokeWidthLink
-						(String)  responseItemList.get(15), // dashArrayLink
-						(String)  responseItemList.get(16), // startDecoLink
-						(String)  responseItemList.get(17),  // endDecoLink
+						(String)  responseItemList.get(15), // colorLink
+						(Integer) responseItemList.get(16), // strokeWidthLink
+						(String)  responseItemList.get(17), // dashArrayLink
+						(String)  responseItemList.get(18), // startDecoLink
+						(String)  responseItemList.get(19),  // endDecoLink
 						(String)  responseItemList.get(7),  // sourcePath
 						(String)  responseItemList.get(8),  // targetPath
-						(String)  responseItemList.get(9),  // sourceLevel
-						(String)  responseItemList.get(10), // targetLevel
-						(String)  responseItemList.get(11), // sourceMult
-						(String)  responseItemList.get(12)  // targetMult
+						sLevel,
+						tLevel,
+						(String)  responseItemList.get(13), // sourceMult
+						(String)  responseItemList.get(14)  // targetMult
 
 						);
 				result.add(aType);
@@ -527,10 +531,8 @@ public class FmmlxDiagramCommunicator {
 //					System.err.println("Inheritance edge "+edgeInfoAsList.get(1)+"->"+edgeInfoAsList.get(2)+" ignored, probably external.");
 				}
 			}
-			System.err.println("getAllInheritanceEdges End");
 			inheritanceEdgeReceivedReturn.run(result);
 		};
-		System.err.println("getAllInheritanceEdges Start");
 		xmfRequestAsync(handle, diagram.getID(), "getAllInheritanceEdges", localReturn);		
 	}
 	
@@ -913,6 +915,7 @@ public class FmmlxDiagramCommunicator {
 		    Vector<Issue> result = new Vector<>();
 		    int issueNumber = 0;
 		    for (Object issueO : issueList) {
+//		    	System.err.println("issueO: " + issueO);
 		        Vector<Object> issueV = (Vector<Object>) issueO;
 		        try {
 		            Issue issue = Issue.readIssue(issueV);
@@ -1572,7 +1575,10 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.strokeWidthLink),
                 new Value(aType.dashArrayLink),
                 new Value(aType.startDecoLink), new Value(aType.endDecoLink),
-                new Value(aType.sourcePath), new Value(aType.targetPath)};
+                new Value(aType.sourcePath), new Value(aType.targetPath),
+                new Value(aType.sourceLevel.getMinLevel()), new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.targetLevel.getMinLevel()), new Value(aType.targetLevel.getMaxLevel())
+                };
 //        sendMessage("addAssociationType", message);
         xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
     }
@@ -1584,7 +1590,7 @@ public class FmmlxDiagramCommunicator {
         Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
         Integer instLevelSourceMin, Integer instLevelSourceMax, 
         Integer instLevelTargetMin, Integer instLevelTargetMax, 
-        boolean sourceVisible, boolean targetVisible,
+        boolean sourceVisible, boolean _UNUSED_targetVisible,
         boolean isSymmetric, boolean isTransitive,
         String sourceGetterName,
         String sourceSetterName,
@@ -1600,7 +1606,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(multSourceToTarget.toValue()), // multiplicity,
                 new Value(instLevelSourceMin), new Value(instLevelSourceMax), 
                 new Value(instLevelTargetMin), new Value(instLevelTargetMax),
-                new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive),
+                new Value(sourceVisible), new Value(true), new Value(isSymmetric), new Value(isTransitive),
                 (sourceGetterName==null?new Value(-1):new Value(sourceGetterName)), 
                 (sourceSetterName==null?new Value(-1):new Value(sourceSetterName)), 
                 (targetGetterName==null?new Value(-1):new Value(targetGetterName)), 
