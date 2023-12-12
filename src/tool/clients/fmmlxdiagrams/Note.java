@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Iterator;
 import java.util.Vector;
+
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -298,5 +299,20 @@ public class Note extends Node implements CanvasElement {
 		};
 		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
 		comm.xmfRequestAsync(comm.getHandle(), diagramID, "getNoteMappings", noteMappingsVectorReturned);
+	}
+
+	/**
+	 * Update note data in the backend
+	 * @param diagram references the diagram the note should be updated for
+	 * @param result contains the new Color + new Content of the note
+	 */
+	public void updateNoteData(AbstractPackageViewer diagram, NoteCreationDialog.Result result) {
+		Value[] xmfParam = new Value[] {
+				new Value(getId()),
+				new Value(result.getContent()),
+				new Value(result.getColor().toString()), };
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+		comm.xmfRequestAsync(comm.getHandle(), diagram.getID(), "updateNoteData", r -> {}, xmfParam);
+		diagram.updateDiagram();
 	}
 }

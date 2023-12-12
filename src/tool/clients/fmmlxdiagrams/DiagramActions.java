@@ -269,9 +269,7 @@ public class DiagramActions {
 			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
 				return;
 			} else {
-				note.setNoteColor(result.get().getColor());
-				note.setContent(result.get().getContent());
-				diagram.updateDiagram();
+				note.updateNoteData(diagram, result.get());
 			}
 		});
 	}
