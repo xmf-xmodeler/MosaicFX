@@ -14,8 +14,11 @@ public class NoteContextMenu extends ContextMenu {
 		changeItem.setOnAction(e -> actions.editNote(note));
 		
 		MenuItem delItem = new MenuItem("Delete Note");
-		delItem.setOnAction(e -> note.delete((FmmlxDiagram) actions.getDiagram()));	
+		delItem.setOnAction(e -> note.remove((FmmlxDiagram) actions.getDiagram()));	
 		
-		getItems().addAll(changeItem, delItem);
+		MenuItem hideItem = new MenuItem("Hide");
+		hideItem.setOnAction(e -> note.hide(diagram));	
+		
+		getItems().addAll(changeItem, delItem, hideItem);
 	}
 }

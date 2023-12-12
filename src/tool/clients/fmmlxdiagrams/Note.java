@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Iterator;
+import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,10 +11,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 import tool.clients.fmmlxdiagrams.menus.NoteContextMenu;
+import xos.Value;
 
 public class Note extends Node implements CanvasElement {
 
@@ -21,24 +26,56 @@ public class Note extends Node implements CanvasElement {
 	private int id;
 	private NodeBox selectionMarker;
 
-	public Note(FmmlxDiagram diagram, Point2D canvasPosition, NoteCreationDialog.Result noteResult) {
-		setId(diagram);
+	/**
+	 * This constructor is called from Java-site. Afterwards the information is send
+	 * to XMF. There the valid id is set and after the Instance comes back from XMF
+	 * the note is added to a diagram.
+	 * @param canvasPosition defines the position the note should be placed
+	 * @param noteResult is the result of the noteCreationDialog and contains all info you need to add  a note
+	 */
+	public Note(Point2D canvasPosition, NoteCreationDialog.Result noteResult) {
+		setId(-1);
 		setX(canvasPosition.getX());
 		setY(canvasPosition.getY());
 		noteColor = noteResult.getColor();
 		content = noteResult.getContent();
-		layout();
+		hidden = false;
+	}
+	
+	/**
+	 * This constructor is used to create notes from data sent by the backend
+	 */
+	public Note(int noteId, String content, Color noteColor) {
+		this.id = noteId;
+		this.content = content;
+		this.noteColor = noteColor;
+		hidden = false;
 	}
 
 	@Override
 	public void paintOn(GraphicsContext g, Affine currentTransform, DiagramViewPane view) {
+		if (hidden) return;
+		layout();
 		// needs to be called before every paint because there is no mechanism to remove
 		// the selectionMarker once it is added.
-		rootNodeElement.getNodeElements().remove(selectionMarker);
+		removeSelectionMarker();
 		if (view.getDiagram().getSelectedObjects().contains(this)) {
 			rootNodeElement.addNodeElementAtFirst(selectionMarker);
 		}
 		rootNodeElement.paintOn(view, false);
+	}
+
+	/**
+	 * Filter all NodeElements of rootNodeElement. Because there is no equal reference all NodeElements are checked against the attributes of
+	 * the selection marker. If one element matches these attributes it is removed. So the note gets painted without black border that should show the selection of the note
+	 */
+	private void removeSelectionMarker() {
+		Iterator<NodeElement> iterator = rootNodeElement.getNodeElements().iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next().equals(selectionMarker)) {
+				iterator.remove();
+			}
+		}
 	}
 
 	@Override
@@ -52,14 +89,21 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	private void layout() {
+		checkForDiagramMapping();
+		
 		// layoutProperties, the values were determined experimentally and can be adapted to preferences
 		final double MAX_WIDTH = 300;
 		final double VERTICAL_OFFSET_CONTENT_TO_HEADER = 15;
-		final Color BORDER_COLOR = Color.BLACK;
+		final Color BORDER_COLOR = Color.LIGHTGREY;
 
-		NodeGroup group = new NodeGroup(new Affine(1, 0, getX(), 0, 1, getY()));
-		rootNodeElement = group;
-
+		NodeGroup group = null;
+		if (rootNodeElement == null) {
+			group = new NodeGroup(new Affine(1, 0, getX(), 0, 1, getY()));
+			rootNodeElement = group;			
+		} else {
+			group = rootNodeElement;
+		}
+		
 		NodeLabel header = layoutHeader();
 
 		WrappedNodeLabelFactory factory = new WrappedNodeLabelFactory();
@@ -83,13 +127,24 @@ public class Note extends Node implements CanvasElement {
 		selectionMarker.setBgColor(Color.BLACK);
 		selectionMarker.setFgColor(BORDER_COLOR);
 		selectionMarker.setSize(MAX_WIDTH + markerLineWidth, totalHeight + markerLineWidth);
-
+		
 		// The direction in which the elements are added to the group is crucial.
 		// Elements that are added later are printed over the Elements that have been
 		// added before
 		group.addNodeElement(box);
 		group.addNodeElement(header);
 		group.addNodeElement(wrappedNodeLabel);
+	}
+
+	/**
+	 * If you use the constructor(int noteId, String content, Color noteColor) a default position is set for the note. Normally this is the first step in the creation logic.
+	 * In XMF the note data is stored separate from the notes visible information. The diagramMappings are loaded later. This function should check if you have called the functions in the right order.
+	 */
+	private void checkForDiagramMapping() {
+		if (x == 0 || y == 0) {
+			//There could be the spare case, where a user added a note at position 0,0. Then ignore the error
+	        throw new IllegalArgumentException("Please first get DiagramMapping from XMF");
+	    }
 	}
 
 	private NodeLabel layoutHeader() {
@@ -101,28 +156,16 @@ public class Note extends Node implements CanvasElement {
 		return header;
 	}
 
-	public static void addNoteToDiagram(FmmlxDiagram diagram, Note note) {
-		diagram.getNotes().add(note);
-		// in XMF version vielleicht ändern zu update()
-		diagram.redraw();
-	}
-
-	private static void removeNoteFromDiagram(FmmlxDiagram diagram, Note note) {
-		diagram.getNotes().remove(note);
-	}
-
 	public int getId() {
 		return id;
 	}
 
 	public void setNoteColor(Color noteColor) {
 		this.noteColor = noteColor;
-		layout();
 	}
 
 	public void setContent(String content) {
 		this.content = content;
-		layout();
 	}
 
 	public Color getNoteColor() {
@@ -133,18 +176,127 @@ public class Note extends Node implements CanvasElement {
 		return content;
 	}
 
-	public void delete(FmmlxDiagram diagram) {
-		removeNoteFromDiagram(diagram, this);
+	/**
+	 * Removes note from diagram. Backendinformation is also deleted.
+	 * @param diagram references the diagram the note should be deleted from
+	 */
+	public void remove(FmmlxDiagram diagram) {
+		Value[] xmfParam = new Value[] {new Value(getId())};
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator(); 
+		comm.xmfRequestAsync(comm.getHandle(), diagram.getID(), "removeNoteFromDiagram", (r)-> {}, xmfParam);
 		diagram.updateDiagram();
 	}
 
-	public void setId(FmmlxDiagram diagram) {
-		if (diagram.getNotes().isEmpty()) {
-			id = 0;
-		} else {
-			int size = diagram.getNotes().size();
-			// the Id should be the highest Id in the diagram + 1
-			id = diagram.getNotes().get(size - 1).getId() + 1;
-		}
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Note [noteColor=" + noteColor + ", content=" + content + ", id=" + id + ", x=" + x + ", y=" + y + ", hidden=" + hidden + "]";
+	}
+	
+	public void sendCurrentNoteMappingToXMF(int diagramId, ReturnCall<Object> onNotePositionSet) {
+		Value[] xmfParam = new Value[] {
+				new Value(getId()),
+				new Value((int)getX()),
+				new Value((int)getY()),
+				new Value(isHidden())};
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator(); 
+		comm.xmfRequestAsync(comm.getHandle(), diagramId, "sendNoteMappingToXMF", r -> onNotePositionSet.run(null), xmfParam);
+	}
+	
+	public void updateNoteMappingXMF(int diagramId, int x, int y, boolean hidden) {
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator(); 
+		Value[] xmfParam = new Value[] {
+				new Value(getId()),
+				new Value(x),
+				new Value(y),
+				new Value(hidden)};
+		comm.xmfRequestAsync(comm.getHandle(), diagramId, "sendNoteMappingToXMF", r -> {}, xmfParam);
+	}
+	
+	public void hide(AbstractPackageViewer diagram) {
+		updateNoteMappingXMF(diagram.getID(), (int)getX(), (int)getY(), true);
+	}
+	
+	public void unhide(AbstractPackageViewer diagram) {
+		updateNoteMappingXMF(diagram.getID(), (int)getX(), (int)getY(), false);
+	}
+
+	@Override
+	protected void updatePositionInBackend(int diagramID) {
+		sendCurrentNoteMappingToXMF(diagramID, r -> {});
+		
+	}
+	
+	/**
+	 * Adds note to diagram. The values of the java instance are sent to the backend. There an instance of a note is created. This instances is sent back to 
+	 * Java and added to the note-list of the diagram referenced by the diagram id.
+	 * @param diagramId references the diagram the note should be added to
+	 * @param onNoteIdReturned here action could be defined that should be performed after the note is returned from backend
+	 */
+	public void addNoteToDiagram(int diagramId, ReturnCall<Integer> onNoteIdReturned) {
+		ReturnCall<Vector<Object>> onNoteIdReturnedFromXMF = idVector ->
+		onNoteIdReturned.run((Integer) idVector.get(0));
+		Value[] xmfParam = new Value[] {
+				new Value(getContent()),
+				new Value(getNoteColor().toString()), };
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+		comm.xmfRequestAsync(comm.getHandle(), diagramId, "addNoteToDiagram", onNoteIdReturnedFromXMF, xmfParam);
+	}
+	
+	/**
+	 * Returns all notes the backend stores to a specific diagram
+	 * @param diagramID references the diagram the notes are requested for
+	 * @param notesReturned a returncall, that can perform an action on all returned notes transformed back to java instances
+	 */
+	public static void getAllNotes(int diagramID, ReturnCall<Vector<Note>> notesReturned) {
+		ReturnCall<Vector<Object>> notesVectorReturned = notesVector -> {
+			//the size of the vector equals the amount of notes stored in the backend
+			@SuppressWarnings("unchecked")
+			Vector<Vector<Object>> list = (Vector<Vector<Object>>) notesVector.get(0);
+			//Create a new vector to return a list of Java Note-Instances
+			Vector<Note> notes = new Vector<>();
+			//For each position in the backenddata a new note is created
+			for(Vector<Object> item : list) {
+				int noteId  = Integer.parseInt(String.valueOf(item.get(0)));
+				String content = String.valueOf(item.get(1));
+				Color noteColor = Color.valueOf((String) item.get(2));
+				Note note = new Note(noteId, content, noteColor);
+				notes.add(note);
+			}
+			//The callback from the inputParam gets started. A list of notes is provided as inputParam. Operation then can be done on the java note.instances
+			notesReturned.run(notes);
+		};
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+		comm.xmfRequestAsync(comm.getHandle(), diagramID, "getAllNotes", notesVectorReturned);
+	}
+	
+	/**
+	 * Ask the backend for DiagramMappingInfos of notes
+	 * @param diagramID references diagram you would like to get backenddata for
+	 * @param noteMappingRetturned a returncall, that can perform an action on all returned noteMappingInfos transformed back to java instances
+	 */
+	public static void getNotesMappings(int diagramID, ReturnCall<Vector<GraphicalMappingInfo>> noteMappingRetturned) {
+		ReturnCall<Vector<Object>> noteMappingsVectorReturned = noteMappings -> {
+			// List that contains the backenddata
+			Vector<Vector<Object>> list = (Vector<Vector<Object>>) noteMappings.get(0);
+			// new vector is used to provide java.instnaces of MappingInfo
+			Vector<GraphicalMappingInfo> mappings = new Vector<>();
+			// For each backendinstance on java instances is generated
+			for (Vector<Object> item : list) {
+				String mappingKey = String.valueOf(item.get(0));
+				double xPosition = Double.parseDouble(String.valueOf(item.get(1)));
+				double yPosition = Double.parseDouble(String.valueOf(item.get(2)));
+				boolean hidden = Boolean.parseBoolean(String.valueOf(item.get(3)));
+				GraphicalMappingInfo mapping = new GraphicalMappingInfo(mappingKey, xPosition, yPosition, hidden);
+				mappings.add(mapping);
+			}
+			// retuncall is started with the mapping info
+			noteMappingRetturned.run(mappings);
+		};
+		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+		comm.xmfRequestAsync(comm.getHandle(), diagramID, "getNoteMappings", noteMappingsVectorReturned);
 	}
 }

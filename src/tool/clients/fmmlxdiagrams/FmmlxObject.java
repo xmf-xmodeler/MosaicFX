@@ -629,4 +629,20 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
 		
 	}
+
+	@Override
+	public void hide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(true);
+	}
+
+	@Override
+	public void unhide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(false);
+	}
+	
+	private void sendHiddenStatusToXMF(boolean hidden) {
+		Vector<FmmlxObject> v = new Vector<>();
+		v.add(this);
+		diagram.getActions().hide(v, hidden);
+	}
 }

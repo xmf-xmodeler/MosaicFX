@@ -245,7 +245,7 @@ public class DiagramActions {
 				return;
 			} else {
 				//1.Note with default id is created
-				Note note = new Note((FmmlxDiagram) diagram, canvasPosition, result.get());
+				Note note = new Note(canvasPosition, result.get());
 				ReturnCall<Integer> onNoteIdReturned = noteId -> {			
 					//3. Set note id to valid id
 					note.setId(noteId);

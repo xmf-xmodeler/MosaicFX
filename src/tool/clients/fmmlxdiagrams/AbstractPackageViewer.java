@@ -534,5 +534,16 @@ public abstract class AbstractPackageViewer {
 			}
 		}
 		return false;
-	}	
+	}
+	
+	/**
+	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.
+	 * @return list of all node elements
+	 */
+	public ArrayList<Node> getAllNodes() {
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.addAll(objects.values());
+		nodes.addAll(notes);
+		return nodes;
+	}
 }

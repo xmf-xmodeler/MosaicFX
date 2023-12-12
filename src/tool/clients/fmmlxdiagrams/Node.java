@@ -162,4 +162,14 @@ public abstract class Node implements CanvasElement {
 	}
 
 	protected abstract void updatePositionInBackend(int diagramID);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void hide(AbstractPackageViewer diagram);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void unhide(AbstractPackageViewer diagram);
 }

@@ -889,17 +889,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return FONT;
 	}
 
-	/**
-	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.
-	 * @return list of all node elements
-	 */
-	private ArrayList<Node> getAllNodes() {
-		ArrayList<Node> nodes = new ArrayList<>();
-		nodes.addAll(objects.values());
-		nodes.addAll(notes);
-		return nodes;
-	}
-
 	public class DiagramViewPane extends Pane implements View {
 		
 		Canvas canvas;
