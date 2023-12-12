@@ -1420,10 +1420,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 			// otherwise gather (first-level) objects to be painted
 			Vector<CanvasElement> objectsToBePainted = new Vector<>();
+			//For some reason the notes should not be painted before the edges otherwise the edges are moved when the notes are moved
+			objectsToBePainted.addAll(notes);
 			objectsToBePainted.addAll(objects.values());
 			objectsToBePainted.addAll(labels);
 			objectsToBePainted.addAll(edges);
-			objectsToBePainted.addAll(notes);
 			
 			//reverse so that those first in the list are painted last
 			Collections.reverse(objectsToBePainted);
