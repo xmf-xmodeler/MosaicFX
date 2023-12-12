@@ -42,6 +42,7 @@ class WrappedNodeLabelFactory {
 	}
 
 	//This function will cause problems if the text contains many whitespace-characters
+	//Can not handle line-breaks
 	private void appendWrapedTextToGroup(String text, double maxWidth) {
 		// defines the vertical difference between two lines
 		double lineShot = FmmlxDiagram.getFont().getSize();

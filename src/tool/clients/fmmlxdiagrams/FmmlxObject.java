@@ -624,4 +624,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
 	}
 
+	@Override
+	protected void updatePositionInBackend(int diagramID) {
+		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
+		
+	}
 }

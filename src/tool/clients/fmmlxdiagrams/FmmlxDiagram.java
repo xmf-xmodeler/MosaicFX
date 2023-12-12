@@ -130,8 +130,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	//@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
-	private final ArrayList<Note> notes = new ArrayList<>();
-	
+
 	private FmmlxDiagram() {
 		super(null,-1,null);
 		this.newFmmlxPalette = null;
@@ -515,35 +514,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return new Vector<>(selectedObjects);
 	}
 
-	private void mouseReleasedStandard() {
-		for (Edge<?> e : edges) e.removeRedundantPoints();
-
-		if (objectsMoved) {
-			for (CanvasElement s : selectedObjects)
-				if (s instanceof FmmlxObject) {
-					FmmlxObject o = (FmmlxObject) s;
-					o.drop();
-					comm.sendObjectInformation(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
-					for(Edge<?> e : edges) {
-						if(e.isSourceNode(o) || e.isTargetNode(o)) {
-							comm.sendCurrentEdgePositions(this.getID(), e);
-						}
-					}
-				} else if (s instanceof Edge) {
-					comm.sendCurrentEdgePositions(this.getID(), (Edge<?>) s);
-				} else if (s instanceof DiagramEdgeLabel) {
-					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
-					del.drop();
-					del.owner.updatePosition(del);
-					comm.storeLabelInfo(this, del);
-				} else if (s instanceof Note note) {
-					note.drop();
-				}
-		}
-		objectsMoved = false;
-
-	}
-
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
 
 	/* Setters for MouseMode */
@@ -915,12 +885,19 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 	}
 	
-	public List<Note> getNotes() {
-		return notes;
-	}
-	
 	public static Font getFont() {
 		return FONT;
+	}
+
+	/**
+	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.
+	 * @return list of all node elements
+	 */
+	private ArrayList<Node> getAllNodes() {
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.addAll(objects.values());
+		nodes.addAll(notes);
+		return nodes;
 	}
 
 	public class DiagramViewPane extends Pane implements View {
@@ -1076,19 +1053,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		private void moveObjectsOnDrag(Point2D p) {
 			for (CanvasElement s : selectedObjects)
-				if (s instanceof FmmlxObject) {
-					FmmlxObject o = (FmmlxObject) s;
-					o.dragTo(dragAffine);
-					for(Edge<?> e : edges) {
-						if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
-					}
+				if (s instanceof Node) {
+					Node n = (Node)s;
+					moveNode(n);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
-					o.dragTo(dragAffine);
-				} else if (s instanceof Note note) {
-					//TODO Why does this not work smooth?
-					note.dragTo(dragAffine);
-				}
+					o.dragTo(dragAffine);}
 				else { // must be edge
 					Edge<?> e = (Edge<?>) s;
 					e.moveTo(p.getX(), p.getY(), this);
@@ -1096,6 +1066,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			objectsMoved = true;
 			for(Edge<?> e : edges) {e.align();}
 			redraw();
+		}
+
+		private void moveNode(Node n) {
+			n.dragTo(dragAffine);
+			if (n instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) n;
+				for (Edge<?> e : edges) {
+					if (e.isSourceNode(o) || e.isTargetNode(o))
+						e.align();
+				}
+			}
 		}
 
 		private void mouseReleased(MouseEvent e) {
@@ -1174,7 +1155,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					}
 				}
 			} else if (nodeCreationType.equals("Note")) {
-				actions.addNote(unTransformedPoint);
+				actions.addNote(this.getDiagram(), unTransformedPoint);
 				canvas.setCursor(Cursor.DEFAULT);
 				deselectPalette();
 			} else {
@@ -1323,6 +1304,43 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 		
+		private void mouseReleasedStandard() {
+			for (Edge<?> e : edges) e.removeRedundantPoints();
+			if (objectsMoved) {
+				releaseObjects();
+			}
+			objectsMoved = false;
+		}
+
+		private void releaseObjects() {
+			for (CanvasElement s : selectedObjects)
+				if (s instanceof Node) {
+					Node n = (Node) s;
+					releaseNode(n);
+				} else if (s instanceof Edge) {
+					comm.sendCurrentEdgePositions(diagramID, (Edge<?>) s);
+				} else if (s instanceof DiagramEdgeLabel) {
+					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
+					del.drop();
+					del.owner.updatePosition(del);
+					comm.storeLabelInfo(getDiagram(), del);
+				}
+		}
+		
+		private void releaseNode(Node n) {
+			n.drop();
+			n.updatePositionInBackend(diagramID);
+			if (n instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) n;
+				for (Edge<?> e : edges) {
+					if (e.isSourceNode(o) || e.isTargetNode(o)) {
+						comm.sendCurrentEdgePositions(diagramID, e);
+					}
+				}
+			}
+		
+		}
+
 		private void zoomClicked(MouseEvent e) {
 			if(e.getButton() == MouseButton.PRIMARY) try {
 				Point2D p = canvasTransform.inverseTransform(e.getX(), e.getY());
@@ -1408,18 +1426,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				canvasTransform = newTransform;
 				
 			}
-			//this must stay before the next if otherwise notes are not printed if there are no objects							
-			for (Note note : notes) {	
-				note.paintOn(g, canvasTransform, getActiveDiagramViewPane());
-			}
-
-			if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
+	
+			if (objects.size() <= 0 && notes.isEmpty()) {return;} // if no objects yet: out, avoid div/0 or similar
 			
 			// otherwise gather (first-level) objects to be painted
 			Vector<CanvasElement> objectsToBePainted = new Vector<>();
 			objectsToBePainted.addAll(objects.values());
 			objectsToBePainted.addAll(labels);
 			objectsToBePainted.addAll(edges);
+			objectsToBePainted.addAll(notes);
+			
 			//reverse so that those first in the list are painted last
 			Collections.reverse(objectsToBePainted);
 			
@@ -1583,14 +1599,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			Rectangle rec = new Rectangle(x, y, w, h);
 			deselectAll();
-			for (FmmlxObject o : objects.values()) {
-				if (isObjectContained(rec, o)) {
-					select(o);
-				}
-			}
-			for (Note note : notes) {
-				if (isObjectContained(rec, note)) {
-					select(note);
+			
+			for (Node node : getAllNodes()) {
+				if (isObjectContained(rec, node)) {
+					select(node);
 				}
 			}
 			mouseMode = MouseMode.STANDARD;
@@ -1689,5 +1701,5 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			setCloseListener();
 			
 		}		
-	}	
+	}
 }

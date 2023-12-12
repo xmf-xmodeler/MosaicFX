@@ -48,6 +48,9 @@ public class FmmlxDiagramCommunicator {
 	private static FmmlxDiagramCommunicator self;
 	private int handle; // this is set by xmf and serves as an identifier for the communication
 	
+	public int getHandle() {
+		return handle;
+	}
 	public static boolean isDebug() {
 		return DEBUG;
 	}
@@ -363,7 +366,7 @@ public class FmmlxDiagramCommunicator {
 		return functionReturnVector;
 	}
 	
-	private void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+	void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 		setNewRequestID();
 		Value[] args2 = new Value[args.length + 1];
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
@@ -2662,7 +2665,6 @@ public class FmmlxDiagramCommunicator {
 			new Value(text)});
     }
       
-    
     /**
      * This function gets called from Menu-Item "Load Package" in ControlCenter.
      * This Menu-Item calls a function in XMF which is forwarded to this function.
@@ -2672,5 +2674,5 @@ public class FmmlxDiagramCommunicator {
     		XMLParser parser = new XMLParser();
     		parser.parseXMLDocument();   		
     	});
-    }   
+    } 
 }

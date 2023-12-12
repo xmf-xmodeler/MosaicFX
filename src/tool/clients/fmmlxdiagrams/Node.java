@@ -1,16 +1,13 @@
 package tool.clients.fmmlxdiagrams;
 
+import org.w3c.dom.Element;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-
-import java.util.Map;
-
-import org.w3c.dom.Element;
-
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -153,4 +150,16 @@ public abstract class Node implements CanvasElement {
 		this.x = rootNodeElement.getMyTransform().getTx();
 		this.y = rootNodeElement.getMyTransform().getTy();
 	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+	
+	public void setDiagramMapping(GraphicalMappingInfo mapping){
+		setX(mapping.getxPosition());
+		setY(mapping.getyPosition());
+		setHidden(mapping.isHidden());
+	}
+
+	protected abstract void updatePositionInBackend(int diagramID);
 }

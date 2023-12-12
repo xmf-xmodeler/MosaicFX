@@ -1,13 +1,12 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Objects;
+import org.w3c.dom.Element;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-
-import org.w3c.dom.Element;
-
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -132,4 +131,21 @@ public class NodeBox extends NodeGroup{
 	public void setWidth(double width) {
 		this.width = width;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NodeBox other = (NodeBox) obj;
+		return Objects.equals(bgColor, other.bgColor) && Objects.equals(fgColor, other.fgColor)
+				&& Double.doubleToLongBits(height) == Double.doubleToLongBits(other.height)
+				&& Objects.equals(lineWidth, other.lineWidth) && propertyType == other.propertyType
+				&& Double.doubleToLongBits(width) == Double.doubleToLongBits(other.width);
+	}
+	
+	
 }

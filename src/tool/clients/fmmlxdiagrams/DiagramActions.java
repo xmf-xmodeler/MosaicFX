@@ -237,15 +237,27 @@ public class DiagramActions {
 		});
 	}
 	
-	public void addNote(Point2D canvasPosition) {
+	public void addNote(FmmlxDiagram fmmlxDiagram, Point2D canvasPosition) {
 		Platform.runLater(() -> {
 			NoteCreationDialog dialog = new NoteCreationDialog();
 			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
 			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
 				return;
 			} else {
+				//1.Note with default id is created
 				Note note = new Note((FmmlxDiagram) diagram, canvasPosition, result.get());
-				Note.addNoteToDiagram((FmmlxDiagram) diagram, note);
+				ReturnCall<Integer> onNoteIdReturned = noteId -> {			
+					//3. Set note id to valid id
+					note.setId(noteId);
+					//4. Use the note-instance to send mappingInfos to XMF
+					note.sendCurrentNoteMappingToXMF(fmmlxDiagram.getID(), r -> {});
+					//5. After the update all note information on Java-side is deleted because an update will clear the notes array. Afterwards all notes data is reloaded from backend. 
+					fmmlxDiagram.updateDiagram();
+				};
+				//2. Note with default id is send to XMF. There a note-instance is created. 
+				// The valid id is returned from XMF
+				note.addNoteToDiagram(fmmlxDiagram.getID(), onNoteIdReturned);
+				
 			}
 		});
 	}
