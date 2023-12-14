@@ -256,7 +256,7 @@ public class DiagramActions {
 				};
 				//2. Note with default id is send to XMF. There a note-instance is created. 
 				// The valid id is returned from XMF
-				note.addNoteToDiagram(fmmlxDiagram.getID(), onNoteIdReturned);
+				note.addNoteToDiagram(fmmlxDiagram, onNoteIdReturned);
 				
 			}
 		});

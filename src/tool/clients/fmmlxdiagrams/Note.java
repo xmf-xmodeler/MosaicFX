@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Iterator;
 import java.util.Vector;
-
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -237,14 +236,24 @@ public class Note extends Node implements CanvasElement {
 	 * @param diagramId references the diagram the note should be added to
 	 * @param onNoteIdReturned here action could be defined that should be performed after the note is returned from backend
 	 */
-	public void addNoteToDiagram(int diagramId, ReturnCall<Integer> onNoteIdReturned) {
-		ReturnCall<Vector<Object>> onNoteIdReturnedFromXMF = idVector ->
-		onNoteIdReturned.run((Integer) idVector.get(0));
+	public void addNoteToDiagram(AbstractPackageViewer diagram, ReturnCall<Integer> onNoteIdReturned) {
+		ReturnCall<Vector<Object>> onNoteIdReturnedFromXMF = idVector ->{
+			// 2. the returned vector contains at 0 the proper id. This is the highest current id of a note in a diagram incremented by one
+			int properId = (Integer) idVector.get(0);
+			// 3. set the id of the dummy note to the proper id to use this object to transfer the noteMapping to the backend
+			this.setId(properId);
+			sendCurrentNoteMappingToXMF(diagram.getID(), r -> {});
+		// 4. this will start the callback that could be defined for the method
+		onNoteIdReturned.run(properId);
+		// 5. the diagram is updated. Afterward the diagram contains the created note in its notes-list
+		diagram.updateDiagram();
+		};
 		Value[] xmfParam = new Value[] {
 				new Value(getContent()),
 				new Value(getNoteColor().toString()), };
 		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
-		comm.xmfRequestAsync(comm.getHandle(), diagramId, "addNoteToDiagram", onNoteIdReturnedFromXMF, xmfParam);
+		// 1. send request to backend to create new note
+		comm.xmfRequestAsync(comm.getHandle(), diagram.getID(), "addNoteToDiagram", onNoteIdReturnedFromXMF, xmfParam);
 	}
 	
 	/**
