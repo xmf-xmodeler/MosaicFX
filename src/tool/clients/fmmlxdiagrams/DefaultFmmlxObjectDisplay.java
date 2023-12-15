@@ -2,11 +2,11 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Map;
 import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -319,7 +319,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				//40 is here defined as the max length that a method return should have. If this is the case the return value is presented in an alert stage
 				if (opv.getValue().length() > 40) {	
 				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + "Double click for value");									
-				NodeElement.Action action = () -> showToLongValue(opv.getValue());
+				NodeElement.Action action = () -> displayLongMethodReturns(opv.getValue());
 				((NodeLabel) opvValueLabel).setAction(action);
 				} else {
 					opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
@@ -338,9 +338,18 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
 	}
 
-	private void showToLongValue(String value) {
+	/**
+	 * Display too long method returns in alert stage. A TextArea is used so the return value is selectable + copyable
+	 * @param return value as string representation
+	 */
+	private void displayLongMethodReturns(String value) {
+		//If you do not like the layout feel free to adjust the parameter
 		Alert a = new Alert(AlertType.INFORMATION);
-		a.setContentText(value);
+		a.setTitle("Show too long method return");
+		a.setHeaderText("Return Value:");
+		TextArea text = new TextArea(value);
+		text.setWrapText(true);
+		a.getDialogPane().setContent(text);
 		a.showAndWait();
 	}
 
