@@ -172,4 +172,9 @@ public abstract class Node implements CanvasElement {
 	 * Must include the backend update
 	 */
 	public abstract void unhide(AbstractPackageViewer diagram);
+	
+	public void setPosition(double x, double y) {
+		setX(x);
+		setY(y);
+	}
 }
