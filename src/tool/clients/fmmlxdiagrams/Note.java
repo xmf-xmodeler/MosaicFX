@@ -25,6 +25,10 @@ public class Note extends Node implements CanvasElement {
 	private String content;
 	private int id;
 	private NodeBox selectionMarker;
+	
+	public Note() {
+		super();
+	}
 
 	/**
 	 * This constructor is called from Java-site. Afterwards the information is send
@@ -231,29 +235,52 @@ public class Note extends Node implements CanvasElement {
 	}
 	
 	/**
+	 * Different signatures are needed because of different scenarios. This is used if a user creates a new note from the diagram view. 
+	 * At this time there is a already a diagram instance which needs to be update after the adding process to see the note on the canvas.
+	 * @param diagram the note should be added to
+	 * @param onNoteIdReturned possible actions after a note is added. In this case it is used to update notes position afterwards 
+	 */
+	public void addNoteToDiagram(AbstractPackageViewer diagram, ReturnCall<Integer> onNoteIdReturned) {
+		addNoteToDiagram(diagram.getID(), onNoteIdReturned, true);
+	}
+	
+	/**
+	 * This is used while loading a diagram from XML. At this time there is no diagram instance in Java. So data is only send to backend. There is no callback needed because there is not directly called a Java-operation, that uses this data.
+	 * The backenddata is loaded to the new diagram-java-instance, when the diagram is opened.
+	 * @param diagramId defines to which backend instance of diagram the data is added to.
+	 */
+	public void addNoteToDiagram(int diagramId) {
+		addNoteToDiagram(diagramId, r -> {}, false);
+	}
+	
+	/**
 	 * Adds note to diagram. The values of the java instance are sent to the backend. There an instance of a note is created. This instances is sent back to 
 	 * Java and added to the note-list of the diagram referenced by the diagram id.
 	 * @param diagramId references the diagram the note should be added to
 	 * @param onNoteIdReturned here action could be defined that should be performed after the note is returned from backend
+	 * @param updateDiagram decides if the diagram is updated after the note was added
 	 */
-	public void addNoteToDiagram(AbstractPackageViewer diagram, ReturnCall<Integer> onNoteIdReturned) {
+	public void addNoteToDiagram(int diagramId, ReturnCall<Integer> onNoteIdReturned, boolean updateDiagram) {
 		ReturnCall<Vector<Object>> onNoteIdReturnedFromXMF = idVector ->{
 			// 2. the returned vector contains at 0 the proper id. This is the highest current id of a note in a diagram incremented by one
 			int properId = (Integer) idVector.get(0);
 			// 3. set the id of the dummy note to the proper id to use this object to transfer the noteMapping to the backend
 			this.setId(properId);
-			sendCurrentNoteMappingToXMF(diagram.getID(), r -> {});
+			sendCurrentNoteMappingToXMF(diagramId, r -> {});
 		// 4. this will start the callback that could be defined for the method
 		onNoteIdReturned.run(properId);
 		// 5. the diagram is updated. Afterward the diagram contains the created note in its notes-list
-		diagram.updateDiagram();
+		if (updateDiagram) {
+			AbstractPackageViewer diagram = FmmlxDiagramCommunicator.getDiagram(diagramId);
+			diagram.updateDiagram();
+		}
 		};
 		Value[] xmfParam = new Value[] {
 				new Value(getContent()),
 				new Value(getNoteColor().toString()), };
 		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
 		// 1. send request to backend to create new note
-		comm.xmfRequestAsync(comm.getHandle(), diagram.getID(), "addNoteToDiagram", onNoteIdReturnedFromXMF, xmfParam);
+		comm.xmfRequestAsync(comm.getHandle(), diagramId, "addNoteToDiagram", onNoteIdReturnedFromXMF, xmfParam);
 	}
 	
 	/**
