@@ -63,9 +63,11 @@ public class XMLUtil {
 	}
 
 	public static Element getChildElement(Element element, String tagName) {
-
 		return getChildElement(element, tagName, true);
-
+	}
+	
+	public static Element getChildElement(Element element, XMLTags tag) {
+		return getChildElement(element, tag.getName(), true);
 	}
 
 	public static Element getChildElement(Element element, String tagName, boolean create) {
