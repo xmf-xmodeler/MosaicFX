@@ -185,7 +185,7 @@ public class XMLCreator {
 		XMLUtil.createChildElement(noteElement, XMLTags.NOTECONTENT.getName(), note.getContent());
 		Element notePositionElement = XMLUtil.createChildElement(noteElement, XMLTags.NOTEPOSITION.getName());
 		XMLUtil.createChildElement(notePositionElement, XMLTags.XPOSITION.getName(), String.valueOf(mappingInfo.getxPosition()));
-		XMLUtil.createChildElement(notePositionElement, XMLTags.XPOSITION.getName(), String.valueOf(mappingInfo.getyPosition()));
+		XMLUtil.createChildElement(notePositionElement, XMLTags.YPOSITION.getName(), String.valueOf(mappingInfo.getyPosition()));
 	}
 
 	private Element returnDiagramsTag() {
