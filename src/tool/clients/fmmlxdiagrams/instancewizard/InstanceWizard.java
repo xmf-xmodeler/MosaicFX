@@ -124,6 +124,8 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		}
 	}
 	
+	
+	//TODO while creating the gui should be blocked... see logic in the update diagramFunction
 	private void generateInstance() {
 		String namePrefix = theClass.getName();
 		if(theClass.getLevel().getMinLevel() == 1) namePrefix = namePrefix.substring(0,1).toLowerCase() + namePrefix.substring(1);
