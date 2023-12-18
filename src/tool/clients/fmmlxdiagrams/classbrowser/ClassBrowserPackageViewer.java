@@ -57,7 +57,13 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	@Override
 	public void updateDiagram() {
 		//Hinders user to do further inputs
-				view.setDisabled(true);
-				updateDiagram((ReturnCall<Object>) e -> Platform.runLater(() -> {view.setDisabled(false);}));
+		super.updateDiagram(view.getScene().getRoot(), r -> {});		
+		
+
+	}
+
+	@Override
+	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
+		super.updateDiagram(view.getScene().getRoot(), r -> {onDiagramUpdated.run(null);});
 	}
 }

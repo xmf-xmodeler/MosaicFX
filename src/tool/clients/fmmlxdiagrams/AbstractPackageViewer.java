@@ -2,14 +2,16 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EventListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
-import javafx.application.Platform;
+import org.apache.logging.log4j.LogManager;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.canvas.Canvas;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
 public abstract class AbstractPackageViewer {
@@ -26,6 +28,8 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
+	
+	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -61,16 +65,31 @@ public abstract class AbstractPackageViewer {
 		}
 		return allVisibleObjects;
 	}
+
+	public abstract void  updateDiagram();
+			
+	public abstract void updateDiagram(ReturnCall<Object> onDiagramUpdated);
 	
-	public void updateDiagram() {
-		updateDiagram( (ReturnCall<Object>) e -> { } );
-	}
-		
-	public void updateDiagram( ReturnCall<Object> a ) {
+	public void updateDiagram(javafx.scene.Node node, ReturnCall<Object> onDiagramUpdated ) {
 		setViewerStatus(ViewerStatus.DIRTY);
 		
-		Thread t = new Thread( () -> {
-			this.fetchDiagramData( a );
+		List<Event> eventList = new ArrayList<>();
+		EventHandler<Event> actionHandler = new EventHandler<Event>() {
+	            @Override
+	            public void handle(Event event) {
+	            	eventList.add(event);
+	            	event.consume();
+	            }
+	        };
+		node.addEventFilter(Event.ANY, actionHandler);
+		
+		Thread t = new Thread(() -> {
+			this.fetchDiagramData(r -> {
+				onDiagramUpdated.run(null);
+				node.removeEventFilter(Event.ANY, actionHandler);
+				logger.debug("Block events while updating {}", eventList);
+
+			});
 		});
 		t.start();
 	}

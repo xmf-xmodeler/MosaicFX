@@ -846,6 +846,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return new BoundingBox(0,0,100,100);
 	}
 		
+	/*
+	 * Does the same like the method below but allows to define a ReturnCall, that is executed after the Diagram is updated
+	 */
+	@Override
+	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
+		// Hinders user to do further inputs
+		super.updateDiagram(getView(), (ReturnCall<Object>) e -> {
+			onDiagramUpdated.run(null);
+		});
+	}
+
+	@Override
+	public void updateDiagram() {
+		//Hinders user to do further inputs
+		super.updateDiagram(getView(), r -> {});	
+	}
+
 	public class DiagramViewPane extends Pane implements View {
 		
 		Canvas canvas;
@@ -1618,27 +1635,5 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			break;
 		}
 		
-	}
-	/*
-	 * Does the same like the method below but allows to define a ReturnCall, that is executed after the Diagram is updated
-	 */
-	@Override
-	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
-		// Hinders user to do further inputs
-		getView().setDisable(true);
-		super.updateDiagram((ReturnCall<Object>) e -> {
-			onDiagramUpdated.run(null);
-			Platform.runLater(() -> {
-				getView().setDisable(false);
-			});
-		});
-	}
-	
-	
-	@Override
-	public void updateDiagram() {
-		//Hinders user to do further inputs
-		getView().setDisable(true);
-		super.updateDiagram((ReturnCall<Object>) e -> Platform.runLater(() -> {getView().setDisable(false);}));	
 	}
 }
