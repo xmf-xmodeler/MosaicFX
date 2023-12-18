@@ -26,7 +26,7 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
-	protected final ArrayList<Note> notes = new ArrayList<>();
+	protected final NoteList notes = new NoteList();
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -237,7 +237,7 @@ public abstract class AbstractPackageViewer {
 	 */
 	private void addNewNotesToNoteList(Vector<Note> returnedNotes) {
 		for (Note note : returnedNotes) {
-			if (containsNote(note.getId())) {
+			if (notes.contain(note.getId())) {
 				continue;
 			}
 			this.notes.add(note);
@@ -256,7 +256,7 @@ public abstract class AbstractPackageViewer {
 			for (GraphicalMappingInfo mappingInfo : noteMappings) {
 				//here the reference from the diagram is initialized. If you would have not updates the note list, an exception would occure.
 				try {
-					Note note = getNote(mappingInfo.getNoteIdFromMappingKey());					
+					Note note = notes.getNote(mappingInfo.getNoteIdFromMappingKey());					
 					note.setDiagramMapping(mappingInfo);
 				} catch (NullPointerException e) {
 					System.err.println("Pleas update notes first");
@@ -514,27 +514,11 @@ public abstract class AbstractPackageViewer {
 		return new Vector<>(associationTypes);
 	}
 	
-	public List<Note> getNotes() {
+	public NoteList getNotes() {
 		return notes;
 	}
 
-	public Note getNote(int noteId) {
-		for (Note note : notes) {
-			if (note.getId() == noteId) {
-				return note;
-			}
-		}
-		throw new NoSuchElementException("Diagram does not contain Note with " + noteId);
-	}
-	
-	public boolean containsNote(int noteId) {
-		for (Note note : notes) {
-			if (note.getId() == noteId) {
-				return true;
-			}
-		}
-		return false;
-	}
+
 	
 	/**
 	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.

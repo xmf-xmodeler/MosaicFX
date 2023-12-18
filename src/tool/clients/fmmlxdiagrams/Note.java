@@ -220,12 +220,20 @@ public class Note extends Node implements CanvasElement {
 		comm.xmfRequestAsync(comm.getHandle(), diagramId, "sendNoteMappingToXMF", r -> {}, xmfParam);
 	}
 	
+	/**
+	 *Send boolean to backend, that note is now hidden. Afterward the diagram is updated so that the note is no longer visible on the diagram.
+	 */
 	public void hide(AbstractPackageViewer diagram) {
 		updateNoteMappingXMF(diagram.getID(), (int)getX(), (int)getY(), true);
+		diagram.updateDiagram();
 	}
 	
+	/**
+	 *Send boolean to backend, that note is now visible. Afterward the diagram is updated so that the note is visible on the diagram.
+	 */
 	public void unhide(AbstractPackageViewer diagram) {
 		updateNoteMappingXMF(diagram.getID(), (int)getX(), (int)getY(), false);
+		diagram.updateDiagram();
 	}
 
 	@Override
@@ -338,7 +346,7 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	/**
-	 * Update note data in the backend
+	 * Update note data in the backend. Attention if you not update the diagram change is not visible.
 	 * @param diagram references the diagram the note should be updated for
 	 * @param result contains the new Color + new Content of the note
 	 */

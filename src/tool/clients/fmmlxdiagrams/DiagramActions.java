@@ -1367,4 +1367,15 @@ public class DiagramActions {
 		});
 	}
 
+	public void hideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.hide(diagram);
+		}
+	}
+	
+	public void unhideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.unhide(diagram);
+		}
+	}
 }

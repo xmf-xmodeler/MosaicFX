@@ -151,6 +151,9 @@ public abstract class Node implements CanvasElement {
 		this.y = rootNodeElement.getMyTransform().getTy();
 	}
 
+	/**
+	 * Please mind, that the use of this method will not alter backend data!!!
+	 */
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}
