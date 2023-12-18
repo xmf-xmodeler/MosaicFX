@@ -66,14 +66,28 @@ public abstract class AbstractPackageViewer {
 		return allVisibleObjects;
 	}
 
+	/**
+	 * Used to update diagram to backenddata
+	 */
 	public abstract void  updateDiagram();
 			
+	/**
+	 * Used to update diagram to backenddata
+	 * @param onDiagramUpdated defines an action that is performed after the diagram is updated
+	 */
 	public abstract void updateDiagram(ReturnCall<Object> onDiagramUpdated);
 	
-	public void updateDiagram(javafx.scene.Node node, ReturnCall<Object> onDiagramUpdated ) {
+	/**
+	 * This function defines the update logic for every diagram. The gui of a diagram will consume all upcoming events. 
+	 * For debug purposes all events are logged.
+	 * @param node main note for which all events will be consumed
+	 * @param onDiagramUpdated action performed after diagram is updated
+	 */
+	public void updateDiagram(javafx.scene.Node node, ReturnCall<Object> onDiagramUpdated) {
 		setViewerStatus(ViewerStatus.DIRTY);
 		
 		List<Event> eventList = new ArrayList<>();
+		//Every event is consumed and the event is added to an event list
 		EventHandler<Event> actionHandler = new EventHandler<Event>() {
 	            @Override
 	            public void handle(Event event) {
@@ -86,9 +100,10 @@ public abstract class AbstractPackageViewer {
 		Thread t = new Thread(() -> {
 			this.fetchDiagramData(r -> {
 				onDiagramUpdated.run(null);
+				//after the update execution the EventFilter is removed from the node
 				node.removeEventFilter(Event.ANY, actionHandler);
+				//all consumed events are printed to the log file
 				logger.debug("Block events while updating {}", eventList);
-
 			});
 		});
 		t.start();

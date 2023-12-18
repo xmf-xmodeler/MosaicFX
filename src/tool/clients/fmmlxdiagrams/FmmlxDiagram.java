@@ -851,7 +851,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	 */
 	@Override
 	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
-		// Hinders user to do further inputs
 		super.updateDiagram(getView(), (ReturnCall<Object>) e -> {
 			onDiagramUpdated.run(null);
 		});
@@ -859,7 +858,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	public void updateDiagram() {
-		//Hinders user to do further inputs
+		//Performs the diagram update with empty return call
 		super.updateDiagram(getView(), r -> {});	
 	}
 

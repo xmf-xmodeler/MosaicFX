@@ -56,10 +56,8 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	
 	@Override
 	public void updateDiagram() {
-		//Hinders user to do further inputs
+		//Updated diagram without returnCall
 		super.updateDiagram(view.getScene().getRoot(), r -> {});		
-		
-
 	}
 
 	@Override
