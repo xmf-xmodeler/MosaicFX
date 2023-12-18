@@ -1494,8 +1494,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			Rectangle rec = new Rectangle(x, y, w, h);
 			deselectAll();
 			for (FmmlxObject o : objects.values()) {
-				if (isObjectContained(rec, o)) {
-					select(o);
+				//while merging please change implementation to node 
+				if(!o.isHidden() && isObjectContained(rec, o)) {
+						select(o);					
 				}
 			}
 
