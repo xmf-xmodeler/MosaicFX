@@ -137,7 +137,7 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects.values()) {
 				slotNames.put(o, o.getSlotNames());
 			}
-			comm.fetchAllSlots(this, slotNames, slotsReturn);
+			comm.fetchAllSlots(this, slotsReturn);
 		};
 
 		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {

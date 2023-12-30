@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.Vector;
@@ -946,8 +947,14 @@ public class FmmlxDiagramCommunicator {
 	    xmfRequestAsync(handle, fmmlxDiagram.getID(), "getAllAuxTypes", returnCall);
     }
     
+    /**
+     * This function ask the backend for specific slots. All classes that defined in the map are requested.
+     * @param diagram the diagram for that the values will be requested
+     * @param slotNames A map that contains all class names of which slots should be requested
+     * @param slotsReceivedReturn Returncall, that defines what should be done after XMF has send result
+     */
     @SuppressWarnings("unchecked")
-    public void fetchAllSlots(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
+    public void fetchSpecificSlots(AbstractPackageViewer diagram, Map <FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
     	java.util.Set<FmmlxObject> objects = slotNames.keySet();
     	Value[] objectSlotList = new Value[slotNames.size()];
     	int count = 0;
@@ -979,6 +986,41 @@ public class FmmlxDiagramCommunicator {
     		slotsReceivedReturn.run(null);
     	};
     	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", returnCall, new Value(objectSlotList));
+    }
+        
+    /**
+     * This function ask the backend for all slots.
+     * The list returned by the backend does not contain classes or instances, that do not have slots. 
+     * @param diagram the diagram for that the values will be requested
+     * @param onSlotsUpdated Returncall, that defines what should be done after the slots of the diagram are updated
+     */
+    public void fetchAllSlots(AbstractPackageViewer diagram, ReturnCall<?> onSlotsUpdated) {
+    	
+    	ReturnCall<Vector<Object>> onSlotsReturnedFromXMF = returnedSlotList -> {
+    		
+    		//The response is a vector, that contains for every object a Vector.
+    		Vector<Vector<Object>> response = (Vector<Vector<Object>>) (returnedSlotList.get(0));
+    		//The Vector of every objects contains the objectName and a slotList
+    		for(Vector<Object> objectVector : response) {
+    			    			
+    			String objName = (String) (objectVector.get(0));
+    			String objectPath = diagram.getPackagePath() + "::" + objName;    			
+    			FmmlxObject correspondingDiagramObject = diagram.getObjectByPath(objectPath);
+    				
+    			Vector<Vector<Object>> slotList = (Vector<Vector<Object>>) (objectVector.get(1));
+    			Vector<FmmlxSlot> result = new Vector<>();
+	    		for (Vector<Object> slotO : slotList) {
+	    			String name = (String) (slotO.get(0));
+	    			String value = (String) (slotO.get(1));
+	    			result.add(new FmmlxSlot(name, value, correspondingDiagramObject));
+	    			Collections.sort(result);
+	    			correspondingDiagramObject.slots = result;
+    			}
+    		}
+    		onSlotsUpdated.run(null);
+    	};
+    	
+    	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", onSlotsReturnedFromXMF);
     }
     
 
