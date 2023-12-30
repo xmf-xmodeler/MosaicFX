@@ -1,7 +1,5 @@
 package tool.logging;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.logging.log4j.LogManager;

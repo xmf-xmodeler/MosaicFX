@@ -1359,7 +1359,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectName),
 				new Value(attName),
 				new Value(oldLevel.getMinLevel()),
-				new Value(newLevel.getMinLevel())};
+				new Value(oldLevel.getMaxLevel()),
+				new Value(newLevel.getMinLevel()),
+				new Value(newLevel.getMaxLevel())};
 		sendMessage("changeAttributeLevel", message);
 	}
 
