@@ -1003,8 +1003,8 @@ public class FmmlxDiagramCommunicator {
     		//The Vector of every objects contains the objectName and a slotList
     		for(Vector<Object> objectVector : response) {
     			    			
-    			String objName = (String) (objectVector.get(0));
-    			String objectPath = diagram.getPackagePath() + "::" + objName;    			
+    			String objectPath = (String) (objectVector.get(0));
+//    			String objectPath = diagram.getPackagePath() + "::" + objName;    			
     			FmmlxObject correspondingDiagramObject = diagram.getObjectByPath(objectPath);
     				
     			Vector<Vector<Object>> slotList = (Vector<Vector<Object>>) (objectVector.get(1));
