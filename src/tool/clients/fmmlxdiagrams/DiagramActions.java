@@ -1331,7 +1331,7 @@ public class DiagramActions {
 		uiGenerator.instantiateCustomGUI();
 	}
 	
-	// FH addAssociation
+	// FH addAssociation -- eigentlich ist die bennenung irreführend, da ein link erstellt wird
 	public void addAssociation(String instanceName, String instance2Name, String assocName) {
 		if (instanceName != null && instance2Name != null && assocName != null) {
 			this.diagram.comm.addLink(this.diagram.diagramID, instanceName, instance2Name, assocName);

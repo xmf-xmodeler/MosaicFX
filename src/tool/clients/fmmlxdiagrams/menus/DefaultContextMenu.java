@@ -34,10 +34,8 @@ public class DefaultContextMenu extends ContextMenu {
 
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
-		
 		MenuItem generateCustomUI = new MenuItem("Generate Standard UI");
 		generateCustomUI.setOnAction(e -> actions.showGenerateCustomUIDialog());
-
 		Menu enumerationMenu = new Menu("Enumerations");
 		MenuItem createEnumeration = new MenuItem("Create Enumeration...");
 		createEnumeration.setOnAction(e -> actions.addEnumerationDialog());
@@ -46,12 +44,12 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration...");
 		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
 		//MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
-		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
+		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false)); 
 		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
+		getItems().addAll(addMenu, searchMenu, unhideItem, generateCustomUI, enumerationMenu, new SeparatorMenuItem(), addAssocType);
 	}
 }

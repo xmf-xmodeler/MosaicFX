@@ -2702,10 +2702,13 @@ public class FmmlxDiagramCommunicator {
     	int requestID = this.getcurrentRequestID();
     	Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
     	Value[] parentsArray = createValueArray(parents);
-    	Value[] message = new Value[]{new Value(arr), getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level), new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+    	Value[] message = new Value[]{new Value(arr), new Value(arr), new Value(className), new Value(name), new Value(level), new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
     	
-    	xmfRequestAsync(handle, diagramID, "addInstanceAsync", onInstanceCreated, message);
-		
+//    	xmfRequestAsync(handle, diagramID, "addInstanceAsync", onInstanceCreated, message);
+    	
+    	returnMap.put(requestID, onInstanceCreated);
+		WorkbenchClient.theClient().send(handle, "addInstanceAsync", message);
+
 	}
 
     

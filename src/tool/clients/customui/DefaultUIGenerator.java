@@ -45,7 +45,7 @@ public class DefaultUIGenerator {
 
 	private HashMap<String, HashMap<String, String>> customGuiSlots;
 
-	private String metaClassName = "Root::FMMLx::MetaClass";
+	private String metaClassName = "MetaClass";
 	// !! this is not the name of the commonClass but rather the name that is
 	// included in commonclass and all neeeded dummy classes
 	private String commonClassName = "CommonClass";
@@ -97,7 +97,7 @@ public class DefaultUIGenerator {
 			return instanceOf;
 		}
 
-		FmmlxObject metaClass = this.diagram.getObjectByPath(object.getMetaClassName());
+		FmmlxObject metaClass = this.diagram.getObjectByPath(diagram.getPackagePath()+"::"+object.getMetaClassName());
 
 		if (metaClass.getName().contains(commonClassName))
 			instanceOf = true;
@@ -124,7 +124,7 @@ public class DefaultUIGenerator {
 
 		// instance of customGUI
 		String guiInstanceName = actions.addInstance("UserInterface",
-				"gui" + UUID.randomUUID().toString().replace("-", ""), false, onInstanceCreated);
+				"gui" + UUID.randomUUID().toString().replace("-", ""),false, onInstanceCreated);
 
 		// objects for customGUI
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
@@ -181,7 +181,7 @@ public class DefaultUIGenerator {
 			for (FmmlxObject o : objects) {
 				// check if there is a metaclass ...
 				i = 0;
-				while ((height > i || height == -1) && !(o.getMetaClassName().equals(metaClassName))) {
+				while (!o.getName().contains("CommonClass") && (height > i || height == -1) && !(o.getMetaClassName().equals(metaClassName))) {
 					i += 1;
 					o = diagram.getObjectByPath(diagram.getPackagePath() + "::" + o.getMetaClassName());
 					// that has an association ...
@@ -211,17 +211,13 @@ public class DefaultUIGenerator {
 		}
 
 		// get associations that are mapped
-		FmmlxAssociation associationDerivedFrom = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::derivedFrom");
-		FmmlxAssociation associationComposedOf = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::composedOf");
-		FmmlxAssociation associationRefersToStateOf = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::refersToStateOf");
-		FmmlxAssociation associationIsParent = diagram.getAssociationByPath(diagram.getPackagePath() + "::isParent");
-		FmmlxAssociation associationIsChild = diagram.getAssociationByPath(diagram.getPackagePath() + "::isChild");
-		FmmlxAssociation associationUses = diagram.getAssociationByPath(diagram.getPackagePath() + "::uses");
-		FmmlxAssociation associationRepresentedAs = diagram
-				.getAssociationByPath(diagram.getPackagePath() + "::representedAs");
+		FmmlxAssociation associationDerivedFrom = diagram.getAssociationByPath(diagram.getPackagePath()+"::UIControlElement::reference");
+		FmmlxAssociation associationComposedOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::UserInterface::uIElement");
+		FmmlxAssociation associationRefersToStateOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::commonClass");
+		FmmlxAssociation associationIsParent = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::parent");
+		FmmlxAssociation associationIsChild = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::child");
+		FmmlxAssociation associationUses = diagram.getAssociationByPath(diagram.getPackagePath() + "::Action::parameter");
+		FmmlxAssociation associationRepresentedAs = diagram.getAssociationByPath(diagram.getPackagePath() + "::Parameter::virtual");
 
 		// create standard GUI
 		GridPane rechteSeiteGrid = new GridPane();
@@ -300,7 +296,6 @@ public class DefaultUIGenerator {
 			helper.clear();
 
 			// add link "refersToStateOf" -> Reference + CommonClassInstance
-
 			if (reference.getObject().getInstances().size() > 0) {
 				actions.addAssociation(reference.getReferenceInstanceName(),
 						reference.getObject().getInstances().get(0).getName(), associationRefersToStateOf.getName());
@@ -410,7 +405,6 @@ public class DefaultUIGenerator {
 
 				// if method is monitor than action; otherwise acttionInjection
 				// TODO: maybe find something better more robust approach
-
 				String body = operation.getBody();
 				isActionInjection = body.contains("monitor=true") ? true : false;
 
