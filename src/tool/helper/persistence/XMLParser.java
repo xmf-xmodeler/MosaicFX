@@ -7,12 +7,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
@@ -21,6 +26,7 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
 import tool.helper.userProperties.PropertyManager;
@@ -64,17 +70,18 @@ public class XMLParser {
 	}
 
 	XMLParser(File inputFile) {
+		root = initParser(inputFile);
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
 			//overrride importFile with transformed Version
 			inputFile = new ModelInputTransformer().transform(inputFile, importVersion);
+			//used to clean disc from temporary used files for transformation
+			ModelInputTransformer.deleteTempFiles();
 		}
-		root = initParser(inputFile);
-    	ModelInputTransformer.deleteTempFiles();
+		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
 	private int getVersion(File inputFile) {
-		Element root = initParser(inputFile);
 		String importVersion = null;
 		try {
 			importVersion = root.getAttribute(XMLAttributes.VERSION.getName());	
@@ -103,8 +110,10 @@ public class XMLParser {
 	}
 
 	public void parseXMLDocument() {
-		createProject();
+		//2. run ReturnCall when there are no name conflicts
+		ReturnCall<Object> onConflicitingNamesChecked = noConflict -> {
 		
+		communicator.createProject(projectPath.split("::")[1], projectPath);		
 		//i am unsure where it needs to be, you can move it.
 		checkImports();
 		
@@ -123,9 +132,47 @@ public class XMLParser {
 				}
 				ControlCenterClient.getClient().getAllProjects();
 			});
-
+		};
+		//Check if XModeler already contains project with same name
+		checkForNameConflict(onConflicitingNamesChecked);
 	}
 	
+	/**
+	 * If the backend tries to create a project with the same name it crashes. This
+	 * function checks whether there is already a project whose name matches the
+	 * name of the import project. If so, an alert is presented and the import is aborted.
+	 */
+	private void checkForNameConflict(ReturnCall<Object> onNameChecked) {
+
+		ReturnCall<Vector<Object>> onProjectNamesReturned = projectNamesVec -> {
+
+			Vector<String> projectNames = (Vector) projectNamesVec.get(0);
+			for (String projectName : projectNames) {
+				if ((projectPath.split("::")[1]).equals(projectName)) {
+					showNameConflictAlert(projectPath.split("::")[1]);
+					return;
+				}
+			}
+			onNameChecked.run(null);
+		};
+		// please replace 0 with getHandle() and the second 0 with get DiagramId -> there was an update in another branch that contain these functions
+		communicator.xmfRequestAsync(0, 0, "getAllProjectNames", onProjectNamesReturned);
+	}
+
+	/**
+	 * In case of conflicting project names by import this function shows an alert.
+	 */
+	private void showNameConflictAlert(String conflictingProject) {
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Conflicting names");
+			alert.setHeaderText("The current session already contains a project with the name \"" + conflictingProject + "\"!");
+			alert.setContentText("Please change name of the project you would like to import or restart XModeler");
+			alert.getButtonTypes().setAll(ButtonType.OK);
+			alert.showAndWait();}
+		);
+	}
+
 	/**
 	 * This function proves if the referenced packages of the new imported package are already loaded.
 	 * Add Info about what happens when the package is not found.
@@ -142,19 +189,6 @@ public class XMLParser {
 			}
 		}
 	}
-
-	private void createProject() {
-		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
-        String projectName = projectPath.split("::")[1];
-		communicator.createProject(projectName, projectPath);
-	}
-
-//	private void buildModel() {
-//			//Creates dummy project that hold the model data.
-//			//Current assumption is, that there is only one model per project
-////			int localID = 	communicator.createDiagramAsync(projectPath, projectName, DiagramType.ModelBrowser);		
-////			sendModelDataToXMF(localID);
-//		}
 
 	private void sendModelDataToXMF(Integer diagramId) {
 		Element model = XMLUtil.getChildElement(root, XMLTags.MODEL.getName());
