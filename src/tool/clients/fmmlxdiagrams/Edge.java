@@ -3,8 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
@@ -165,9 +163,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 			// normal
 			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
-			g.setLineWidth(getStrokeWidth() + (isSelected() ? 2 : 0));
+			g.setLineWidth(getStrokeWidth() + (view.getDiagram().isSelected(this) ? 2 : 0));
 			g.setLineDashes(getLineDashes());
-
+			
 			for (int i = 0; i < points.size() - 1; i++) {
 //				if(i!=0) try {
 //					g.setFill(Color.PURPLE);
@@ -419,10 +417,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return "1";
 	}
 
-	private boolean isSelected() {
-		return false;
-	}
-
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(!isVisible()) return false;
@@ -665,6 +659,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return labelPositions.get(localId);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initLabelPositionMap(Vector<Object> labelPositions2) {
 		labelPositions = new HashMap<>();
 		for (Object labelPositionO : labelPositions2) {

@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
+import tool.clients.fmmlxdiagrams.Constraint;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
@@ -25,47 +26,55 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 
 	private ComboBox<FmmlxAttribute> attBox;
 	private ComboBox<FmmlxOperation> opBox;
+	private ComboBox<Constraint> constraintBox;	
 	private ComboBox<Consequence> cBox;
+	private TextField minField = new TextField();
+	private TextField maxField = new TextField();
 	private TextField refTextField;
 	public static enum DataType {BOOLEAN, NUMBER, STRING}
 	public static enum PropertyType {SLOT, OPVAL, CONSTRAINT}
 	
-	public DefaultModificationDialog(FmmlxObject type, int level, final Class<?> condition, NodeElement nodeElement) {
+	public DefaultModificationDialog(FmmlxObject obj, int level, final Class<?> condition, NodeElement nodeElement) {
 		Vector<Consequence> cList = new Vector<>();
-		PropertyType slot = null;
-		
+		PropertyType type = null;
+		boolean isNumeric = condition == Condition.NumCompareSlotCondition.class;
 		DataType dataType = null;
-		if(condition == Condition.BooleanSlotCondition.class || condition == Condition.BooleanOpValCondition.class) {
+		if(condition == Condition.BooleanSlotCondition.class || condition == Condition.BooleanOpValCondition.class || condition == Condition.NumCompareSlotCondition.class) {
 			dataType = DataType.BOOLEAN;
 			cList.add(Consequence.SHOW_IF);
-			cList.add(Consequence.SHOW_IF_NOT);			
+			cList.add(Consequence.SHOW_IF_NOT);		
 		} else if(condition == Condition.ReadFromSlotCondition.class || condition == Condition.ReadFromOpValCondition.class) {
 			dataType = DataType.STRING;
 			if(nodeElement instanceof NodeLabel) cList.add(Consequence.READ_FROM_SLOT);
 			if(nodeElement instanceof NodePath) cList.add(Consequence.SET_COLOR);		
 		}
-		if(condition == Condition.BooleanSlotCondition.class || condition == Condition.ReadFromSlotCondition.class) {
-			slot = PropertyType.SLOT;
+		if(condition == Condition.BooleanSlotCondition.class || condition == Condition.ReadFromSlotCondition.class || condition == Condition.NumCompareSlotCondition.class) {
+			type = PropertyType.SLOT;
 		} else if(condition == Condition.BooleanOpValCondition.class || condition == Condition.ReadFromOpValCondition.class) {
-			slot = PropertyType.OPVAL;
+			type = PropertyType.OPVAL;
 		} else if(condition == Condition.BooleanConstraintCondition.class) {
-			slot = PropertyType.CONSTRAINT;
+			type = PropertyType.CONSTRAINT;
+			dataType = DataType.BOOLEAN;
 		} else {
 			throw new RuntimeException("Condition not recognized.");
 		}
 		
-		GridPane grid = new GridPane();
-		Label refLabel = new Label( slot == PropertyType.SLOT?"Attribute":
-									slot == PropertyType.OPVAL?"Operation":"Constraint");
-		grid.add(refLabel, 0, 0);
 		
-		if(type == null) {
+		
+		int y = 0;
+		GridPane grid = new GridPane();
+		Label refLabel = new Label( type == PropertyType.SLOT?"Attribute":
+									type == PropertyType.OPVAL?"Operation":"Constraint");
+		grid.setHgap(6); grid.setVgap(6);
+		grid.add(refLabel, 0, y);
+		
+		if(obj == null) {
 			refTextField = new TextField();
-			grid.add(refTextField, 1, 0);
+			grid.add(refTextField, 1, y);
 		} else {
-			if(slot == PropertyType.SLOT) {
+			if(type == PropertyType.SLOT) {
 				Vector<FmmlxAttribute> atts = new Vector<>();
-				for(FmmlxAttribute a : type.getAllAttributes()) {
+				for(FmmlxAttribute a : obj.getAllAttributes()) {
 					if(a.getLevel() == level && 
 							("Boolean".equals(a.getType()) && dataType == DataType.BOOLEAN ||
 							 "Integer".equals(a.getType()) && dataType == DataType.NUMBER ||
@@ -76,10 +85,10 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 				}
 				Collections.sort(atts);
 				attBox = new ComboBox<>(FXCollections.observableArrayList(atts));
-				grid.add(attBox, 1, 0);
-			} else if(slot == PropertyType.OPVAL) {
+				grid.add(attBox, 1, y);
+			} else if(type == PropertyType.OPVAL) {
 				Vector<FmmlxOperation> ops = new Vector<>();
-				for(FmmlxOperation o : type.getAllOperations()) {
+				for(FmmlxOperation o : obj.getAllOperations()) {
 					if(o.getLevel() == level && o.isMonitored() && 
 							("Root::XCore::Boolean".equals(o.getType()) && dataType == DataType.BOOLEAN ||
 							 "Root::XCore::Integer".equals(o.getType()) && dataType == DataType.NUMBER ||
@@ -90,15 +99,33 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 				}
 				Collections.sort(ops);
 				opBox = new ComboBox<>(FXCollections.observableArrayList(ops));
-				grid.add(opBox, 1, 0);
+				grid.add(opBox, 1, y);
 			} else { // if(slot == PropertyType.CONSTRAINT) 
-				System.err.println("Dialog for Constraints not yet implemeted");
+				Vector<Constraint> cons = new Vector<>();
+				for(Constraint c : obj.getAllConstraints()) {
+					if(c.getLevel() == level) {
+						cons.add(c);
+					}
+				}
+				Collections.sort(cons);
+				constraintBox = new ComboBox<>(FXCollections.observableArrayList(cons));
+				grid.add(constraintBox, 1, y);
+			}
+			
+			y++;
+			
+			if(isNumeric) {
+				grid.add(new Label("min"), 0, y);
+				grid.add(minField, 1, y);
+				grid.add(new Label("max"), 0, y+1);
+				grid.add(maxField, 1, y+1);
+				y += 2;
 			}
 			
 			Label cLabel = new Label("Consequence");
 			cBox = new ComboBox<>(FXCollections.observableArrayList(cList));
-			grid.add(cLabel, 0, 1);
-			grid.add(cBox, 1, 1);
+			grid.add(cLabel, 0, y);
+			grid.add(cBox, 1, y);
 			
 			getDialogPane().setContent(grid);
 			getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
@@ -115,6 +142,11 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
             				opBox.getValue(),
             				null,
             				cBox.getValue());
+	        		} else if(condition == Condition.BooleanConstraintCondition.class) {
+	            		return new Result(
+            				constraintBox.getValue(),
+            				null,
+            				cBox.getValue());
 	        		} else if(condition == Condition.ReadFromSlotCondition.class) {
 	            		return new Result(
             				attBox.getValue(),
@@ -125,6 +157,13 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
             				opBox.getValue(),
             				null,
             				cBox.getValue());
+	        		} else if(condition == Condition.NumCompareSlotCondition.class) {
+	            		return new Result(
+	            			attBox.getValue(),
+            				null,
+            				cBox.getValue(),
+            				Double.parseDouble(minField.getText()),
+            				Double.parseDouble(maxField.getText()));
 	        		} else return null;
 	            } else {
 	        	    return null;
@@ -167,5 +206,8 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 		public String getPropertyName() {
 			return property.getName();
 		}
+
+		public Double getNumMin() { return min;}
+		public Double getNumMax() { return max;}
 	}
 }

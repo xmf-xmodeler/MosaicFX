@@ -88,7 +88,7 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	protected double[] getLineDashes() {
 		try{
 			AssociationType type = getAssociation().getAssociationType();
-			if("".equals(type.dashArray)) return new double[]{};
+			if("".equals(type.dashArrayLink)) return new double[]{};
 			String[] dashesS = type.dashArrayLink.split(",");
 			double[] dashes = new double[dashesS.length];
 			for(int i = 0; i < dashesS.length; i++) {

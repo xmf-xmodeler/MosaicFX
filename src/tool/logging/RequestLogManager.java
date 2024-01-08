@@ -1,7 +1,5 @@
 package tool.logging;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +36,7 @@ public class RequestLogManager {
 	}
 
 	public RequestLog getLog(int requestId) {
-		for (RequestLog requestLog : logList) {
+		for (RequestLog requestLog : new Vector<>(logList)) {
 			if (requestLog.getRequestId() == requestId) {
 				return requestLog;
 			}

@@ -137,7 +137,7 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects.values()) {
 				slotNames.put(o, o.getSlotNames());
 			}
-			comm.fetchAllSlots(this, slotNames, slotsReturn);
+			comm.fetchAllSlots(this, slotsReturn);
 		};
 
 		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {
@@ -179,15 +179,17 @@ public abstract class AbstractPackageViewer {
 		};
 				
 		ReturnCall<Vector<FmmlxObject>> allConstraintsReturn = x1 -> {
-			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
+			if(TIMER) System.err.println("Constraints loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchIssues(this, allIssuesReturn);
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allOperationsReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Operations loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllConstraints(this, visibleObjects, allConstraintsReturn);	
 		};
 
 		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Attributes loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllOperations(this, visibleObjects, allOperationsReturn);	
 		};
 		
