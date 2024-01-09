@@ -26,7 +26,7 @@ import xos.Value;
  * This is needed if the user first models a domain model and later decides that a UI shall be included.
  * This class ensures that all needed classes are instantiated correctly and that all prior meta classes
  * are mapped to CommonClass.
- */
+*/
 
 public class DefaultUIModelGenerator {
 
@@ -39,17 +39,7 @@ public class DefaultUIModelGenerator {
 
 	}
 
-	public void generateUIModel() {
-
-// Fehler / Bugs
-// - Klassen können nicht gelöscht werden (Stand Freddy XMF Branch)
-// - Diagramme laden nicht beim öffnen (Stand neuste XMF Branch)
-// - XMF findet	asynchrone Funktion nicht
-// - beim öffnen eines diagramms -> no entry for diagramtype ControlCenter
-// - bei neukompilierung (FreddyBranch) kann XModeler nicht mehr mit Assoziationstypen umgehen: The object Client(com.ceteva.fmmlxDiagram) cannot handle the message getAssociationTypes(Vector{1,3})
-		
-		
-		
+	public void generateUIModel() {		
 		// check for naming conflicts before the model can be generated
 		if (!hasNoNamingConflicts()) {
 			return;
@@ -60,7 +50,7 @@ public class DefaultUIModelGenerator {
 		actions.addMetaClass(commonClassName, levels.get(0) + 1);
 
 		// change from metaClass to CommonClass
-//		changeMetaClassForDiagram();
+		changeMetaClassForDiagram();
 
 		// instantiate model
 		instantiateUIModel(commonClassName);
@@ -131,12 +121,12 @@ public class DefaultUIModelGenerator {
 					// instances of meta class must be regenerated as instances of the corresponding
 					// commonclass
 					// TODO remove copy in name
-					diagram.getComm().addNewInstance(diagram.getID(), commonClassName, o.getName()+"Copy", o.getLevel(),
+					diagram.getComm().addNewInstance(diagram.getID(), commonClassName, o.getName(), o.getLevel(),
 							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				} else {
 					// instances of other classes must not be deleted but regenerated
 					// TODO remove copy of name
-					diagram.getComm().addNewInstance(diagram.getID(), o.getMetaClassName(), o.getName()+"Copy", o.getLevel(),
+					diagram.getComm().addNewInstance(diagram.getID(), o.getMetaClassName(), o.getName(), o.getLevel(),
 							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				}
 
@@ -144,8 +134,7 @@ public class DefaultUIModelGenerator {
 
 					// operation gets set at last AFTER associations so getter and setter from
 					// associations can be set first and don't lead to duplications
-
-//					
+					
 					for (FmmlxAttribute att : o.getOwnAttributes()) {
 						diagram.getComm().mergeAttribute(diagram.getID(), o.getName(), att.getName(), att.getLevel(),
 								att.getType(), att.getMultiplicity());
@@ -346,53 +335,53 @@ public class DefaultUIModelGenerator {
 
 		diagram.getComm().addAssociation(diagram.getID(), "Parameter", "Virtual", "parameter", "virtual",
 				"representedAs", null, new Multiplicity(0, 1, true, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, "parameter","parameter","virtual","virtual");
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, "getParameter","setParameter","getVirtual","setVirtual");
 
 		diagram.getComm().addAssociation(diagram.getID(), "Action", "Parameter", "action", "parameter", "uses", null,
 				new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(0, 2147483647, false, false, true), 0, 0, 0, 0, true, true, false, false,"actions","actions","parameter","parameter");
+				new Multiplicity(0, 2147483647, false, false, true), 0, 0, 0, 0, true, true, false, false,"getActions","setActions","getParameter","setParameter");
 
 		diagram.getComm().addAssociation(diagram.getID(), "UIControlElement", "Reference", "controlElement",
 				"reference", "derivedFrom", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, "controlElements","controlElements","reference","reference");
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, "getControlElements","setControlElements","getReference","setReference");
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "parent", "parent", "isParent",
 				null, new Multiplicity(0, 2147483647, false, false, true), new Multiplicity(0, 1, true, false, true), 0,
-				0, 0, 0, false, true, false, false, "parents", "parents", "parent", "parent");
+				0, 0, 0, true, true, false, false, "getParents", "setParents", "getParent", "setParent");
 
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", "Reference", "child", "child", "isChild", null,
 				new Multiplicity(0, 1, true, false, true), new Multiplicity(0, 2147483647, false, false, true), 0, 0, 0,
-				0, false, true, false, false, "child", "child", "childs", "childs");
+				0, true, true, false, false, "getChild", "setChild", "getChilds", "setChilds");
 
 		// max level for objects of commonClass is here set to 5 .... not sure whether a
 		// higher value is better -> better use ... classes
 		// TBD: What side effects are possible
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", commomClassName, "reference", "commonClass",
-				"refersToStateOf", null, new Multiplicity(0, 2147483647, false, false, true),
-				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 5, false, true, false, false, "references","references","commonClass","commonClass");
+				"refersToStateOf", "Associations::DefaultAssociation", new Multiplicity(0, 2147483647, false, false, true),
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 5, true, true, false, false, "getReferences","setReferences","getCommonClass","setCommonClass");
 
 		// add Attributes
 		Multiplicity multOne = new Multiplicity(1, 1, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "pathToFXML", new Level(0), "String", multOne, false, false, false);
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "pathToIconOfWindow", new Level(0), "String", multOne, false, false, false);
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "titleOfUI", new Level(0), "String", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "pathToFXML", new Level(0), "String", multOne, true, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "pathToIconOfWindow", new Level(0), "String", multOne, true, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UserInterface", "titleOfUI", new Level(0), "String", multOne, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UIElement", "idOfUIElement", new Level(0), "String", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UIElement", "idOfUIElement", new Level(0), "String", multOne, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "dataType", new Level(0), "String", multOne, false, false, false);
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "orderNo", new Level(0), "Integer", multOne, false, false, false);
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "value", new Level(0), "String", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "dataType", new Level(0), "String", multOne, true, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "orderNo", new Level(0), "Integer", multOne, true, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Parameter", "value", new Level(0), "String", multOne, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Action", "eventName", new Level(0), "String", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Action", "eventName", new Level(0), "String", multOne, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::ListInjection", "isListView", new Level(0), "Boolean", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::ListInjection", "isListView", new Level(0), "Boolean", multOne, true, false, false);
 
 		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::UIControlElement", "nameOfModelElement", new Level(0), "String",
-				multOne, false, false, false);
+				multOne, true, false, false);
 
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Reference", "associationName", new Level(0), "String", multOne, false, false, false);
-		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Reference", "isHead", new Level(0), "Boolean", multOne, false, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Reference", "associationName", new Level(0), "String", multOne, true, false, false);
+		diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath()+"::Reference", "isHead", new Level(0), "Boolean", multOne, true, false, false);
 
 		// add functions
 		String bodyRunAction = "@Operation runAction[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
