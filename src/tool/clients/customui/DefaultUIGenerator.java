@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -31,6 +32,7 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 // TODO 
 // Distanz sucht assoziationen in beide rifchutngen nicht nur target source
 public class DefaultUIGenerator {
+
 
 	private AbstractPackageViewer diagram;
 	private Vector<FmmlxObject> objects;
@@ -97,13 +99,24 @@ public class DefaultUIGenerator {
 			return instanceOf;
 		}
 
-		FmmlxObject metaClass = this.diagram.getObjectByPath(diagram.getPackagePath()+"::"+object.getMetaClassName());
-
-		if (metaClass.getName().contains(commonClassName))
-			instanceOf = true;
-		if (!instanceOf && !metaClass.getName().equals(metaClassName)) {
-			instanceOf = instanceOfCommonClass(metaClass);
+		try {
+			FmmlxObject metaClass;
+			if (this.diagram.getPackagePath().contains("Root")) {
+				metaClass = this.diagram.getObjectByPath(this.diagram.getPackagePath()+"::" + object.getMetaClassName());
+			}else {
+				metaClass = this.diagram.getObjectByPath("Root::"+this.diagram.getPackagePath()+"::" + object.getMetaClassName());
+			}
+			
+			
+			if (metaClass.getName().contains(commonClassName))
+				instanceOf = true;
+			if (!instanceOf && !metaClass.getName().equals(metaClassName)) {
+				instanceOf = instanceOfCommonClass(metaClass);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 		}
+
 		return instanceOf;
 	}
 
@@ -123,8 +136,8 @@ public class DefaultUIGenerator {
 		int rowCount = 0;
 
 		// instance of customGUI
-		String guiInstanceName = actions.addInstance("UserInterface",
-				"gui" + UUID.randomUUID().toString().replace("-", ""),false, onInstanceCreated);
+//		String guiInstanceName = actions.addInstance("UserInterface",
+//				"gui" + UUID.randomUUID().toString().replace("-", ""),false, onInstanceCreated);
 
 		// objects for customGUI
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
@@ -181,7 +194,8 @@ public class DefaultUIGenerator {
 			for (FmmlxObject o : objects) {
 				// check if there is a metaclass ...
 				i = 0;
-				while (!o.getName().contains("CommonClass") && (height > i || height == -1) && !(o.getMetaClassName().equals(metaClassName))) {
+				while (!o.getName().contains("CommonClass") && (height > i || height == -1)
+						&& !(o.getMetaClassName().equals(metaClassName))) {
 					i += 1;
 					o = diagram.getObjectByPath(diagram.getPackagePath() + "::" + o.getMetaClassName());
 					// that has an association ...
@@ -211,13 +225,33 @@ public class DefaultUIGenerator {
 		}
 
 		// get associations that are mapped
-		FmmlxAssociation associationDerivedFrom = diagram.getAssociationByPath(diagram.getPackagePath()+"::UIControlElement::reference");
-		FmmlxAssociation associationComposedOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::UserInterface::uIElement");
-		FmmlxAssociation associationRefersToStateOf = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::commonClass");
-		FmmlxAssociation associationIsParent = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::parent");
-		FmmlxAssociation associationIsChild = diagram.getAssociationByPath(diagram.getPackagePath() + "::Reference::child");
-		FmmlxAssociation associationUses = diagram.getAssociationByPath(diagram.getPackagePath() + "::Action::parameter");
-		FmmlxAssociation associationRepresentedAs = diagram.getAssociationByPath(diagram.getPackagePath() + "::Parameter::virtual");
+		Vector<FmmlxAssociation> assocs = new Vector<>();
+		FmmlxAssociation associationDerivedFrom = diagram.getAssociationByPath(
+				"AssociationMapping: " + diagram.getPackagePath() + "::UIControlElement::reference");
+		assocs.add(associationDerivedFrom);
+		FmmlxAssociation associationComposedOf = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::UserInterface::uIElement");
+		assocs.add(associationComposedOf);
+		FmmlxAssociation associationRefersToStateOf = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::Reference::commonClass");
+		assocs.add(associationRefersToStateOf);
+		FmmlxAssociation associationIsParent = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::Reference::child");
+		assocs.add(associationIsParent);
+		FmmlxAssociation associationIsChild = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::Reference::parentC");
+		assocs.add(associationIsChild);
+		FmmlxAssociation associationUses = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::Action::parameter");
+		assocs.add(associationUses);
+		FmmlxAssociation associationRepresentedAs = diagram
+				.getAssociationByPath("AssociationMapping: " + diagram.getPackagePath() + "::Parameter::virtual");
+		assocs.add(associationRepresentedAs);
+
+		
+
+		String guiInstanceName = actions.addInstance("UserInterface",
+				"gui" + UUID.randomUUID().toString().replace("-", ""), 0);
 
 		// create standard GUI
 		GridPane rechteSeiteGrid = new GridPane();
@@ -240,7 +274,7 @@ public class DefaultUIGenerator {
 					head = false;
 					// create reference for every object + assoc pair
 					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + UUID.randomUUID().toString().replace("-", ""),0);
+							"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
@@ -254,7 +288,7 @@ public class DefaultUIGenerator {
 			if (head) {
 				// create a reference for head
 				referenceInstanceName = actions.addInstance("Reference",
-						"ref" + UUID.randomUUID().toString().replace("-", ""),0);
+						"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
 				referenceMapping.add(new Reference(o, null, referenceInstanceName, true));
 				atLeastOneHead = true;
 			}
@@ -303,7 +337,7 @@ public class DefaultUIGenerator {
 				raiseAlert("No instances found for " + reference.getObject().getName()
 						+ " . A new instance will be created.");
 				String instanceName = actions.addInstance(reference.getObject().getName(),
-						reference.getObject().getName() + UUID.randomUUID().toString().replace("-", ""),0);
+						reference.getObject().getName() + UUID.randomUUID().toString().replace("-", ""), 0);
 				actions.addAssociation(reference.getReferenceInstanceName(), instanceName,
 						associationRefersToStateOf.getName());
 			}
@@ -326,7 +360,7 @@ public class DefaultUIGenerator {
 
 			if (isList) {
 				injectionInstanceName = actions.addInstance("ListInjection",
-						"list" + UUID.randomUUID().toString().replace("-", ""),0);
+						"list" + UUID.randomUUID().toString().replace("-", ""), 0);
 
 				actions.addAssociation(injectionInstanceName, guiInstanceName, associationComposedOf.getName());
 				actions.addAssociation(injectionInstanceName, reference.getReferenceInstanceName(),
@@ -370,7 +404,7 @@ public class DefaultUIGenerator {
 				}
 
 				injectionInstanceName = actions.addInstance("SlotInjection",
-						"slot" + UUID.randomUUID().toString().replace("-", ""),0);
+						"slot" + UUID.randomUUID().toString().replace("-", ""), 0);
 
 				helper.put("idOfUIElement", injectionInstanceName);
 				helper.put("nameOfModelElement", attribute.getName());
@@ -399,7 +433,7 @@ public class DefaultUIGenerator {
 			for (FmmlxOperation operation : operations) {
 
 				// if operation is not suitable for the displayed level; skip it
-				if (reference.getObject().getLevel().isEqual(operation.getLevel()+1)) {
+				if (reference.getObject().getLevel().isEqual(operation.getLevel() + 1)) {
 					continue;
 				}
 
@@ -413,7 +447,7 @@ public class DefaultUIGenerator {
 				// if actionInjection
 				if (isActionInjection) {
 					injectionInstanceName = actions.addInstance("ActionInjection",
-							"actInj" + UUID.randomUUID().toString().replace("-", ""),0);
+							"actInj" + UUID.randomUUID().toString().replace("-", ""), 0);
 					helper.put("idOfUIElement", injectionInstanceName);
 
 					slotValues.put(injectionInstanceName, (HashMap<String, String>) helper.clone());
@@ -433,8 +467,8 @@ public class DefaultUIGenerator {
 					rowCount++;
 
 				} else {
-					actionInstanceName = actions.addInstance("Action", "act" +
-							UUID.randomUUID().toString().replace("-", ""),0);
+					actionInstanceName = actions.addInstance("Action",
+							"act" + UUID.randomUUID().toString().replace("-", ""), 0);
 					helper.put("idOfUIElement", actionInstanceName);
 
 					slotValues.put(actionInstanceName, (HashMap<String, String>) helper.clone());
@@ -458,7 +492,7 @@ public class DefaultUIGenerator {
 					for (String paramType : operation.getParamTypes()) {
 						paramCounter++;
 						parameterInstanceName = actions.addInstance("Parameter",
-								"par" + UUID.randomUUID().toString().replace("-", ""),0);
+								"par" + UUID.randomUUID().toString().replace("-", ""), 0);
 						actions.addAssociation(parameterInstanceName, actionInstanceName, associationUses.getName());
 
 						paramType = paramType.substring(paramType.lastIndexOf("::") + 2);
@@ -471,7 +505,7 @@ public class DefaultUIGenerator {
 
 						// virtual for every parameter
 						virtualInstanceName = actions.addInstance("Virtual",
-								"vir" + UUID.randomUUID().toString().replace("-", ""),0);
+								"vir" + UUID.randomUUID().toString().replace("-", ""), 0);
 						helper.put("idOfUIElement", virtualInstanceName);
 						slotValues.put(virtualInstanceName, (HashMap<String, String>) helper.clone());
 						helper.clear();
@@ -513,6 +547,8 @@ public class DefaultUIGenerator {
 
 		slotValues.put(guiInstanceName, (HashMap<String, String>) helper.clone());
 		helper.clear();
+
+		onInstanceCreated.run(null);
 
 		return slotValues;
 	}
