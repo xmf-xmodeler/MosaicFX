@@ -18,8 +18,6 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
-import xos.Value;
 
 /*
  * FH 2023
@@ -29,12 +27,20 @@ import xos.Value;
  * are mapped to CommonClass.
 */
 
-// FH 10.01.2024
+// FH 10.01.2024 TODO
 // Bekannte Fehler - aktuell
-// Nachdem das Model generiert wurde, können keine Links zwischen CommonClass
-// und Reference gezogen werden, da "Objects do not fit the type"
-// es scheint ein fehler in der assoziation "isParent" zu geben
 
+// addAssociation an den Communicator auf XMF seite schicken -> 
+// funktioniert nur wenn min und max level gleich sind; wird hier ignoriert -> 
+// CommonClass läuft zunächst nur auf Levbel 0; kann bei Bedarf später angepasst werden
+
+// Testen, ob generierung von GUI funktioniert wie gewünscht.
+// Neu Transformierung triggert Element existiert bereits error, kann aber trotzdem erstellt werden
+
+// assoziationen bei gui werden nicht richtig dargestellt
+// -> wie kann ich über XMF eine Assoziation erhalten? -> anpassen der Operation getAssociation bei Reference.
+// auchg relevant für "refersToStateOf" Assoziation, da diese auch nicht im modell ist n
+// hasAssociationInstance() funktioniert nicht mehr XMF seitig                         
 
 public class DefaultUIModelGenerator {
 
@@ -68,30 +74,31 @@ public class DefaultUIModelGenerator {
 			System.err.println("Update completed");
 			return;
 		};
-
 		diagram.updateDiagram(onUpdate);
 
 	}
 
 	private void changeMetaClassForDiagram() {
+		// objects must be created according to their level so instances can be created
+		// performance may not be optimal when there are many objects -> maybe find a
+		// different approach
 
 		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
 		Vector<Integer> levels = diagram.getAllObjectLevel();
 		Vector<FmmlxAssociation> assocs = diagram.getAssociations();
 		Vector<FmmlxLink> links = diagram.getAssociationInstance();
-
 		Vector<FmmlxObject> objectsWithParents = new Vector<>();
 
-		// objects must be created according to their level so instances can be created
-		// performance may not be optimal when there are many objects -> maybe find a
-		// different approach
 		for (int level : levels) {
-
 			// create dummy class for level > 0
 			if (level > 0)
 				actions.addInstance("CommonClassL" + (level + 1), "CommonClassL" + level, level);
 
 			for (FmmlxObject o : objects) {
+
+				int x = (int) Math.round(o.getX());
+				int y = (int) Math.round(o.getY());
+				Vector<String> parents = new Vector<>();
 
 				if (o.getName().contains("CommonClass")) {
 					continue;
@@ -107,7 +114,6 @@ public class DefaultUIModelGenerator {
 					continue;
 				}
 
-				Vector<String> parents = new Vector<>();
 				try {
 					if (o.getParentsPaths().size() > 1) {
 						objectsWithParents.add(o);
@@ -116,23 +122,19 @@ public class DefaultUIModelGenerator {
 					// no parents have been set
 				}
 
-				int x = (int) Math.round(o.getX());
-				int y = (int) Math.round(o.getY());
-
 				if (o.getMetaClassName().contains("MetaClass")) {
+					// instances of meta class must be regenerated as instances of the corresponding
+					// commonclass
+
 					// if the class is on an instance of metaclass than it needs to be removed from
 					// the canvas
 					diagram.getComm().removeClass(diagram.getID(), o.getName(), 0);
 
 					String commonClassName = "CommonClassL" + (o.getLevel().getMaxLevel() + 1);
-					// instances of meta class must be regenerated as instances of the corresponding
-					// commonclass
-					// TODO remove copy in name
 					diagram.getComm().addNewInstance(diagram.getID(), commonClassName, o.getName(), o.getLevel(),
 							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				} else {
 					// instances of other classes must not be deleted but regenerated
-					// TODO remove copy of name
 					diagram.getComm().addNewInstance(diagram.getID(), o.getMetaClassName(), o.getName(), o.getLevel(),
 							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				}
@@ -143,8 +145,9 @@ public class DefaultUIModelGenerator {
 					// associations can be set first and don't lead to duplications
 
 					for (FmmlxAttribute att : o.getOwnAttributes()) {
-						diagram.getComm().mergeAttribute(diagram.getID(), o.getName(), att.getName(), att.getLevel(),
-								att.getType(), att.getMultiplicity());
+						diagram.getComm().addAttribute(diagram.getID(), diagram.getPackagePath() + "::" + o.getName(),
+								att.getName(), new Level(att.getLevel()), att.getType(), att.getMultiplicity(), true,
+								false, false);
 					}
 
 					for (Constraint constraint : o.getConstraints()) {
@@ -269,7 +272,6 @@ public class DefaultUIModelGenerator {
 		}
 
 		// operations are added
-		// what about getter / setter from assocs?
 		for (FmmlxObject oldObject : objects) {
 			for (FmmlxOperation op : oldObject.getAllOperations()) {
 				boolean added = false;
@@ -286,25 +288,33 @@ public class DefaultUIModelGenerator {
 					}
 				}
 
+				// add getter and setter from asociations
 				for (FmmlxAssociation assoc : assocs) {
 					if (added)
 						continue;
+
 					// check if name contains get or set AND the the name of an association
 					if ((op.getName().contains("get") || op.getName().contains("set"))
 							&& (op.getName().toLowerCase().contains(assoc.getAccessNameEndToStart().toLowerCase()))) {
+						// must be added
+						diagram.getComm().addOperation(diagram.getID(),
+								diagram.getPackagePath() + "::" + oldObject.getName(), op.getLevel(), op.getBody());
 						added = true;
+
 					}
 					if ((op.getName().contains("get") || op.getName().contains("set"))
 							&& (op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase()))) {
+						diagram.getComm().addOperation(diagram.getID(),
+								diagram.getPackagePath() + "::" + oldObject.getName(), op.getLevel(), op.getBody());
 						added = true;
-					}
 
+					}
 				}
 
 				if (added) {
 				} else {
-					FmmlxObject newObject = diagram.getObjectByPath(oldObject.getName());
-					diagram.getComm().addOperation(diagram.getID(), newObject.getName(), op.getLevel(), op.getBody());
+					diagram.getComm().addOperation(diagram.getID(),
+							diagram.getPackagePath() + "::" + oldObject.getName(), op.getLevel(), op.getBody());
 				}
 			}
 		}
@@ -368,9 +378,9 @@ public class DefaultUIModelGenerator {
 		// higher value is better -> better use contigent classes
 		// TBD: What side effects are possible
 		diagram.getComm().addAssociation(diagram.getID(), "Reference", commomClassName, "reference", "commonClass",
-				"refersToStateOf", "Associations::DefaultAssociation",
-				new Multiplicity(0, 2147483647, false, false, true), new Multiplicity(1, 1, true, false, true), 0, 0, 0,
-				5, true, true, false, false, "getReferences", "setReferences", "getCommonClass", "setCommonClass");
+				"refersToStateOf", null, new Multiplicity(0, 2147483647, false, false, true),
+				new Multiplicity(1, 1, true, false, true), 0, 0, 0, 0, true, true, false, false, "getReferences",
+				"setReferences", "getCommonClass", "setCommonClass");
 
 		// add Attributes
 		Multiplicity multOne = new Multiplicity(1, 1, true, false, false);
@@ -409,7 +419,7 @@ public class DefaultUIModelGenerator {
 		// add functions
 		String bodyRunAction = "@Operation runAction[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
 				+ "  let a = self.getReference().getCommonClass() then\r\n"
-				+ "      b = self.getParameters().size() then\r\n" + "      res = null\r\n"
+				+ "      b = self.getParameter().size() then\r\n" + "      res = null\r\n"
 				+ "  in @While a.name.toString() <> \"MetaClass\" do\r\n"
 				+ "       if a.of().hasOperation(self.nameOfModelElement.asSymbol(),b)\r\n"
 				+ "       then res := a.of().getOperation(self.nameOfModelElement).invoke(a,self.getParamValuesAsList())\r\n"
@@ -439,20 +449,20 @@ public class DefaultUIModelGenerator {
 				+ "            i.name.toString() = newCommonObject)\r\n" + "  in if (b <> null)\r\n" + "     then \r\n"
 				+ "       a.removeAssociationInstance(self.owner.getAssociation(\"refersToStateOf\"),self,self.getCommonClass());\r\n"
 				+ "       a.addAssociationInstance(self.owner,self,b.asSeq().at(0),self.owner.getAssociation(\"refersToStateOf\"));\r\n"
-				+ "       if (self.getChilds() <> null)\r\n" + "       then @For child in self.getChilds() do\r\n"
+				+ "       if (self.getChild() <> null)\r\n" + "       then @For child in self.getChild() do\r\n"
 				+ "              child.checkCommonClass()\r\n" + "            end\r\n" + "       else false\r\n"
 				+ "       end \r\n" + "     else false\r\n" + "     end \r\n" + "  end\r\n" + "end";
 
 		String bodyCheckCommonClass = "@Operation checkCommonClass[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
-				+ "  let a = self.getControlElements()->select(i |\r\n"
+				+ "  let a = self.getControlElement()->select(i |\r\n"
 				+ "            i.of().name.toString() = \"ListInjection\")\r\n" + "  in if (not a->isEmpty)\r\n"
 				+ "     then if (a.asSeq().at(0).getInstanceList().contains(self.getCommonClass()))\r\n"
 				+ "          then true\r\n"
 				+ "          else self.changeCommonClass(a.asSeq().at(0).getInstanceList().at(0).name.toString())\r\n"
 				+ "          end \r\n"
 				+ "     else self.changeCommonClass(self.owner.getLinkEnds(self.getParent().getCommonClass(),self.getAssociation().name).asSeq().at(0).name.toString())\r\n"
-				+ "     end ;\r\n" + "     if (self.getChilds() <> null)\r\n"
-				+ "     then @For child in self.getChilds() do\r\n" + "            child.checkCommonClass()\r\n"
+				+ "     end ;\r\n" + "     if (self.getChild() <> null)\r\n"
+				+ "     then @For child in self.getChild() do\r\n" + "            child.checkCommonClass()\r\n"
 				+ "          end\r\n" + "     else false\r\n" + "     end \r\n" + "  end\r\n" + "end";
 
 		String bodyGetInstanceByID = "@Operation getInstanceByID[monitor=false,delToClassAllowed=false](idUI : XCore::String):ControllerMapping::UIElement\r\n"
@@ -469,7 +479,7 @@ public class DefaultUIModelGenerator {
 				+ "  let a = Seq{} then\r\n" + "      b = Seq{} then\r\n" + "      c = Seq{} then\r\n"
 				+ "      d = Seq{} then\r\n" + "      e = \"\" then\r\n" + "      h = \"\" then\r\n"
 				+ "      m = \"\" then\r\n" + "      f = Root::Auxiliary::Date then\r\n" + "      i = 0\r\n"
-				+ "  in @For obj in self.getParameters() do\r\n" + "       if obj.getDataType() = \"Integer\"\r\n"
+				+ "  in @For obj in self.getParameter() do\r\n" + "       if obj.getDataType() = \"Integer\"\r\n"
 				+ "       then \r\n" + "         a := a + Seq{obj.getValue().asInt()};\r\n"
 				+ "         b := b + Seq{obj.getOrderNo()}\r\n" + "       else false\r\n" + "       end ;\r\n"
 				+ "       if obj.getDataType() = \"Float\"\r\n" + "       then \r\n"
@@ -561,7 +571,7 @@ public class DefaultUIModelGenerator {
 				+ "     a.level = 0).idOfUIElement.asSet().size() = self.of().allMetaInstances()->select(a |\r\n"
 				+ "     a.level = 0).asSet().size()";
 
-		String constraintOneListInjectionPerReference = "self.getControlElements()->select(i | i.of().name.toString() = \"ListInjection\").size() < 2";
+		String constraintOneListInjectionPerReference = "self.getControlElement()->select(i | i.of().name.toString() = \"ListInjection\").size() < 2";
 
 		String constraintMissingParent = "if self.isHead = false\r\n" + "   then (self.getParent() <> null)\r\n"
 				+ "   else true\r\n" + "   end ";
@@ -611,7 +621,6 @@ public class DefaultUIModelGenerator {
 		assocs.add(associationRepresentedAs);
 
 		// create getter and setter, bc this is not done automatically
-		// TODO skip the unnecessary ones ...
 		for (FmmlxAssociation association : assocs) {
 
 			if (association == null) {
@@ -628,7 +637,7 @@ public class DefaultUIModelGenerator {
 			String opName;
 			String opBody;
 
-			if (!targetEnd.contains("CommonClass")){
+			if (!targetEnd.contains("CommonClass")) {
 				// adds getter for the associations
 				opName = "get" + accessNameEndToStart.substring(0, 1).toUpperCase() + accessNameEndToStart.substring(1);
 
@@ -636,18 +645,15 @@ public class DefaultUIModelGenerator {
 						+ "\n" + "  self." + accessNameEndToStart + "\n" + "end";
 				diagram.getComm().addOperation(diagram.getID(), targetEnd, 0, opBody);
 			}
-			
-			if(!sourceEnd.contains("CommonClass")) {
+
+			if (!sourceEnd.contains("CommonClass")) {
 				// in both directions
 				opName = "get" + accessNameStartToEnd.substring(0, 1).toUpperCase() + accessNameStartToEnd.substring(1);
 				opBody = "@Operation " + opName + "[monitor=false, getterKey=\"" + targetEnd + "\"]()" + ":" + "Element"
 						+ "\n" + "  self." + accessNameStartToEnd + "\n" + "end";
 				diagram.getComm().addOperation(diagram.getID(), sourceEnd, 0, opBody);
 			}
-
-			
 		}
-
 	}
 
 	private boolean hasNoNamingConflicts() {

@@ -27,6 +27,7 @@ import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
+import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
 // TODO 
@@ -134,10 +135,6 @@ public class DefaultUIGenerator {
 
 		// for the fxml export
 		int rowCount = 0;
-
-		// instance of customGUI
-//		String guiInstanceName = actions.addInstance("UserInterface",
-//				"gui" + UUID.randomUUID().toString().replace("-", ""),false, onInstanceCreated);
 
 		// objects for customGUI
 		Vector<FmmlxObject> objectsCommonClass = new Vector<FmmlxObject>();
@@ -397,12 +394,6 @@ public class DefaultUIGenerator {
 
 			for (FmmlxAttribute attribute : attributes) {
 
-				// check if attributes are of correct level, i.e. if UI displays instances at
-				// level 1 no level 0 attributes should be included in the UI
-				if (reference.getObject().getLevel().isEqual(attribute.getLevel() + 1)) {
-					continue;
-				}
-
 				injectionInstanceName = actions.addInstance("SlotInjection",
 						"slot" + UUID.randomUUID().toString().replace("-", ""), 0);
 
@@ -431,11 +422,6 @@ public class DefaultUIGenerator {
 
 			// add actionInjections for operations
 			for (FmmlxOperation operation : operations) {
-
-				// if operation is not suitable for the displayed level; skip it
-				if (reference.getObject().getLevel().isEqual(operation.getLevel() + 1)) {
-					continue;
-				}
 
 				// if method is monitor than action; otherwise acttionInjection
 				// TODO: maybe find something better more robust approach
@@ -532,9 +518,9 @@ public class DefaultUIGenerator {
 				continue;
 
 			actions.addAssociation(reference.getReferenceInstanceName(),
-					reference.getParent().getReferenceInstanceName(), associationIsParent.getName());
+					reference.getParent().getReferenceInstanceName(), associationIsChild.getName());
 			actions.addAssociation(reference.getParent().getReferenceInstanceName(),
-					reference.getReferenceInstanceName(), associationIsChild.getName());
+					reference.getReferenceInstanceName(), associationIsParent.getName());
 		}
 
 		// export standard gui
