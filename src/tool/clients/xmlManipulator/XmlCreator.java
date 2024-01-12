@@ -22,6 +22,11 @@ import java.io.File;
 *This class has two creators.
 *   First, Creator to create XML files used to keep FMMlx Data Data.
 *   Second, creator to make the SVG file used to export the FmmlxDiagram into a graphic asset*/
+
+/**
+ * @deprecated use instead {@link XMLCreator}.
+ */
+@Deprecated
 public class XmlCreator {
     private static final int version = SerializerConstant.SERIALIZER_VERSION;
 

@@ -1,10 +1,16 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import org.w3c.dom.Document;
+
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -23,11 +29,13 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 
 public class DiagramViewHeadToolBar extends VBox {
@@ -51,15 +59,29 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu modelMenu = new Menu("Model");		
 		Menu viewMenu = new Menu("View");
 		Menu refactorMenu = new Menu("Refactor");
+		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
+		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
+		
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);	
 		buildRefactorMenu(refactorMenu);
+		buildAutoMlmMenu(autoMlmMenu);
 		buildHelpMenu(helpMenu);
+		
 		ToolBar toolBar = buildToolBar();
 		this.getChildren().addAll(hBox, toolBar);
+	}
+
+	private void buildAutoMlmMenu(Menu autoMlmMenu) {
+		
+		 EventHandler<ActionEvent> onButtonClicked = e -> {
+	            	XMLCreator creator = new XMLCreator();
+	        		ReturnCall<Document> onDocumentCreated = doc ->	System.err.println(XMLUtil.getStringFromDocument(doc));
+	        		creator.getXmlRepresentation(fmmlxDiagram.getPackagePath(), onDocumentCreated);
+	        };
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Perform Magic on current Model",  onButtonClicked);
 	}
 
 	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
