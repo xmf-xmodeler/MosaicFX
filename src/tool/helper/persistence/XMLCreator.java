@@ -3,12 +3,16 @@ package tool.helper.persistence;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -16,17 +20,23 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
+import tool.clients.fmmlxdiagrams.ModelActionsList;
+import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.xmodeler.XModeler;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
-import tool.clients.fmmlxdiagrams.ModelActionsList;
-import tool.clients.fmmlxdiagrams.ReturnCall;
 
+/**
+ * This class is used to create an XML representation of a package.
+ */
 public class XMLCreator {
-	Vector<DiagramInfo> diagramsWaitingForParsing;
-	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
-	Element root;
-	private static final int exportVersion = 4;
-	String packagePath;
+	private Vector<DiagramInfo> diagramsWaitingForParsing;
+	private FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+	private Element root;
+	private static final int EXPORT_VERSION = 4;
+	private String packagePath;
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
@@ -34,7 +44,7 @@ public class XMLCreator {
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
-
+	
 	private void saveToFile(Document doc) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Choose save location");
@@ -63,9 +73,7 @@ public class XMLCreator {
 	}
 
 	private void getData(String packagePath, ReturnCall<Object> onDataReceived) {
-		ReturnCall<Vector<DiagramInfo>> onDiagramInfosReceived = diagramInfo -> {
-			appendModelToRoot(diagramInfo, packagePath, onDataReceived);
-		};
+		ReturnCall<Vector<DiagramInfo>> onDiagramInfosReceived = diagramInfo -> appendModelToRoot(diagramInfo, packagePath, onDataReceived);
 		comm.getAllDiagramInfos(packagePath, onDiagramInfosReceived);
 	}
 
@@ -78,13 +86,29 @@ public class XMLCreator {
 			for (ModelActionsList logData : logs) {
 				buildModelActionTag(model, logData);
 			}
-			;
 			getDiagramsData(diagramInfos, packagePath, onDataReceived);
 		};
-		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false,
-				diagramId -> {
-					comm.getModelData(diagramId, onModelDataReceived);
-				});
+		
+		ReturnCall<Integer> onDiagramCreated = diagramId -> {
+			ReturnCall<Vector<String>> importedPackagesReturn = importedPackages -> {
+				exportPackageImports(importedPackages);
+				comm.getModelData(diagramId, onModelDataReceived);
+			};			
+			comm.getImportedPackages(diagramId, importedPackagesReturn);
+		};				
+		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
+	}
+
+	/**
+	 * This function exports all packages that are imported by the package that the user exports.
+	 * @param imports a string list that holds the imported package names
+	 */
+	private void exportPackageImports(List<String> imports) {
+		Element importsElement = XMLUtil.createChildElement(root, XMLTags.IMPORTS.getName());
+		for (String importName : imports) {
+			Element importElement = XMLUtil.createChildElement(importsElement, XMLTags.PACKAGE_IMPORT.getName());
+			importElement.setTextContent(importName);
+		}		
 	}
 
 	private void buildModelActionTag(Element model, ModelActionsList logData) {
@@ -109,21 +133,69 @@ public class XMLCreator {
 			appendEdgesToDiagram(diagramInfo, diagram);
 			appendObjectInformationToDiagram(diagramInfo, diagram);
 			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagram);
+			appendNotesToDiagram(diagramInfo, diagram);
 			// the next function also makes recursive call to buildNextDiagram
 			appendViewsToDiagram(onDataReceived, diagramInfo, diagram);
 		}
+	}
+
+	/**
+	 * This function exports all notes of a diagram
+	 * @param diagramInfo holds info about the diagram
+	 * @param diagram represents the XML-Element that holds the diagram-export-data
+	 */
+	private void appendNotesToDiagram(DiagramInfo diagramInfo, Element diagram) {
+		Element notesElement = XMLUtil.createChildElement(diagram, XMLTags.NOTES.getName());
+		ReturnCall<Vector<Note>> onNotesReturned = notes -> {
+			ReturnCall<Vector<GraphicalMappingInfo>> noteMappingRetturned = noteMapping -> {
+				//3. loop over every note
+				for (Note note : notes) {
+					boolean matched = false;
+					//4. for every note loop over the list of returned mappingInfos
+					for (GraphicalMappingInfo mappingInfo : noteMapping) {
+						//5. if the mappingInfoKey matches the note id use all infos to append note to XML 
+						if (mappingInfo.getNoteIdFromMappingKey() == note.getId()) {
+							appendNoteToNotes(notesElement, note, mappingInfo);
+							matched = true;
+						}
+					}
+					if (!matched) {
+						//6. if there is no match raise exception
+						throw new NoSuchElementException("Try to find a noteMapping for Note with id '" +  note.getId() + "'. Backend does not contain information about that");
+					}
+				}
+			};
+			//2. after all notes are returned (local var "notes") all noteMappings are requested
+			Note.getNotesMappings(diagramInfo.getId(), noteMappingRetturned);
+		};
+		//1. request all notes from xmf
+		Note.getAllNotes(diagramInfo.getId(), onNotesReturned);
+	}
+
+	/**
+	 * For each note on the diagram an note tag is added to the XML-File. See all contained subtags in the method
+	 * @param notesElement is the element each note tag is added to
+	 * @param note contains the note information
+	 * @param mappingInfo contains the mappingInformation
+	 */
+	private void appendNoteToNotes(Element notesElement, Note note, GraphicalMappingInfo mappingInfo) {	
+		Element noteElement = XMLUtil.createChildElement(notesElement, XMLTags.NOTE.getName());
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTEID.getName(), String.valueOf(note.getId()));
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTECOLOR.getName(), note.getNoteColor().toString());
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTECONTENT.getName(), note.getContent());
+		Element notePositionElement = XMLUtil.createChildElement(noteElement, XMLTags.NOTEPOSITION.getName());
+		XMLUtil.createChildElement(notePositionElement, XMLTags.XPOSITION.getName(), String.valueOf(mappingInfo.getxPosition()));
+		XMLUtil.createChildElement(notePositionElement, XMLTags.YPOSITION.getName(), String.valueOf(mappingInfo.getyPosition()));
 	}
 
 	private Element returnDiagramsTag() {
 		NodeList nodes = root.getElementsByTagName(XMLTags.DIAGRAMS.getName());
 		// if diagrams do not exist append new tag to document
 		if (nodes.getLength() == 0) {
-			Element diagrams = XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
-			return diagrams;
+			return XMLUtil.createChildElement(root, XMLTags.DIAGRAMS.getName());
 		}
 		// if diagram exists return existing diagrams tag
-		Element diagrams = (Element) nodes.item(0);
-		return diagrams;
+		return (Element) nodes.item(0);
 	}
 
 	private void appendDiagramDisplayPropertiesToDiagrams(DiagramInfo diagramInfo, Element diagram) {
@@ -176,16 +248,16 @@ public class XMLCreator {
 
 	private void setEdgeType(Element edge, Entry<String, HashMap<String, Object>> edgeData) {
 		String type = edgeData.getKey().split("Mapping")[0];
-		if (!XMLEdgeTypes.contains(type)) {
-			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
-			String edgePath = packagePath + "::" + edgeData.getKey();
-			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
-			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
-			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
-		} else {
+//		if (!XMLEdgeTypes.contains(type)) {
+//			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
+//			String edgePath = packagePath + "::" + edgeData.getKey();
+//			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
+//			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
+//			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
+//		} else {
 			edge.setAttribute(XMLAttributes.TYPE.getName(), type);
 			edge.setAttribute(XMLAttributes.PATH.getName(), edgeData.getKey());
-		}
+//		}
 	}
 
 	private void appendIntermediatePointsToEdge(Vector<Vector<Object>> intermediatePointsData, Element edge) {
@@ -277,8 +349,9 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(exportVersion));
+		root.setAttribute(XMLAttributes.EXPORT_VERSION.getName(), String.valueOf(EXPORT_VERSION));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
+		root.setAttribute(XMLAttributes.XMODELER_VERSION.getName(), XModeler.getVersion());
 		return doc;
 	}
 	
@@ -286,6 +359,6 @@ public class XMLCreator {
 	 * @return current used version of XML-Exports
 	 */
 	public static int getExportversion() {
-		return exportVersion;
+		return EXPORT_VERSION;
 	}
 }

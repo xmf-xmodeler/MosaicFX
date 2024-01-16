@@ -9,14 +9,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.Level;
 
-class LevelBox extends HBox {
+public class LevelBox extends HBox {
 	final TextField levelTextField = new TextField();
 	private final Button levelButton = new Button("...");
 	private LevelChangedListener levelChangedListener;
 	
 	public LevelBox() {this(null);}
 	
-	LevelBox(Level oldlevel) {
+	public LevelBox(Level oldlevel) {
 		super(3);
 		getChildren().add(levelTextField);
 		getChildren().add(levelButton);
@@ -25,18 +25,22 @@ class LevelBox extends HBox {
 		if(oldlevel != null) levelTextField.setText(oldlevel.toString());
 		HBox.setHgrow(levelTextField, Priority.ALWAYS);
 		levelTextField.setMaxWidth(Double.POSITIVE_INFINITY);
-		levelTextField.setOnKeyTyped((e) -> {
+		levelTextField.setOnKeyReleased((e) -> {
 			if (levelChangedListener != null) {
 				levelChangedListener.run(getLevel());
 			}
 		});
 	}
 
+	public void setLevel(Level l) {
+		levelTextField.setText(l.toString());
+	}
+	
 	public Level getLevel() {
 		try{
 			return Level.parseLevel(levelTextField.getText());
 		} catch (Level.UnparseableException upe) {
-			upe.printStackTrace();
+//			upe.printStackTrace();
 			return null;
 		}
 	}

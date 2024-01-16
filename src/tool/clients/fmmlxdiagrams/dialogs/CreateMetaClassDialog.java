@@ -2,8 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.Vector;
 
-import org.controlsfx.control.CheckListView;
-
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -19,7 +17,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 
 	private TextField nameTextField;
 	private LevelBox levelComboBox;
-	private CheckListView<FmmlxObject> parentListView;
+	private ListView<FmmlxObject> parentListView;
 	private CheckBox abstractCheckbox;
 	private CheckBox singletonCheckbox;
 
@@ -52,21 +50,20 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		Label abstractLabel = new Label("Abstract");
 		Label singletonLabel = new Label("Singleton");
 		Label parentLabel = new Label("Parent");
-		parentListView = new CheckListView<>();
-		parentListView.setMaxHeight(150);
 
 		nameTextField = new TextField();
+		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		levelComboBox = new LevelBox();
 		levelComboBox.setLevelListener(level -> {
 			try {
 				possibleParents = diagram.getAllPossibleParents(level);
-				parentListView.setItems(possibleParents.sorted());
+				parentListView.setItems(possibleParents);
 				parentListView.setDisable(false);
 				if (possibleParents.isEmpty()) {
 					parentListView.setDisable(true);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				//ex.printStackTrace();
 			}
 		});
 		abstractCheckbox = new CheckBox();
@@ -94,7 +91,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 						levelComboBox.getLevel(), 
 						abstractCheckbox.isSelected(), 
 						singletonCheckbox.isSelected(), 
-						parentListView.getCheckModel().getCheckedItems());
+						parentListView.getSelectionModel().getSelectedItems());
 			}
 			return null;
 		});

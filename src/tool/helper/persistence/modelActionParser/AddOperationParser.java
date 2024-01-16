@@ -14,10 +14,10 @@ public class AddOperationParser extends ModelActionParser {
 	@Override
 	public void parse(Element modelElement) {
 		String classPath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-		String[] classPathArray = classPath.split("::");
-		String className = classPathArray[classPathArray.length - 1];
+//		String[] classPathArray = classPath.split("::");
+//		String className = classPathArray[classPathArray.length - 1];
 		String body = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY);
 		int level = Integer.parseInt(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-		communicator.addOperation(diagramId, className, level, body);
+		communicator.addOperation(diagramId, classPath, level, body);
 	}
 }

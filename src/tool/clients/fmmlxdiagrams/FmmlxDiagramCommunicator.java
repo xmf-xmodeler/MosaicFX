@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.Vector;
@@ -26,6 +27,7 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
+import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import xos.Value;
@@ -47,6 +49,9 @@ public class FmmlxDiagramCommunicator {
 	private static FmmlxDiagramCommunicator self;
 	private int handle; // this is set by xmf and serves as an identifier for the communication
 	
+	public int getHandle() {
+		return handle;
+	}
 	public static boolean isDebug() {
 		return DEBUG;
 	}
@@ -362,7 +367,7 @@ public class FmmlxDiagramCommunicator {
 		return functionReturnVector;
 	}
 	
-	private void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+	void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 		setNewRequestID();
 		Value[] args2 = new Value[args.length + 1];
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
@@ -429,9 +434,63 @@ public class FmmlxDiagramCommunicator {
 			}
 			objectsReceivedReturn.run(result);
 		};
-		
 		xmfRequestAsync(handle, diagram.getID(), "getAllObjects", localReturn);
-		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void getImportedPackages(Integer diagramId,
+			ReturnCall<Vector<String>> importedPackagesReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<String> result = new Vector<>();
+			for (Object responseItem : responseContent) {
+				result.add((String)responseItem);
+			}
+			importedPackagesReturn.run(result);
+		};
+		xmfRequestAsync(handle, diagramId, "getImportedPackages", localReturn);
+	} 
+	
+	@SuppressWarnings("unchecked")
+	public void getAssociationTypes(AbstractPackageViewer diagram,
+			ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<AssociationType> result = new Vector<>();
+			
+			for (Object responseItem : responseContent) {
+				Vector<Object> responseItemList = (Vector<Object>) (responseItem);
+				Integer sMax = (Integer) responseItemList.get(10);
+				Level sLevel = new Level((Integer) responseItemList.get(9), sMax == -1 ? null : sMax);
+				Integer tMax = (Integer) responseItemList.get(12);
+				Level tLevel = new Level((Integer) responseItemList.get(11), tMax == -1 ? null : tMax);
+				AssociationType aType = new AssociationType(
+						(String)  responseItemList.get(0), // name
+						(String)  responseItemList.get(1), // path
+						(String)  responseItemList.get(2), // color
+						(Integer) responseItemList.get(3), // strokeWidth
+						(String)  responseItemList.get(4), // dashArray
+						(String)  responseItemList.get(5), // startDeco
+						(String)  responseItemList.get(6),  // endDeco
+						(String)  responseItemList.get(15), // colorLink
+						(Integer) responseItemList.get(16), // strokeWidthLink
+						(String)  responseItemList.get(17), // dashArrayLink
+						(String)  responseItemList.get(18), // startDecoLink
+						(String)  responseItemList.get(19),  // endDecoLink
+						(String)  responseItemList.get(7),  // sourcePath
+						(String)  responseItemList.get(8),  // targetPath
+						sLevel,
+						tLevel,
+						(String)  responseItemList.get(13), // sourceMult
+						(String)  responseItemList.get(14)  // targetMult
+
+						);
+				result.add(aType);
+			}
+			
+			associationTypesReceivedReturn.run(result);
+		};
+		xmfRequestAsync(handle, diagram.getID(), "getAssociationTypes", localReturn);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -462,15 +521,19 @@ public class FmmlxDiagramCommunicator {
 					}
 				}
 	
-				InheritanceEdge object = new InheritanceEdge(
-						(String) edgeInfoAsList.get(0), // id
-						(String) edgeInfoAsList.get(1), //TODO startId
-						(String) edgeInfoAsList.get(2), //TODO endId
-						listOfPoints, // points
-						startRegion, endRegion,
-						diagram);
-	
-				result.add(object);
+				try{
+					InheritanceEdge object = new InheritanceEdge(
+							(String) edgeInfoAsList.get(0), // id
+							(String) edgeInfoAsList.get(1), //TODO startId
+							(String) edgeInfoAsList.get(2), //TODO endId
+							listOfPoints, // points
+							startRegion, endRegion,
+							diagram);
+		
+					result.add(object);
+				} catch (Exception e) {
+//					System.err.println("Inheritance edge "+edgeInfoAsList.get(1)+"->"+edgeInfoAsList.get(2)+" ignored, probably external.");
+				}
 			}
 			inheritanceEdgeReceivedReturn.run(result);
 		};
@@ -635,8 +698,8 @@ public class FmmlxDiagramCommunicator {
 						(Integer) edgeInfoAsList.get(3), // parentId
 						listOfPoints, // points
 						startRegion, endRegion,
-						(String) edgeInfoAsList.get(5), // name 1
-						(String) edgeInfoAsList.get(6), // name 2
+						(String) edgeInfoAsList.get(5), // name
+						(String) edgeInfoAsList.get(6), // type
 						(String) edgeInfoAsList.get(7), // name source->target
 						(String) edgeInfoAsList.get(8), // name target->source
 						(Integer) edgeInfoAsList.get(9), // level source
@@ -771,8 +834,9 @@ public class FmmlxDiagramCommunicator {
 					for (Object o : ownOpList) {
 						Vector<Object> opInfo = (Vector<Object>) o;
 						if(opInfo==null) {
-							System.err.println("NULL"); 
+							System.err.println("operation info not found -> to be investigated"); 
 						} else {
+//							System.err.println(opInfo.get(1)); 
 						Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
 						Vector<String> paramNamesS = new Vector<>();
 						for (Object O : paramNamesO) {
@@ -855,6 +919,7 @@ public class FmmlxDiagramCommunicator {
 		    Vector<Issue> result = new Vector<>();
 		    int issueNumber = 0;
 		    for (Object issueO : issueList) {
+//		    	System.err.println("issueO: " + issueO);
 		        Vector<Object> issueV = (Vector<Object>) issueO;
 		        try {
 		            Issue issue = Issue.readIssue(issueV);
@@ -885,8 +950,14 @@ public class FmmlxDiagramCommunicator {
 	    xmfRequestAsync(handle, fmmlxDiagram.getID(), "getAllAuxTypes", returnCall);
     }
     
+    /**
+     * This function ask the backend for specific slots. All classes that defined in the map are requested.
+     * @param diagram the diagram for that the values will be requested
+     * @param slotNames A map that contains all class names of which slots should be requested
+     * @param slotsReceivedReturn Returncall, that defines what should be done after XMF has send result
+     */
     @SuppressWarnings("unchecked")
-    public void fetchAllSlots(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
+    public void fetchSpecificSlots(AbstractPackageViewer diagram, Map <FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
     	java.util.Set<FmmlxObject> objects = slotNames.keySet();
     	Value[] objectSlotList = new Value[slotNames.size()];
     	int count = 0;
@@ -918,6 +989,41 @@ public class FmmlxDiagramCommunicator {
     		slotsReceivedReturn.run(null);
     	};
     	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", returnCall, new Value(objectSlotList));
+    }
+        
+    /**
+     * This function ask the backend for all slots.
+     * The list returned by the backend does not contain classes or instances, that do not have slots. 
+     * @param diagram the diagram for that the values will be requested
+     * @param onSlotsUpdated Returncall, that defines what should be done after the slots of the diagram are updated
+     */
+    public void fetchAllSlots(AbstractPackageViewer diagram, ReturnCall<?> onSlotsUpdated) {
+    	
+    	ReturnCall<Vector<Object>> onSlotsReturnedFromXMF = returnedSlotList -> {
+    		
+    		//The response is a vector, that contains for every object a Vector.
+    		Vector<Vector<Object>> response = (Vector<Vector<Object>>) (returnedSlotList.get(0));
+    		//The Vector of every objects contains the objectName and a slotList
+    		for(Vector<Object> objectVector : response) {
+    			    			
+    			String objectPath = (String) (objectVector.get(0));
+//    			String objectPath = diagram.getPackagePath() + "::" + objName;    			
+    			FmmlxObject correspondingDiagramObject = diagram.getObjectByPath(objectPath);
+    				
+    			Vector<Vector<Object>> slotList = (Vector<Vector<Object>>) (objectVector.get(1));
+    			Vector<FmmlxSlot> result = new Vector<>();
+	    		for (Vector<Object> slotO : slotList) {
+	    			String name = (String) (slotO.get(0));
+	    			String value = (String) (slotO.get(1));
+	    			result.add(new FmmlxSlot(name, value, correspondingDiagramObject));
+	    			Collections.sort(result);
+	    			correspondingDiagramObject.slots = result;
+    			}
+    		}
+    		onSlotsUpdated.run(null);
+    	};
+    	
+    	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", onSlotsReturnedFromXMF);
     }
     
 
@@ -1198,7 +1304,7 @@ public class FmmlxDiagramCommunicator {
 			String namePrefix, 
 			Vector<Vector<String>> slotValues,
 			Vector<String> mandatoryConstraints, 
-			ReturnCall<Boolean> wizardReturn) {
+			ReturnCall<Vector> wizardReturn) {
 
 		int i = 0;
 		Value[] slotList = new Value[slotValues.size()];
@@ -1219,8 +1325,7 @@ public class FmmlxDiagramCommunicator {
 		
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
 			System.err.println("Instance Generator response from XMF: "+ response);
-			Boolean success = (Boolean) response.get(0);
-			wizardReturn.run(success);
+			wizardReturn.run(response);
 		};
 		
 		xmfRequestAsync(handle, diagram.getID(), "addGeneratedInstance", localReturn, 
@@ -1259,19 +1364,20 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociation", message);
 	}
 
-	public void setAssociationEndVisibility(int diagramID, String assocName, boolean targetEnd, boolean newVisbility) {
+	public void setAssociationEndVisibility(int diagramID, FmmlxAssociation assoc, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(assocName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
 				new Value(targetEnd),
 				new Value(newVisbility)};
 		sendMessage("setAssociationEndVisibility", message);
 	}
 
-	public void addAttribute(int diagramID, String className, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
+	public void addAttribute(int diagramID, String classPath, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(className),
+				new Value(classPath),
 				new Value(name),
 				new Value(level.getMinLevel()),
 				new Value(level.getMaxLevel()),
@@ -1283,20 +1389,6 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addAttribute", message);
 	}
 	
-//	public void addAttributeAsync(int diagramID, String className, String name, int level, String type, Multiplicity multi) {
-//		Value[] message = new Value[]{
-//				new Value(className),
-//				new Value(name),
-//				new Value(level),
-//				new Value(level),
-//				new Value(type),
-//				new Value(multi.toValue()),
-//				new Value(true),
-//				new Value(false),
-//				new Value(false)};
-//		xmfRequestAsync(handle, diagramID, "addAttribute", (emptyCall) -> {}, message);
-//	}
-	
 	public void changeAttributeName(int diagramID, String className, String oldName, String newName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
@@ -1306,13 +1398,15 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAttributeName", message);
 	}
 
-	public void changeAttributeLevel(int diagramID, String objectName, String attName, int oldLevel, int newLevel) {
+	public void changeAttributeLevel(int diagramID, String objectName, String attName, Level oldLevel, Level newLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attName),
-				new Value(oldLevel),
-				new Value(newLevel)};
+				new Value(oldLevel.getMinLevel()),
+				new Value(oldLevel.getMaxLevel()),
+				new Value(newLevel.getMinLevel()),
+				new Value(newLevel.getMaxLevel())};
 		sendMessage("changeAttributeLevel", message);
 	}
 
@@ -1345,7 +1439,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldType),
 				new Value(newType)};
 		sendMessage("changeAttributeType", message);
-
 	}
 
 	public void removeAttribute(int diagramID, String className, String name, int strategy) {
@@ -1357,48 +1450,48 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAttribute", message);
 	}
 
-    public void addOperation(int diagramID, String objectName, int level, String body) {
+    public void addOperation(int diagramID, String classPath, int level, String body) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(level),
                 new Value(body)
         };
-        sendMessage("addOperation2", message);
+        sendMessage("addOperation", message);
     }
 
-    public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
+    public void changeOperationName(int diagramID, String classPath, String oldName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(oldName),
                 new Value(newName)};
         sendMessage("changeOperationName", message);
     }
 
-    public void changeOperationLevel(int diagramID, String objectName, String opName, int oldLevel, int newLevel) {
+    public void changeOperationLevel(int diagramID, String classPath, String opName, Level oldLevel, Level newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(opName),
-                new Value(oldLevel),
-                new Value(newLevel)};
+                new Value(oldLevel.getMinLevel()),
+                new Value(newLevel.getMinLevel())};
         sendMessage("changeOperationLevel", message);
     }
 
-    public void changeOperationOwner(int diagramID, String objectName, String name, String newOwnerName) {
+    public void changeOperationOwner(int diagramID, String classPath, String name, String newOwnerName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(name),
                 new Value(newOwnerName)};
         sendMessage("changeOperationOwner", message);
     }
 
-    public void changeOperationType(int diagramID, String objectName, String operationName, String newType) {
+    public void changeOperationType(int diagramID, String classPath, String operationName, String newType) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(classPath),
                 new Value(operationName),
                 new Value(newType)};
         sendMessage("changeOperationType", message);
@@ -1433,11 +1526,12 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassName", message);
     }
 
-    public void changeClassLevel(int diagramID, String objectName, int newLevel) {
+    public void changeClassLevel(int diagramID, String objectPath, Level newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
-                new Value(newLevel)};
+                new Value(objectPath),
+                new Value(newLevel.getMinLevel()),
+                new Value(newLevel.getMaxLevel())};
         sendMessage("changeClassLevel", message);
     }
 
@@ -1499,6 +1593,42 @@ public class FmmlxDiagramCommunicator {
                 new Value(roleName)};
         sendMessage("removeRoleFiller", message);
     }
+    
+    public void addAssociationType(int diagramID,
+        AssociationType aType,
+        ReturnCall<AssociationType> onXmfReturn) {
+    	
+    	ReturnCall<Vector<Object>> localReturn = (msgAsVec) -> {
+    		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
+			if (err != null && err.size() > 0 && err.get(0) != null ) {
+				Platform.runLater(() -> {
+//					Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+//					alert.show();
+					aType._error_Mgs_ = err.get(0) + "";
+					onXmfReturn.run(aType);
+				});
+			} else {
+				onXmfReturn.run(null);
+			}
+    	};
+        
+        Value[] message = new Value[]{
+                new Value(aType.displayName), 
+                new Value(aType.color),
+                new Value(aType.strokeWidth),
+                new Value(aType.dashArray),
+                new Value(aType.startDeco), new Value(aType.endDeco), 
+                new Value(aType.colorLink),
+                new Value(aType.strokeWidthLink),
+                new Value(aType.dashArrayLink),
+                new Value(aType.startDecoLink), new Value(aType.endDecoLink),
+                new Value(aType.sourcePath), new Value(aType.targetPath),
+                new Value(aType.sourceLevel.getMinLevel()), new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.targetLevel.getMinLevel()), new Value(aType.targetLevel.getMaxLevel())
+                };
+//        sendMessage("addAssociationType", message);
+        xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
+    }
 
     public void addAssociation(int diagramID,
         String classSourceName, String classTargetName,
@@ -1507,7 +1637,7 @@ public class FmmlxDiagramCommunicator {
         Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
         Integer instLevelSourceMin, Integer instLevelSourceMax, 
         Integer instLevelTargetMin, Integer instLevelTargetMax, 
-        boolean sourceVisible, boolean targetVisible,
+        boolean sourceVisible, boolean _UNUSED_targetVisible,
         boolean isSymmetric, boolean isTransitive,
         String sourceGetterName,
         String sourceSetterName,
@@ -1523,7 +1653,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(multSourceToTarget.toValue()), // multiplicity,
                 new Value(instLevelSourceMin), new Value(instLevelSourceMax), 
                 new Value(instLevelTargetMin), new Value(instLevelTargetMax),
-                new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive),
+                new Value(sourceVisible), new Value(true), new Value(isSymmetric), new Value(isTransitive),
                 (sourceGetterName==null?new Value(-1):new Value(sourceGetterName)), 
                 (sourceSetterName==null?new Value(-1):new Value(sourceSetterName)), 
                 (targetGetterName==null?new Value(-1):new Value(targetGetterName)), 
@@ -1606,11 +1736,21 @@ public class FmmlxDiagramCommunicator {
         sendMessage("storeLabelInfo", l.getInfo4XMF());
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
+    
+    public void storeLabelInfo(int diagramID, String ownerPath, int localID, float x, float y) {
+    	sendMessage("storeLabelInfo", new Value[]{ new Value(
+				new Value[] {new Value(diagramID), new Value(-1)}),
+				new Value(ownerPath),
+				new Value(localID),
+				new Value(x),
+				new Value(y)});
+    }
 
-    public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
+    public void changeAssociationForwardName(int diagramID, FmmlxAssociation assoc, String newFwName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newFwName)};
         sendMessage("changeAssociationForwardName", message);
     }
@@ -1623,50 +1763,56 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeDelegationLevel", message);
     }
     
-    public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
+    public void changeAssociationStart2EndLevel(int diagramID, FmmlxAssociation assoc, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newLevel)};
         sendMessage("changeAssociationStart2EndLevel", message);
     }
 
-    public void changeAssociationEnd2StartLevel(int diagramID, String associationName, Integer newLevel) {
+    public void changeAssociationEnd2StartLevel(int diagramID, FmmlxAssociation assoc, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newLevel)};
         sendMessage("changeAssociationEnd2StartLevel", message);
     }
 
-    public void changeAssociationStart2EndAccessName(int diagramID, String associationName, String newName) {
+    public void changeAssociationStart2EndAccessName(int diagramID, FmmlxAssociation assoc, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newName)};
         sendMessage("changeAssociationStart2EndAccessName", message);
     }
 
-    public void changeAssociationEnd2StartAccessName(int diagramID, String associationName, String newName) {
+    public void changeAssociationEnd2StartAccessName(int diagramID, FmmlxAssociation assoc, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newName)};
         sendMessage("changeAssociationEnd2StartAccessName", message);
     }
 
-    public void changeAssociationStart2EndMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+    public void changeAssociationStart2EndMultiplicity(int diagramID, FmmlxAssociation assoc, Multiplicity newMultiplicity) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newMultiplicity.toValue())};
         sendMessage("changeAssociationStart2EndMultiplicity", message);
     }
 
-    public void changeAssociationEnd2StartMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+    public void changeAssociationEnd2StartMultiplicity(int diagramID, FmmlxAssociation assoc, Multiplicity newMultiplicity) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationName),
+				new Value(assoc.sourceNode.ownPath),
+				new Value(assoc.getAccessNameStartToEnd()),
                 new Value(newMultiplicity.toValue())};
         sendMessage("changeAssociationEnd2StartMultiplicity", message);
     }
@@ -2596,5 +2742,16 @@ public class FmmlxDiagramCommunicator {
         sendMessage("runOperation", new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
+    }
+      
+    /**
+     * This function gets called from Menu-Item "Load Package" in ControlCenter.
+     * This Menu-Item calls a function in XMF which is forwarded to this function.
+     */
+    public void openXmlFile() {
+    	Platform.runLater(()->{
+    		XMLParser parser = new XMLParser();
+    		parser.parseXMLDocument();   		
+    	});
     }
 }

@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -421,6 +422,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<Constraint> getConstraints() {
 		return new Vector<>(constraints);
 	}
+	
+	public Vector<Constraint> getAllConstraints() {
+		HashSet<Constraint> allConstraints = new HashSet<>(constraints);
+		for(FmmlxObject o : getAllAncestors()) {
+			allConstraints.addAll(o.getConstraints());
+		}
+		return new Vector<>(allConstraints);
+	}
 
 	/// Setters
 
@@ -481,15 +490,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return hitLabel;
 	}
 
-	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
-		if(p == null) return;
-		NodeElement.Action action = null;
-		if(rootNodeElement != null) if(action == null) {
-			action = rootNodeElement.getAction(p, g, currentTransform, view);
-		}
-		if(action != null) action.perform();
-	}
-
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
 		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
 		return new PaletteItem(tool);
@@ -532,19 +532,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		
 		// try to find concrete syntax:
-		ConcreteSyntax myConcreteSyntax = null;
-		
-		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
-			try{
-				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
-				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level) {
-					myConcreteSyntax = c;
-				}
-				if(this.ownPath.equals(c.classPath) && this.level.getMinLevel() == c.level) {
-					myConcreteSyntax = c;
-				}
-			} catch (Exception e) {}
-		}
+		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax(diagram,0);
 		
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
@@ -559,16 +547,22 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
 	}
 
-	public void dragTo(Affine dragAffine) {
-		rootNodeElement.dragTo(dragAffine);
+	private ConcreteSyntax findMyConcreteSyntax(FmmlxDiagram diagram, int levelDiff) {
+		ConcreteSyntax myConcreteSyntax = null;
+		for(ConcreteSyntax c : new Vector<>(diagram.syntaxes.values())) if(myConcreteSyntax == null) {
+			try{
+				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
+				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level+levelDiff) {
+					myConcreteSyntax = c;
+				}
+				if(this.ownPath.equals(c.classPath) && this.level.getMinLevel() == c.level+levelDiff) {
+					myConcreteSyntax = c;
+				}
+			} catch (Exception e) {}
+		}
+		return myConcreteSyntax;
 	}
 
-	public void drop() {
-		rootNodeElement.drop();
-		this.x = rootNodeElement.getMyTransform().getTx();
-		this.y = rootNodeElement.getMyTransform().getTy();
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 		if(o==null) return false;
@@ -584,11 +578,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		} catch (Exception e) {
 			throw new IllegalStateException("The meta-class of this element is not available.");
 		}
-	}
-
-	@Override
-	protected void layout(FmmlxDiagram diagram) {
-		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
 	}
 	
 	private transient Vector<Issue> cachedIssues = null;
@@ -616,6 +605,46 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public boolean isClass() {
 		return level.isClass();
+	}
+
+	public javafx.scene.Node getConcreteSyntaxIcon(int size) {
+		if(!(diagram instanceof FmmlxDiagram)) return null;
+		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax((FmmlxDiagram)diagram, 1);
+		if(myConcreteSyntax == null) return null;
+		return new ConcreteSyntaxIcon(myConcreteSyntax, size);
+	}
+
+	public String getRelativeName() {
+		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
+	}
+  
+	@Override
+	protected void updatePositionInBackend(int diagramID) {
+		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
+		
+	}
+
+	@Override
+	public void hide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(true);
+	}
+
+	@Override
+	public void unhide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(false);
+	}
+	
+	private void sendHiddenStatusToXMF(boolean hidden) {
+		Vector<FmmlxObject> v = new Vector<>();
+		v.add(this);
+		diagram.getActions().hide(v, hidden);
+	}
+  
+	public boolean hasIssue(String constraintName) {
+		for(Issue i : getIssues()) {
+			if(i.getName().equals(constraintName)) return true;
+		}
+		return false;
 	}
 
 }

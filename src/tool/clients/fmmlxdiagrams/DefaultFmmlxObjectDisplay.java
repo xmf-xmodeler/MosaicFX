@@ -53,7 +53,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		object.requiresReLayout = false;
+//		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);
@@ -74,10 +74,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		});
 		group.addNodeElement(header);
 		String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+		if(ofName.equals("FMMLx::MetaClass")) ofName = "MetaClass";
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (object.level.toString()), FontPosture.REGULAR, FontWeight.BOLD, 2.);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		
 		if(object.isSingleton()) {
 			NodeBox singletonBar = new NodeBox(neededWidth/3., currentY, neededWidth/3., textHeight * headerLines + EXTRA_Y_PER_LINE, 
@@ -144,7 +145,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Attribute);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level == -1 ? " " : att.level + "");
 			attBox.addNodeElement(attLevelLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -366,10 +367,10 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		double neededWidth = FmmlxDiagram.calculateTextWidth(object.name); 
+		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 
 
 		try {
-			String ofName = FmmlxObject.getRelativePath(object.getPath(), object.getOfPath());
+			String ofName = FmmlxObject.getRelativePath(diagram.packagePath, object.getOfPath());
 //			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {
@@ -454,10 +455,17 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
 	private String getParentsList(FmmlxDiagram diagram) {
 		StringBuilder parentsList = new StringBuilder("extends ");
+//		System.err.println(object.ownPath + "-> " + object.getParentsPaths());
 		for (String parentName : object.getParentsPaths()) {
 			try {
 				FmmlxObject parent = null;
-				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {}
+				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {
+//					System.err.println(parentName + " not found (must be external)");
+					if(!("Root::XCore::Object".equals(parentName) 
+							|| "Root::FMMLx::MetaClass".equals(parentName)
+							|| "Root::FMMLx::FmmlxObject".equals(parentName)))
+					parentsList.append(parentName).append(", ");
+				}
 				InheritanceEdge edge = diagram.getInheritanceEdge(object, parent);
 				if(edge != null && !edge.isVisible()) {
 					parentName = parent.name;
@@ -469,7 +477,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				parentsList.append(parentName).append(", ");
 			}
 		}
-		//System.err.println(parentsList);
+//		System.err.println(parentsList);
 		if(!("extends ".equals(parentsList.toString()))) return parentsList.substring(0, parentsList.length() - 2);
 		
 		return "";

@@ -50,6 +50,8 @@ public class StringValue {
         public static final String pleaseInputValidIntegerValue= "Please input valid integer value";
 		public static final String pleaseInputValidFloatValue= "Please input valid Float value";
         public static final String selectOf = "Select Of!";
+        public static final String levelUnparseable = "Level cannot be parsed";
+        public static final String levelMustNotBeContingent = "Level must not be contingent";
     }
 
     public static class ValueGeneratorName{

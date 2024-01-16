@@ -3,8 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
@@ -165,9 +163,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 			// normal
 			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
-			g.setLineWidth(isSelected() ? 3 : 1);
+			g.setLineWidth(getStrokeWidth() + (view.getDiagram().isSelected(this) ? 2 : 0));
 			g.setLineDashes(getLineDashes());
-
+			
 			for (int i = 0; i < points.size() - 1; i++) {
 //				if(i!=0) try {
 //					g.setFill(Color.PURPLE);
@@ -281,6 +279,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 					sourceNode.getPointForEdge(sourceEnd, true));
 
 		}
+	}
+
+	protected double getStrokeWidth() {
+		return 1.;
 	}
 
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
@@ -403,8 +405,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return Color.BLACK;
 	}
 
-	protected Double getLineDashes() {
-		return (double) 0;
+	protected double[] getLineDashes() {
+		return new double[]{};
 	}
 
 	protected String getSvgDashes() {
@@ -413,10 +415,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	protected String getSvgStrokeWidth() {
 		return "1";
-	}
-
-	private boolean isSelected() {
-		return false;
 	}
 
 	@Override
@@ -661,6 +659,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return labelPositions.get(localId);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initLabelPositionMap(Vector<Object> labelPositions2) {
 		labelPositions = new HashMap<>();
 		for (Object labelPositionO : labelPositions2) {

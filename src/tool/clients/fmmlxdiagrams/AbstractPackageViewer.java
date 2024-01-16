@@ -4,23 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Vector;
-
-import org.apache.logging.log4j.LogManager;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.apache.logging.log4j.LogManager;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
 public abstract class AbstractPackageViewer {
 	
-	protected Vector<FmmlxObject> objects = new Vector<>();
+	protected HashMap<String, FmmlxObject> objects = new HashMap<>();
 	protected Vector<FmmlxEnum>   enums = new Vector<>();
 	protected Vector<String>      auxTypes = new Vector<>();
 	protected Vector<Edge<?>>     edges = new Vector<>();
 	protected Vector<Issue>       issues = new Vector<>();
+	protected Vector<AssociationType> associationTypes = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
 	protected DiagramActions actions;
@@ -28,8 +29,9 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
-	
+  
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
+	protected final NoteList notes = new NoteList();
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -52,7 +54,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public Vector<FmmlxObject> getObjectsReadOnly() {
-		return new Vector<>(objects);
+		return new Vector<>(objects.values());
 	}
 	
 	public Vector<FmmlxObject> getVisibleObjectsReadOnly() {
@@ -157,7 +159,7 @@ public abstract class AbstractPackageViewer {
 		ReturnCall<Vector<String>> slotsReturn = x2 -> {
 			if(TIMER) System.err.println("Slot values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 			HashMap<FmmlxObject, Vector<String>> opValNames = new HashMap<>();
-			for(FmmlxObject o : objects) {
+			for(FmmlxObject o : objects.values()) {
 				opValNames.put(o, o.getMonitoredOperationsNames());
 			}
 			comm.fetchAllOperationValues(this, opValNames, opValReturn);
@@ -166,10 +168,10 @@ public abstract class AbstractPackageViewer {
 		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
 			auxTypes = fetchedAuxTypes;
 			HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
-			for(FmmlxObject o : objects) {
+			for(FmmlxObject o : objects.values()) {
 				slotNames.put(o, o.getSlotNames());
 			}
-			comm.fetchAllSlots(this, slotNames, slotsReturn);
+			comm.fetchAllSlots(this, slotsReturn);
 		};
 
 		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {
@@ -211,37 +213,97 @@ public abstract class AbstractPackageViewer {
 		};
 				
 		ReturnCall<Vector<FmmlxObject>> allConstraintsReturn = x1 -> {
-			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
+			if(TIMER) System.err.println("Constraints loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchIssues(this, allIssuesReturn);
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allOperationsReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Operations loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllConstraints(this, visibleObjects, allConstraintsReturn);	
 		};
 
 		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Attributes loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllOperations(this, visibleObjects, allOperationsReturn);	
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
-			objects.addAll(fetchedObjects);
-
+			objects.clear();
+			for(FmmlxObject o : fetchedObjects) objects.put(o.ownPath, o);
+			
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
 					
 			Vector<FmmlxObject> visibleObjects = new Vector<>();
 			if (loadOnlyVisibleObjects()) {
-				for(FmmlxObject o : objects)
+				for(FmmlxObject o : objects.values())
 					if(!o.hidden) visibleObjects.add(o); }
-				else visibleObjects = objects;
+				else visibleObjects = new Vector<>(objects.values());
 			
 			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
 		};
 		
-		if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
-		comm.getAllObjects(this, allObjectsReturn);
-
+		ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn = associationTypes -> {
+			this.associationTypes = associationTypes;
+			if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
+			comm.getAllObjects(this, allObjectsReturn);
+		};
+		
+		comm.getAssociationTypes(this, associationTypesReceivedReturn);
+		fetchNotes();
 	}
 	
+	/**
+	 * This function asks the backend for all information about diagramNotes. For the most fetching operations the call order does play a huge role. 
+	 * If YOu will not ask in the right order errors will be raised due to missing backend information and interdependencies. For the notes this does not play 
+	 * any role because the loading process is not dependend on other data
+	 */
+	private void fetchNotes() {
+		ReturnCall<Vector<Note>> notesReturned = returnedNotes -> {
+			//reset notesList. Everytime the diagram is loaded all CanvasElements will be fully new loaded from xmf.
+			this.notes.clear();
+			addNewNotesToNoteList(returnedNotes);
+			setNotePositionsFromXMF();
+		};
+		Note.getAllNotes(diagramID, notesReturned);
+	}
+
+	/**
+	 * If you create a note in the frontend all data about the note is send to the backend. Afterward the diagram is updated, what means, that on Java-side there is no more information about the new note. 
+	 * This function checks if the current instance of the diagram holds a reference to all notes that are in the returnedNotes-list. If the note is already contained the loop continues otherwise the reference is added to the diagramNotes-list.
+	 * @param returnedNotes list of all notes associated to the diagram in the backend
+	 */
+	private void addNewNotesToNoteList(Vector<Note> returnedNotes) {
+		for (Note note : returnedNotes) {
+			if (notes.contain(note.getId())) {
+				continue;
+			}
+			this.notes.add(note);
+		}
+	}
+
+	/**
+	 * Beside the data about the note like color and content the backend manages a mapping to the diagram. This mapping contains the information xPosition, yPosition and if the note is hidden.
+	 * This information must be asked separately because it can be updated by movement of the note on the canvas. It is important, that before this function is called the notes-list is updated. Therefore this function 
+	 * is called from a ReturnCall of getAllNotes.
+	 * 
+	 * !!Prerequisite: Get all notes from XMF 
+	 */
+	private void setNotePositionsFromXMF() {
+		ReturnCall<Vector<GraphicalMappingInfo>> noteMappingRetturned = noteMappings -> {
+			for (GraphicalMappingInfo mappingInfo : noteMappings) {
+				//here the reference from the diagram is initialized. If you would have not updates the note list, an exception would occure.
+				try {
+					Note note = notes.getNote(mappingInfo.getNoteIdFromMappingKey());					
+					note.setDiagramMapping(mappingInfo);
+				} catch (NullPointerException e) {
+					System.err.println("Pleas update notes first");
+					e.printStackTrace();
+				}	
+			}
+		};
+		Note.getNotesMappings(diagramID, noteMappingRetturned);	
+	}
+		
 	protected abstract boolean loadOnlyVisibleObjects();
 
 	private void setViewerStatus(ViewerStatus newStatus) {
@@ -354,7 +416,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public final boolean isNameAvailable(String t) {
-		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		for (FmmlxObject o : objects.values()) if (o.getName().equals(t)) return false;
 		return true;
 	}
 	
@@ -363,22 +425,14 @@ public abstract class AbstractPackageViewer {
 
 		public PathNotFoundException(String message) {
 			super(message);
-		}
-		
+		}		
 	}
 	
 	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
-		for(FmmlxObject obj : getObjectsReadOnly()) {
-			if (obj.getPath().equals(path)){
-				return obj;
-			}
-		}
-		for(FmmlxObject obj : getObjectsReadOnly()) {
-			if (obj.getName().equals(path)){
-				return obj;
-			}
-		}
-		throw new PathNotFoundException("path " + path + " not found");
+		if(objects.containsKey(path))
+			return objects.get(path);
+		else
+			throw new PathNotFoundException("path " + path + " not found");
 	}
 	
 	public final FmmlxAssociation getAssociationByPath(String path) {
@@ -413,7 +467,7 @@ public abstract class AbstractPackageViewer {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
+			for (FmmlxObject object : objects.values()) {
 				if (level.getMinLevel() != 0 && object.getLevel().getMinLevel() == level.getMinLevel()) {
 					objectList.add(object);
 				}
@@ -481,7 +535,7 @@ public abstract class AbstractPackageViewer {
 
 	public Vector<Integer> getAllObjectLevel() {
 		Vector<Integer> result = new Vector<>();
-		for(FmmlxObject obj : objects){
+		for(FmmlxObject obj : objects.values()){
 			if(!result.contains(obj.getLevel())){
 				result.add(obj.getLevel().getMinLevel());
 			}
@@ -492,5 +546,25 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public View getActiveDiagramViewPane() {return null;}
+
+	public Vector<AssociationType> getAssociationTypes() {
+		return new Vector<>(associationTypes);
+	}
 	
+	public NoteList getNotes() {
+		return notes;
+	}
+
+
+	
+	/**
+	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.
+	 * @return list of all node elements
+	 */
+	public ArrayList<Node> getAllNodes() {
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.addAll(objects.values());
+		nodes.addAll(notes);
+		return nodes;
+	}
 }

@@ -1,34 +1,45 @@
 package tool.clients.fmmlxdiagrams;
 
+import org.w3c.dom.Element;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 
 import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement {
 	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
 	protected boolean hidden;
 	protected double x;
 	protected double y;
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	
-	transient boolean requiresReLayout;
+//	transient boolean requiresReLayout;
 	public NodeGroup rootNodeElement = null;	
 	
-	public void triggerLayout() {
-		this.requiresReLayout = true;
-	}
+//	public void triggerLayout() {
+//		this.requiresReLayout = true;
+//	}
 	
 	public double getX() { return x; }
 	public double getY() { return y; }
@@ -58,7 +69,7 @@ public abstract class Node implements CanvasElement {
 	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		
 		if(hidden) return;		
-		if(requiresReLayout) layout(view.getDiagram());
+//		if(requiresReLayout) layout(view.getDiagram());
 		boolean selected = view.getDiagram().isSelected(this);
 		
 		if (rootNodeElement != null) {
@@ -81,7 +92,7 @@ public abstract class Node implements CanvasElement {
 
 		if(hidden) return;
 
-		if(requiresReLayout) layout(diagram);
+//		if(requiresReLayout) layout(diagram);
 
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "object");
@@ -101,7 +112,11 @@ public abstract class Node implements CanvasElement {
 		return false;
 	}
 
-	protected abstract void layout(FmmlxDiagram diagram) ;
+	protected abstract void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
+	
+	protected void layout(FmmlxDiagram diagram) {
+		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
+	}	
 	
 	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}
@@ -130,11 +145,58 @@ public abstract class Node implements CanvasElement {
 		port.sortAllPorts();
 	}
 
-	public abstract String getName();
-
 	public Affine getOwnAndDragTransform() {
 		Affine a = new Affine(rootNodeElement.getMyTransform());
 		a.append(rootNodeElement.getDragAffine());		
 		return a;
+	}
+  
+	public void dragTo(Affine dragAffine) {
+		rootNodeElement.dragTo(dragAffine);
+	}
+
+	public void drop() {
+		rootNodeElement.drop();
+		this.x = rootNodeElement.getMyTransform().getTx();
+		this.y = rootNodeElement.getMyTransform().getTy();
+	}
+
+	/**
+	 * Please mind, that the use of this method will not alter backend data!!!
+	 */
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+	
+	public void setDiagramMapping(GraphicalMappingInfo mapping){
+		setX(mapping.getxPosition());
+		setY(mapping.getyPosition());
+		setHidden(mapping.isHidden());
+	}
+
+	protected abstract void updatePositionInBackend(int diagramID);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void hide(AbstractPackageViewer diagram);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void unhide(AbstractPackageViewer diagram);
+	
+	public void setPosition(double x, double y) {
+		setX(x);
+		setY(y);
+	}
+  
+	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+		if(p == null) return;
+		NodeElement.Action action = null;
+		if(rootNodeElement != null) if(action == null) {
+			action = rootNodeElement.getAction(p, g, currentTransform, view);
+		}
+		if(action != null) action.perform();
 	}
 }

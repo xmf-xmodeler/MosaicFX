@@ -51,10 +51,12 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 
 				MenuItem genGetterItem = new MenuItem("Generate Getter");
 				genGetterItem.setOnAction(e -> actions.generateGetter(object, attribute));
+				genGetterItem.setDisable(attribute == null);
 				getItems().add(genGetterItem);
 				
 				MenuItem genSetterItem = new MenuItem("Generate Setter");
 				genSetterItem.setOnAction(e -> actions.generateSetter(object, attribute));
+				genSetterItem.setDisable(attribute == null);
 				getItems().add(genSetterItem);
 	
 				getItems().add(new SeparatorMenuItem());
