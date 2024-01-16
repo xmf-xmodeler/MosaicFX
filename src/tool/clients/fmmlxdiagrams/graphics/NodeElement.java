@@ -41,7 +41,7 @@ public abstract class NodeElement {
 	public final void setSelected() { selected = true;}
 	public final void setDeselected() { selected = false;}
 	public final FmmlxProperty getActionObject() { return actionObject;}
-	public final void performDoubleClickAction(View view) { if(action!=null) action.perform();}
+//	public final void performDoubleClickAction(View view) { if(action!=null) action.perform();}
 	
 	public NodeElement() {
 		this.dragAffine = new Affine();

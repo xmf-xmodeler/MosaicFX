@@ -422,6 +422,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<Constraint> getConstraints() {
 		return new Vector<>(constraints);
 	}
+	
+	public Vector<Constraint> getAllConstraints() {
+		HashSet<Constraint> allConstraints = new HashSet<>(constraints);
+		for(FmmlxObject o : getAllAncestors()) {
+			allConstraints.addAll(o.getConstraints());
+		}
+		return new Vector<>(allConstraints);
+	}
 
 	/// Setters
 
@@ -480,15 +488,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			 hitLabel = rootNodeElement.getHitElement(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
 		return hitLabel;
-	}
-
-	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
-		if(p == null) return;
-		NodeElement.Action action = null;
-		if(rootNodeElement != null) if(action == null) {
-			action = rootNodeElement.getAction(p, g, currentTransform, view);
-		}
-		if(action != null) action.perform();
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
@@ -623,7 +622,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public String getRelativeName() {
 		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
 	}
-
+  
 	@Override
 	protected void updatePositionInBackend(int diagramID) {
 		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
@@ -645,4 +644,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		v.add(this);
 		diagram.getActions().hide(v, hidden);
 	}
+  
+	public boolean hasIssue(String constraintName) {
+		for(Issue i : getIssues()) {
+			if(i.getName().equals(constraintName)) return true;
+		}
+		return false;
+	}
+
 }

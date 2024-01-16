@@ -1591,7 +1591,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			deselectAll();
 			
 			for (Node node : getAllNodes()) {
-				if (isObjectContained(rec, node)) {
+				if (!node.isHidden() && isObjectContained(rec, node)) {
 					select(node);
 				}
 			}

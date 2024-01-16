@@ -14,6 +14,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.AssociationType;
+import tool.clients.fmmlxdiagrams.Level;
 
 public class AssociationTypeDialog extends Dialog<AssociationType>{
 
@@ -59,6 +60,8 @@ public class AssociationTypeDialog extends Dialog<AssociationType>{
 			sDecoFieldLink.setText("arrow");
 			tDecoFieldLink.setText("arrow");
 			dashFieldLink.setText("10,5");
+			sLevelField.setLevel(new Level(1, null));
+			tLevelField.setLevel(new Level(1, null));
 			widthField = new Spinner<Integer>(1,Integer.MAX_VALUE,1);
 			widthFieldLink = new Spinner<Integer>(1,Integer.MAX_VALUE,1);
 		} else {
@@ -73,6 +76,8 @@ public class AssociationTypeDialog extends Dialog<AssociationType>{
 			tDecoField.setText(oldType.endDeco);
 			dashField.setText(oldType.dashArray);
 			dashFieldLink.setText(oldType.dashArrayLink);
+			sLevelField.setLevel(oldType.sourceLevel);
+			tLevelField.setLevel(oldType.targetLevel);
 			widthField = new Spinner<Integer>(1,Integer.MAX_VALUE,oldType.strokeWidth);
 			widthFieldLink = new Spinner<Integer>(1,Integer.MAX_VALUE,oldType.strokeWidthLink);
 		}
@@ -162,8 +167,8 @@ public class AssociationTypeDialog extends Dialog<AssociationType>{
 					tDecoFieldLink.getText(),
 					sClassField.getText(),
 					tClassField.getText(),
-					"",
-					"",
+					sLevelField.getLevel(),
+					tLevelField.getLevel(),
 					sMultField.getText(),
 					tMultField.getText());						
 			}

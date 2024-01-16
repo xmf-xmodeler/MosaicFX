@@ -8,6 +8,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
+
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -140,7 +146,7 @@ public abstract class Node implements CanvasElement {
 		a.append(rootNodeElement.getDragAffine());		
 		return a;
 	}
-	
+  
 	public void dragTo(Affine dragAffine) {
 		rootNodeElement.dragTo(dragAffine);
 	}
@@ -179,5 +185,14 @@ public abstract class Node implements CanvasElement {
 	public void setPosition(double x, double y) {
 		setX(x);
 		setY(y);
+	}
+  
+	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+		if(p == null) return;
+		NodeElement.Action action = null;
+		if(rootNodeElement != null) if(action == null) {
+			action = rootNodeElement.getAction(p, g, currentTransform, view);
+		}
+		if(action != null) action.perform();
 	}
 }
