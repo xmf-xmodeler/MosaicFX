@@ -1,7 +1,5 @@
 package tool.logging;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +10,7 @@ public class RequestLogManager {
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private static RequestLogManager instance;
-	private List<RequestLog> logList = new ArrayList<>(); 
+	private Vector<RequestLog> logList = new Vector<>(); 
 
 	public static RequestLogManager getInstance() {
 		if (instance == null) {
@@ -38,7 +36,7 @@ public class RequestLogManager {
 	}
 
 	public RequestLog getLog(int requestId) {
-		for (RequestLog requestLog : logList) {
+		for (RequestLog requestLog : new Vector<>(logList)) {
 			if (requestLog.getRequestId() == requestId) {
 				return requestLog;
 			}

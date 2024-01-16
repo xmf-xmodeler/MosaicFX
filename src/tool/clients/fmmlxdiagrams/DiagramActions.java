@@ -43,7 +43,9 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -53,6 +55,7 @@ import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
@@ -163,10 +166,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addInstanceDialog(View view) {
-		addInstanceDialog(null, view);
-	}
-
 	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
@@ -178,7 +177,7 @@ public class DiagramActions {
 				final AddInstanceDialog.Result aidResult = result.get();
 
 				if(view == null) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 							aidResult.name, aidResult.level,
                             aidResult.getParentNames(), 
                             aidResult.isAbstract, 
@@ -200,7 +199,7 @@ public class DiagramActions {
 							
 	
 							if (x > 0 && y > 0) {
-								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfPath(), 
 										aidResult.name, aidResult.level, 
 										aidResult.getParentNames(), aidResult.isAbstract, 
 			                            aidResult.isSingleton, 
@@ -228,12 +227,49 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
 				diagram.getComm().addNewInstance(
-						diagram.getID(), aidResult.getOfName(), aidResult.name,
+						diagram.getID(), aidResult.getOfPath(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 				diagram.updateDiagram();
+			}
+		});
+	}
+	
+	public void addNote(FmmlxDiagram fmmlxDiagram, Point2D canvasPosition) {
+		Platform.runLater(() -> {
+			NoteCreationDialog dialog = new NoteCreationDialog();
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				//1.Note with default id is created
+				Note note = new Note(canvasPosition, result.get());
+				ReturnCall<Integer> onNoteIdReturned = noteId -> {			
+					//3. Set note id to valid id
+					note.setId(noteId);
+					//4. Use the note-instance to send mappingInfos to XMF
+					note.sendCurrentNoteMappingToXMF(fmmlxDiagram.getID(), r -> {});
+					//5. After the update all note information on Java-side is deleted because an update will clear the notes array. Afterwards all notes data is reloaded from backend. 
+					fmmlxDiagram.updateDiagram();
+				};
+				//2. Note with default id is send to XMF. There a note-instance is created. 
+				// The valid id is returned from XMF
+				note.addNoteToDiagram(fmmlxDiagram, onNoteIdReturned);
+				
+			}
+		});
+	}
+
+	public void editNote(Note note) {
+		Platform.runLater(() -> {
+			ChangeNoteDialog dialog = new ChangeNoteDialog(note);
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				note.updateNoteData(diagram, result.get());
 			}
 		});
 	}
@@ -256,7 +292,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialog.Result aad = result.get();
-				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
+				diagram.getComm().addAttribute(diagram.getID(), aad.classPath, aad.name, aad.level, aad.type, aad.multi, aad.isIntrinsic, aad.isIncomplete, aad.isOptional);
 			}
 			diagram.updateDiagram();
 		});
@@ -425,13 +461,13 @@ public class DiagramActions {
 				final ChangeLevelDialog.Result result = opt.get();
 				switch (result.type) {
 					case Class:
-						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
+						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectPath(), result.newLevel);
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
+						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectPath(), result.name, result.oldLevel, result.newLevel);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
@@ -547,7 +583,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().addOperation(diagram.getID(), result.object.getName(), result.level, result.body);
+				diagram.getComm().addOperation(diagram.getID(), result.object.getPath(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});
@@ -710,40 +746,40 @@ public class DiagramActions {
 				final AssociationDialog.Result result = opt.get();
 				
 				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), false, result.sourceVisibleFromTarget);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation, false, result.sourceVisibleFromTarget);				
 				}
 				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), true, result.targetVisibleFromSource);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation, true, result.targetVisibleFromSource);				
 				}
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierSource);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierTarget);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation, result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
 					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation, result.newInstLevelSource);
 				}
 				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
 					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
-					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation, result.newInstLevelTarget);
 				}
 				
 				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multTargetToSource);
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), result.selectedAssociation, result.multTargetToSource);
 				}
 				if(!result.selectedAssociation.getMultiplicityStartToEnd().equals(result.multSourceToTarget)) {
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), result.selectedAssociation.getName(), result.multSourceToTarget);
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), result.selectedAssociation, result.multSourceToTarget);
 				}
 				
 				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
 					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
-					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
+					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation, result.newDisplayName);
 				}
 					
 				diagram.updateDiagram();
@@ -819,7 +855,7 @@ public class DiagramActions {
 					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
 				}
 			}
-			diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller_Local.getName());
+			diagram.getComm().setRoleFiller(diagram.getID(), role.getPath(), roleFiller_Local.getPath());
 			diagram.updateDiagram();
 		});
 	}
@@ -1311,4 +1347,35 @@ public class DiagramActions {
 		});	
 	}
 
+	public void associationTypeDialog(AssociationType oldType) {
+		Platform.runLater(() -> {
+			AssociationTypeDialog atd = new AssociationTypeDialog(oldType);
+			Optional<AssociationType> opt = atd.showAndWait();
+			
+			if (opt.isPresent()) {
+				final AssociationType result = opt.get();
+				diagram.getComm().addAssociationType(diagram.getID(),
+					result,
+					xmfReturn -> {
+						if(xmfReturn == null) {
+							diagram.updateDiagram();
+						} else {
+							associationTypeDialog(xmfReturn);
+						}						
+					});
+			}
+		});
+	}
+
+	public void hideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.hide(diagram);
+		}
+	}
+	
+	public void unhideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.unhide(diagram);
+		}
+	}
 }

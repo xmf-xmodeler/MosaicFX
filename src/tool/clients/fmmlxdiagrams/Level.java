@@ -37,6 +37,10 @@ public class Level{
 		return maxLevel == level && minLevel == level;
 	}
 
+	public boolean isNonIntrinsic(int level) {
+		return maxLevel == -1 && minLevel == -1;
+	}
+
 	public int getMinLevel() {return minLevel == null ? -1 : minLevel;} 
 	public int getMaxLevel() {return maxLevel == null ? -1 : maxLevel;} 
 	
@@ -47,38 +51,42 @@ public class Level{
 	}
 
 	public static Level parseLevel(String s) throws UnparseableException{
-		if(s.contains("-")) {
-			String[] sa = s.split("-");
-			if(sa.length > 2) { throw new UnparseableException("Too many levels"); } 
-			if(sa.length < 2) { throw new UnparseableException("Too few levels"); }
-			String minS = sa[0];
-			String maxS = sa[1];
-			Integer min = null;
-			Integer max = null;
-			try { 
-				min = Integer.parseInt(minS); 
-			} catch (NumberFormatException nfe) {
-				throw new UnparseableException("minLevel unparseable", nfe);
-			}
-			try { 
-				if(!("?".equals(maxS) || "*".equals(maxS))) {
-					max = Integer.parseInt(maxS); 
+		if(s.equals("-1")) {
+			return new Level(-1, -1);
+		} else {
+			if(s.contains("-")) {
+				String[] sa = s.split("-");
+				if(sa.length > 2) { throw new UnparseableException("Too many levels"); } 
+				if(sa.length < 2) { throw new UnparseableException("Too few levels"); }
+				String minS = sa[0];
+				String maxS = sa[1];
+				Integer min = null;
+				Integer max = null;
+				try { 
+					min = Integer.parseInt(minS); 
+				} catch (NumberFormatException nfe) {
+					throw new UnparseableException("minLevel unparseable", nfe);
 				}
-			} catch (NumberFormatException nfe) {
-				throw new UnparseableException("maxLevel unparseable", nfe);
+				try { 
+					if(!("?".equals(maxS) || "*".equals(maxS))) {
+						max = Integer.parseInt(maxS); 
+					}
+				} catch (NumberFormatException nfe) {
+					throw new UnparseableException("maxLevel unparseable", nfe);
+				}
+				return new Level(min, max);
 			}
-			return new Level(min, max);
-		}
-		boolean plus = s.endsWith("+");
-		if(plus) {
-			s = s.substring(0, s.length()-1);
-		}
-		try{
-			int i = Integer.parseInt(s);
-			if(i >= 0) return plus?new Level(i,null):new Level(i);
-			throw new UnparseableException("Level cannot be negative.");
-		} catch (NumberFormatException nfe) {
-			throw new UnparseableException("Level unparseable", nfe);
+			boolean plus = s.endsWith("+");
+			if(plus) {
+				s = s.substring(0, s.length()-1);
+			}
+			try{
+				int i = Integer.parseInt(s);
+				if(i >= 0) return plus?new Level(i,null):new Level(i);
+				throw new UnparseableException("Level cannot be negative.");
+			} catch (NumberFormatException nfe) {
+				throw new UnparseableException("Level unparseable", nfe);
+			}			
 		}
 	}
 
