@@ -367,7 +367,7 @@ public class FmmlxDiagramCommunicator {
 		return functionReturnVector;
 	}
 	
-	void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+	public void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 		setNewRequestID();
 		Value[] args2 = new Value[args.length + 1];
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
