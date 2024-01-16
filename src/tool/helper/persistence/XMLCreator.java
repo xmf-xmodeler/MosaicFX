@@ -1,7 +1,6 @@
 package tool.helper.persistence;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +8,11 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -22,6 +23,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.xmodeler.XModeler;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
@@ -347,8 +349,9 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(EXPORT_VERSION));
+		root.setAttribute(XMLAttributes.EXPORT_VERSION.getName(), String.valueOf(EXPORT_VERSION));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
+		root.setAttribute(XMLAttributes.XMODELER_VERSION.getName(), XModeler.getVersion());
 		return doc;
 	}
 	

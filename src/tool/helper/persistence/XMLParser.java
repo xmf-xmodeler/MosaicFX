@@ -79,7 +79,7 @@ public class XMLParser {
 		Element root = initParser(inputFile);
 		String importVersion = null;
 		try {
-			importVersion = root.getAttribute(XMLAttributes.VERSION.getName());	
+			importVersion = root.getAttribute(XMLAttributes.EXPORT_VERSION.getName());	
 			return Integer.valueOf(importVersion);
 		} catch (Exception e) {
 			// Version is not 4
