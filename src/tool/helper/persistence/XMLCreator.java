@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -20,11 +21,16 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
+import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.xmodeler.XModeler;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
-import tool.xmodeler.XModeler;
 
+/**
+ * This class is used to create an XML representation of a package.
+ */
 public class XMLCreator {
 	private Vector<DiagramInfo> diagramsWaitingForParsing;
 	private FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
@@ -38,7 +44,7 @@ public class XMLCreator {
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
-
+	
 	private void saveToFile(Document doc) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Choose save location");
@@ -127,9 +133,59 @@ public class XMLCreator {
 			appendEdgesToDiagram(diagramInfo, diagram);
 			appendObjectInformationToDiagram(diagramInfo, diagram);
 			appendDiagramDisplayPropertiesToDiagrams(diagramInfo, diagram);
+			appendNotesToDiagram(diagramInfo, diagram);
 			// the next function also makes recursive call to buildNextDiagram
 			appendViewsToDiagram(onDataReceived, diagramInfo, diagram);
 		}
+	}
+
+	/**
+	 * This function exports all notes of a diagram
+	 * @param diagramInfo holds info about the diagram
+	 * @param diagram represents the XML-Element that holds the diagram-export-data
+	 */
+	private void appendNotesToDiagram(DiagramInfo diagramInfo, Element diagram) {
+		Element notesElement = XMLUtil.createChildElement(diagram, XMLTags.NOTES.getName());
+		ReturnCall<Vector<Note>> onNotesReturned = notes -> {
+			ReturnCall<Vector<GraphicalMappingInfo>> noteMappingRetturned = noteMapping -> {
+				//3. loop over every note
+				for (Note note : notes) {
+					boolean matched = false;
+					//4. for every note loop over the list of returned mappingInfos
+					for (GraphicalMappingInfo mappingInfo : noteMapping) {
+						//5. if the mappingInfoKey matches the note id use all infos to append note to XML 
+						if (mappingInfo.getNoteIdFromMappingKey() == note.getId()) {
+							appendNoteToNotes(notesElement, note, mappingInfo);
+							matched = true;
+						}
+					}
+					if (!matched) {
+						//6. if there is no match raise exception
+						throw new NoSuchElementException("Try to find a noteMapping for Note with id '" +  note.getId() + "'. Backend does not contain information about that");
+					}
+				}
+			};
+			//2. after all notes are returned (local var "notes") all noteMappings are requested
+			Note.getNotesMappings(diagramInfo.getId(), noteMappingRetturned);
+		};
+		//1. request all notes from xmf
+		Note.getAllNotes(diagramInfo.getId(), onNotesReturned);
+	}
+
+	/**
+	 * For each note on the diagram an note tag is added to the XML-File. See all contained subtags in the method
+	 * @param notesElement is the element each note tag is added to
+	 * @param note contains the note information
+	 * @param mappingInfo contains the mappingInformation
+	 */
+	private void appendNoteToNotes(Element notesElement, Note note, GraphicalMappingInfo mappingInfo) {	
+		Element noteElement = XMLUtil.createChildElement(notesElement, XMLTags.NOTE.getName());
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTEID.getName(), String.valueOf(note.getId()));
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTECOLOR.getName(), note.getNoteColor().toString());
+		XMLUtil.createChildElement(noteElement, XMLTags.NOTECONTENT.getName(), note.getContent());
+		Element notePositionElement = XMLUtil.createChildElement(noteElement, XMLTags.NOTEPOSITION.getName());
+		XMLUtil.createChildElement(notePositionElement, XMLTags.XPOSITION.getName(), String.valueOf(mappingInfo.getxPosition()));
+		XMLUtil.createChildElement(notePositionElement, XMLTags.YPOSITION.getName(), String.valueOf(mappingInfo.getyPosition()));
 	}
 
 	private Element returnDiagramsTag() {

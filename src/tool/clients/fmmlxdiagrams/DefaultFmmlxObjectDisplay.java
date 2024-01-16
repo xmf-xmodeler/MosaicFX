@@ -53,7 +53,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		object.requiresReLayout = false;
+//		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);

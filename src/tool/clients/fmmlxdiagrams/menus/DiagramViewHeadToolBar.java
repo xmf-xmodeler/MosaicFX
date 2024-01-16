@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -23,6 +24,7 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
@@ -50,6 +52,7 @@ public class DiagramViewHeadToolBar extends VBox {
 				
 		Menu modelMenu = new Menu("Model");		
 		Menu viewMenu = new Menu("View");
+		viewMenu.setOnShowing(e -> renderHideNotesItem(viewMenu));
 		Menu refactorMenu = new Menu("Refactor");
 		Menu helpMenu = new Menu("Help");
 		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
@@ -62,6 +65,9 @@ public class DiagramViewHeadToolBar extends VBox {
 		this.getChildren().addAll(hBox, toolBar);
 	}
 
+	/**
+	 * Was an idea to open Menus on hover. Was decided to not use this. Could be used later
+	 */
 	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
 		for(int i = 0 ; i < hBox.getChildren().size() ; i++) {
             Node parentNode = hBox.getChildren().get(i);
@@ -155,6 +161,7 @@ public class DiagramViewHeadToolBar extends VBox {
 				itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
 				itemMap.get(DiagramDisplayProperty.ISSUETABLE)				
 		);
+		
 		viewMenu.getItems().add(new SeparatorMenuItem());
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", 
 		e -> {
@@ -165,7 +172,90 @@ public class DiagramViewHeadToolBar extends VBox {
 				e -> {
 					Vector<String> models = new Vector<>(); 
 					models.add(fmmlxDiagram.getPackagePath());
-					ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", fmmlxDiagram.getPackagePath(), models);});
+					ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", fmmlxDiagram.getPackagePath(), models);});		
+	}
+	
+	/**
+	 * Defines local class which is used to create MenuItem
+	 */
+	class HideNotesItem extends MenuItem {
+
+		String hideText = "Hide all Notes";
+		String unhideText = "Unhide all Notes";
+
+		/**
+		 * Defines default rendering. In other cases the label and the actionEvent is
+		 * changed according to unhide the notes. This case is seen as the case that
+		 * appears most often.
+		 */
+		public HideNotesItem() {
+			this.setText(unhideText);
+			this.setOnAction(e -> {
+				diagramActions.hideAllNotes();
+				// Toggles ItemText
+				this.setText("alter");
+			});
+		}
+
+		public void setUnhiding() {
+			this.setText(unhideText);
+			this.setOnAction(e -> {
+				for (Note note : fmmlxDiagram.getNotes()) {
+					note.unhide(fmmlxDiagram);
+				}
+			});
+		}
+
+		public void setHiding() {
+			this.setText(hideText);
+			this.setOnAction(e -> {
+				for (Note note : fmmlxDiagram.getNotes()) {
+					note.hide(fmmlxDiagram);
+				}
+			});
+		}
+	}
+
+	/**
+	 * The view menu should contain a menuItem to hide or unhide all notes.
+	 * Depending on the diagram data this menu needs to be rendered on different
+	 * ways. If the diagram do not contain notes, the item is disabled. If it
+	 * contains minimum one note it should show the text "Hide all" and implement
+	 * the specific functionality. Otherwise it should be used to unhide all notes.
+	 * 
+	 * @param viewMenu parent menu the item is added to
+	 */
+	private void renderHideNotesItem(Menu viewMenu) {
+		// Checks if the Menu already contains item
+		HideNotesItem item = (HideNotesItem)DiagramViewHeadToolBar.findMenuItemByContainingText(viewMenu, "Note");
+		if (item == null) {
+			item = new HideNotesItem();
+			//Position is set via hard coded number. If more elements are added to the Menu, this could lead to a wrong position of this item.
+			viewMenu.getItems().add(9, item);				
+		}
+		
+		//if no notes on the diagram the menu is disabled
+		if (fmmlxDiagram.getNotes().isEmpty()) {
+			item.setDisable(true);
+		} else {
+			item.setDisable(false);
+			configureItem(item);
+		}
+	}
+
+	/**
+	 * In case the diagram has notes, the rendering of the menu item depends on the
+	 * visibility of the contained notes. This function will render the item
+	 * accordingly.
+	 * 
+	 * @param item
+	 */
+	private void configureItem(HideNotesItem item) {
+		if (fmmlxDiagram.getNotes().allhidden()) {
+			item.setUnhiding();
+		} else {
+			item.setHiding();
+		}
 	}
 
 	private void buildRefactorMenu(Menu refactorMenu) {
@@ -234,5 +324,27 @@ public class DiagramViewHeadToolBar extends VBox {
 				updateButton.setGraphic(updateSvg);
 			}
 		});
+	}
+	
+	/**
+	 * Helper function needed for adding the notesHideMenuItem. Be careful this is
+	 * only a heuristic. If new elements are added that may contain the same
+	 * chatsSeq this will lead to confusion with current implementation
+	 * 
+	 * @param menu you want to search for a item
+	 * @param text of the menu item
+	 * @return the found item
+	 */
+	private static MenuItem findMenuItemByContainingText(Menu menu, String text) {
+		for (MenuItem item : menu.getItems()) {
+			try {
+				if (item.getText().contains(text)) {
+					return item;
+				}
+			} catch (Exception e) {
+				// Separator Menus do not have text
+			}
+		}
+		return null;
 	}
 }
