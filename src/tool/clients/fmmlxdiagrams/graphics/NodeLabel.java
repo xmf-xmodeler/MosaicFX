@@ -30,7 +30,7 @@ public class NodeLabel extends NodeBaseElement {
 	private final double fontScale;
 	private Color fgColor;
 	private Color bgColor;
-	protected String text;
+	private String text;
 	private double textWidth;
 	private double textHeight;
 	private final static int Y_BASELINE_DIFF = 4;
@@ -40,6 +40,10 @@ public class NodeLabel extends NodeBaseElement {
 	
 	private boolean special = false;
 	private double availableWidth;
+	
+	public void setTextWidth(double textWidth) {
+		this.textWidth = textWidth;
+	}
 
 	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
 		this(alignment, a, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);

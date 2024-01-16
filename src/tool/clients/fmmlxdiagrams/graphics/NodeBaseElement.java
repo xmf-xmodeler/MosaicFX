@@ -19,8 +19,8 @@ public abstract class NodeBaseElement extends NodeElement {
 	
 	protected NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
 		this.myTransform = myTransform;
-		this.actionObject = actionObject;
-		this.action = action;
+		this.setActionObject(actionObject);
+		this.setAction(action);
 		this.styleDeclaration = styleDeclaration;
 	}	
 	
