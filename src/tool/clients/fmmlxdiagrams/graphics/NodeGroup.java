@@ -45,6 +45,12 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 	
+	public final void addNodeElementAtFirst(NodeElement nodeElement) {
+		nodeElements.add(0, nodeElement);
+		nodeElement.setOwner(this);
+		updateBounds();
+	}
+	
 	public final void addAllNodeElements(Vector<NodeElement> nodeElementList) {
 		nodeElements.addAll(nodeElementList);
 		for(NodeElement e : nodeElements) {
@@ -248,4 +254,7 @@ public class NodeGroup extends NodeElement {
 		this.action=action;
 	}
 
+	public Vector<NodeElement> getNodeElements() {
+		return nodeElements;
+	}
 }

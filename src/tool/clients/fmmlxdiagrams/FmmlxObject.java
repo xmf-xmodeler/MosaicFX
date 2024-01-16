@@ -563,16 +563,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return myConcreteSyntax;
 	}
 
-	public void dragTo(Affine dragAffine) {
-		rootNodeElement.dragTo(dragAffine);
-	}
-
-	public void drop() {
-		rootNodeElement.drop();
-		this.x = rootNodeElement.getMyTransform().getTx();
-		this.y = rootNodeElement.getMyTransform().getTy();
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 		if(o==null) return false;
@@ -632,7 +622,29 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public String getRelativeName() {
 		return FmmlxObject.getRelativePath(diagram.packagePath, getPath());
 	}
+  
+	@Override
+	protected void updatePositionInBackend(int diagramID) {
+		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
+		
+	}
 
+	@Override
+	public void hide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(true);
+	}
+
+	@Override
+	public void unhide(AbstractPackageViewer diagram) {
+		sendHiddenStatusToXMF(false);
+	}
+	
+	private void sendHiddenStatusToXMF(boolean hidden) {
+		Vector<FmmlxObject> v = new Vector<>();
+		v.add(this);
+		diagram.getActions().hide(v, hidden);
+	}
+  
 	public boolean hasIssue(String constraintName) {
 		for(Issue i : getIssues()) {
 			if(i.getName().equals(constraintName)) return true;

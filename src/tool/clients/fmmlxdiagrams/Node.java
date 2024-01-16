@@ -1,11 +1,13 @@
 package tool.clients.fmmlxdiagrams;
 
+import org.w3c.dom.Element;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 
 import java.util.Map;
 
@@ -18,6 +20,14 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement {
 	
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
 	protected boolean hidden;
 	protected double x;
 	protected double y;
@@ -131,14 +141,52 @@ public abstract class Node implements CanvasElement {
 		port.sortAllPorts();
 	}
 
-	public abstract String getName();
-
 	public Affine getOwnAndDragTransform() {
 		Affine a = new Affine(rootNodeElement.getMyTransform());
 		a.append(rootNodeElement.getDragAffine());		
 		return a;
 	}
+  
+	public void dragTo(Affine dragAffine) {
+		rootNodeElement.dragTo(dragAffine);
+	}
+
+	public void drop() {
+		rootNodeElement.drop();
+		this.x = rootNodeElement.getMyTransform().getTx();
+		this.y = rootNodeElement.getMyTransform().getTy();
+	}
+
+	/**
+	 * Please mind, that the use of this method will not alter backend data!!!
+	 */
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
 	
+	public void setDiagramMapping(GraphicalMappingInfo mapping){
+		setX(mapping.getxPosition());
+		setY(mapping.getyPosition());
+		setHidden(mapping.isHidden());
+	}
+
+	protected abstract void updatePositionInBackend(int diagramID);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void hide(AbstractPackageViewer diagram);
+
+	/**
+	 * Must include the backend update
+	 */
+	public abstract void unhide(AbstractPackageViewer diagram);
+	
+	public void setPosition(double x, double y) {
+		setX(x);
+		setY(y);
+	}
+  
 	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(p == null) return;
 		NodeElement.Action action = null;

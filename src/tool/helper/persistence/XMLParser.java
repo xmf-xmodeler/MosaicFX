@@ -3,31 +3,35 @@ package tool.helper.persistence;
 import java.io.File;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
+import tool.clients.fmmlxdiagrams.Note;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
+/**
+ * This class is used to send data that is contained in a XML-represenation of an model to the backend. So later the model and its diagrams could be displayed in the java-frontend
+ */
 public class XMLParser {
 	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
 	private Element root;
@@ -186,32 +190,87 @@ public class XMLParser {
 
 	private void buildDiagram(Element diagram) {
 		String diagramName = diagram.getAttribute(XMLAttributes.NAME.getName());
-		// TODO is the file used somewhere?
-//		int newDiagramId = communicator.createDiagramAsync(projectPath, diagramName, DiagramType.ClassDiagram );
-//		sendDiagramDataToXMF(newDiagramId, diagram);	
 		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, false, 
 				newDiagramId -> sendDiagramDataToXMF(newDiagramId, diagram));
 	}
 	
-	private void sendDiagramDataToXMF(Integer diagramId, Element diagram) {
-		Element views = XMLUtil.getChildElement(diagram, XMLTags.VIEWS.getName());
+	private void sendDiagramDataToXMF(Integer diagramId, Element diagramElement) {
+		Element views = XMLUtil.getChildElement(diagramElement, XMLTags.VIEWS.getName());
 		sendDiagramViewStatus(diagramId, views);
-		Element diagramsDisplayProperty = XMLUtil.getChildElement(diagram, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
+		Element diagramsDisplayProperty = XMLUtil.getChildElement(diagramElement, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
 		sendDiagramDisplayproperties(diagramId, diagramsDisplayProperty);
-		Element instances = XMLUtil.getChildElement(diagram, XMLTags.INSTANCES.getName());
+		Element instances = XMLUtil.getChildElement(diagramElement, XMLTags.INSTANCES.getName());
 		NodeList instancesList = instances.getChildNodes();
-		//TODO TS Why is this line important?
-//		System.err.println("xxxxxx   after wait " + 	communicator.getAllObjectPositions(diagramId));
 		for (int i = 0; i < instancesList.getLength(); i++) {
 			Node node = instancesList.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				sendObjectInformation(diagramId, (Element) node);
 			}
 		}
-		Element edges = XMLUtil.getChildElement(diagram, XMLTags.EDGES.getName());
+		sendNotesDataToXMF(diagramId, diagramElement);
+    Element edges = XMLUtil.getChildElement(diagram, XMLTags.EDGES.getName());
 		_ALIGN_EDGES(edges, diagramId);
 //		_ALIGN_LABELS(edges, diagramId);
 	}
+
+	/**
+	 * Prepares loop. This loop will call for every Note-Element in the XML a function that sends note corresponding data to XMF
+	 * @param diagramId defines the diagram the note is added to
+	 * @param diagramElement XML-Element, that contains as children further XML-Elements with data
+	 */
+	private void sendNotesDataToXMF(Integer diagramId, Element diagramElement) {
+		Element notesElement = XMLUtil.getChildElement(diagramElement, XMLTags.NOTES.getName());
+		NodeList notesList = notesElement.getChildNodes();
+		//loop over every note-element
+		for (int i = 0; i < notesList.getLength(); i++) {
+			Node node = notesList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				sendNoteDataToXMF(diagramId, (Element) node);
+			}
+		}
+	}
+	
+	/**
+	 * For every note element containing data is send to XMF
+	 * @param diagramId defines the diagram the note is added to
+	 * @param noteElement contains the note data from the XML-representation
+	 */
+	private void sendNoteDataToXMF(Integer diagramId, Element noteElement) {
+        //Create note instance
+		Note note = new Note();
+        note.setId(Integer.parseInt(XMLUtil.getChildElement(noteElement, XMLTags.NOTEID.getName()).getTextContent()));
+        note.setNoteColor(Color.valueOf((XMLUtil.getChildElement(noteElement, XMLTags.NOTECOLOR.getName()).getTextContent())));
+        note.setContent((XMLUtil.getChildElement(noteElement, XMLTags.NOTECONTENT.getName()).getTextContent()));
+		double[] position = parseNotePosition(noteElement);
+		note.setPosition(position[0], position[1]);
+        
+		//send data to XMF
+		note.addNoteToDiagram(diagramId);
+        note.sendCurrentNoteMappingToXMF(diagramId, r -> {});
+	}
+
+	/**
+	 * Parses x and y coordinate of note from XML
+	 * @param noteElement has child element, that contains data
+	 * @return double array. First position = x, second position = y
+	 */
+	private double[] parseNotePosition(Element noteElement) {
+		double[] positions = new double[2];
+		Element notePosition = XMLUtil.getChildElement(noteElement, XMLTags.NOTEPOSITION);
+		NodeList positionsList = notePosition.getChildNodes();
+		for (int i = 0; i < positionsList.getLength(); i++) {
+			Node node = positionsList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				if (Objects.equals(node.getNodeName(), XMLTags.XPOSITION.getName())) {
+					positions[0] = Double.parseDouble(node.getTextContent());
+				} else if (Objects.equals(node.getNodeName(), XMLTags.YPOSITION.getName())) {
+					positions[1] = Double.parseDouble(node.getTextContent());
+				}
+			}
+		}
+		return positions;
+	}
+  
 	/*
     public void _ALIGN_LABELS(Element edgesNode, Integer diagramId) {
     	FmmlxDiagram diagram = FmmlxDiagramCommunicator.getDiagram(diagramId);
