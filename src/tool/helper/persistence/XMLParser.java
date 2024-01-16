@@ -208,7 +208,7 @@ public class XMLParser {
 			}
 		}
 		sendNotesDataToXMF(diagramId, diagramElement);
-    Element edges = XMLUtil.getChildElement(diagram, XMLTags.EDGES.getName());
+		Element edges = XMLUtil.getChildElement(diagramElement, XMLTags.EDGES.getName());
 		_ALIGN_EDGES(edges, diagramId);
 //		_ALIGN_LABELS(edges, diagramId);
 	}

@@ -34,12 +34,12 @@ public abstract class Node implements CanvasElement {
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	
-	transient boolean requiresReLayout;
+//	transient boolean requiresReLayout;
 	public NodeGroup rootNodeElement = null;	
 	
-	public void triggerLayout() {
-		this.requiresReLayout = true;
-	}
+//	public void triggerLayout() {
+//		this.requiresReLayout = true;
+//	}
 	
 	public double getX() { return x; }
 	public double getY() { return y; }
@@ -69,7 +69,7 @@ public abstract class Node implements CanvasElement {
 	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		
 		if(hidden) return;		
-		if(requiresReLayout) layout(view.getDiagram());
+//		if(requiresReLayout) layout(view.getDiagram());
 		boolean selected = view.getDiagram().isSelected(this);
 		
 		if (rootNodeElement != null) {
@@ -92,7 +92,7 @@ public abstract class Node implements CanvasElement {
 
 		if(hidden) return;
 
-		if(requiresReLayout) layout(diagram);
+//		if(requiresReLayout) layout(diagram);
 
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "object");
@@ -112,7 +112,11 @@ public abstract class Node implements CanvasElement {
 		return false;
 	}
 
-	protected abstract void layout(FmmlxDiagram diagram) ;
+	protected abstract void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
+	
+	protected void layout(FmmlxDiagram diagram) {
+		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
+	}	
 	
 	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}

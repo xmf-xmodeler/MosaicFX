@@ -579,11 +579,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			throw new IllegalStateException("The meta-class of this element is not available.");
 		}
 	}
-
-	@Override
-	protected void layout(FmmlxDiagram diagram) {
-		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
-	}
 	
 	private transient Vector<Issue> cachedIssues = null;
 	public Vector<Issue> getIssues() {

@@ -495,7 +495,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		long start = System.currentTimeMillis();
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
-			for(FmmlxObject o : getVisibleObjectsReadOnly()) {
+			for(Node o : getVisibleObjectsReadOnly()) {
 				o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 //				System.err.println("layout node " + o.name + ":"+ i + "->" +(System.currentTimeMillis()-start));
 			}
@@ -759,6 +759,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	protected void fetchDiagramDataSpecific() {
 		for(FmmlxObject o : objects.values()) {
 			o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
+		}
+		for(Note n : notes) {
+			n.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 		}
 	}
 
@@ -1174,8 +1177,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				l.performAction();
 			} else if (hitObject instanceof FmmlxAssociation) {
 				actions.editAssociationDialog((FmmlxAssociation) hitObject);
-			} else if (hitObject instanceof Note note) {
-				actions.editNote(note);
+			} else if (hitObject instanceof Note) {
+				actions.editNote((Note) hitObject);
 			}
 		}
 
