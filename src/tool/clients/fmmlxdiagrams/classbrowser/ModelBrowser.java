@@ -543,7 +543,6 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
-		System.err.println("onObjectListViewNewValue");
 		boolean noObject = selectedObject == null;
 		
 		fmmlxAttributeListView.getItems().clear();
@@ -1020,5 +1019,5 @@ public final class ModelBrowser extends CustomStage {
 	}
 	
 	private static final Enabler ALWAYS = () -> true; 
-	private static final Enabler NEVER = () -> false; 
+	private static final Enabler NEVER = () -> false;
 }

@@ -495,7 +495,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		long start = System.currentTimeMillis();
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
-			for(FmmlxObject o : getVisibleObjectsReadOnly()) {
+			for(Node o : getVisibleObjectsReadOnly()) {
 				o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 //				System.err.println("layout node " + o.name + ":"+ i + "->" +(System.currentTimeMillis()-start));
 			}
@@ -760,6 +760,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : objects.values()) {
 			o.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
 		}
+		for(Note n : notes) {
+			n.layout(this, diagramViewToolBarModel.getDisplayPropertiesMap());
+		}
 	}
 
 	@Override
@@ -848,6 +851,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return new BoundingBox(0,0,100,100);
 	}
 		
+	/*
+	 * Does the same like the method below but allows to define a ReturnCall, that is executed after the Diagram is updated
+	 */
+	@Override
+	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
+		super.updateDiagram(getView(), (ReturnCall<Object>) e -> {
+			onDiagramUpdated.run(null);
+		});
+	}
+
+	@Override
+	public void updateDiagram() {
+		//Performs the diagram update with empty return call
+		super.updateDiagram(getView(), r -> {});	
+  }
+  
 	public void switchTableOnAndOffForIssues() {
 		mainView.getChildren().clear();
 		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
@@ -1174,8 +1193,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				l.performAction();
 			} else if (hitObject instanceof FmmlxAssociation) {
 				actions.editAssociationDialog((FmmlxAssociation) hitObject);
-			} else if (hitObject instanceof Note note) {
-				actions.editNote(note);
+			} else if (hitObject instanceof Note) {
+				actions.editNote((Note) hitObject);
 			}
 		}
 
@@ -1591,7 +1610,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			deselectAll();
 			
 			for (Node node : getAllNodes()) {
-				if (isObjectContained(rec, node)) {
+				if (!node.isHidden() && isObjectContained(rec, node)) {
 					select(node);
 				}
 			}
@@ -1691,5 +1710,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			setCloseListener();
 			
 		}		
+	}
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		switch(newStatus) {
+		case LOADING:
+		case DIRTY:	
+			diagramViewToolbar.toggleUpdateButton(true);
+			break;
+
+		default:
+			diagramViewToolbar.toggleUpdateButton(false);
+			break;
+		}
+		
 	}
 }

@@ -75,6 +75,9 @@ public class Modification{
 			} else if("BooleanOpValCondition".equals(conditionType)) {
 				String opName =  conditionElement.getAttribute("opName");
 				condition = new Condition.BooleanOpValCondition(opName);
+			} else if("BooleanConstraintCondition".equals(conditionType)) {
+				String conName =  conditionElement.getAttribute("conName");
+				condition = new Condition.BooleanConstraintCondition(conName);
 			} else if("ReadFromOpValCondition".equals(conditionType)) {
 				String opName = conditionElement.getAttribute("opName");
 				condition = new Condition.ReadFromOpValCondition(opName);
@@ -86,13 +89,20 @@ public class Modification{
 				String opName =  conditionElement.getAttribute("opName");
 				String match = conditionElement.getAttribute("match");
 				condition = new Condition.StringMatchOpValCondition(opName, match);
-			} else if("SlotNumCompareCondition".equals(conditionType)) {
+			} else if("SlotNumCompareCondition".equals(conditionType) || "NumCompareSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				Double low = Double.NEGATIVE_INFINITY;
 				Double high = Double.POSITIVE_INFINITY;
 				try{low = Double.parseDouble(conditionElement.getAttribute("lowBound"));} catch (Exception e) {}
 				try{high = Double.parseDouble(conditionElement.getAttribute("highBound"));} catch (Exception e) {}
-				condition = new Condition.SlotNumCompareCondition(slotName, low, high);
+				condition = new Condition.NumCompareSlotCondition(slotName, low, high);
+			} else if("NumCompareOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				Double low = Double.NEGATIVE_INFINITY;
+				Double high = Double.POSITIVE_INFINITY;
+				try{low = Double.parseDouble(conditionElement.getAttribute("lowBound"));} catch (Exception e) {}
+				try{high = Double.parseDouble(conditionElement.getAttribute("highBound"));} catch (Exception e) {}
+				condition = new Condition.NumCompareOpValCondition(opName, low, high);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}

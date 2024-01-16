@@ -1,7 +1,6 @@
 package tool.helper.persistence;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +8,11 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -22,6 +23,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.xmodeler.XModeler;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
@@ -77,13 +79,6 @@ public class XMLCreator {
 
 	private void appendModelToRoot(Vector<DiagramInfo> diagramInfos, String packagePath, ReturnCall<Object> onDataReceived) {
 		ReturnCall<ModelActionsList> onModelDataReceived = packageContent -> {
-	
-			//Only used for test. Package data could hold this List.. If you want to send the data via another callback you could just move the function
-			ArrayList<String> imports = new ArrayList();
-			imports.add("Import1");
-			imports.add("Import2");		
-			exportPackageImports(imports);
-			
 			Vector<ModelActionsList> logs = packageContent.getChildren();
 			Collections.sort(logs);
 			Element model = XMLUtil.createChildElement(root, XMLTags.MODEL.getName());
@@ -93,10 +88,15 @@ public class XMLCreator {
 			}
 			getDiagramsData(diagramInfos, packagePath, onDataReceived);
 		};
-		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false,
-				diagramId -> {
-					comm.getModelData(diagramId, onModelDataReceived);
-				});
+		
+		ReturnCall<Integer> onDiagramCreated = diagramId -> {
+			ReturnCall<Vector<String>> importedPackagesReturn = importedPackages -> {
+				exportPackageImports(importedPackages);
+				comm.getModelData(diagramId, onModelDataReceived);
+			};			
+			comm.getImportedPackages(diagramId, importedPackagesReturn);
+		};				
+		comm.createDiagram(packagePath, "Serializer", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
 	}
 
 	/**
@@ -248,16 +248,16 @@ public class XMLCreator {
 
 	private void setEdgeType(Element edge, Entry<String, HashMap<String, Object>> edgeData) {
 		String type = edgeData.getKey().split("Mapping")[0];
-		if (!XMLEdgeTypes.contains(type)) {
-			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
-			String edgePath = packagePath + "::" + edgeData.getKey();
-			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
-			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
-			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
-		} else {
+//		if (!XMLEdgeTypes.contains(type)) {
+//			//TODO for association no string value for the type is send back from XMF... On the long run this should not be handled on the Java side but fixed on XMF
+//			String edgePath = packagePath + "::" + edgeData.getKey();
+//			edge.setAttribute(XMLAttributes.PATH.getName(), edgePath);
+//			edge.setAttribute(XMLAttributes.TYPE.getName(), XMLEdgeTypes.ASSOCIATION.getName());
+//			edge.setAttribute(XMLAttributes.DISPLAYNAME.getName(), edgeData.getKey());
+//		} else {
 			edge.setAttribute(XMLAttributes.TYPE.getName(), type);
 			edge.setAttribute(XMLAttributes.PATH.getName(), edgeData.getKey());
-		}
+//		}
 	}
 
 	private void appendIntermediatePointsToEdge(Vector<Vector<Object>> intermediatePointsData, Element edge) {
@@ -349,8 +349,9 @@ public class XMLCreator {
 	private Document initXML() {
 		Document doc = XMLUtil.createDocument(XMLTags.ROOT.getName());
 		root = doc.getDocumentElement();
-		root.setAttribute(XMLAttributes.VERSION.getName(), String.valueOf(EXPORT_VERSION));
+		root.setAttribute(XMLAttributes.EXPORT_VERSION.getName(), String.valueOf(EXPORT_VERSION));
 		root.setAttribute(XMLAttributes.PATH.getName(), packagePath);
+		root.setAttribute(XMLAttributes.XMODELER_VERSION.getName(), XModeler.getVersion());
 		return doc;
 	}
 	

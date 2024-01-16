@@ -14,11 +14,11 @@ public class AddInstanceParser extends ModelActionParser {
 	@Override
 	public void parse(Element modelElement) {
 		String name = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-		String ofName = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_OF).split("::")[2];
+		String ofPath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_OF);
 		boolean isAbstract = Boolean.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
 		boolean isSingleton = Boolean.parseBoolean(modelElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SINGLETON));
 		Level level = defineLevel(modelElement);
-		communicator.addNewInstance(diagramId, ofName, name, level, new Vector<>(), isAbstract, isSingleton, 0, 0, false);
+		communicator.addNewInstance(diagramId, ofPath, name, level, new Vector<>(), isAbstract, isSingleton, 0, 0, false);
 	}
 	
 	private Level defineLevel(Element modelElement) {

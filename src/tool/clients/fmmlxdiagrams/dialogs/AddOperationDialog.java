@@ -171,7 +171,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
 		
 		codeBoxPair.setBodyText(
-				"@Operation "+name+"[monitor=false]()"+":"+attribute.getType()+"\n" +
+				"@Operation "+name+"[monitor=false, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
 				"  self."+attribute.getName()+"\n" +
 				"end");
 	}

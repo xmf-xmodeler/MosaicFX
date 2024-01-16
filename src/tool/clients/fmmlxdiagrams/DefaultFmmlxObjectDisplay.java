@@ -53,7 +53,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		object.requiresReLayout = false;
+//		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);
@@ -455,10 +455,17 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
 	private String getParentsList(FmmlxDiagram diagram) {
 		StringBuilder parentsList = new StringBuilder("extends ");
+//		System.err.println(object.ownPath + "-> " + object.getParentsPaths());
 		for (String parentName : object.getParentsPaths()) {
 			try {
 				FmmlxObject parent = null;
-				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {}
+				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {
+//					System.err.println(parentName + " not found (must be external)");
+					if(!("Root::XCore::Object".equals(parentName) 
+							|| "Root::FMMLx::MetaClass".equals(parentName)
+							|| "Root::FMMLx::FmmlxObject".equals(parentName)))
+					parentsList.append(parentName).append(", ");
+				}
 				InheritanceEdge edge = diagram.getInheritanceEdge(object, parent);
 				if(edge != null && !edge.isVisible()) {
 					parentName = parent.name;
@@ -470,7 +477,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				parentsList.append(parentName).append(", ");
 			}
 		}
-		//System.err.println(parentsList);
+//		System.err.println(parentsList);
 		if(!("extends ".equals(parentsList.toString()))) return parentsList.substring(0, parentsList.length() - 2);
 		
 		return "";

@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -59,7 +60,7 @@ public class Note extends Node implements CanvasElement {
 	@Override
 	public void paintOn(GraphicsContext g, Affine currentTransform, DiagramViewPane view) {
 		if (hidden) return;
-		layout();
+		if(rootNodeElement == null) return;
 		// needs to be called before every paint because there is no mechanism to remove
 		// the selectionMarker once it is added.
 		removeSelectionMarker();
@@ -87,12 +88,8 @@ public class Note extends Node implements CanvasElement {
 		return new NoteContextMenu(fmmlxDiagram.getDiagram(), this);
 	}
 
-	@Override
-	protected void layout(FmmlxDiagram diagram) {
-		throw new AbstractMethodError("Not implemented for this class");
-	}
-
-	private void layout() {
+	public void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+//		requiresReLayout = false;
 		checkForDiagramMapping();
 		
 		// layoutProperties, the values were determined experimentally and can be adapted to preferences
@@ -138,6 +135,8 @@ public class Note extends Node implements CanvasElement {
 		group.addNodeElement(box);
 		group.addNodeElement(header);
 		group.addNodeElement(wrappedNodeLabel);
+		
+		if(rootNodeElement != null) rootNodeElement.updateBounds();
 	}
 
 	/**
