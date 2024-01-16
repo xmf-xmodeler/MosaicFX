@@ -313,18 +313,16 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperationValue opv : object.getOperationValues()) {
 				opvY += lineHeight;
 				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
-				opvBox.addNodeElement(opvNameLabel);
 				
 				NodeElement opvValueLabel = null;
+				NodeElement.Action action = () -> displayLongMethodReturns(opv.getValue());
 				
 				//40 is here defined as the max length that a method return should have. If this is the case the return value is presented in an alert stage
-				if (opv.getValue().length() > 40) {	
-				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + "Double click for value");									
-				NodeElement.Action action = () -> displayLongMethodReturns(opv.getValue());
-				((NodeLabel) opvValueLabel).setAction(action);
-				} else {
-					opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
-				}
+				String text = opv.getValue().length() > 40 ? "Double click for value" : opv.getValue();
+				
+				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, action, "" + text);									
+				
+				opvBox.addNodeElement(opvNameLabel);
 				opvBox.addNodeElement(opvValueLabel);
 			}
 		}

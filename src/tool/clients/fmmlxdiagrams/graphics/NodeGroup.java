@@ -251,7 +251,7 @@ public class NodeGroup extends NodeElement {
 	}	
 
 	public void setAction(Action action) {
-		this.action=action;
+		super.setAction(action);
 	}
 
 	public Vector<NodeElement> getNodeElements() {

@@ -236,7 +236,7 @@ public abstract class NodeElement {
 		return dragAffine;
 	}
   
-	public void setActionObject(FmmlxProperty actionObject) {
+	protected void setActionObject(FmmlxProperty actionObject) {
 		this.actionObject = actionObject;
   }
 	
@@ -244,7 +244,7 @@ public abstract class NodeElement {
 		myTransform = new Affine(1,0,x,0,1,y);
   }
 
-	public void setAction(Action action) {
+	protected void setAction(Action action) {
 		this.action = action;
 	}
 }

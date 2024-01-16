@@ -1712,18 +1712,5 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}		
 	}
 
-	@Override
-	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
-		switch(newStatus) {
-		case LOADING:
-		case DIRTY:	
-			diagramViewToolbar.toggleUpdateButton(true);
-			break;
 
-		default:
-			diagramViewToolbar.toggleUpdateButton(false);
-			break;
-		}
-		
-	}
 }
