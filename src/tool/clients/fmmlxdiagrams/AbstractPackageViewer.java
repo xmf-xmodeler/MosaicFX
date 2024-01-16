@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Vector;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.logging.log4j.LogManager;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
@@ -26,6 +29,8 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
+  
+	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	protected final NoteList notes = new NoteList();
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
@@ -62,16 +67,46 @@ public abstract class AbstractPackageViewer {
 		}
 		return allVisibleObjects;
 	}
+
+	/**
+	 * Used to update diagram to backenddata
+	 */
+	public abstract void  updateDiagram();
+			
+	/**
+	 * Used to update diagram to backenddata
+	 * @param onDiagramUpdated defines an action that is performed after the diagram is updated
+	 */
+	public abstract void updateDiagram(ReturnCall<Object> onDiagramUpdated);
 	
-	public void updateDiagram() {
-		updateDiagram( (ReturnCall<Object>) e -> { } );
-	}
-		
-	public void updateDiagram( ReturnCall<Object> a ) {
+	/**
+	 * This function defines the update logic for every diagram. The gui of a diagram will consume all upcoming events. 
+	 * For debug purposes all events are logged.
+	 * @param node main note for which all events will be consumed
+	 * @param onDiagramUpdated action performed after diagram is updated
+	 */
+	public void updateDiagram(javafx.scene.Node node, ReturnCall<Object> onDiagramUpdated) {
 		setViewerStatus(ViewerStatus.DIRTY);
 		
-		Thread t = new Thread( () -> {
-			this.fetchDiagramData( a );
+		List<Event> eventList = new ArrayList<>();
+		//Every event is consumed and the event is added to an event list
+		EventHandler<Event> actionHandler = new EventHandler<Event>() {
+	            @Override
+	            public void handle(Event event) {
+	            	eventList.add(event);
+	            	event.consume();
+	            }
+	        };
+		node.addEventFilter(Event.ANY, actionHandler);
+		
+		Thread t = new Thread(() -> {
+			this.fetchDiagramData(r -> {
+				onDiagramUpdated.run(null);
+				//after the update execution the EventFilter is removed from the node
+				node.removeEventFilter(Event.ANY, actionHandler);
+				//all consumed events are printed to the log file
+				logger.debug("Block events while updating {}", eventList);
+			});
 		});
 		t.start();
 	}

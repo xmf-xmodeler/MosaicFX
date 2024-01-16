@@ -851,6 +851,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return new BoundingBox(0,0,100,100);
 	}
 		
+	/*
+	 * Does the same like the method below but allows to define a ReturnCall, that is executed after the Diagram is updated
+	 */
+	@Override
+	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
+		super.updateDiagram(getView(), (ReturnCall<Object>) e -> {
+			onDiagramUpdated.run(null);
+		});
+	}
+
+	@Override
+	public void updateDiagram() {
+		//Performs the diagram update with empty return call
+		super.updateDiagram(getView(), r -> {});	
+  }
+  
 	public void switchTableOnAndOffForIssues() {
 		mainView.getChildren().clear();
 		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
@@ -1694,5 +1710,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			setCloseListener();
 			
 		}		
+	}
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		switch(newStatus) {
+		case LOADING:
+		case DIRTY:	
+			diagramViewToolbar.toggleUpdateButton(true);
+			break;
+
+		default:
+			diagramViewToolbar.toggleUpdateButton(false);
+			break;
+		}
+		
 	}
 }
