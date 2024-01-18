@@ -37,11 +37,6 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 // Testen, ob generierung von GUI funktioniert wie gewünscht.
 // Neu Transformierung triggert Element existiert bereits error, kann aber trotzdem erstellt werden
 
-// assoziationen bei gui werden nicht richtig dargestellt
-// -> wie kann ich über XMF eine Assoziation erhalten? -> anpassen der Operation getAssociation bei Reference.
-// auchg relevant für "refersToStateOf" Assoziation, da diese auch nicht im modell ist n
-// hasAssociationInstance() funktioniert nicht mehr XMF seitig                         
-
 public class DefaultUIModelGenerator {
 
 	AbstractPackageViewer diagram;
@@ -91,7 +86,7 @@ public class DefaultUIModelGenerator {
 
 		for (int level : levels) {
 			// create dummy class for level > 0
-			if (level > 0)
+			if (level > 1)
 				actions.addInstance("CommonClassL" + (level + 1), "CommonClassL" + level, level);
 
 			for (FmmlxObject o : objects) {
@@ -131,6 +126,7 @@ public class DefaultUIModelGenerator {
 					diagram.getComm().removeClass(diagram.getID(), o.getName(), 0);
 
 					String commonClassName = "CommonClassL" + (o.getLevel().getMaxLevel() + 1);
+
 					diagram.getComm().addNewInstance(diagram.getID(), commonClassName, o.getName(), o.getLevel(),
 							parents, o.isAbstract(), o.isSingleton(), x, y, o.isHidden());
 				} else {
@@ -157,7 +153,6 @@ public class DefaultUIModelGenerator {
 					}
 				}
 			}
-
 		}
 
 		for (FmmlxObject o : objectsWithParents) {
@@ -300,14 +295,12 @@ public class DefaultUIModelGenerator {
 						diagram.getComm().addOperation(diagram.getID(),
 								diagram.getPackagePath() + "::" + oldObject.getName(), op.getLevel(), op.getBody());
 						added = true;
-
 					}
 					if ((op.getName().contains("get") || op.getName().contains("set"))
 							&& (op.getName().toLowerCase().contains(assoc.getAccessNameStartToEnd().toLowerCase()))) {
 						diagram.getComm().addOperation(diagram.getID(),
 								diagram.getPackagePath() + "::" + oldObject.getName(), op.getLevel(), op.getBody());
 						added = true;
-
 					}
 				}
 
@@ -438,17 +431,18 @@ public class DefaultUIModelGenerator {
 		String bodyGetOf = "@Operation getOf[monitor=true,delToClassAllowed=false]():XCore::Class\r\n"
 				+ "  self.getCommonClass().of()\r\n" + "end";
 
-		String bodyGetAssociatons = "@Operation getAssociation[monitor=false,delToClassAllowed=false]():Associations::Association\r\n"
-				+ "  if (self.associationName <> \"\")\r\n" + "  then self.owner.associations.asSeq()->select(i |\r\n"
-				+ "         i.name.toString() = self.associationName).at(0)\r\n" + "  else false\r\n" + "  end \r\n"
-				+ "end";
+		// TODO change to monitir = false;
+		String bodyGetAssociatons = "@Operation getAssociation[monitor=true,delToClassAllowed=false]():Associations::Association\r\n"
+				+ "  if (self.associationName <> \"\")\r\n"
+				+ "  then self.getCommonClass().of().attributes->select(a|a.isKindOf(Associations::End)).get(\"association\")->select(a|a.get(\"name\")=self.associationName).asSeq().at(0)\r\n"
+				+ "  else false\r\n" + "  end \r\n" + "end";
 
 		String bodyChangeCommonClass = "@Operation changeCommonClass[monitor=false,delToClassAllowed=false](newCommonObject : XCore::String):XCore::Element\r\n"
 				+ "  let a = Clients::FmmlxDiagrams::FmmlxManipulator() then\r\n"
 				+ "      b = self.owner.classes->select(i |\r\n"
 				+ "            i.name.toString() = newCommonObject)\r\n" + "  in if (b <> null)\r\n" + "     then \r\n"
-				+ "       a.removeAssociationInstance(self.owner.getAssociation(\"refersToStateOf\"),self,self.getCommonClass());\r\n"
-				+ "       a.addAssociationInstance(self.owner,self,b.asSeq().at(0),self.owner.getAssociation(\"refersToStateOf\"));\r\n"
+				+ "       a.removeAssociationInstance(self.owner().getAssociations()->select(a|a.get(\"name\")=\"refersToStateOf\"),	   self,self.getCommonClass());\r\n"
+				+ "       a.addAssociationInstance(self.owner,self,b.asSeq().at(0),self.owner().getAssociations()->select(a|a.get(\"name\")=\"refersToStateOf\"));\r\n"
 				+ "       if (self.getChild() <> null)\r\n" + "       then @For child in self.getChild() do\r\n"
 				+ "              child.checkCommonClass()\r\n" + "            end\r\n" + "       else false\r\n"
 				+ "       end \r\n" + "     else false\r\n" + "     end \r\n" + "  end\r\n" + "end";
@@ -517,9 +511,10 @@ public class DefaultUIModelGenerator {
 		String bodyGetInstanceList = "@Operation getInstanceList[monitor=true,delToClassAllowed=false]():XCore::Seq(ControllerMapping::CommonClass)\r\n"
 				+ "  let a = Seq{};\r\n" + "      b = self.getReference();\r\n" + "      c = self.owner\r\n"
 				+ "  in if (b.isHead)\r\n" + "     then b.getCommonClass().of().allInstances()->select(i |\r\n"
-				+ "            true).asSeq()\r\n" + "     else b.getCommonClass().of().allInstances()->select(i |\r\n"
-				+ "            c.hasAssociationInstance(b.getParent().getCommonClass(),i,b.getAssociation())).asSeq()\r\n"
-				+ "     end \r\n" + "  end\r\n" + "end";
+				+ "            true).asSeq()\r\n" + "     else b.getParent().getCommonClass().slots()->select(s |\r\n"
+				+ "            s.type.isKindOf(Associations::End))->select(a |\r\n"
+				+ "            a.type.association = b.getAssociation()).value.asSeq()\r\n" + "     end \r\n"
+				+ "  end\r\n" + "end";
 
 		String bodyGetInstanceNamesList = "@Operation getInstanceNamesList[monitor=false,delToClassAllowed=false]():XCore::Seq(XCore::String)\r\n"
 				+ "  let a = Seq{}\r\n" + "  in self.getInstanceList()->collect(i |\r\n"
