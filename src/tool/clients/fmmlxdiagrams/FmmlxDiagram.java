@@ -284,7 +284,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				//Used for test purposes
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.T) {
 					XMLCreator creator = new XMLCreator();
-					ReturnCall<Document> onDocumentCreated = doc ->	System.err.println(XMLUtil.getStringFromDocument(doc));
+					ReturnCall<Document> onDocumentCreated = (doc) -> {
+						
+						
+						String xmlDoc = (XMLUtil.getStringFromDocument(doc));
+						System.err.print(xmlDoc);
+						
+						
+					};
 					creator.getXmlRepresentation(packagePath, onDocumentCreated);
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {

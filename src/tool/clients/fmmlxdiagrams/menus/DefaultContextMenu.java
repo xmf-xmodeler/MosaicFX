@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 
+
 public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu(DiagramViewPane view) {
@@ -32,6 +33,11 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Classes...", e -> actions.openFindClassDialog());
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Senders...", e -> actions.openFindSendersDialog());
 
+		MenuItem saveToDB = new MenuItem("Save to Database");
+		saveToDB.setOnAction(e -> actions.exportToDB());
+		
+		
+		
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
 		
@@ -49,6 +55,6 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
+		getItems().addAll(addMenu, searchMenu, saveToDB, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
 	}
 }
