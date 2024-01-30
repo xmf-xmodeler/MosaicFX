@@ -28,7 +28,7 @@ public class PythonExecutor {
 	}
 
 	public void executeAutoMlmFunction(PythonFunction function, String messageId) throws IllegalArgumentException {
-		final String autoMlmBridgePath = "AutoMLM\\src\\java_communication\\call_reciever.py";
+		final String autoMlmBridgePath = "AutoMLM\\src\\java_communication\\call_receiver.py";
 		ProcessBuilder processBuilder = buildProcessBuilder(autoMlmBridgePath, function, messageId);
 		executePythonFunction(processBuilder);
 	}
