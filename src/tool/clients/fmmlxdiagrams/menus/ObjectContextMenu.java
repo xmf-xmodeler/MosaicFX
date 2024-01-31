@@ -149,8 +149,8 @@ public class ObjectContextMenu extends ContextMenu {
 		//add all items, that are used for all Objects
 		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
 		//add items, that are used only for Objects that are not on level 0
-		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu);
-
+		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
+		getItems().addAll(delegationMenu);
 		addRunMenu();
 		
 		addNewMenuItem(this, "Hide", e -> {
@@ -367,8 +367,10 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private Menu createDelegationSubMenu() {
 		Menu delegationMenu = new Menu("Delegate");
-		addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
-		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		if(object.isClass()) {
+			addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
+			addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		}
 		addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
 //		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;

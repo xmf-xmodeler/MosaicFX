@@ -126,7 +126,7 @@ public class ControlCenterClient {
 			} else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
-					new ButtonType("Damned", ButtonData.YES)).showAndWait();
+					new ButtonType("OK", ButtonData.YES)).showAndWait();
 			}
 		}
 	}

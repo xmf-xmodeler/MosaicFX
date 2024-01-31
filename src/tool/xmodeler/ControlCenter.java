@@ -244,19 +244,19 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-		Button newDiagram2 = new Button("Create UML Diagram");
-		newDiagram2.setDisable(true);
-		newDiagram2.disableProperty().bind(
-				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
-		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
+//		Button newDiagram2 = new Button("Create UML Diagram");
+//		newDiagram2.setDisable(true);
+//		newDiagram2.disableProperty().bind(
+//				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+//				);
+//		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
 		
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram.setOnAction(e -> callNewDiagramDialog(false)); 
+		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
@@ -281,12 +281,18 @@ public class ControlCenter extends Stage {
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
 		grid.add(concreteSyntaxWizardStart, 3, 4);
-		grid.add(newDiagram2, 4, 4);
+//		grid.add(newDiagram2, 4, 4);
 		
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
 		grid.add(loadModelDir, 2, 4);
 		
 		return grid;
+	}
+
+	private String getDiagramNameSuggestion() {
+		int i = 1;
+		while(diagramLV.getItems().contains("diagram" + i)) i++;
+		return "diagram" + i;
 	}
 
 	private void handelClickOnDiagramListView(MouseEvent me) {
@@ -306,8 +312,8 @@ public class ControlCenter extends Stage {
 		wizard.start(new Stage());
 	}
 
-	private void callNewDiagramDialog(boolean umlMode) {
-		TextInputDialog dialog = new TextInputDialog();
+	private void callNewDiagramDialog(boolean umlMode, String defaultName) {
+		TextInputDialog dialog = new TextInputDialog(defaultName);
 		dialog.setTitle("Create new Diagram");
 		dialog.setContentText("New diagram name:");
 		Optional<String> result = dialog.showAndWait();

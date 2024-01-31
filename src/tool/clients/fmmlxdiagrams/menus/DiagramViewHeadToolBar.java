@@ -53,13 +53,13 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu modelMenu = new Menu("Model");		
 		Menu viewMenu = new Menu("View");
 		viewMenu.setOnShowing(e -> renderHideNotesItem(viewMenu));
-		Menu refactorMenu = new Menu("Refactor");
+//		Menu refactorMenu = new Menu("Refactor");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
+		menuBar.getMenus().addAll(modelMenu, viewMenu, helpMenu);
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);	
-		buildRefactorMenu(refactorMenu);
+//		buildRefactorMenu(refactorMenu);
 		buildHelpMenu(helpMenu);
 		ToolBar toolBar = buildToolBar();
 		this.getChildren().addAll(hBox, toolBar);

@@ -97,15 +97,18 @@ public abstract class AbstractPackageViewer {
 	            	event.consume();
 	            }
 	        };
-		node.addEventFilter(Event.ANY, actionHandler);
+//	    if(!fetchingData) {
+//	    System.err.println("add filter");
+//		node.addEventFilter(Event.ANY, actionHandler); }
 		
 		Thread t = new Thread(() -> {
 			this.fetchDiagramData(r -> {
 				onDiagramUpdated.run(null);
 				//after the update execution the EventFilter is removed from the node
-				node.removeEventFilter(Event.ANY, actionHandler);
+//				node.removeEventFilter(Event.ANY, actionHandler);
 				//all consumed events are printed to the log file
 				logger.debug("Block events while updating {}", eventList);
+//			    System.err.println("remove filter");
 			});
 		});
 		t.start();
@@ -244,6 +247,7 @@ public abstract class AbstractPackageViewer {
 		
 		ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn = associationTypes -> {
 			this.associationTypes = associationTypes;
+			Collections.sort(this.associationTypes);
 			if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
 			comm.getAllObjects(this, allObjectsReturn);
 		};
