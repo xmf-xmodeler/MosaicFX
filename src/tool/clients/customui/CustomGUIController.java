@@ -1,5 +1,6 @@
 package tool.clients.customui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -228,11 +230,33 @@ public class CustomGUIController {
 								   value = value.replace("Seq{", "");
 								   value = value.replace("}", "");
 								   ObservableList<String> objList = FXCollections.observableArrayList(Arrays.asList( value.split(",")));
-								   method.invoke(currElem, objList );
-							   } else {
-								   if( ! value.equals("") ) {
-									   method.invoke(currElem, value );
-								   }
+								   
+								   // changed to platform.runLater to ensure that it continues when possible
+									Platform.runLater(() -> {
+										try {
+											method.invoke(currElem, objList);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											System.err.print(e);
+										}
+									});
+
+								} else {
+									if (!value.equals("")) {
+
+										final String value2 = value;
+										
+										Platform.runLater(() -> {
+											
+											try {
+												method.invoke(currElem, value2);
+											} catch (Exception e) {
+												// TODO Auto-generated catch block
+												System.err.print(e);
+											}
+											
+										});
+									}
 							   }
 									
 						   }   
