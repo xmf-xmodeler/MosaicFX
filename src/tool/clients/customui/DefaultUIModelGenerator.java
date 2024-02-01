@@ -1,5 +1,8 @@
 package tool.clients.customui;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javafx.scene.control.Alert;
@@ -27,7 +30,7 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
  * are mapped to CommonClass.
 */
 
-// FH 10.01.2024 TODO
+// FH 30.01.2024 TODO
 // Bekannte Fehler - aktuell
 
 // addAssociation an den Communicator auf XMF seite schicken -> 
@@ -36,6 +39,9 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 
 // Testen, ob generierung von GUI funktioniert wie gewünscht.
 // Neu Transformierung triggert Element existiert bereits error, kann aber trotzdem erstellt werden
+// gibt es eine Möglichkeit XMF seitig fehlermeldungen zu pausieren?
+
+// gui aktualisiert nicht automatisch ?!
 
 public class DefaultUIModelGenerator {
 
@@ -75,14 +81,18 @@ public class DefaultUIModelGenerator {
 
 	private void changeMetaClassForDiagram() {
 		// objects must be created according to their level so instances can be created
-		// performance may not be optimal when there are many objects -> maybe find a
-		// different approach
 
 		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
-		Vector<Integer> levels = diagram.getAllObjectLevel();
+		Vector<Integer> levelsV = diagram.getAllObjectLevel();
 		Vector<FmmlxAssociation> assocs = diagram.getAssociations();
 		Vector<FmmlxLink> links = diagram.getAssociationInstance();
 		Vector<FmmlxObject> objectsWithParents = new Vector<>();
+
+		// "easy" way to convert the levels into a unique vector for iterating through
+		// it
+		Set<Integer> levelsS = new HashSet<>(levelsV);
+		Vector<Integer> levels = new Vector<>(levelsS);
+		levels.sort(Collections.reverseOrder());
 
 		for (int level : levels) {
 			// create dummy class for level > 0
@@ -117,7 +127,7 @@ public class DefaultUIModelGenerator {
 					// no parents have been set
 				}
 
-				if (o.getMetaClassName().contains("MetaClass")) {
+				if (o.getMetaClassName().contains("MetaClass") || o.getMetaClassName().contains("CommonClass")) {
 					// instances of meta class must be regenerated as instances of the corresponding
 					// commonclass
 
@@ -412,12 +422,16 @@ public class DefaultUIModelGenerator {
 		// add functions
 		String bodyRunAction = "@Operation runAction[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
 				+ "  let a = self.getReference().getCommonClass() then\r\n"
-				+ "      b = self.getParameter().size() then\r\n" + "      res = null\r\n"
+				+ "      b = self.getParameterSize() then\r\n" + "      res = null\r\n"
 				+ "  in @While a.name.toString() <> \"MetaClass\" do\r\n"
 				+ "       if a.of().hasOperation(self.nameOfModelElement.asSymbol(),b)\r\n"
 				+ "       then res := a.of().getOperation(self.nameOfModelElement).invoke(a,self.getParamValuesAsList())\r\n"
 				+ "       else false\r\n" + "       end ;\r\n" + "       a := a.of()\r\n" + "     end;\r\n"
 				+ "     res\r\n" + "  end\r\n" + "end";
+
+		String getParameterSize = "@Operation getParameterSize[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
+				+ "  if self.getParameter() <> null\r\n" + "  then self.getParameter().size\r\n" + "  else 0\r\n"
+				+ "  end \r\n" + "end";
 
 		String bodySelectNewInstance = "@Operation selectNewInstance[monitor=false,delToClassAllowed=false](idUI : XCore::String,instanceName : XCore::String):XCore::Element\r\n"
 				+ "  let a = self.getInstanceByID(idUI).asSeq().at(0)\r\n"
@@ -440,24 +454,33 @@ public class DefaultUIModelGenerator {
 		String bodyChangeCommonClass = "@Operation changeCommonClass[monitor=false,delToClassAllowed=false](newCommonObject : XCore::String):XCore::Element\r\n"
 				+ "  let a = Clients::FmmlxDiagrams::FmmlxManipulator() then\r\n"
 				+ "      b = self.owner.classes->select(i |\r\n"
-				+ "            i.name.toString() = newCommonObject)\r\n" + "  in if (b <> null)\r\n" + "     then \r\n"
-				+ "       a.removeAssociationInstance(self.owner().getAssociations()->select(a|a.get(\"name\")=\"refersToStateOf\"),	   self,self.getCommonClass());\r\n"
-				+ "       a.addAssociationInstance(self.owner,self,b.asSeq().at(0),self.owner().getAssociations()->select(a|a.get(\"name\")=\"refersToStateOf\"));\r\n"
+				+ "            i.name.toString() = newCommonObject)->sel\r\n" + "  in if (b <> null)\r\n"
+				+ "     then \r\n" + "       a.removeAssociationInstance(self.owner().getAssociations()->select(a |\r\n"
+				+ "         a.get(\"name\") = \"refersToStateOf\")->sel,self,self.getCommonClass());\r\n"
+				+ "       a.addAssociationInstance(self.owner,self,b,self.owner().getAssociations()->select(a |\r\n"
+				+ "         a.get(\"name\") = \"refersToStateOf\")->sel);\r\n"
 				+ "       if (self.getChild() <> null)\r\n" + "       then @For child in self.getChild() do\r\n"
 				+ "              child.checkCommonClass()\r\n" + "            end\r\n" + "       else false\r\n"
 				+ "       end \r\n" + "     else false\r\n" + "     end \r\n" + "  end\r\n" + "end";
 
 		String bodyCheckCommonClass = "@Operation checkCommonClass[monitor=false,delToClassAllowed=false]():XCore::Element\r\n"
 				+ "  let a = self.getControlElement()->select(i |\r\n"
-				+ "            i.of().name.toString() = \"ListInjection\")\r\n" + "  in if (not a->isEmpty)\r\n"
+				+ "            i.of().name.toString() = \"ListInjection\")\r\n"
+				+ "  in if (not a->isEmpty)\r\n"
 				+ "     then if (a.asSeq().at(0).getInstanceList().contains(self.getCommonClass()))\r\n"
 				+ "          then true\r\n"
 				+ "          else self.changeCommonClass(a.asSeq().at(0).getInstanceList().at(0).name.toString())\r\n"
 				+ "          end \r\n"
-				+ "     else self.changeCommonClass(self.owner.getLinkEnds(self.getParent().getCommonClass(),self.getAssociation().name).asSeq().at(0).name.toString())\r\n"
-				+ "     end ;\r\n" + "     if (self.getChild() <> null)\r\n"
-				+ "     then @For child in self.getChild() do\r\n" + "            child.checkCommonClass()\r\n"
-				+ "          end\r\n" + "     else false\r\n" + "     end \r\n" + "  end\r\n" + "end";
+				+ "     else self.changeCommonClass(self.getParent().getCommonClass().slots()->select(s |            s.type.isKindOf(Associations::End))->select(a |a.type.association = self.getAssociation()).value.asSeq().at(0).name.toString())\r\n"
+				+ "     end ;\r\n"
+				+ "     if (self.getChild() <> null)\r\n"
+				+ "     then @For child in self.getChild() do\r\n"
+				+ "            child.checkCommonClass()\r\n"
+				+ "          end\r\n"
+				+ "     else false\r\n"
+				+ "     end \r\n"
+				+ "  end\r\n"
+				+ "end";
 
 		String bodyGetInstanceByID = "@Operation getInstanceByID[monitor=false,delToClassAllowed=false](idUI : XCore::String):ControllerMapping::UIElement\r\n"
 				+ "  self.of().parents->select(i |\r\n"
@@ -473,40 +496,44 @@ public class DefaultUIModelGenerator {
 				+ "  let a = Seq{} then\r\n" + "      b = Seq{} then\r\n" + "      c = Seq{} then\r\n"
 				+ "      d = Seq{} then\r\n" + "      e = \"\" then\r\n" + "      h = \"\" then\r\n"
 				+ "      m = \"\" then\r\n" + "      f = Root::Auxiliary::Date then\r\n" + "      i = 0\r\n"
-				+ "  in @For obj in self.getParameter() do\r\n" + "       if obj.getDataType() = \"Integer\"\r\n"
-				+ "       then \r\n" + "         a := a + Seq{obj.getValue().asInt()};\r\n"
-				+ "         b := b + Seq{obj.getOrderNo()}\r\n" + "       else false\r\n" + "       end ;\r\n"
-				+ "       if obj.getDataType() = \"Float\"\r\n" + "       then \r\n"
-				+ "         a := a + Seq{obj.getValue().asFloat()};\r\n" + "         b := b + Seq{obj.getOrderNo()}\r\n"
-				+ "       else false\r\n" + "       end ;\r\n" + "       if obj.getDataType() = \"Date\"\r\n"
-				+ "       then \r\n" + "         e := obj.getValue();\r\n" + "         h := e.splitBy(\" \",0,0);\r\n"
-				+ "         f := f.new();\r\n" + "         if h.at(1) = \"Jan\"\r\n" + "         then m := 1\r\n"
-				+ "         else false\r\n" + "         end ;\r\n" + "         if h.at(1) = \"Feb\"\r\n"
-				+ "         then m := 2\r\n" + "         else false\r\n" + "         end ;\r\n"
-				+ "         if h.at(1) = \"Mar\"\r\n" + "         then m := 3\r\n" + "         else false\r\n"
-				+ "         end ;\r\n" + "         if h.at(1) = \"Apr\"\r\n" + "         then m := 4\r\n"
-				+ "         else false\r\n" + "         end ;\r\n" + "         if h.at(1) = \"May\"\r\n"
-				+ "         then m := 5\r\n" + "         else false\r\n" + "         end ;\r\n"
-				+ "         if h.at(1) = \"Jun\"\r\n" + "         then m := 6\r\n" + "         else false\r\n"
-				+ "         end ;\r\n" + "         if h.at(1) = \"Jul\"\r\n" + "         then m := 7\r\n"
-				+ "         else false\r\n" + "         end ;\r\n" + "         if h.at(1) = \"Aug\"\r\n"
-				+ "         then m := 8\r\n" + "         else false\r\n" + "         end ;\r\n"
-				+ "         if h.at(1) = \"Sep\"\r\n" + "         then m := 9\r\n" + "         else false\r\n"
-				+ "         end ;\r\n" + "         if h.at(1) = \"Oct\"\r\n" + "         then m := 10\r\n"
-				+ "         else false\r\n" + "         end ;\r\n" + "         if h.at(1) = \"Nov\"\r\n"
-				+ "         then m := 11\r\n" + "         else false\r\n" + "         end ;\r\n"
-				+ "         if h.at(1) = \"Dec\"\r\n" + "         then m := 12\r\n" + "         else false\r\n"
-				+ "         end ;\r\n" + "         f := f.createDate(h.at(2).asInt(),m,h.at(0).asInt());\r\n"
-				+ "         a := a + Seq{f};\r\n" + "         b := b + Seq{obj.getOrderNo()}\r\n"
-				+ "       else false\r\n" + "       end ;\r\n" + "       if obj.getDataType() = \"String\"\r\n"
-				+ "       then \r\n" + "         a := a + Seq{obj.getValue()};\r\n"
-				+ "         b := b + Seq{obj.getOrderNo()}\r\n" + "       else false\r\n" + "       end \r\n"
-				+ "     end;\r\n" + "     @While not b->isEmpty do\r\n"
-				+ "       c := c + Seq{a.at(b.indexOf(b->max))};\r\n" + "       a := a.removeAt(b.indexOf(b->max));\r\n"
-				+ "       b := b.removeAt(b.indexOf(b->max))\r\n" + "     end;\r\n" + "     if c.size() <> 0\r\n"
-				+ "     then \r\n" + "       i := c.size() - 1;\r\n" + "       @While i >= 0 do\r\n"
-				+ "         d := d + Seq{c.at(i)};\r\n" + "         i := i - 1\r\n" + "       end\r\n"
-				+ "     else false\r\n" + "     end ;\r\n" + "     d\r\n" + "  end\r\n" + "end";
+				+ "  in if self.getParameter() <> null\r\n" + "     then \r\n"
+				+ "       @For obj in self.getParameter() do\r\n" + "         if obj.getDataType() = \"Integer\"\r\n"
+				+ "         then \r\n" + "           a := a + Seq{obj.getValue().asInt()};\r\n"
+				+ "           b := b + Seq{obj.getOrderNo()}\r\n" + "         else false\r\n" + "         end ;\r\n"
+				+ "         if obj.getDataType() = \"Float\"\r\n" + "         then \r\n"
+				+ "           a := a + Seq{obj.getValue().asFloat()};\r\n"
+				+ "           b := b + Seq{obj.getOrderNo()}\r\n" + "         else false\r\n" + "         end ;\r\n"
+				+ "         if obj.getDataType() = \"Date\"\r\n" + "         then \r\n"
+				+ "           e := obj.getValue();\r\n" + "           h := e.splitBy(\" \",0,0);\r\n"
+				+ "           f := f.new();\r\n" + "           if h.at(1) = \"Jan\"\r\n" + "           then m := 1\r\n"
+				+ "           else false\r\n" + "           end ;\r\n" + "           if h.at(1) = \"Feb\"\r\n"
+				+ "           then m := 2\r\n" + "           else false\r\n" + "           end ;\r\n"
+				+ "           if h.at(1) = \"Mar\"\r\n" + "           then m := 3\r\n" + "           else false\r\n"
+				+ "           end ;\r\n" + "           if h.at(1) = \"Apr\"\r\n" + "           then m := 4\r\n"
+				+ "           else false\r\n" + "           end ;\r\n" + "           if h.at(1) = \"May\"\r\n"
+				+ "           then m := 5\r\n" + "           else false\r\n" + "           end ;\r\n"
+				+ "           if h.at(1) = \"Jun\"\r\n" + "           then m := 6\r\n" + "           else false\r\n"
+				+ "           end ;\r\n" + "           if h.at(1) = \"Jul\"\r\n" + "           then m := 7\r\n"
+				+ "           else false\r\n" + "           end ;\r\n" + "           if h.at(1) = \"Aug\"\r\n"
+				+ "           then m := 8\r\n" + "           else false\r\n" + "           end ;\r\n"
+				+ "           if h.at(1) = \"Sep\"\r\n" + "           then m := 9\r\n" + "           else false\r\n"
+				+ "           end ;\r\n" + "           if h.at(1) = \"Oct\"\r\n" + "           then m := 10\r\n"
+				+ "           else false\r\n" + "           end ;\r\n" + "           if h.at(1) = \"Nov\"\r\n"
+				+ "           then m := 11\r\n" + "           else false\r\n" + "           end ;\r\n"
+				+ "           if h.at(1) = \"Dec\"\r\n" + "           then m := 12\r\n" + "           else false\r\n"
+				+ "           end ;\r\n" + "           f := f.createDate(h.at(2).asInt(),m,h.at(0).asInt());\r\n"
+				+ "           a := a + Seq{f};\r\n" + "           b := b + Seq{obj.getOrderNo()}\r\n"
+				+ "         else false\r\n" + "         end ;\r\n" + "         if obj.getDataType() = \"String\"\r\n"
+				+ "         then \r\n" + "           a := a + Seq{obj.getValue()};\r\n"
+				+ "           b := b + Seq{obj.getOrderNo()}\r\n" + "         else false\r\n" + "         end \r\n"
+				+ "       end;\r\n" + "       @While not b->isEmpty do\r\n"
+				+ "         c := c + Seq{a.at(b.indexOf(b->max))};\r\n"
+				+ "         a := a.removeAt(b.indexOf(b->max));\r\n" + "         b := b.removeAt(b.indexOf(b->max))\r\n"
+				+ "       end;\r\n" + "       if c.size() <> 0\r\n" + "       then \r\n"
+				+ "         i := c.size() - 1;\r\n" + "         @While i >= 0 do\r\n"
+				+ "           d := d + Seq{c.at(i)};\r\n" + "           i := i - 1\r\n" + "         end\r\n"
+				+ "       else false\r\n" + "       end ;\r\n" + "       d\r\n" + "     else Set{}\r\n"
+				+ "     end \r\n" + "  end\r\n" + "end";
 
 		String bodyGetInstanceList = "@Operation getInstanceList[monitor=true,delToClassAllowed=false]():XCore::Seq(ControllerMapping::CommonClass)\r\n"
 				+ "  let a = Seq{};\r\n" + "      b = self.getReference();\r\n" + "      c = self.owner\r\n"
@@ -537,6 +564,7 @@ public class DefaultUIModelGenerator {
 				+ "  then self.getInstanceNamesList()\r\n" + "  else false\r\n" + "  end \r\n" + "end";
 
 		diagram.getComm().addOperation(diagram.getID(), "Action", 0, bodyRunAction);
+		diagram.getComm().addOperation(diagram.getID(), "Action", 0, getParameterSize);
 
 		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyChangeCommonClass);
 		diagram.getComm().addOperation(diagram.getID(), "Reference", 0, bodyCheckCommonClass);

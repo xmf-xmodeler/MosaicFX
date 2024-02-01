@@ -270,8 +270,14 @@ public class DefaultUIGenerator {
 
 					head = false;
 					// create reference for every object + assoc pair
+					
+					// TODO restore uuid naming
+//					referenceInstanceName = actions.addInstance("Reference",
+//							"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
+					// debug zwecke
 					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
+							"ref" + o.getName(),0);
+					
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
 				}
