@@ -30,8 +30,6 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 
-// TODO 
-// Distanz sucht assoziationen in beide rifchutngen nicht nur target source
 public class DefaultUIGenerator {
 
 
@@ -270,13 +268,9 @@ public class DefaultUIGenerator {
 
 					head = false;
 					// create reference for every object + assoc pair
-					
-					// TODO restore uuid naming
-//					referenceInstanceName = actions.addInstance("Reference",
-//							"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
-					// debug zwecke
 					referenceInstanceName = actions.addInstance("Reference",
-							"ref" + o.getName(),0);
+							"ref" + UUID.randomUUID().toString().replace("-", ""), 0);
+					
 					
 					referenceMapping.add(new Reference(o, assoc, referenceInstanceName, false,
 							new Reference(assoc.getSourceNode())));
@@ -665,7 +659,6 @@ public class DefaultUIGenerator {
 	}
 
 	private void addSlotValuesCustomGUI(HashMap<String, HashMap<String, String>> slotValues) {
-		// TODO refactor this
 
 		if (slotValues == null) {
 			return;

@@ -37,11 +37,6 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 // funktioniert nur wenn min und max level gleich sind; wird hier ignoriert -> 
 // CommonClass läuft zunächst nur auf Levbel 0; kann bei Bedarf später angepasst werden
 
-// Testen, ob generierung von GUI funktioniert wie gewünscht.
-// Neu Transformierung triggert Element existiert bereits error, kann aber trotzdem erstellt werden
-// gibt es eine Möglichkeit XMF seitig fehlermeldungen zu pausieren?
-
-// gui aktualisiert nicht automatisch ?!
 
 public class DefaultUIModelGenerator {
 
