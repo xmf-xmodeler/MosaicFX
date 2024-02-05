@@ -9,7 +9,7 @@
 
 # user
 /user_properties.xml
-*.properties
+/user.properties
 /ini3.txt
 
 # /doc/old/RequirementsAndSpecifications/.gitignore

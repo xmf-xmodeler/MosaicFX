@@ -2,9 +2,11 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Map;
 import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -15,6 +17,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.IssueBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
@@ -53,7 +56,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		object.requiresReLayout = false;
+//		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);
@@ -310,8 +313,16 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperationValue opv : object.getOperationValues()) {
 				opvY += lineHeight;
 				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
+				
+				NodeElement opvValueLabel = null;
+				NodeElement.Action action = () -> displayLongMethodReturns(opv.getValue());
+				
+				//40 is here defined as the max length that a method return should have. If this is the case the return value is presented in an alert stage
+				String text = opv.getValue().length() > 40 ? "Double click for value" : opv.getValue();
+				
+				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, action, "" + text);									
+				
 				opvBox.addNodeElement(opvNameLabel);
-				NodeLabel opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
 				opvBox.addNodeElement(opvValueLabel);
 			}
 		}
@@ -324,6 +335,21 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 //		object.height = (int) currentY;
 
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
+	}
+
+	/**
+	 * Display too long method returns in alert stage. A TextArea is used so the return value is selectable + copyable
+	 * @param return value as string representation
+	 */
+	private void displayLongMethodReturns(String value) {
+		//If you do not like the layout feel free to adjust the parameter
+		Alert a = new Alert(AlertType.INFORMATION);
+		a.setTitle("Show too long method return");
+		a.setHeaderText("Return Value:");
+		TextArea text = new TextArea(value);
+		text.setWrapText(true);
+		a.getDialogPane().setContent(text);
+		a.showAndWait();
 	}
 
 	private int countOperationsToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
@@ -435,7 +461,9 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		}
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES)) {
 			for (FmmlxOperationValue opValue : object.getAllOperationValues()) {
-				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
+				if (opValue.getValue().length() > 40) {
+					neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + " Double click for value"), neededWidth);
+				} else neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
 		

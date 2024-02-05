@@ -49,6 +49,9 @@ public class FmmlxDiagramCommunicator {
 	private static FmmlxDiagramCommunicator self;
 	private int handle; // this is set by xmf and serves as an identifier for the communication
 	
+	public int getHandle() {
+		return handle;
+	}
 	public static boolean isDebug() {
 		return DEBUG;
 	}
@@ -365,7 +368,7 @@ public class FmmlxDiagramCommunicator {
 		return functionReturnVector;
 	}
 	
-	private void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+	public void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 		setNewRequestID();
 		Value[] args2 = new Value[args.length + 1];
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
@@ -2751,31 +2754,7 @@ public class FmmlxDiagramCommunicator {
 			boolean isAbstract, boolean isCollective,
 			int x, int y, boolean hidden, ReturnCall<Vector<Object>> onInstanceCreated) {
     	
-    	
-//    	old version:
-//		Value[] parentsArray = createValueArray(parents);
-//		
-//		String command = "addInstanceAsync";
-//		
-//		// the idCounter could in theory cycle through all int. But as -1 is reserved the cycle has to be cut short.
-//		if(idCounter > 10000) idCounter = 0;
-//		int requestID = idCounter++;
-//		if (DEBUG) System.err.println(": Sending request " + command + "(" + requestID + ") handle" + handle);
-//				
-//		// so the request id can be returned properly
-//		Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
-//		
-//		Value[] message = new Value[]{new Value(arr), getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name), new Value(level),
-//				new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
-//
-//		
-//		
-//		
-//		returnMap.put(requestID, onInstanceCreated);
-//		WorkbenchClient.theClient().send(handle, command, message);
-    	
-    	
-    	
+	
 //    	new version:
     	this.setNewRequestID();
     	int requestID = this.getcurrentRequestID();
@@ -2783,13 +2762,10 @@ public class FmmlxDiagramCommunicator {
     	Value[] parentsArray = createValueArray(parents);
     	Value[] message = new Value[]{new Value(arr), new Value(arr), new Value(className), new Value(name), new Value(level), new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
     	
-//    	xmfRequestAsync(handle, diagramID, "addInstanceAsync", onInstanceCreated, message);
-    	
     	returnMap.put(requestID, onInstanceCreated);
 		WorkbenchClient.theClient().send(handle, "addInstanceAsync", message);
 
 	}
-
     
     /**
      * This function gets called from Menu-Item "Load Package" in ControlCenter.
@@ -2800,6 +2776,5 @@ public class FmmlxDiagramCommunicator {
     		XMLParser parser = new XMLParser();
     		parser.parseXMLDocument();   		
     	});
+    }
 }
-}
-

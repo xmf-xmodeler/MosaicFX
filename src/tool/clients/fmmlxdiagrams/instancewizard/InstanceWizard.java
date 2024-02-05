@@ -177,6 +177,8 @@ public class InstanceWizard extends Dialog<Object> {
 		}
 	}
 	
+	//TODO while creating the gui should be blocked... see logic in the update diagramFunction
+
 	private void setObjectsVisible() {
 		if (createObjectsVisible) {
 			Vector<FmmlxObject> objectsVector = new Vector();

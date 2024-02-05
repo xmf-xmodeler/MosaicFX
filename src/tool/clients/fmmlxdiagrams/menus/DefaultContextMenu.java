@@ -18,8 +18,8 @@ public class DefaultContextMenu extends ContextMenu {
 
 		Menu addMenu = new Menu("Add");
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Instance...", e -> actions.addInstanceDialog(view));
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
 
 		/*TS 2023-03-29: This code block is commented out because the assumption is, that the functionality is right now not used
 		 * 
