@@ -120,7 +120,8 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<String, ReturnCall<Integer>> newlyCreatedDiagrams = new HashMap<>();
 
 
-    public static enum DiagramType {ClassDiagram, ModelBrowser};
+	// FH new diagram type for GUI
+    public static enum DiagramType {ClassDiagram, ModelBrowser, ControlCenter};
 	
     public void createFmmlxModelBrowser(String packagePath, 
 			String diagramName, 
@@ -2743,7 +2744,29 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
-      
+    
+    // FH add instance async
+    public void addNewInstance(int diagramID, 
+			String className, 
+			String name,
+			Integer level, 
+			Vector<String> parents,
+			boolean isAbstract, boolean isCollective,
+			int x, int y, boolean hidden, ReturnCall<Vector<Object>> onInstanceCreated) {
+    	
+	
+//    	new version:
+    	this.setNewRequestID();
+    	int requestID = this.getcurrentRequestID();
+    	Value[] arr = new Value[] {new Value(diagramID), new Value(requestID)};
+    	Value[] parentsArray = createValueArray(parents);
+    	Value[] message = new Value[]{new Value(arr), new Value(arr), new Value(className), new Value(name), new Value(level), new Value(parentsArray), new Value(isAbstract), new Value(isCollective), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+    	
+    	returnMap.put(requestID, onInstanceCreated);
+		WorkbenchClient.theClient().send(handle, "addInstanceAsync", message);
+
+	}
+    
     /**
      * This function gets called from Menu-Item "Load Package" in ControlCenter.
      * This Menu-Item calls a function in XMF which is forwarded to this function.

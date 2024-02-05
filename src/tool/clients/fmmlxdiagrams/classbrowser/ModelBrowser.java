@@ -805,13 +805,14 @@ public final class ModelBrowser extends CustomStage {
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
-
+			
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
 			//set Flag for loaded okay...
 			restoreSelection();
 		});
 	}
+	
 	
 	private transient HashMap<String, String> selection = new HashMap<>();
 	
@@ -1006,6 +1007,7 @@ public final class ModelBrowser extends CustomStage {
 			addNewMenuItem(this,"Remove Constraint", e -> actions.removeDialog(object,PropertyType.Constraint, constraint),() -> {return constraint != null;});
 		}
 	}
+	
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {
 		MenuItem item = new MenuItem(text);

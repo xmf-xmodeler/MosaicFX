@@ -1,7 +1,7 @@
 package tool.clients.customui;
 
-import java.awt.Button;
-import java.awt.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -111,12 +111,13 @@ public class FXMLExporter {
 	            	// every Subclass of Labeled is affected
 	            	res.add(new Property(aClass.getMethod("getText"), "text")); 
 	            }      
-	            if(Button.class.isAssignableFrom(aClass)) { // does not work..?
+	            if(Button.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich Default on Action ermitteln 
 	            	// zus�tzlich GridPane Ids ermitteln
 	            	found = true;
-	            } if(TextField.class.isAssignableFrom(aClass)) { // does not work..?
+	            } if(TextField.class.isAssignableFrom(aClass)) { 
 	            	// zus�tzlich GridPane Ids ermitteln
+	            	res.add(new Property(aClass.getMethod("isEditable"),"editable"));
 	            	found = true;
 	            } if(GridPane.class.isAssignableFrom(aClass)) {
 	            	//res.add(new Property(aClass.getMethod("getChildren"), "children")); 
@@ -179,59 +180,8 @@ public class FXMLExporter {
 	            propertiesCache.put(object.getClass(), properties);
 	        }
 	        
-	        // Additionally try to set property f�r Row and ColumnIndex of GridPane
-	        // if object is label, button or textfield
-	        try {
-	        	Object value;
-	        	switch( fxml.tagName ) {
-	        		case "GridPane":
-	        			fxml.addProperty("xmlns:fx", "http://javafx.com/fxml/1"); // Default Action
-	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
-	        			
-	        			// hier ist ggf. auch ein Controller zu definieren
-	        			fxml.addProperty("fx:controller", "tool.clients.fmmlxdiagrams.classbrowser.CustomGUIController");
-	        			
-	        			break;
-	        	
-	        		case "Label":
-	        			value = GridPane.getColumnIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
-	        			
-	        			value = GridPane.getRowIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
-	        			break;
-	        			
-	        		case "Button":
-	        			fxml.addProperty("onAction", "#setSlot"); // Default Action
-	        			
-	        			value = GridPane.getColumnIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
-	        			
-	        			value = GridPane.getRowIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
-	        			break;
-	        			
-	        		case "TextField":
-	        			value = GridPane.getColumnIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
-	        			
-	        			value = GridPane.getRowIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
-	        			break;
-	        			
-	        		case "ListView":
-	        			value = GridPane.getColumnIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
-	        			
-	        			value = GridPane.getRowIndex((Node)object);
-	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
-	        			break;
-	        	}
-	        } catch (Exception e) {
-	        	System.err.println(e.getMessage());
-	        }
 	        
-	        	
+	        // moved that section on top to put the fx:id first in the xml file -> important for CustomUI Controller
 	        for (Property property : properties) {
 	            try {
 	                Object[] parameters = new Object[property.getter.getParameterTypes().length];
@@ -264,6 +214,68 @@ public class FXMLExporter {
 	            } catch (Exception ex) {
 	                System.err.println(ex.getMessage());
 	            }
+	        }
+	        
+	        // Additionally try to set property f�r Row and ColumnIndex of GridPane
+	        // if object is label, button or textfield
+	        try {
+	        	Object value;
+	        	switch( fxml.tagName ) {
+	        	// FH
+	        		case "ScrollPane": 
+	        			fxml.addProperty("xmlns:fx", "http://javafx.com/fxml/1"); // Default Action
+	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
+	        			break;
+	        	
+	        		case "GridPane":
+	        			fxml.addProperty("xmlns:fx", "http://javafx.com/fxml/1"); // Default Action
+	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
+	        			
+	        			// hier ist ggf. auch ein Controller zu definieren
+	        			// F.H. mit der Änderung auf das neue Controller Modell und dem Mapping innerhalb des
+	        			// Diagramms, ist es nicht mehr notwendig hier einen Controller festzulegen.
+	        			//fxml.addProperty("fx:controller", "tool.clients.customui.CustomGUIController");
+	        			
+	        			break;
+	        	
+	        		case "Label":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			break;
+	        			
+	        		case "Button":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			
+	        			// get Action of Button
+	        			value = ((javafx.scene.control.Button) object).getText();
+	        			fxml.addProperty("onAction", "#" + value); // Default Action
+	        			break;
+	        			
+	        		case "TextField":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			break;
+	        			
+	        		case "ListView":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			break;
+	        	}
+	        } catch (Exception e) {
+	        	System.err.println(e.getMessage());
 	        }
 
 	        return fxml;

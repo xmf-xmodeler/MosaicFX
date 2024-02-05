@@ -53,6 +53,15 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
 		view.setStatusButton(newStatus);		
 	}
+
+	@Override
+	protected Vector<CanvasElement> getSelectedObjects() {
+		// TODO Auto-generated method stub
+		// FH 02.05.2023
+		// Method was needed in the interface to access it for FmmlxDiagram
+		// in this class it is not needed
+		return null;
+	}	
 	
 	@Override
 	public void updateDiagram() {

@@ -1,5 +1,6 @@
 package tool.clients.customui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -7,8 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Set;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -22,8 +23,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
@@ -41,8 +44,8 @@ public class CustomGUIController {
 		this.loader = loader;
 		this.eventToID = eventToID;
 		this.customUI = customUI;
-	}  
-	   
+	}
+	
 	@FXML
 	public void initialize() {
 		// initialize the missing attributes after the loading of the controller is finished
@@ -58,12 +61,13 @@ public class CustomGUIController {
 				((ListView) currEl).setOnMouseClicked(this::selectNewInstance); // event also covers update of UI / Model
 			}
 		}
-		   
+		  
+
 		// Inject values of the mapping model into the custom UI to complete initialization
 		injectGUI();
-		   		   
 		// Output information
 		System.err.println("Load of View from file finished!");
+		
 	}
 	   
 	private void fillChildren(Parent content) {
@@ -71,25 +75,30 @@ public class CustomGUIController {
 		   Parent recall;
 		   
 		   // Handle different kind of contents
-		   Class<?> cls = content.getClass();
-		   if( Pane.class.isAssignableFrom( cls ) ) {
-			   children = ((Pane) content).getChildren();
-		   } else if( TabPane.class.isAssignableFrom( cls ) ) {
-			   ObservableList<Tab> tabs = ((TabPane) content).getTabs();
-			   for(Tab tab: tabs) {
-				   recall = (Parent) tab.getContent();
-				   fillChildren(recall);
-			   }
-			   return; // exit condition on recursive call
-		   } else if( TitledPane.class.isAssignableFrom( cls ) ) {
-			   recall = (Parent) ((TitledPane) content).getContent();
-			   fillChildren(recall);
-			   return; // exit condition on recursive call
-		   } else {
-			   System.err.println("Cannot handle the following UI-Element during loading of CustomUI: " + cls.getName());
-			   return; // error situation
-		   }
-		   
+			Class<?> cls = content.getClass();
+			if (Pane.class.isAssignableFrom(cls)) {
+				children = ((Pane) content).getChildren();
+			} else if (TabPane.class.isAssignableFrom(cls)) {
+				ObservableList<Tab> tabs = ((TabPane) content).getTabs();
+				for (Tab tab : tabs) {
+					recall = (Parent) tab.getContent();
+					fillChildren(recall);
+				}
+				return; // exit condition on recursive call
+			} else if (TitledPane.class.isAssignableFrom(cls)) {
+				recall = (Parent) ((TitledPane) content).getContent();
+				fillChildren(recall);
+				return; // exit condition on recursive call
+			} else if (ScrollPane.class.isAssignableFrom(cls)) {
+				recall = (Parent) ((ScrollPane) content).getContent();
+				fillChildren(recall);
+				return; // exit condition on recursive call
+			} else {
+				System.err
+						.println("Cannot handle the following UI-Element during loading of CustomUI: " + cls.getName());
+				return; // error situation
+			}
+
 		   // Create Map-Entries
 		   String id;
 		   Node obj;
@@ -158,6 +167,11 @@ public class CustomGUIController {
 		   // Fetch controller mapping objects on level 0
 		   String packageOfDiagram = this.customUI.getDiagram().getPackagePath();
 		   String rootPath = packageOfDiagram + "::" + "UIElement";
+		   
+		   // if gui is executed via the controlanel "Root::" is missing
+		   if (!rootPath.contains("Root::")) {
+			   rootPath = "Root::"+rootPath;
+		   }
 		   FmmlxObject rootObjectMapping = this.customUI.getDiagram().getObjectByPath(rootPath);
 		   
 		   HashSet<FmmlxObject> subClass = rootObjectMapping.getAllSubclasses();
@@ -216,11 +230,33 @@ public class CustomGUIController {
 								   value = value.replace("Seq{", "");
 								   value = value.replace("}", "");
 								   ObservableList<String> objList = FXCollections.observableArrayList(Arrays.asList( value.split(",")));
-								   method.invoke(currElem, objList );
-							   } else {
-								   if( ! value.equals("") ) {
-									   method.invoke(currElem, value );
-								   }
+								   
+								   // changed to platform.runLater to ensure that it continues when possible
+									Platform.runLater(() -> {
+										try {
+											method.invoke(currElem, objList);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											System.err.print(e);
+										}
+									});
+
+								} else {
+									if (!value.equals("")) {
+
+										final String value2 = value;
+										
+										Platform.runLater(() -> {
+											
+											try {
+												method.invoke(currElem, value2);
+											} catch (Exception e) {
+												// TODO Auto-generated catch block
+												System.err.print(e);
+											}
+											
+										});
+									}
 							   }
 									
 						   }   

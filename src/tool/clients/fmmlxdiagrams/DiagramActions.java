@@ -29,13 +29,22 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import tool.clients.customui.CustomUI;
+
+import tool.clients.customui.DefaultUIGenerator;
+import tool.clients.customui.DefaultUIModelGenerator;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
+import tool.clients.fmmlxdiagrams.dialogs.*;
+import tool.clients.fmmlxdiagrams.dialogs.AddStandardUIDialog.Result;
+import tool.clients.fmmlxdiagrams.dialogs.shared.*;
+import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
+import tool.clients.fmmlxdiagrams.graphics.View;
+import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
+import tool.xmodeler.PropertyManager;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddEnumerationDialog;
@@ -64,11 +73,9 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
-import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
-import tool.clients.fmmlxdiagrams.graphics.View;
-import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.helper.userProperties.PropertyManager;
+
 import tool.xmodeler.XModeler;
+import xos.Value;
 
 public class DiagramActions {
 
@@ -1023,6 +1030,7 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	
 
 	public void assignToGlobalVariable(FmmlxObject object) {
 		TextInputDialog dialog = new TextInputDialog("");
@@ -1098,19 +1106,8 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-	// LM, 07.04.2023, New Action for execution of custom UI
-	public void executeUI(FmmlxObject object) {
-		
-		Platform.runLater(() -> new CustomUI(diagram, object));
-			
-	}
-	// End customUI
-	
-		
 	public void showObjectBrowser(FmmlxObject object) {
-			
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
-			
 	}
 
 	public void exportSvg() {
@@ -1323,6 +1320,104 @@ public class DiagramActions {
 		});	
 	}	
 	
+	public void showGenerateCustomUIDialog() {
+		Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
+		boolean uiNeeded = true;
+
+		for (FmmlxObject o : objects) {
+			if (o.getName().contains("UserInterface")) {
+				uiNeeded = false;
+			}
+		}
+		
+		if (uiNeeded) {
+			DefaultUIModelGenerator defaultGenerator = new DefaultUIModelGenerator(diagram);
+			defaultGenerator.generateUIModel();
+			Alert alert = new Alert(AlertType.CONFIRMATION, "UI Model Generation is needed.\nFor UI Instantiation reselect the Dialog");
+			alert.showAndWait().ifPresent(response -> {
+				if (response == ButtonType.OK) {
+					return;
+				}
+			});
+			return;
+		}else {
+			new AddStandardUIDialog(this.diagram, this.diagram.getSelectedObjects()).showDialog();
+		}
+		
+	}
+	
+	public void instantiateGUI(Optional<Result> r) {
+
+		if (!r.isPresent())
+			return;
+
+		int distance = r.get().distance;
+		int height = r.get().height;
+		Vector<FmmlxObject> roots = r.get().root;
+		String pathIcon = r.get().pathIcon;
+		String pathGUI = r.get().pathGUI;
+		String titleGUI = r.get().titleGUI;
+		Vector<FmmlxObject> selectedObjects = r.get().selectedObjects;
+		Vector<FmmlxAssociation> selectedAssociations = r.get().selectedAssociations;
+
+		DefaultUIGenerator uiGenerator = new DefaultUIGenerator(this.diagram, selectedObjects, selectedAssociations,
+				this, pathIcon, pathGUI, titleGUI, roots, distance, height);
+
+		uiGenerator.instantiateCustomGUI();
+	}
+	
+	// FH addAssociation -- eigentlich ist die bennenung irreführend, da ein link erstellt wird
+	public void addAssociation(String instanceName, String instance2Name, String assocName) {
+		if (instanceName != null && instance2Name != null && assocName != null) {
+			this.diagram.comm.addLink(this.diagram.diagramID, instanceName, instance2Name, assocName);
+		} else {
+			System.err.println("Association cannot be instantiated, because one of the parameters is null");
+		}
+	
+	}
+	
+
+	// FH adding instances that can be shown, asynchronously
+	public String addInstance(String className, String instanceName, boolean hidden, ReturnCall<Vector<Object>> onInstantiation) {
+		Vector<String> parents = new Vector<String>();
+ 		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, 0, parents, false, false, 0, 0, hidden, onInstantiation);
+		return instanceName;
+	}
+	
+	// FH adding instances that can be shown
+	public String addInstance(String className, String instanceName, int level) {
+		Vector<String> parents = new Vector<String>();
+		boolean hidden = true;
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, 0, 0, hidden);
+		return instanceName;
+	}
+	
+	// FH adding instance with parents
+	public String addInstance(String className, String instanceName, int level, Vector<String> parents) {
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, 0, 0, true);
+		return instanceName;
+	}
+	
+	// FH adding instance with hidden level and x-y coordinates
+	public String addInstance(String className, String instanceName, int level, boolean hidden, int x, int y) {
+		Vector<String> parents = new Vector<String>();
+		diagram.getComm().addNewInstance(this.diagram.getID(), className, instanceName, new Level(level), parents, false, false, x,y, hidden);
+		return instanceName;
+	}
+	
+	// FH adding metaClass
+	public void addMetaClass(String name, int level) {
+		Vector<String> parents = new Vector<String>();
+		boolean hidden = true;
+		diagram.getComm().addMetaClass(this.diagram.getID(), name, new Level(level), parents, false, false, 0, 0, hidden);
+	}
+	
+	// FH adding metaClass with parents
+	public void addMetaClass(String name, int level, Vector<String> parents) {
+		diagram.getComm().addMetaClass(this.diagram.getID(), name, new Level(level), parents, false, false, 0, 0, true);
+	}
+		
+		
 	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
 		throw new RuntimeException("Not yet implemented!");
 	}

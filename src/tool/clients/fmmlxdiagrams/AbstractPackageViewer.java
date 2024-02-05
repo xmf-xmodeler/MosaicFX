@@ -547,6 +547,9 @@ public abstract class AbstractPackageViewer {
 
 	public View getActiveDiagramViewPane() {return null;}
 
+	// implemented in FmmlxDiagram
+	protected abstract Vector<CanvasElement> getSelectedObjects();
+
 	public Vector<AssociationType> getAssociationTypes() {
 		return new Vector<>(associationTypes);
 	}

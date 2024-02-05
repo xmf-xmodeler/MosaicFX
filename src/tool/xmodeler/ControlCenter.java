@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.Arrays;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -46,7 +47,16 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.collections.*;
+
+import tool.clients.customui.CustomUI;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.ControlCenterGUIView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
@@ -65,8 +75,12 @@ public class ControlCenter extends Stage {
 	private final ListView<String> projectLV = new ListView<String>();
 	private final ListView<String> modelLV = new ListView<String>();
 	private final ListView<String> diagramLV = new ListView<String>();
+	private final ListView<String> customGuiLV = new ListView<String>();
 	private MenuBar menuBar;
+	
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
+	private HashMap<String, AbstractPackageViewer> loadedDiagrams = new HashMap<>();
+	private HashMap<String, FmmlxObject> guiPrettyStringMapping = new HashMap<>();
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -261,6 +275,11 @@ public class ControlCenter extends Stage {
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
+		// GUI
+		Label guiLabel = new Label("Custom User Interfaces");
+		grid.add(guiLabel, 5, 1);
+		
+		//build second row
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
 		TreeItem<String> loading = new TreeItem<String>("Loading");
@@ -277,6 +296,11 @@ public class ControlCenter extends Stage {
 		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
+		
+		// TODO
+		customGuiLV.setOnMouseClicked(me -> handleClickOnGUIListView(me, customGuiLV.getSelectionModel().getSelectedItem()));
+		customGuiLV.setPrefSize(250, 150);
+		grid.add(customGuiLV, 5, 2);
 
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
@@ -289,7 +313,10 @@ public class ControlCenter extends Stage {
 		return grid;
 	}
 
+
+
 	private void handelClickOnDiagramListView(MouseEvent me) {
+		// open diagram
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if(selectedDiagramString != null) {
@@ -299,6 +326,18 @@ public class ControlCenter extends Stage {
 		       }
 		   }
 		}
+		
+		// list potential guis
+		if (me.getClickCount() == 1 && me.getButton() == MouseButton.PRIMARY) {
+			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
+			if (selectedDiagramString != null) {
+				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
+				if (selectedModelString != null) {
+					loadCustomGUIS(selectedModelString, selectedDiagramString);
+				}
+			}
+		}
+		
 	}
 
 	private void callConcreteSyntaxWizard() {
@@ -353,6 +392,59 @@ public class ControlCenter extends Stage {
 		}
 		return modelBrowser;
 	}
+	
+	// FH load CustomUIs and display
+	public void loadCustomGUIS(String project, String model) {
+		customGuiLV.getItems().clear();
+		// load diagram and keep it
+		String packagePath = project;
+
+		// 2nd step get objects from diagram
+		// and filter guis
+		ReturnCall<Integer> onDiagramCreated = onCreated -> {
+
+			// new diagram gets instantiated
+			AbstractPackageViewer diagram = new ControlCenterGUIView(FmmlxDiagramCommunicator.getCommunicator(),
+					onCreated, packagePath);
+
+			ReturnCall<Object> onUpdate = update -> {
+				// guis are listed in control center
+				String prettyName ="";
+				Vector<FmmlxObject> objects = diagram.getObjectsReadOnly();
+
+				for (FmmlxObject o : objects) {
+
+					if (o.getMetaClassName().equals("UserInterface")) {
+						prettyName =  o.getSlot("titleOfUI").getValue();
+						guiPrettyStringMapping.put(prettyName, o);
+						customGuiLV.getItems().add(prettyName);
+						loadedDiagrams.put(o.getName(), o.getDiagram());
+					}
+				}
+			};
+			// diagram is updated, i.e. filled with its objects 
+			diagram.updateDiagram(onUpdate);
+		};
+
+		// 1st step create new diagram
+		// If the diagram name is set to the actual diagram name, the diagram itself is overridden. 
+		// Therefore, it is necessary to choose a name, which is unlikely to be the name of a real existing diagram.
+		FmmlxDiagramCommunicator.getCommunicator().createDiagram(packagePath, "ControlCenterDiagramGUI", "",
+				DiagramType.ControlCenter, false, onDiagramCreated);
+
+	}
+
+	// FH open CustomUI
+	private void handleClickOnGUIListView(MouseEvent me, String guiName) {
+		if (!(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY)) {
+			return;
+		}
+		FmmlxObject gui = guiPrettyStringMapping.get(guiName);
+		AbstractPackageViewer diagram = loadedDiagrams.get(gui.getName());
+		CustomUI customUI = new CustomUI(diagram, gui);
+	}
+	
+	
 
 	public Stage getStageForConsole() {
 		return new Stage();
@@ -394,6 +486,9 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 		TreeItem<String> root = new TreeItem<>("root");
 		
+		ObservableList<Integer> currSel = projectTree.getSelectionModel().getSelectedIndices();
+		Integer[] integerArray = Arrays.copyOf(currSel.toArray(), currSel.toArray().length, Integer[].class);
+		
 		for (String projectString : vec) {
 			String[] projectPath = projectString.split("::");
 			TreeItem<String> currentTreeItemPosition = root;
@@ -420,6 +515,32 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
+		
+		//if( integerArray.length > 0 ) {
+			
+			//for( int i : integerArray) {
+				//projectTree.getSelectionModel().selectIndices( i ); // Remember the selected indices from the listView after update
+				// Might be counterintuitive if new projects are created in the meanwhile
+				// Instead derive the id based on the projectname
+				// For now always do the below
+			//}
+		//} else {
+			// Default select the first Element under "myProjects" if no selection is made
+			int i = 0;
+			try {
+				while( i < 500000) {
+					TreeItem<String> currEl = projectTree.getTreeItem(i);
+					i++;
+					if ( currEl.getValue().equals("MyProjects")) {
+						break; // i contains the first custom project
+					}
+				}
+			} catch( Exception e ) {
+				i = 0; // Select root element
+			}
+			
+			projectTree.getSelectionModel().select(i);
+		//}
 		});
 	}
 		

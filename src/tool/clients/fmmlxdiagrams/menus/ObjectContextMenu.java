@@ -31,12 +31,6 @@ public class ObjectContextMenu extends ContextMenu {
 		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
-
-		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
-		MenuItem execUI = new MenuItem("Execute UI");
-		execUI.setOnAction( e -> actions.executeUI(object) );
-		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
-		// End custom UI
 				
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
@@ -49,6 +43,12 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
+		
+		
+		// menu item for instantiating and mapping custom GUI
+		MenuItem instantiateGUI = new MenuItem("Instantiate Standard GUI");
+		instantiateGUI.setOnAction(e-> actions.showGenerateCustomUIDialog());
+		if ((object.getLevel().isEqual(1) && object.getMetaClassName().equals("CommonClass"))) getItems().add(instantiateGUI);
 		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));

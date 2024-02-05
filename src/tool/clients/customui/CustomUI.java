@@ -2,6 +2,7 @@ package tool.clients.customui;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,8 +18,9 @@ import org.dom4j.io.XMLWriter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
@@ -65,10 +67,14 @@ public class CustomUI {
 		stage.setTitle(title.getValue());
 
 		// Obtail icon from UI object
-		FmmlxSlot icon = customUIobject.getSlot("pathToIconOfWindow");
-		System.err.println("icon.getValue(): " + icon.getValue());
-		Image imageIcon = new Image(icon.getValue());
-		stage.getIcons().add(imageIcon);
+		try {
+			FmmlxSlot icon = customUIobject.getSlot("pathToIconOfWindow");
+			Image imageIcon = new Image(icon.getValue());
+			stage.getIcons().add(imageIcon);
+		} catch (Exception e) {
+			System.err.println("CustomUI can not set a icon");
+			//System.err.println(e.toString());
+		}
 		
 		// Obtain FXML file from UI object
 		FmmlxSlot filePath = customUIobject.getSlot("pathToFXML");
@@ -76,6 +82,15 @@ public class CustomUI {
 		
 		this.scene = new Scene(loadUI(fxmlFile)); // Loaded file represents the scene for the stage
 		this.stage.setScene(scene);
+		
+		// Load stylesheets related to FXML file
+		File rootDir = new File( fxmlFile.getParent() );
+		String[] CSSNextToFXML = rootDir.list( new CSSExtFilter() );
+		for (String file : CSSNextToFXML) {
+			String currfile = "file:/" + rootDir.toString() + "/" + file;
+			currfile = currfile.replaceAll("\\\\", "/");
+			scene.getStylesheets().add(currfile);
+		}
 
 		stage.show();
 	}
@@ -91,8 +106,10 @@ public class CustomUI {
 		// new ExtensionFilter("All Files", "*.*"));
 		// File selectedFile = fileChooser.showOpenDialog(stage);
 
-		Parent loadedFXML = new Pane();
-
+		Parent loadedFXML = new ScrollPane();
+		((ScrollPane) loadedFXML).setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		((ScrollPane) loadedFXML).setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		
 		if (fxmlFile != null) {
 			try {
 				// First step: Read FXML file
@@ -111,16 +128,21 @@ public class CustomUI {
 				writer.close();
 				writer.flush();
 				fxml = stringWriter.toString();
-
+				
+				
+				// FH refactor diagram to apply changes made to the UI externally
+				DefaultUIGenerator uiGenerator = new DefaultUIGenerator(diagram, diagram.getActions());
+				uiGenerator.refactorModel(fxml, this.customUIobjectName);
+				
 				// Fourth step: Load FXML UI
 				FXMLLoader loader = new FXMLLoader();
 
 				// Controller factory in case we want to use the controller from the FXML file
-				//loader.setControllerFactory(controller -> {
-				//	return new CustomGUIController(loader, eventToID, this);
-				//});
-
-				loadedFXML = loader.load(new ByteArrayInputStream(fxml.getBytes()));
+				loader.setControllerFactory(controller -> {
+					return new CustomGUIController(loader, eventToID, this);
+				});
+				
+				((ScrollPane) loadedFXML).setContent(loader.load(new ByteArrayInputStream(fxml.getBytes())));
 				this.customGUI = loadedFXML;
 				
 				// Set default controller to prevent linking the controller in the file
@@ -173,4 +195,18 @@ public class CustomUI {
 
 		return eventToID;
 	}
+	
+	 // inner class, generic extension filter for CSS Stylesheets
+	  public class CSSExtFilter implements FilenameFilter {
+	 
+	   private String ext;
+	 
+	   public CSSExtFilter() {
+	    this.ext = ".css";
+	   }
+	 
+	   public boolean accept(File dir, String name) {
+	    return (name.endsWith(ext));
+	   }
+	  }
 }
