@@ -89,6 +89,24 @@ public class DiagramActions {
 			Platform.runLater(() -> ClassBrowserClient.show(diagram));
 		}
 	}
+	
+
+
+	public void importModels() {
+		Platform.runLater(() -> {
+			tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog dlg = 
+					new tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog(diagram);
+			Optional<tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result> result = 
+					dlg.showAndWait();
+			
+			if (result.isPresent()) {
+				final tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result imdResult = result.get();
+				
+				diagram.getComm().setImports(diagram.getID(), imdResult.imports);
+				diagram.updateDiagram();
+			}
+		});
+	}
 
 	public void addMetaClassDialog(final View view) {
 

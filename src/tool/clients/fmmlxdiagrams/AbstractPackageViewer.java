@@ -29,6 +29,7 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
+	protected Vector<String> importedPackages = new Vector<>();
   
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	protected final NoteList notes = new NoteList();
@@ -252,7 +253,12 @@ public abstract class AbstractPackageViewer {
 			comm.getAllObjects(this, allObjectsReturn);
 		};
 		
-		comm.getAssociationTypes(this, associationTypesReceivedReturn);
+		ReturnCall<Vector<String>> importedPackagesReturn = imports -> {
+			this.importedPackages = imports;
+			comm.getAssociationTypes(this, associationTypesReceivedReturn);
+		};
+		
+		comm.getImportedPackages(this.diagramID, importedPackagesReturn);
 		fetchNotes();
 	}
 	
@@ -559,6 +565,9 @@ public abstract class AbstractPackageViewer {
 		return notes;
 	}
 
+	public Vector<String> getImportedPackages() {
+		return new Vector<>(importedPackages);
+	}
 
 	
 	/**

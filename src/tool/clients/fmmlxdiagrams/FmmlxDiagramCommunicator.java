@@ -452,6 +452,20 @@ public class FmmlxDiagramCommunicator {
 	} 
 	
 	@SuppressWarnings("unchecked")
+	public void getAllPackages(Integer diagramId, boolean onlyFmmlx, 
+			ReturnCall<Vector<String>> availablePackagesReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<String> result = new Vector<>();
+			for (Object responseItem : responseContent) {
+				result.add((String)responseItem);
+			}
+			availablePackagesReturn.run(result);
+		};
+	xmfRequestAsync(handle, diagramId, "getAvailablePackages", localReturn, new Value(onlyFmmlx));
+	}
+	
+	@SuppressWarnings("unchecked")
 	public void getAssociationTypes(AbstractPackageViewer diagram,
 			ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn) {
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
@@ -2754,4 +2768,10 @@ public class FmmlxDiagramCommunicator {
     		parser.parseXMLDocument();   		
     	});
     }
+    
+	public void setImports(Integer diagramID, Vector<String> imports) {
+        sendMessage("setImportedPackages", new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(createValueArray(imports))});
+	}
 }

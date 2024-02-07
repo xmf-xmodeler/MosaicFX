@@ -282,8 +282,12 @@ public class DiagramViewHeadToolBar extends VBox {
 		modelMenu.getItems().add(exportMenu);
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "SVG", e -> diagramActions.exportSvg());
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "PNG", e -> diagramActions.exportPNG());
+
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Merge Models",e -> diagramActions.mergeModels());
+
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Import Models",e -> diagramActions.importModels());
 		
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Merge Models",e -> diagramActions.mergeModels());	
+		
 	}
 	
 	private void buildHelpMenu(Menu helpMenu) {
