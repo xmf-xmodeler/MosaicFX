@@ -117,6 +117,8 @@ public class FmmlxPalette {
 			treeView.setRoot(root);
 			treeView.setShowRoot(false);
 			root.getChildren().add(relationships);
+			TreeItem<AbstractTreeType> miscs = new TreeItem<AbstractTreeType>(new TreeGroup("Miscellaneous"));
+			root.getChildren().add(miscs);
 			root.getChildren().add(elements);
 			
 			DefaultTool associationTool = 
@@ -139,7 +141,8 @@ public class FmmlxPalette {
 			TreeItem<AbstractTreeType> note = new TreeItem<AbstractTreeType>(noteTool);
 
 			elements.getChildren().add(metaClass);
-			relationships.getChildren().addAll(association, link, delegation, note);
+			relationships.getChildren().addAll(association, link, delegation);
+			miscs.getChildren().add(note);
 	
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
@@ -169,6 +172,7 @@ public class FmmlxPalette {
 			levelSet.clear();
 			relationships.setExpanded(true);
 			elements.setExpanded(true);
+			miscs.setExpanded(true);
 		});
 	}
 
