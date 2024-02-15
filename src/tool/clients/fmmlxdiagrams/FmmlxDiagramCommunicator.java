@@ -1637,8 +1637,12 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.dashArrayLink),
                 new Value(aType.startDecoLink), new Value(aType.endDecoLink),
                 new Value(aType.sourcePath), new Value(aType.targetPath),
-                new Value(aType.sourceLevel.getMinLevel()), new Value(aType.sourceLevel.getMaxLevel()),
-                new Value(aType.targetLevel.getMinLevel()), new Value(aType.targetLevel.getMaxLevel())
+                new Value(aType.sourceLevel.getMinLevel()), 
+                new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.targetLevel.getMinLevel()), 
+                new Value(aType.targetLevel.getMaxLevel()),
+                new Value(aType.sourceMult), 
+                new Value(aType.targetMult)
                 };
 //        sendMessage("addAssociationType", message);
         xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
