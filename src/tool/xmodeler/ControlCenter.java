@@ -50,6 +50,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.ModelInputTransformer;
@@ -138,6 +139,10 @@ public class ControlCenter extends Stage {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
+			
+			Menu xmlDatabaseMenu = new Menu("XML Database");
+			getMenus().add(xmlDatabaseMenu);
+			buildXMLDatabaseMenu(xmlDatabaseMenu);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -154,6 +159,13 @@ public class ControlCenter extends Stage {
 			aboutItem.setOnAction(e-> callAboutStage());
 							
 			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
+		}
+		
+		private void buildXMLDatabaseMenu(Menu xmlDatabase)
+		{
+			MenuItem dbConfig = new MenuItem("Database Configurations");
+			dbConfig.setOnAction(e -> openUploadDialog());
+			xmlDatabase.getItems().addAll(dbConfig);
 		}
 		
 		private void openWebpage(String url) {
@@ -447,6 +459,15 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 			diagramLV.getItems().clear();
 			diagramLV.getItems().addAll(vec);
+		});
+	}
+	
+	public void openUploadDialog()
+	{
+		Platform.runLater(() ->
+		{
+			UploadConfig uc = new UploadConfig();
+			Optional<UploadConfig.Result> result = uc.showAndWait();
 		});
 	}
 }

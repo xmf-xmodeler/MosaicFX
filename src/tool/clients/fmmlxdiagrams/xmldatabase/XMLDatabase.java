@@ -52,6 +52,7 @@ public class XMLDatabase {
 	 *                   document storage.
 	 */
 	private void connectToDatabase() throws Exception {
+		long t1 = System.currentTimeMillis();
 		try (ClientSession session = new ClientSession("localhost", 1984, "testuser", "testuser")) {
 			// Create a new database
 			session.execute("CREATE DB database");
@@ -62,6 +63,8 @@ public class XMLDatabase {
 			// storage
 			e.printStackTrace();
 		}
+		long t2 = System.currentTimeMillis()-t1;
+		System.err.print(t2 + "\n");
 	}
 	private void writeToDB(ClientSession session, FmmlxDiagram diagram) throws IOException
 	{
