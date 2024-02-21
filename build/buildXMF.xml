@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="compileAll" basedir="." name="TestBuild">
+<project default="compileAll" basedir=".">
 	<description>
 	This buildfile is used for test purposes. If you just need to test some XMF adaptions use this script. 
 	There are no activities to pack the project so in comparison to the other scripts this is the fastest.
@@ -181,34 +181,11 @@
 		</java>
 	</target>
 	<target name="init">
-		<property file="build.properties"/>
-		<property name="loadedVersion" value="${version}"/>
-		<property name="loadedBuildDate" value="${builddate}"/>
-		<property name="output" location="output/"/>
-		<property name="archiveDir" location="${output}/archiv/"/>
-		<condition property="version" value="${loadedVersion}-SNAPSHOT" else="${loadedVersion}">
-			<or>
-				<resourceexists>
-					<file file="${output}/XModeler-${loadedVersion}.zip"/>
-				</resourceexists>
-				<resourceexists>
-					<file file="${archiveDir}/XModeler-${loadedVersion}.zip"/>
-				</resourceexists>
-			</or>
-		</condition>
-		<property name="outputArchive" location="${output}/XModeler-${version}.zip"/>
-		<property name="prefix" value="XModeler/"/>
-		<echo message="Building XModeler ${version}."/>
 		<property name="homeDir" location="../../XMF/com.ceteva.xmf.system/xmf-src"/>
 		<property name="imageDir" location="${homeDir}/../xmf-img/"/>
 		<property name="machineDir" location="${homeDir}/../../com.ceteva.xmf.machine/"/>
 		<property name="compileAll" location="${homeDir}/bin/compileAll.bat"/>
 		<property name="makexmf" location="${homeDir}/bin/makexmf.bat"/>
 		<property name="makemosaic" location="${homeDir}/bin/makemosaic.bat"/>
-		<move todir="${archiveDir}" overwrite="true">
-			<fileset dir="${output}">
-				<include name="*.zip"/>
-			</fileset>
-		</move>
 	</target>
 </project>
