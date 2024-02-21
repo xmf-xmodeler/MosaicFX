@@ -9,9 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.helper.userProperties.PropertyManager;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog.Result;
 import javafx.scene.control.DialogPane;
 
@@ -28,6 +30,8 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	private TextField portTextfield	= new TextField();
 	private TextField userTextfield = new TextField();
 	private TextField passwordTextfield = new TextField();
+	
+	public GridPane gridPane = new GridPane();
 
 	public UploadConfig() {
 		
@@ -48,25 +52,24 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	}
 	
 	private void layout() {
-		grid.add(hostname,0,1);
-		grid.add(port, 0, 2);
-		grid.add(userLabel, 0, 3);
-		grid.add(passwordLabel, 0, 4);
+		this.gridPane.add(hostname,0,1);
+		this.gridPane.add(port, 0, 2);
+		this.gridPane.add(userLabel, 0, 3);
+		this.gridPane.add(passwordLabel, 0, 4);
 		
-		grid.add(hostnameTextfield,1,1);
-		grid.add(portTextfield,1,2);
-		grid.add(userTextfield, 1, 3);
-		grid.add(passwordTextfield, 1, 4);
+		this.gridPane.add(hostnameTextfield,1,1);
+		this.gridPane.add(portTextfield,1,2);
+		this.gridPane.add(userTextfield, 1, 3);
+		this.gridPane.add(passwordTextfield, 1, 4);
 		
 	}
-	private void setResult() {
-		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new Result(hostnameTextfield.getText(),
-						userTextfield.getText(),passwordTextfield.getText());
-			}
-			return null;
-		});
+	public void setResult() 
+	{
+		PropertyManager manager = new PropertyManager();
+		manager.setProperty("hostname",this.hostnameTextfield.getText());
+		manager.setProperty("port", this.portTextfield.getText());
+		manager.setProperty("user", this.userTextfield.getText());
+		manager.setProperty("password", this.passwordTextfield.getText());
 	}
 	
 	public class Result {

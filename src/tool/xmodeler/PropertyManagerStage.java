@@ -21,6 +21,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.userProperties.PropertyManager;
@@ -45,12 +47,24 @@ public class PropertyManagerStage extends Stage {
 		root.getChildren().add(tabPane);
 		Tab directoriesTab = new Tab("Directories");
 		Tab userInterfaceTab = new Tab("UserInterface");
+		Tab xmlDatabaseTab = new Tab("XML Database");
 		// debugTab not running currently
 		// Tab debugTab = new Tab("Debugging");
-		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab /* ,debugTab */);
+		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab,xmlDatabaseTab /* ,debugTab */);
 		buildDirectoriesTab(directoriesTab);
 		buildUserInterfaceTab(userInterfaceTab);
+		buildXmlDatabaseTab(xmlDatabaseTab);
+		
 		// buildDebugGrid(debugTab);
+	}
+
+	private void buildXmlDatabaseTab(Tab xmlDatabaseTab) {
+		
+		UploadConfig uc = new UploadConfig();
+		GridPane saveTabContentGrid = uc.gridPane;
+		Button okButton = JavaFxButtonAuxilary.createButton("OK", e ->uc.setResult());
+		saveTabContentGrid.add(okButton, 0, 6);
+		xmlDatabaseTab.setContent(saveTabContentGrid);
 	}
 
 	private void buildDirectoriesTab(Tab directoriesTab) {

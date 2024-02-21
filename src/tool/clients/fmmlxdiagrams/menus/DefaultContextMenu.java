@@ -33,8 +33,7 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Classes...", e -> actions.openFindClassDialog());
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Senders...", e -> actions.openFindSendersDialog());
 
-		MenuItem saveToDB = new MenuItem("Save to Database");
-		saveToDB.setOnAction(e -> actions.exportToDB());
+		
 		
 		
 		
@@ -55,6 +54,6 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
-		getItems().addAll(addMenu, searchMenu, saveToDB, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
+		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
 	}
 }

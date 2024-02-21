@@ -177,7 +177,9 @@ public class DiagramViewHeadToolBar extends VBox {
 
 	private void buildModelMenu(Menu modelMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()));
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save to Database", e -> diagramActions.exportToDB());
 		modelMenu.getItems().add(new SeparatorMenuItem());
+		
 				
 		Menu enumMenu = new Menu("Enumeration");
 		modelMenu.getItems().add(enumMenu);

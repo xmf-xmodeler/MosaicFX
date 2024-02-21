@@ -140,9 +140,7 @@ public class ControlCenter extends Stage {
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
 			
-			Menu xmlDatabaseMenu = new Menu("XML Database");
-			getMenus().add(xmlDatabaseMenu);
-			buildXMLDatabaseMenu(xmlDatabaseMenu);
+			
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -161,12 +159,7 @@ public class ControlCenter extends Stage {
 			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
-		private void buildXMLDatabaseMenu(Menu xmlDatabase)
-		{
-			MenuItem dbConfig = new MenuItem("Database Configurations");
-			dbConfig.setOnAction(e -> openUploadDialog());
-			xmlDatabase.getItems().addAll(dbConfig);
-		}
+		
 		
 		private void openWebpage(String url) {
 			Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -462,12 +455,4 @@ public class ControlCenter extends Stage {
 		});
 	}
 	
-	public void openUploadDialog()
-	{
-		Platform.runLater(() ->
-		{
-			UploadConfig uc = new UploadConfig();
-			Optional<UploadConfig.Result> result = uc.showAndWait();
-		});
-	}
 }

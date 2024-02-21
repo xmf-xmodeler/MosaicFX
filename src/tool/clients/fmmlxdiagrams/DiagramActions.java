@@ -1081,8 +1081,14 @@ public class DiagramActions {
 	
 	public void exportToDB()
 	{
-		Platform.runLater(() -> {
-			new XMLDatabase((FmmlxDiagram) this.diagram);
+		Platform.runLater(() -> {XMLDatabase db = 
+			new XMLDatabase();
+			try {
+				db.writeToDB((FmmlxDiagram)this.diagram);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 	}
 
