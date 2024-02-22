@@ -14,9 +14,11 @@ import org.basex.api.client.ClientSession;
 import org.basex.util.Prop;
 import org.w3c.dom.Document;
 
+import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.persistence.XMLParser;
 import tool.helper.persistence.XMLUtil;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
@@ -90,9 +92,12 @@ public class XMLDatabase {
 	
 	public void getDiagramsFromDB()
 	{
+		DiagramClient client = new DiagramClient();
+		XMLParser parser = new XMLParser();
 		List<File> files = getAllDocuments();
 		for(File file : files)
 		{
+			client.writeXML(null);
 			
 		}
 	}
