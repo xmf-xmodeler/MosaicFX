@@ -78,12 +78,23 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildAutoMlmMenu(Menu autoMlmMenu) {
-		buildProcessStringButton(autoMlmMenu);
-		buildIllegalArgumentsButton(autoMlmMenu);
-		buildSimulateLostFielButton(autoMlmMenu);
+		// TODO Aufräumen und Integrationstests entfernen.
+		
+		buildGUIMainButon(autoMlmMenu);
+		
+//		buildProcessStringButton(autoMlmMenu);
+//		buildIllegalArgumentsButton(autoMlmMenu);
+//		buildSimulateLostFielButton(autoMlmMenu);
 		
 	}
-
+	// FH main GUI für AutoMLM
+	private void buildGUIMainButon(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			diagramActions.addAutoMLMDialog();;
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Main GUI", onButtonClicked);
+	}
+	
 	private void buildSimulateLostFielButton(Menu autoMlmMenu) {
 		EventHandler<ActionEvent> onButtonClicked = e -> {
 			String[] args = {"foo"};
