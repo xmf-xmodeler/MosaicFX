@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConcreteSyntax classPath="Root::DigitalTwin::ConferenceRoom" level="0">
+  <SVG id="svg0" path="../DigitalTwins/team-svgrepo-com.svg" tx="0.0" ty="0.0" xx="0.24" xy="0.0" yx="0.0" yy="0.24"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x1a4d1aff" id="air" tx="60.0" ty="-5.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x001a80ff" id="temp" tx="60.0" ty="-20.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" id="humidity" tx="60.0" ty="-35.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG id="svg1" path="../OrgML_BusinessProcessControlFlowDiagram/critical.svg" tx="125.14781058301884" ty="-16.02338012607146" xx="0.04736614270344993" xy="0.0" yx="0.0" yy="0.04736614270344993"/>
+  <Modification>
+    <Condition slotName="humidity" type="ReadFromSlot"/>
+    <Affected id="air" localId="air"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="temperature" type="ReadFromSlot"/>
+    <Affected id="temp" localId="temp"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="airQuality" type="ReadFromSlot"/>
+    <Affected id="humidity" localId="humidity"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition opName="hasWarning" type="BooleanOpValCondition"/>
+    <Affected id="svg1" localId="svg1"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+</ConcreteSyntax>
