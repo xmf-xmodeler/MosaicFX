@@ -56,6 +56,20 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		
+		boolean isEnum = false;
+		FmmlxEnum representedEnum = null;
+		
+		if("ENUM".equals(this.object.type)) {
+			for(FmmlxEnum e : diagram.enums) {
+				if(representedEnum == null && e.getName().equals(this.object.name)) { // TODO: check path instead of name
+					representedEnum = e;
+					isEnum = true;
+					break;
+				}
+			}			
+		}
+		
 //		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		object.rootNodeElement = group;
@@ -68,6 +82,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 		String parentString = getParentsList(diagram);
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
+		if(isEnum) {parentString = ""; headerLines = 2;}
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
 		header.setAction( ()-> {
 			Vector<String> models = new Vector<>(); 
@@ -91,7 +106,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		}
 		
 		header.addNodeElement(metaclassLabel);
-		header.addNodeElement(levelLabel);
+		if(!isEnum) header.addNodeElement(levelLabel);
 		header.addNodeElement(nameLabel);
 
 		if ((!"".equals(parentString))) {
@@ -327,6 +342,24 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			}
 		}
 		currentY = yAfterOPVBox;
+		
+		if(isEnum) {
+			double yAfterEnumItemBox = currentY;
+			int enumSize = representedEnum.getItems().size();
+			double enumBoxHeight = Math.max(lineHeight * enumSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+			double enumY = 0;
+			NodeBox enumBox = new NodeBox(0, currentY, neededWidth, enumBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.OperationValue);
+			if (enumSize > 0) {
+				yAfterEnumItemBox = currentY + enumBoxHeight;
+				group.addNodeElement(enumBox);
+				for (String item : representedEnum.getItems()) {
+					enumY += lineHeight;
+					NodeLabel enumNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, enumY, Color.BLACK, null, null, NO_ACTION, item);
+					enumBox.addNodeElement(enumNameLabel);
+				}
+			}
+			currentY = yAfterEnumItemBox;
+		}
 
 		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> selected?3:1, PropertyType.Selection);
 		group.addNodeElement(selectionBox);

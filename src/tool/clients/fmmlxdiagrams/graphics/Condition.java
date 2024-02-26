@@ -202,7 +202,7 @@ public abstract class Condition<ReturnType>{
 //			Vector<Issue> issues = object.getIssues();
 //			issues.get(0).getConstraintName();
 //			throw new RuntimeException("Not yet implemented!");
-			return !object.hasIssue(constraintName);
+			return object.hasIssue(constraintName);
 		}
 
 		@Override
