@@ -9,7 +9,7 @@
 
 # user
 /user_properties.xml
-*.properties
+user.properties
 /ini3.txt
 
 # /doc/old/RequirementsAndSpecifications/.gitignore
@@ -22,6 +22,8 @@
 
 # /build/.gitignore
 /build/output/
+/build/build.properties
+
 
 # Test
 /XModeler2.launch
@@ -30,7 +32,6 @@
 /.classpath
 
 #ignore log files
-
 logs/*
 !logs/java/
 /testXMLImport.xml
