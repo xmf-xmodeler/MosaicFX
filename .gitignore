@@ -30,5 +30,7 @@
 /.classpath
 
 #ignore log files
+
 logs/*
+!logs/java/
 /testXMLImport.xml
