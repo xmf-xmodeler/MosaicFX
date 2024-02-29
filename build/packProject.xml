@@ -5,6 +5,8 @@
 	It only collects all needed data including the AutoMLM sources and copies them to a folder in the outputfolder.
 	</description>
 	<target name="packProject" depends="init, cleanOutputFolder, includeAutoMLM">
+		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt" />
+		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt" />
 		<!-- set version -->
 		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
 		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
@@ -32,20 +34,13 @@
 			<fileset dir=".." includes="u_javafx/lib/*.so"/>
 			<fileset dir=".." includes="m_javafx/lib/*.jar"/>
 			<fileset dir=".." includes="m_javafx/lib/*.dylib"/>
-			<!-- Dateien aus dem zweiten zipfileset -->
-			<fileset dir="./output/" includes="ini-win.txt,ini-linux.txt,user.properties"/>
-			<!-- Dateien aus dem dritten zipfileset -->
+			<fileset dir="./output/" includes="ini-linux.txt,ini-win.txt"/>
 			<fileset dir="./resources/" includes="*.sh,*.exe"/>
-			<!-- Dateien aus dem vierten zipfileset -->
 			<fileset dir="./resources/" includes="changelog.txt"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.machine" includes="bin/**"/>
-			<!-- Dateien aus dem siebten zipfileset -->
-			<fileset dir="../../XMF/com.ceteva.xmf.system" includes="xmf-addons/**,xmf-src/**,demo/**,xmf-img/compiler.img,xmf-img/xmf.img,xmf-img/mosaic.img"/>
-			<!-- Dateien aus dem achten zipfileset -->
+			<fileset dir="../../XMF/com.ceteva.xmf.system" includes="xmf-addons/**,xmf-src/**,demo/**,xmf-img/compiler.img,xmf-img/xmf.img,xmf-img/mosaic.img"/>	
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" includes="Bluebook.pdf"/>
-			<!-- Dateien aus dem mappedresources -->
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" includes="book.pdf"/>
-			<!-- Dateien aus dem zehnten zipfileset -->
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" includes="Applied Metamodelling (Second Edition).pdf"/>
 		</copy>
 	</target>
@@ -65,8 +60,7 @@
 				</resourceexists>
 			</or>
 		</condition>
-		<property name="outputDirectory" location="${output}/XModeler-${version}"/>
-		<property name="prefix" value="XModeler/"/>
+		<property name="outputDirectory" location="${output}/XModeler"/>
 	</target>
 	<property name="autoMlmExportDir" value="../AutoMLM"/>
 	<target name="includeAutoMLM">
