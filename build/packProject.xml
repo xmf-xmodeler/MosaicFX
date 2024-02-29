@@ -46,20 +46,10 @@
 	</target>
 	<target name="init">
 		<property file="build.properties"/>
-		<property name="loadedVersion" value="${version}"/>
+		<property name="version" value="${version}"/>
 		<property name="loadedBuildDate" value="${builddate}"/>
 		<property name="output" location="output/"/>
 		<property name="archiveDir" location="${output}/archiv/"/>
-		<condition property="version" value="${loadedVersion}-SNAPSHOT" else="${loadedVersion}">
-			<or>
-				<resourceexists>
-					<file file="${output}/XModeler-${loadedVersion}.zip"/>
-				</resourceexists>
-				<resourceexists>
-					<file file="${archiveDir}/XModeler-${loadedVersion}.zip"/>
-				</resourceexists>
-			</or>
-		</condition>
 		<property name="outputDirectory" location="${output}/XModeler"/>
 	</target>
 	<property name="autoMlmExportDir" value="../AutoMLM"/>
