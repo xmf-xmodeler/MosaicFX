@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="compileAll" basedir=".">
 	<description>
-	This buildfile is used for test purposes. If you just need to test some XMF adaptions use this script. 
+	This build file is used for compiling XMF. If you just need to test some XMF adaptions use this script. 
 	There are no activities to pack the project so in comparison to the other scripts this is the fastest.
 	Does not contain building a jar and zipping.
 	</description>
