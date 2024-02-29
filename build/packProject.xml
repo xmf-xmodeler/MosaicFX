@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="packProject" basedir=".">
+	<description>
+	!! This script does not build XMF !!
+	It only collects all needed data including the AutoMLM sources and copies them to a folder in the outputfolder.
+	</description>
+	<target name="packProject" depends="init">
+		<!-- If there is a SNAPSHOT, it should be deleted -->
+		<delete file="${outputArchive}" failonerror="no"/>
+		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt"/>
+		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt"/>
+		<copy file="./resources/user.properties" tofile="./output/user.properties"/>
+		<!-- set version -->
+		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
+		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
+		<replace file="./output/ini-linux.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}"/>
+		<replace file="./output/ini-win.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}"/>
+		<antcall target="copyProjectToOutputfolder"/>
+		<antcall target="cleanProjectFolder"/>
+	</target>
+	<target name="copyProjectToOutputfolder">
+		<copy todir="${outputDirectory}">
+			<!-- Dateien aus dem ersten zipfileset -->
+			<fileset dir=".." includes="bin/**"/>
+			<fileset dir=".." includes="lib/*.jar"/>
+			<fileset dir=".." includes="lib/poi-3.10.1/*.jar"/>
+			<fileset dir=".." includes="lib/poi-3.10.1/LICENSE"/>
+			<fileset dir=".." includes="lib/poi-3.10.1/NOTICE"/>
+			<fileset dir=".." includes="setting/**"/>
+			<fileset dir=".." includes="resources/**"/>
+			<fileset dir=".." includes="lib/**"/>
+			<fileset dir=".." includes="AutoMLM/**"/>
+			<fileset dir=".." includes="logs/java/**"/>
+			<fileset dir=".." includes="javafx/bin/*.dll"/>
+			<fileset dir=".." includes="javafx/lib/*.jar"/>
+			<fileset dir=".." includes="u_javafx/lib/*.jar"/>
+			<fileset dir=".." includes="u_javafx/lib/*.so"/>
+			<fileset dir=".." includes="m_javafx/lib/*.jar"/>
+			<fileset dir=".." includes="m_javafx/lib/*.dylib"/>
+			<!-- Dateien aus dem zweiten zipfileset -->
+			<fileset dir="./output/" includes="ini-win.txt,ini-linux.txt,user.properties"/>
+			<!-- Dateien aus dem dritten zipfileset -->
+			<fileset dir="./resources/" includes="*.sh,*.exe"/>
+			<!-- Dateien aus dem vierten zipfileset -->
+			<fileset dir="./resources/" includes="changelog.txt"/>
+			<fileset dir="../../XMF/com.ceteva.xmf.machine" includes="bin/**"/>
+			<!-- Dateien aus dem siebten zipfileset -->
+			<fileset dir="../../XMF/com.ceteva.xmf.system" includes="xmf-addons/**,xmf-src/**,demo/**,xmf-img/compiler.img,xmf-img/xmf.img,xmf-img/mosaic.img"/>
+			<!-- Dateien aus dem achten zipfileset -->
+			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" includes="Bluebook.pdf"/>
+			<!-- Dateien aus dem mappedresources -->
+			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" includes="book.pdf"/>
+			<!-- Dateien aus dem zehnten zipfileset -->
+			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" includes="Applied Metamodelling (Second Edition).pdf"/>
+		</copy>
+	</target>
+	<target name="init" depends="includeAutoMLM">
+		<property file="build.properties"/>
+		<property name="loadedVersion" value="${version}"/>
+		<property name="loadedBuildDate" value="${builddate}"/>
+		<property name="output" location="output/"/>
+		<property name="archiveDir" location="${output}/archiv/"/>
+		<condition property="version" value="${loadedVersion}-SNAPSHOT" else="${loadedVersion}">
+			<or>
+				<resourceexists>
+					<file file="${output}/XModeler-${loadedVersion}.zip"/>
+				</resourceexists>
+				<resourceexists>
+					<file file="${archiveDir}/XModeler-${loadedVersion}.zip"/>
+				</resourceexists>
+			</or>
+		</condition>
+		<property name="outputDirectory" location="${output}/XModeler-${version}"/>
+		<property name="prefix" value="XModeler/"/>
+		<echo message="Building XModeler ${version}."/>
+		<antcall target="archiveOldExportVersion"/>
+	</target>
+	<property name="autoMlmExportDir" value="../AutoMLM"/>
+	<target name="includeAutoMLM">
+		<property file="build.properties"/>
+		<!-- !! Provide the file name in the build.properties file without quotation marks-->
+		<property name="pathToAutoMLM" value="${path_to_automlm}"/>
+		<fail message="The directory ${autoMlmExportDir} already exists. To save you from overwriting your code the build process was aborted. Delete directory from Java project and start build process again.">
+			<condition>
+				<available file="${autoMlmExportDir}"/>
+			</condition>
+		</fail>
+		<mkdir dir="${autoMlmExportDir}"/>
+		<copy todir="${autoMlmExportDir}">
+			<fileset dir="${pathToAutoMLM}"/>
+		</copy>
+	</target>
+	<target name="archiveOldExportVersion">
+		<move todir="${archiveDir}" overwrite="true">
+			<fileset dir="${output}">
+				<include name="*.zip"/>
+			</fileset>
+		</move>
+	</target>
+	<target name="cleanProjectFolder">
+		<delete dir="${autoMlmExportDir}"/>
+		<delete file="./output/ini-win.txt"/>
+		<delete file="./output/ini-linux.txt"/>
+		<delete file="./output/user.properties"/>
+	</target>
+</project>
