@@ -4,7 +4,7 @@
 	!! This script does not build XMF !!
 	It only collects all needed data including the AutoMLM sources and copies them to a folder in the outputfolder.
 	</description>
-	<target name="packProject" depends="init">
+	<target name="packProject" depends="init, cleanOutputFolder, includeAutoMLM">
 		<!-- If there is a SNAPSHOT, it should be deleted -->
 		<delete file="${outputArchive}" failonerror="no"/>
 		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt"/>
@@ -19,7 +19,7 @@
 		<antcall target="cleanProjectFolder"/>
 	</target>
 	<target name="copyProjectToOutputfolder">
-		<copy todir="${outputDirectory}">
+		<copy todir="${outputDirectory}" verbose="true">
 			<!-- Dateien aus dem ersten zipfileset -->
 			<fileset dir=".." includes="bin/**"/>
 			<fileset dir=".." includes="lib/*.jar"/>
@@ -54,7 +54,7 @@
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" includes="Applied Metamodelling (Second Edition).pdf"/>
 		</copy>
 	</target>
-	<target name="init" depends="includeAutoMLM">
+	<target name="init">
 		<property file="build.properties"/>
 		<property name="loadedVersion" value="${version}"/>
 		<property name="loadedBuildDate" value="${builddate}"/>
@@ -102,5 +102,8 @@
 		<delete file="./output/ini-win.txt"/>
 		<delete file="./output/ini-linux.txt"/>
 		<delete file="./output/user.properties"/>
+	</target>
+	<target name="cleanOutputFolder">
+		<delete dir="${outputDirectory}"/>
 	</target>
 </project>
