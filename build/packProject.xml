@@ -5,11 +5,6 @@
 	It only collects all needed data including the AutoMLM sources and copies them to a folder in the outputfolder.
 	</description>
 	<target name="packProject" depends="init, cleanOutputFolder, includeAutoMLM">
-		<!-- If there is a SNAPSHOT, it should be deleted -->
-		<delete file="${outputArchive}" failonerror="no"/>
-		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt"/>
-		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt"/>
-		<copy file="./resources/user.properties" tofile="./output/user.properties"/>
 		<!-- set version -->
 		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
 		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
@@ -72,8 +67,6 @@
 		</condition>
 		<property name="outputDirectory" location="${output}/XModeler-${version}"/>
 		<property name="prefix" value="XModeler/"/>
-		<echo message="Building XModeler ${version}."/>
-		<antcall target="archiveOldExportVersion"/>
 	</target>
 	<property name="autoMlmExportDir" value="../AutoMLM"/>
 	<target name="includeAutoMLM">
@@ -89,13 +82,6 @@
 		<copy todir="${autoMlmExportDir}">
 			<fileset dir="${pathToAutoMLM}"/>
 		</copy>
-	</target>
-	<target name="archiveOldExportVersion">
-		<move todir="${archiveDir}" overwrite="true">
-			<fileset dir="${output}">
-				<include name="*.zip"/>
-			</fileset>
-		</move>
 	</target>
 	<target name="cleanProjectFolder">
 		<delete dir="${autoMlmExportDir}"/>
