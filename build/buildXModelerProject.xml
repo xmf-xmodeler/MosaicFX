@@ -1,96 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="build" basedir=".">
+<project default="exportProject" basedir=".">
 	<description>
 	This script first executes buildXMF. Afterwards AutoMLM is copied to the project folder.
 	All needes files are packed into a Zip-Archive which can be provided to an end user.
 	</description>
-	<target name="build" depends="init, compile">
-		<!-- If there is a SNAPSHOT, it should be deleted -->
-		<delete file="${outputArchive}" failonerror="no"/>
-		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt"/>
-		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt"/>
-		<copy file="./resources/user.properties" tofile="./output/user.properties"/>
-		<!-- set version -->
-		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
-		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
-		<replace file="./output/ini-linux.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}"/>
-		<replace file="./output/ini-win.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}"/>
+	<property file="build.properties"/>
+	<target name="exportProject" depends="init 	, compile, packProject">
+		<antcall target="deleteSnapshot"/>
 		<antcall target="zip"/>
-		<antcall target="cleanProjectFolder"/>
+		<antcall target="makeSetupExe"/>
+	</target>
+	<target name="makeSetupExe">
+		<property name="makeScriptPath" value="./startSetupScript.ps1"/>
+		<!-- Defined in build.properties -->
+		<property name="innoSetupPath" value="${path_to_innosetup}"/>
+		<!-- Call PowerShell script -->
+		<exec executable="powershell" failonerror="true">
+			<arg value="-File"/>
+			<arg value="${makeScriptPath}"/>
+			<arg value="${innoSetupPath}"/>
+		</exec>
+	</target>
+	<target name="deleteSnapshot">
+		<delete file="${outputArchive}" failonerror="no"/>
 	</target>
 	<target name="zip">
 		<zip destfile="${outputArchive}" compress="yes" duplicate="fail">
-			<zipfileset dir=".." prefix="${prefix}">
-				<include name="bin/**"/>
-				<include name="lib/*.jar"/>
-				<include name="lib/poi-3.10.1/*.jar"/>
-				<include name="lib/poi-3.10.1/LICENSE"/>
-				<include name="lib/poi-3.10.1/NOTICE"/>
-				<include name="setting/**"/>
-				<include name="resources/**"/>
-				<include name="lib/**"/>
-				<include name="logs/java/"/>
-				<include name="javafx/bin/*.dll"/>
-				<include name="javafx/lib/*.jar"/>
-				<include name="u_javafx/lib/*.jar"/>
-				<include name="u_javafx/lib/*.so"/>
-				<include name="m_javafx/lib/*.jar"/>
-				<include name="m_javafx/lib/*.dylib"/>
-				<exclude name="**/.DS_Store"/>
-				<exclude name="bin/.idea/"/>
-			</zipfileset>
-			<!-- ini files -->
-			<zipfileset dir="./output/" prefix="${prefix}">
-				<include name="ini-win.txt"/>
-				<include name="ini-linux.txt"/>
-				<include name="user.properties"/>
-			</zipfileset>
-			<!-- start scripts -->
-			<zipfileset dir="./resources/" prefix="${prefix}" filemode="755">
-				<include name="*.sh"/><!-- Mac,Linux -->
-				<include name="*.exe"/><!-- Win -->
-			</zipfileset>
-			<zipfileset dir="./resources/" prefix="${prefix}">
-				<include name="changelog.txt"/>
-			</zipfileset>
-			<zipfileset dir="./resources/" prefix="${prefix}" filemode="755">
-				<include name="XModeler.app/**"/>
-			</zipfileset>
-			<zipfileset dir="../../XMF/com.ceteva.xmf.machine" prefix="${prefix}">
-				<include name="bin/**"/>
-				<exclude name="**/.DS_Store"/>
-			</zipfileset>
-			<zipfileset dir="../../XMF/com.ceteva.xmf.system" prefix="${prefix}">
-				<include name="xmf-addons/**"/>
-				<include name="xmf-src/**"/>
-				<include name="demo/**"/>
-				<include name="xmf-img/compiler.img"/>
-				<include name="xmf-img/xmf.img"/>
-				<include name="xmf-img/mosaic.img"/>
-				<exclude name="**/.DS_Store"/>
-			</zipfileset>
-			<!-- doc/ -->
-			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" prefix="${prefix}doc/">
-				<include name="Bluebook.pdf"/>
-			</zipfileset>
-			<!-- include AutoMlm -->
-			<zipfileset dir="${autoMlmExportDir}" prefix="${prefix}AutoMLM/"/>
-			<mappedresources>
-				<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" prefix="${prefix}doc/">
-					<include name="book.pdf"/>
-				</zipfileset>
-				<globmapper from="book.pdf" to="${prefix}doc/Super Languages.pdf"/>
-			</mappedresources>
-			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" prefix="${prefix}doc/">
-				<include name="Applied Metamodelling (Second Edition).pdf"/>
-			</zipfileset>
+			<zipfileset dir="${outputDirectory}"/>
 		</zip>
 	</target>
 	<target name="compile">
 		<ant antfile="buildXMF.xml"/>
 	</target>
-	<target name="init" depends="includeAutoMLM">
-		<property file="build.properties"/>
+	<target name="packProject">
+		<ant antfile="packProject.xml"/>
+	</target>
+	<target name="archiveOldExportVersion">
+		<move todir="${archiveDir}" overwrite="true">
+			<fileset dir="${output}">
+				<include name="*.zip"/>
+			</fileset>
+		</move>
+	</target>
+	<target name="init">
 		<property name="loadedVersion" value="${version}"/>
 		<property name="loadedBuildDate" value="${builddate}"/>
 		<property name="output" location="output/"/>
@@ -105,37 +57,8 @@
 				</resourceexists>
 			</or>
 		</condition>
+		<property name="outputDirectory" location="${output}/XModeler-${version}"/>
 		<property name="outputArchive" location="${output}/XModeler-${version}.zip"/>
 		<property name="prefix" value="XModeler/"/>
-		<echo message="Building XModeler ${version}."/>
-		<antcall target="archiveOldExportVersion"/>
-	</target>
-	<property name="autoMlmExportDir" value="../AutoMLM"/>
-	<target name="includeAutoMLM">
-		<property file="build.properties"/>
-		<!-- !! Provide the file name in the build.properties file without quotation marks-->
-		<property name="pathToAutoMLM" value="${path_to_automlm}"/>
-		<fail message="The directory ${autoMlmExportDir} already exists. To save you from overwriting your code the build process was aborted. Delete directory from Java project and start build process again.">
-			<condition>
-				<available file="${autoMlmExportDir}"/>
-			</condition>
-		</fail>
-		<mkdir dir="${autoMlmExportDir}"/>
-		<copy todir="${autoMlmExportDir}">
-			<fileset dir="${pathToAutoMLM}"/>
-		</copy>
-	</target>
-	<target name="archiveOldExportVersion">
-		<move todir="${archiveDir}" overwrite="true">
-			<fileset dir="${output}">
-				<include name="*.zip"/>
-			</fileset>
-		</move>
-	</target>
-	<target name="cleanProjectFolder">
-		<delete dir="${autoMlmExportDir}"/>
-		<delete file="./output/ini-win.txt"/>
-		<delete file="./output/ini-linux.txt"/>
-		<delete file="./output/user.properties"/>
 	</target>
 </project>
