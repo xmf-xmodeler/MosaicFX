@@ -48,9 +48,7 @@
 		<property file="build.properties"/>
 		<property name="version" value="${version}"/>
 		<property name="loadedBuildDate" value="${builddate}"/>
-		<property name="output" location="output/"/>
-		<property name="archiveDir" location="${output}/archiv/"/>
-		<property name="outputDirectory" location="${output}/XModeler"/>
+		<property name="outputDirectory" location="output//XModeler"/>
 	</target>
 	<property name="autoMlmExportDir" value="../AutoMLM"/>
 	<target name="includeAutoMLM">
