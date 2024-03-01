@@ -5,7 +5,7 @@
 	All needes files are packed into a Zip-Archive which can be provided to an end user.
 	</description>
 	<property file="build.properties"/>
-	<target name="exportProject" depends="init 	, compile, packProject">
+	<target name="exportProject" depends="compile, initExport, packProject">
 		<antcall target="zip"/>
 		<antcall target="makeSetupExe"/>
 	</target>
@@ -31,8 +31,12 @@
 	<target name="packProject">
 		<ant antfile="packXModeler.xml"/>
 	</target>
-	<target name="init">
+	<target name="initExport">
 		<property name="outputDirectory" location="output/XModeler"/>
 		<property name="outputArchive" location="output/XModeler-${version}.zip"/>
+		 <delete verbose="true">
+            <dirset dir="output" includes="*/"/>
+			<fileset dir="output"/>
+        </delete>
 	</target>
 </project>
