@@ -28,7 +28,7 @@ import tool.helper.userProperties.UserProperty;
 
 /*
  * FH 19.02.2024
- * Implementation of the AutoMLM gui, formerly solely in python. GUI is now in java, functionality is still in python.
+ * Implementation of the AutoMLM gui, formerly solely in python. GUI is now in java, functionality is still and will remain in python.
  */
 public class AutoMLMDialog extends Dialog {
 
@@ -114,7 +114,7 @@ public class AutoMLMDialog extends Dialog {
 			buttonExecutePressed();
 		});
 
-		// dummy button
+		// use current file button
 		Button buttonUseCurrent = new Button("Use Current File");
 		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
 		grid.add(buttonUseCurrent, 2, 4);
@@ -176,6 +176,20 @@ public class AutoMLMDialog extends Dialog {
 	private void buttonExecutePressed() {
 		if (path == "")
 			return;
+
+		String selectedCase = comboboxCaseSelector.getValue();
+		String selectedTechnology = comboboxTechnologySelector.getValue();
+
+		if (selectedCase != null) {
+			if (selectedTechnology != null) {
+				// TBD only send here to python
+			} else {
+				// TBD that no technology has been selected
+			}
+		} else {
+			// TBD alert that no case has been selected
+		}
+
 		sendToPython(this.path);
 	}
 
@@ -187,8 +201,8 @@ public class AutoMLMDialog extends Dialog {
 		alert.setContentText("Has the current diagram been saved and should be used for the transformation process?");
 		alert.getButtonTypes().add(ButtonType.YES);
 		alert.getButtonTypes().add(ButtonType.NO);
-		// Display the alert and wait for it to be dismissed
 
+		// Display the alert and wait for it
 		Optional<ButtonType> result = alert.showAndWait();
 		// wait for result of alert box
 		if (result.isPresent()) {
