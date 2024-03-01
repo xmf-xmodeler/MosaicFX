@@ -7,6 +7,7 @@
 	<target name="packProject" depends="init, cleanOutputFolder, includeAutoMLM">
 		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt" />
 		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt" />
+		<copy file="./resources/user.properties" tofile="./output/user.properties" />
 		<!-- set version -->
 		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
 		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
@@ -34,7 +35,7 @@
 			<fileset dir=".." includes="u_javafx/lib/*.so"/>
 			<fileset dir=".." includes="m_javafx/lib/*.jar"/>
 			<fileset dir=".." includes="m_javafx/lib/*.dylib"/>
-			<fileset dir="./output/" includes="ini-linux.txt,ini-win.txt"/>
+			<fileset dir="./output/" includes="ini-linux.txt,ini-win.txt, user.properties"/>
 			<fileset dir="./resources/" includes="*.sh,*.exe"/>
 			<fileset dir="./resources/" includes="changelog.txt"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.machine" includes="bin/**"/>
