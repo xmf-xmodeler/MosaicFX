@@ -5,9 +5,9 @@
 	It only collects all needed data including the AutoMLM sources and copies them to a folder in the outputfolder.
 	</description>
 	<target name="packProject" depends="init, cleanOutputFolder, includeAutoMLM">
-		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt" />
-		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt" />
-		<copy file="./resources/user.properties" tofile="./output/user.properties" />
+		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt"/>
+		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt"/>
+		<copy file="./resources/user.properties" tofile="./output/user.properties"/>
 		<!-- set version -->
 		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}"/>
 		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}"/>
@@ -18,8 +18,10 @@
 	</target>
 	<target name="copyProjectToOutputfolder">
 		<copy todir="${outputDirectory}" verbose="true">
-			<!-- Dateien aus dem ersten zipfileset -->
-			<fileset dir=".." includes="bin/**"/>
+			<!-- Exlude dev log4j config -->
+			<fileset dir=".." includes="bin/**">
+				<exclude name="bin/log4j2.xml"/>
+			</fileset>
 			<fileset dir=".." includes="lib/*.jar"/>
 			<fileset dir=".." includes="lib/poi-3.10.1/*.jar"/>
 			<fileset dir=".." includes="lib/poi-3.10.1/LICENSE"/>
@@ -28,7 +30,6 @@
 			<fileset dir=".." includes="resources/**"/>
 			<fileset dir=".." includes="lib/**"/>
 			<fileset dir=".." includes="AutoMLM/**"/>
-			<fileset dir=".." includes="logs/java/**"/>
 			<fileset dir=".." includes="javafx/bin/*.dll"/>
 			<fileset dir=".." includes="javafx/lib/*.jar"/>
 			<fileset dir=".." includes="u_javafx/lib/*.jar"/>
@@ -39,10 +40,14 @@
 			<fileset dir="./resources/" includes="*.sh,*.exe"/>
 			<fileset dir="./resources/" includes="changelog.txt"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.machine" includes="bin/**"/>
-			<fileset dir="../../XMF/com.ceteva.xmf.system" includes="xmf-addons/**,xmf-src/**,demo/**,xmf-img/compiler.img,xmf-img/xmf.img,xmf-img/mosaic.img"/>	
+			<fileset dir="../../XMF/com.ceteva.xmf.system" includes="xmf-addons/**,xmf-src/**,demo/**,xmf-img/compiler.img,xmf-img/xmf.img,xmf-img/mosaic.img"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" includes="Bluebook.pdf"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" includes="book.pdf"/>
 			<fileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" includes="Applied Metamodelling (Second Edition).pdf"/>
+		</copy>
+		<copy todir="${outputDirectory}/bin" verbose="true">
+		<!-- Include prod log4j config -->
+			<fileset dir="./resources/" includes="log4j2.xml"/>
 		</copy>
 	</target>
 	<target name="init">
