@@ -65,7 +65,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.helper.userProperties.PropertyManager;
+import tool.helper.user_properties.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {

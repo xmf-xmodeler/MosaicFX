@@ -55,8 +55,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.ModelInputTransformer;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.persistence.XMLParser;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class ControlCenter extends Stage {
 	

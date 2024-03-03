@@ -1,4 +1,4 @@
-package tool.helper.userProperties;
+package tool.helper.user_properties;
 
 import java.io.File;
 import java.util.Optional;

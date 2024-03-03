@@ -1,4 +1,4 @@
-package tool.helper.userProperties;
+package tool.helper.user_properties;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,30 +13,31 @@ import org.apache.logging.log4j.Logger;
 import tool.clients.menus.MenuClient;
 
 public class PropertyManager {
-	
+
 	static final String PROPERTIES_FILE_NAME = "user.properties";
 	static File userPropertiesFile;
 	static Properties properties = new Properties(new DefaultUserProperties());
 	private static final Logger logger = LogManager.getLogger(PropertyManager.class);
-	
-	//init prod file depending on XModeler stage (dev, prod)
-	static {
-	        String envVariableValue = System.getenv("XMODELER_STAGE");
 
-	        if (envVariableValue != null && envVariableValue.equals("prod")) {
-	        	initProdProperties(); 
-	        } else {
-	        	logger.debug("Programm started in dev stage");        	
-	        	userPropertiesFile = new File(PROPERTIES_FILE_NAME);
-	        }
-	        logger.debug(String.format("user.properties file path: %s", userPropertiesFile.getAbsoluteFile()));
+	// init prod file depending on XModeler stage (dev, prod)
+	static {
+		String envVariableValue = System.getenv("XMODELER_STAGE");
+
+		if (envVariableValue != null && envVariableValue.equals("prod")) {
+			initProdProperties();
+		} else {
+			logger.debug("Programm started in dev stage");
+			userPropertiesFile = new File(PROPERTIES_FILE_NAME);
+		}
+		logger.debug(String.format("user.properties file path: %s", userPropertiesFile.getAbsoluteFile()));
 	}
 
 	private static void initProdProperties() {
 		logger.debug("Programm started in prod stage");
 		String localAppData = System.getenv("LOCALAPPDATA");
-		String prodUserPropertiesPath = localAppData + File.separator + "XModeler" + File.separator + PROPERTIES_FILE_NAME;
-		userPropertiesFile = new File(prodUserPropertiesPath);	    
+		String prodUserPropertiesPath = localAppData + File.separator + "XModeler" + File.separator
+				+ PROPERTIES_FILE_NAME;
+		userPropertiesFile = new File(prodUserPropertiesPath);
 		if (!userPropertiesFile.exists()) {
 			try {
 				userPropertiesFile.createNewFile();
@@ -45,7 +46,7 @@ public class PropertyManager {
 			}
 		}
 	}
-	
+
 	public PropertyManager() {
 		loadProperties();
 	}
@@ -59,7 +60,7 @@ public class PropertyManager {
 	}
 
 	private static void storeProperties() {
-        setXmfDebugging();
+		setXmfDebugging();
 		try {
 			properties.store(new FileOutputStream(userPropertiesFile.toString()), null);
 		} catch (IOException e) {
@@ -81,29 +82,30 @@ public class PropertyManager {
 	}
 
 	public static int getProperty(String key, int defaultValue) {
-		return Integer.parseInt(properties.getProperty(key, defaultValue+""));
+		return Integer.parseInt(properties.getProperty(key, defaultValue + ""));
 	}
 
 	public static boolean getProperty(String key, boolean defaultValue) {
-		return Boolean.parseBoolean(properties.getProperty(key, defaultValue+""));
+		return Boolean.parseBoolean(properties.getProperty(key, defaultValue + ""));
 	}
-	
+
 	public static void deleteProperty(String key) {
 		properties.remove(key);
 		storeProperties();
 	}
-	
+
 	public void showPropertyManagerStage() {
 		new PropertyManagerStage().show();
 	}
-	
-	//set xmf debugging values
+
+	// set xmf debugging values
 	private static void setXmfDebugging() {
-	MenuClient.setClientCommunicationMonitoring(getProperty("MONITOR_CLIENT_COMMUNICATION", false));
-	MenuClient.setDaemonMonitoring(getProperty("MONITOR_DAEMON_FIRING", false));
+		MenuClient.setClientCommunicationMonitoring(getProperty("MONITOR_CLIENT_COMMUNICATION", false));
+		MenuClient.setDaemonMonitoring(getProperty("MONITOR_DAEMON_FIRING", false));
 	}
 
 	public static void setXmfSettings() {
-	if (properties != null) setXmfDebugging();
+		if (properties != null)
+			setXmfDebugging();
 	}
 }

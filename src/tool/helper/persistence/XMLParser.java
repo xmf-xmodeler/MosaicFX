@@ -24,8 +24,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
 public class XMLParser {
