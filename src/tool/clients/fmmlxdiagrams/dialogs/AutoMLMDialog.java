@@ -38,7 +38,7 @@ public class AutoMLMDialog extends Dialog {
 
 	private String path = "";
 
-	private Button buttonSelectFile;
+	private Button buttonSelectModel;
 	private Button buttonExecute;
 	private Button buttonUseCurrent;
 
@@ -99,10 +99,10 @@ public class AutoMLMDialog extends Dialog {
 		grid.add(comboboxTechnologySelector, 1, 3, 2, 1);
 
 		// add filechooser
-		buttonSelectFile = new Button("Select File");
-		buttonSelectFile.setMaxWidth(Double.MAX_VALUE);
-		grid.add(buttonSelectFile, 0, 4);
-		buttonSelectFile.setOnAction(e -> {
+		buttonSelectModel = new Button("Select Model");
+		buttonSelectModel.setMaxWidth(Double.MAX_VALUE);
+		grid.add(buttonSelectModel, 0, 4);
+		buttonSelectModel.setOnAction(e -> {
 			buttonSelectFilePressed();
 		});
 
@@ -114,8 +114,8 @@ public class AutoMLMDialog extends Dialog {
 			buttonExecutePressed();
 		});
 
-		// use current file button
-		buttonUseCurrent = new Button("Use Current File");
+		// use current model button
+		buttonUseCurrent = new Button("Use Current Model");
 		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
 		grid.add(buttonUseCurrent, 2, 4);
 		buttonUseCurrent.setOnAction(e -> {
