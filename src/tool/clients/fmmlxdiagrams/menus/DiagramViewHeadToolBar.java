@@ -78,8 +78,13 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildAutoMlmMenu(Menu autoMlmMenu) {
+		// TODO Aufräumen und Integrationstests entfernen.
 		
 		buildGUIMainButon(autoMlmMenu);
+		
+//		buildProcessStringButton(autoMlmMenu);
+//		buildIllegalArgumentsButton(autoMlmMenu);
+//		buildSimulateLostFielButton(autoMlmMenu);
 		
 	}
 	// FH main GUI für AutoMLM
@@ -88,6 +93,36 @@ public class DiagramViewHeadToolBar extends VBox {
 			diagramActions.addAutoMLMDialog();;
 		};
 		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Main GUI", onButtonClicked);
+	}
+	
+	private void buildSimulateLostFielButton(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.SIMULATE_LOST_FILE, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Test file loss", onButtonClicked);
+	}
+
+	private void buildIllegalArgumentsButton(Menu autoMlmMenu) {
+		 EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.ILLEGAL_ARGUMENTS, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+	     };
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Illegal Arguments",  onButtonClicked);
+	}
+
+	private void buildProcessStringButton(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROCESS_STRIGN, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Process String", onButtonClicked);
 	}
 
 	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
