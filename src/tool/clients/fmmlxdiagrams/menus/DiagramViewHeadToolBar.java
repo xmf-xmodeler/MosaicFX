@@ -48,6 +48,9 @@ public class DiagramViewHeadToolBar extends VBox {
 	private DiagramActions diagramActions;
 	private Button updateButton;
 	private Node updateSvg;
+	
+	// changes between a dev and a productive mode regarding the items in the menu
+	private static final boolean DEBUG = false;
 		
 	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
@@ -78,13 +81,15 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildAutoMlmMenu(Menu autoMlmMenu) {
-		// TODO Aufräumen und Integrationstests entfernen.
 		
 		buildGUIMainButon(autoMlmMenu);
 		
-//		buildProcessStringButton(autoMlmMenu);
-//		buildIllegalArgumentsButton(autoMlmMenu);
-//		buildSimulateLostFielButton(autoMlmMenu);
+		if (DEBUG) {
+			buildProcessStringButton(autoMlmMenu);
+			buildIllegalArgumentsButton(autoMlmMenu);
+			buildSimulateLostFielButton(autoMlmMenu);
+		}
+		
 		
 	}
 	// FH main GUI für AutoMLM

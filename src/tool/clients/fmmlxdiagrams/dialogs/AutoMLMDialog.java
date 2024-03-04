@@ -115,7 +115,7 @@ public class AutoMLMDialog extends Dialog {
 		});
 
 		// use current file button
-		Button buttonUseCurrent = new Button("Use Current File");
+		buttonUseCurrent = new Button("Use Current File");
 		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
 		grid.add(buttonUseCurrent, 2, 4);
 		buttonUseCurrent.setOnAction(e -> {
