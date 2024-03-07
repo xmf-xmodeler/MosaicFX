@@ -23,11 +23,11 @@ public class PropertyManager {
 	static {
 		String envVariableValue = System.getenv("XMODELER_STAGE");
 
-		if (envVariableValue != null && envVariableValue.equals("prod")) {
-			initProdProperties();
-		} else {
+		if (envVariableValue != null && envVariableValue.equals("dev")) {
 			logger.debug("Programm started in dev stage");
 			userPropertiesFile = new File(PROPERTIES_FILE_NAME);
+		} else {
+			initProdProperties();
 		}
 		logger.debug(String.format("user.properties file path: %s", userPropertiesFile.getAbsoluteFile()));
 	}
