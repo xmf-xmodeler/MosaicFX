@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
+import tool.helper.persistence.StartupModelLoader;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
 
@@ -113,9 +114,16 @@ public class AutoMLMDialog extends Dialog {
 		buttonExecute.setOnAction(e -> {
 			buttonExecutePressed();
 		});
+		
+		// add button execue and get dummy xml file
+		Button buttonExecuteAndOpen = new Button("Execute and open XML");
+		grid.add(buttonExecuteAndOpen, 1, 8);
+		buttonExecute.setOnAction(e -> {
+			buttonExecuteAndOpenPressed();
+		});
 
 		// use current file button
-		Button buttonUseCurrent = new Button("Use Current File");
+		buttonUseCurrent = new Button("Use Current File");
 		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
 		grid.add(buttonUseCurrent, 2, 4);
 		buttonUseCurrent.setOnAction(e -> {
@@ -126,6 +134,40 @@ public class AutoMLMDialog extends Dialog {
 		grid.add(new Label(""), 0, 5, 3, 1);
 
 		return grid;
+	}
+
+	private void buttonExecuteAndOpenPressed() {
+		
+		String[] args = new String[0];
+		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.IMPORT_XML, args);
+		wrapper.execute();
+		String path = (String) wrapper.getResponse();
+		System.err.println(path);
+		
+		new StartupModelLoader().loadModelsFromPath(path);
+		
+		
+		// alert to inform when transformation is complete
+		Alert alert = new Alert(AlertType.NONE);
+		alert.setTitle("Tranformation complete");
+		alert.setContentText("The transformation of the diagram is complete. Press OK to open the new diagram.");
+		alert.getButtonTypes().add(ButtonType.OK);
+
+		// Display the alert and wait for it
+		Optional<ButtonType> result = alert.showAndWait();
+		// wait for result of alert box
+		if (result.isPresent()) {
+			if (result.get().equals(ButtonType.OK)) {
+				// open the new diagram
+				// TBD do not hardcode the parameters, but instead get them from the xml file
+				diagram.getComm().openDiagram("gen", "gen");
+				return;
+			}
+		}
+		
+		
+		
+		
 	}
 
 	// basic grid pane settings

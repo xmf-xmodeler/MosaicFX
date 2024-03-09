@@ -2,7 +2,8 @@ package tool.communication.java_to_python;
 
 public enum PythonFunction {
 
-	CALL_EXECUTION("perform_promotion_process_from_java", 1, ReturnType.STRING);
+	CALL_EXECUTION("perform_promotion_process_from_java", 1, ReturnType.STRING),
+	IMPORT_XML("import_XML",0,ReturnType.STRING);
 
 	
 	
