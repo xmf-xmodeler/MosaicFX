@@ -310,7 +310,9 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				NodeLabel.Action changeSlotValueAction = () -> diagram.getActions().changeSlotValue(object, s);
 				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ");
 				slotsBox.addNodeElement(slotNameLabel);
-				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), s, changeSlotValueAction, "" + s.getValue());
+				String text = (""+s.getValue()).length() > 40 ? (""+s.getValue().substring(0, 37)+"...") : (""+s.getValue());
+				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), 
+						s, changeSlotValueAction, text);
 				slotsBox.addNodeElement(slotValueLabel);
 			}
 		}
@@ -488,7 +490,10 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		//determine maximal width of slots
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && object.slots.size() > 0) {
 			for (FmmlxSlot slot : object.slots) {
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
+//				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
+				if (slot.getValue().length() > 40) {
+					neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(slot.getName() + " -> " + slot.getValue().substring(0,40)), neededWidth);
+				} else neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(slot.getName() + " -> " + slot.getValue()), neededWidth);
 
 			}
 		}

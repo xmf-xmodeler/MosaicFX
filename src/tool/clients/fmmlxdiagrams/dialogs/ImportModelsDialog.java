@@ -33,7 +33,7 @@ public class ImportModelsDialog extends Dialog<ImportModelsDialog.Result> {
 		});
 
 		DialogPane dialogPane = getDialogPane();
-		setHeaderText("New MetaClass");
+//		setHeaderText("New MetaClass");
 		setTitle("Edit Imports");
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

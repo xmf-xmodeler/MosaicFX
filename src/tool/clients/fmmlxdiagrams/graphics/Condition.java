@@ -19,7 +19,34 @@ public abstract class Condition<ReturnType>{
 	
 	
 	@SuppressWarnings("serial")
-	public static class SlotNotFoundException extends RuntimeException{}
+	public static class SlotNotFoundException extends RuntimeException{
+
+		public SlotNotFoundException() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public SlotNotFoundException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
+			super(arg0, arg1, arg2, arg3);
+			// TODO Auto-generated constructor stub
+		}
+
+		public SlotNotFoundException(String arg0, Throwable arg1) {
+			super(arg0, arg1);
+			// TODO Auto-generated constructor stub
+		}
+
+		public SlotNotFoundException(String arg0) {
+			super(arg0);
+			// TODO Auto-generated constructor stub
+		}
+
+		public SlotNotFoundException(Throwable arg0) {
+			super(arg0);
+			// TODO Auto-generated constructor stub
+		}
+		
+	}
 	
 	public static class BooleanSlotCondition extends Condition<Boolean>{
 		private String slotName;
@@ -171,7 +198,8 @@ public abstract class Condition<ReturnType>{
 		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxOperationValue opVal = object.getOperationValue(opName);
 			if (opVal == null) {
-				throw new SlotNotFoundException();
+				String msg = object.getName() + " -> operation value fail -> " + opName;
+				throw new SlotNotFoundException(msg);
 			}
 			return "true".equals(opVal.getValue());
 		}

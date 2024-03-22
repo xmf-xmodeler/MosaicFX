@@ -56,6 +56,7 @@ public final class ModelBrowser extends CustomStage {
 	private final ListView<FmmlxObject> fmmlxObjectListView = new ListView<>();
 	private final ListView<FmmlxAttribute> fmmlxAttributeListView = new ListView<>();
 	private final ListView<FmmlxSlot> slotListView = new ListView<>();
+	private ToggleButton extendedConstraintButton;
 
 	private final Button opCodeButton = new Button("Commit");
 	private final Button conCodeButton = new Button("Commit");
@@ -351,10 +352,7 @@ public final class ModelBrowser extends CustomStage {
 	        };
 		});
 		
-		linksListView.setCellFactory(associationFactory);
-		
-		
-		
+		linksListView.setCellFactory(associationFactory);		
 	}
 
 	private void addSelectionListeners() {
@@ -406,7 +404,13 @@ public final class ModelBrowser extends CustomStage {
 		modelColumnGrid.add(new Label(StringValue.LabelAndHeaderTitle.project + ": [TODO]"), 0,2);
 		
 		Button button1 = new Button("Update...");
-		modelColumnGrid.add(button1, 0,3);
+		extendedConstraintButton = new ToggleButton("Ext. Constr.");
+		extendedConstraintButton.setOnAction(e -> activePackage.extendedConstraintCheck = extendedConstraintButton.isSelected());
+
+		HBox updateBox = new HBox(button1, extendedConstraintButton);
+		HBox.setHgrow(button1, Priority.ALWAYS);
+		updateBox.setSpacing(5.);
+		modelColumnGrid.add(updateBox, 0,3);
 		button1.setOnAction(e -> activePackage.updateDiagram());
 		modelColumnGrid.add(statusLabel, 0,4);
 		GridPane.setHalignment(statusLabel, javafx.geometry.HPos.CENTER);
@@ -628,6 +632,7 @@ public final class ModelBrowser extends CustomStage {
 				operationCodeArea.setDiagram(activePackage);
 				constraintBodyArea.setDiagram(activePackage);
 				constraintReasonArea.setDiagram(activePackage);
+				extendedConstraintButton.setSelected(activePackage.extendedConstraintCheck);
 				activePackage.updateDiagram();
 			};
 			communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser, false, onDiagramCreated);
@@ -636,6 +641,7 @@ public final class ModelBrowser extends CustomStage {
 			operationCodeArea.setDiagram(activePackage);
 			constraintBodyArea.setDiagram(activePackage);
 			constraintReasonArea.setDiagram(activePackage);
+			extendedConstraintButton.setSelected(activePackage.extendedConstraintCheck);
 			activePackage.updateDiagram();
 		}
 	}	

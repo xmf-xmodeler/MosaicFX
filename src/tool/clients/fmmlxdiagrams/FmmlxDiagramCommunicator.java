@@ -241,7 +241,7 @@ public class FmmlxDiagramCommunicator {
 	 *          Otherwise it is dropped, as no operation is waiting for a response.
 	 */
 	@SuppressWarnings("unchecked")
-	public void sendMessageToJava(Object msgAsObj) {
+	public synchronized void sendMessageToJava(Object msgAsObj) {
 		if (msgAsObj instanceof java.util.Vector) {
 			// First the message is unwrapped.
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
@@ -769,17 +769,21 @@ public class FmmlxDiagramCommunicator {
 	
 				Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 				
-				FmmlxLink object = new FmmlxLink(
-						(String) edgeInfoAsList.get(0), // id
-						(String) edgeInfoAsList.get(1), // startId //TODO
-						(String) edgeInfoAsList.get(2), // endId //TODO
-						(String) edgeInfoAsList.get(3), // ofId	//TODO
-						listOfPoints, // points
-						startRegion, endRegion,
-						labelPositions,
-						diagram);
-	
-				result.add(object);
+				try{				
+					FmmlxLink object = new FmmlxLink(
+							(String) edgeInfoAsList.get(0), // id
+							(String) edgeInfoAsList.get(1), // startId //TODO
+							(String) edgeInfoAsList.get(2), // endId //TODO
+							(String) edgeInfoAsList.get(3), // ofId	//TODO
+							listOfPoints, // points
+							startRegion, endRegion,
+							labelPositions,
+							diagram);
+		
+					result.add(object);				
+				} catch (AbstractPackageViewer.PathNotFoundException e) {
+					System.err.println("Ignoring old link: " + edgeInfoAsList.get(0));
+				}
 			}
 			linksReceivedReturn.run(result);
 		};
@@ -926,7 +930,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
     @SuppressWarnings("unchecked")
-    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
+    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, boolean extended, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
     	ReturnCall<Vector<Object>> returnCall = response -> {
     		Vector<Object> issueList = (Vector<Object>) (response.get(0));
 
@@ -946,7 +950,7 @@ public class FmmlxDiagramCommunicator {
 		    }
 		    issuesReceivedReturn.run(result);
     	};        
-        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall);
+        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall, new Value(extended));
     }
 
     @SuppressWarnings("unchecked")

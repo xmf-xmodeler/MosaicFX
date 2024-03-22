@@ -20,9 +20,4 @@
     <Affected id="humidity" localId="humidity"/>
     <Consequence type="READ_FROM_SLOT"/>
   </Modification>
-  <Modification>
-    <Condition opName="hasWarning" type="BooleanOpValCondition"/>
-    <Affected id="svg1" localId="svg1"/>
-    <Consequence type="SHOW_IF"/>
-  </Modification>
 </ConcreteSyntax>
