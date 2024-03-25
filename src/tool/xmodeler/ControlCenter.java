@@ -244,12 +244,13 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-//		Button newDiagram2 = new Button("Create UML Diagram");
-//		newDiagram2.setDisable(true);
-//		newDiagram2.disableProperty().bind(
-//				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-//				);
-//		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
+		Button newDiagram2 = new Button("Create UML Diagram");		//reactivated by Tom for uml concrete syntax implementation
+		newDiagram2.setDisable(true);
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
+		grid.add(newDiagram2, 4, 4);
 		
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);

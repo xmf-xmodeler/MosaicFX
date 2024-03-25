@@ -298,14 +298,14 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		currentY = yAfterConstraintBox;
 
 		double yAfterSlotBox = currentY;
-		int slotSize = object.slots.size();
+		int slotSize = object.getSlots().size();
 		double slotBoxHeight = Math.max(lineHeight * slotSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double slotsY = 0;
 		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Slot);
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && slotSize > 0) {
 			yAfterSlotBox = currentY + slotBoxHeight;
 			group.addNodeElement(slotsBox);
-			for (FmmlxSlot s : object.slots) {
+			for (FmmlxSlot s : object.getSlots()) {
 				slotsY += lineHeight;
 				NodeLabel.Action changeSlotValueAction = () -> diagram.getActions().changeSlotValue(object, s);
 				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ");
@@ -486,8 +486,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			}
 		}
 		//determine maximal width of slots
-		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && object.slots.size() > 0) {
-			for (FmmlxSlot slot : object.slots) {
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && object.getSlots().size() > 0) {
+			for (FmmlxSlot slot : object.getSlots()) {
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
 
 			}
