@@ -24,7 +24,7 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	protected void layoutLabels(FmmlxDiagramView diagram) {
 		createLabel(""+level, 2, Anchor.TARGET_LEVEL, showChangeLevelDialog, Color.WHITE, getPrimaryColor(), diagram);
 
 		layoutingFinishedSuccesfully = true;

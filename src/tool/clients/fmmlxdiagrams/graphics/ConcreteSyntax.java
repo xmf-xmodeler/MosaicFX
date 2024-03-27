@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ConcreteSyntax extends ConcreteSyntaxPattern{
@@ -115,7 +115,7 @@ public class ConcreteSyntax extends ConcreteSyntaxPattern{
 	}	
 	
 	
-	public NodeGroup createInstance(final FmmlxObject object, FmmlxDiagram diagram) {
+	public NodeGroup createInstance(final FmmlxObject object, FmmlxDiagramView diagram) {
 		NodeGroup instance = createInstance(object, modifications, actions, diagram);
 		instance.myTransform = new Affine(1, 0, object.getX(), 0, 1, object.getY());
 		return instance;

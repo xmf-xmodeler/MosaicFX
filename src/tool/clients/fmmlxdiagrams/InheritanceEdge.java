@@ -22,7 +22,7 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 		visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	protected void layoutLabels(FmmlxDiagramView diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 

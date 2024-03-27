@@ -138,7 +138,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 	
 	@Override
-	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane view) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(view.getDiagram()); 
@@ -357,7 +357,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return allPoints;
 	}
 
-	protected abstract void layoutLabels(FmmlxDiagram diagram);
+	protected abstract void layoutLabels(FmmlxDiagramView diagram);
 
 	public void align() {
 		checkVisibilityMode();
@@ -418,7 +418,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane view) {
 		if(!isVisible()) return false;
 		return null != isHit(new Point2D(mouseX, mouseY), 2.5, view.getCanvasTransform());
 	}
@@ -452,7 +452,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+	public final ContextMenu getContextMenu(FmmlxDiagramView.DiagramViewPane diagram, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
 		//if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		//MenuItem repairItem = new MenuItem("Repair Edge Alignment");
@@ -463,7 +463,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
-	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane view) {
 	  try {
 		Point2D mouse = new Point2D(mouseX, mouseY);
 		Point2D raw = view.getCanvasTransform().inverseTransform(mouse);
@@ -553,7 +553,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		}
 	}
 
-	public void dropPoint(FmmlxDiagram diagram) {
+	public void dropPoint(FmmlxDiagramView diagram) {
 		/*
 		 * Vector<Point2D> points = getAllPoints(); if (pointToBeMoved != -1) { // if
 		 * point very close to other point, remove it. if
@@ -725,9 +725,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	public abstract String getName();
 	
-	protected void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor, FmmlxDiagram diagram) {
-		double w = FmmlxDiagram.calculateTextWidth(value);
-		double h = FmmlxDiagram.calculateTextHeight();
+	protected void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor, FmmlxDiagramView diagram) {
+		double w = FmmlxDiagramView.calculateTextWidth(value);
+		double h = FmmlxDiagramView.calculateTextHeight();
 		
 		if(Anchor.CENTRE_MOVABLE == anchor) {
 			Point2D storedPostion = getLabelPosition(localId);
@@ -820,7 +820,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagramView diagram) {
 		if(!isVisible()) return;
 
 		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();

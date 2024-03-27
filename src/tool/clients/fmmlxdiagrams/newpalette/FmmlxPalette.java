@@ -25,14 +25,14 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class FmmlxPalette {
 
 	private final VBox node;
 	private final TreeView<AbstractTreeType> treeView;
-	private final FmmlxDiagram fmmlxDiagram;
+	private final FmmlxDiagramView fmmlxDiagram;
 	private TreeItem<AbstractTreeType> root;
 	private TreeItem<AbstractTreeType> relationships = new TreeItem<AbstractTreeType>(new TreeGroup("Relationships"));
 	private TreeItem<AbstractTreeType> elements = new TreeItem<AbstractTreeType>(new TreeGroup("Elements"));
@@ -44,7 +44,7 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(FmmlxDiagram fmmlxDiagram) {
+	public FmmlxPalette(FmmlxDiagramView fmmlxDiagram) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
 		this.fmmlxDiagram = fmmlxDiagram;

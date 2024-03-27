@@ -5,14 +5,14 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView.DiagramViewPane;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 
 public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu(DiagramViewPane view) {
-		FmmlxDiagram diagram = view.getDiagram();
+		FmmlxDiagramView diagram = view.getDiagram();
 		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
 

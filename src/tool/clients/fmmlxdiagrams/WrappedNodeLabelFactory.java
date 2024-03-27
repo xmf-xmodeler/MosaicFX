@@ -36,7 +36,7 @@ class WrappedNodeLabelFactory {
 	
 	private void appendNodeBox(double maxWidth) {
 		box = new NodeBox();
-		box.setPosition(0, - FmmlxDiagram.getFont().getSize());
+		box.setPosition(0, - FmmlxDiagramView.getFont().getSize());
 		box.setSize(maxWidth, getTextHeight());
 		group.addNodeElementAtFirst(box);
 	}
@@ -45,7 +45,7 @@ class WrappedNodeLabelFactory {
 	//Can not handle line-breaks
 	private void appendWrapedTextToGroup(String text, double maxWidth) {
 		// defines the vertical difference between two lines
-		double lineShot = FmmlxDiagram.getFont().getSize();
+		double lineShot = FmmlxDiagramView.getFont().getSize();
 		String[] words = text.split(" ");
 
 		// initialize the current positions. The positions will be adapted within this
@@ -77,7 +77,7 @@ class WrappedNodeLabelFactory {
 		if (latestY == -1) {
 			throw new IllegalArgumentException("No WrapedNodeLabel was created. Pleas call WrapedNodeLabelFactory.create() before requesting latest y");
 		}
-		return latestY + FmmlxDiagram.getFont().getSize();
+		return latestY + FmmlxDiagramView.getFont().getSize();
 	}
 
 	public void setBoxBackgroundColor(Color boxBackgroundColor) {

@@ -14,9 +14,9 @@ import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView.DiagramViewPane;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeText extends NodeBaseElement{
@@ -89,7 +89,7 @@ public class NodeText extends NodeBaseElement{
 	}
 
 	@Override
-	void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		// TODO Auto-generated method stub
 	}
 
@@ -105,7 +105,7 @@ public class NodeText extends NodeBaseElement{
 	}
 	
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram) {
 		return new NodeText(textNode, rootNode);
 	}
 }

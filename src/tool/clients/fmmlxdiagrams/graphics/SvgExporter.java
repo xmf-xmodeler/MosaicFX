@@ -38,7 +38,7 @@ public class SvgExporter {
         xmlCreator.createSvg(file, bounds, extraHeight);
     }
     public void export(AbstractPackageViewer diagram, double extraHeight) throws TransformerException {
-        ((FmmlxDiagram)diagram).paintToSvg(xmlHandler, extraHeight);
+        ((FmmlxDiagramView)diagram).paintToSvg(xmlHandler, extraHeight);
         this.xmlHandler.flushData();
     }
 

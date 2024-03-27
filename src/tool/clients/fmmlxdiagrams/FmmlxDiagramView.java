@@ -77,7 +77,7 @@ import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
 
-public class FmmlxDiagram extends AbstractPackageViewer{
+public class FmmlxDiagramView extends AbstractPackageViewer{
 
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
@@ -124,14 +124,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	String edgeCreationType = null;
 	String nodeCreationType = null;
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
-	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
+	public final static FmmlxDiagramView NullDiagram = new FmmlxDiagramView();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
 	//Only used for mouse listener. Should be removed over time. Use getActiveDiagramViewPane() instead.
 	//@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
-	private FmmlxDiagram() {
+	private FmmlxDiagramView() {
 		super(null,-1,null);
 		this.newFmmlxPalette = null;
 		this.diagramName = null;
@@ -141,7 +141,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramViewToolBarModel;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
+	public FmmlxDiagramView(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
 			Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 		super(comm,diagramID,packagePath);
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
@@ -168,7 +168,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			@Override
 			public void handle(MouseEvent click) {
 				if (click.getClickCount() == 2) {
-					getActiveDiagramViewPane().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
+					getActiveDiagramViewPane().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagramView.this));
 				}
 			}
 		});
@@ -178,7 +178,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			@Override
 			public ObservableValue<FmmlxObject> call(CellDataFeatures<Issue, FmmlxObject> f) {
 				try {
-				return new ReadOnlyObjectWrapper<FmmlxObject>(f.getValue().getAffectedObject(FmmlxDiagram.this));
+				return new ReadOnlyObjectWrapper<FmmlxObject>(f.getValue().getAffectedObject(FmmlxDiagramView.this));
 				} catch(Exception e) {
 					return null;
 				}
@@ -286,7 +286,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
 						if (element instanceof FmmlxObject) {
-							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
+							new DiagramActions(FmmlxDiagramView.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 						}
 					}
 				}
@@ -1100,7 +1100,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 	
 				for(Edge<?> edge : edges) {
-					edge.dropPoint(FmmlxDiagram.this);
+					edge.dropPoint(FmmlxDiagramView.this);
 				}
 				
 				triggerOverallReLayout();
@@ -1469,7 +1469,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			drawNewEdgeLine(g);
 			
 			g.setTransform(new Affine());	
-			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			g.setFont(Font.font(FmmlxDiagramView.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
 		}
 		
 		
@@ -1571,7 +1571,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 
-		          public FmmlxDiagram getDiagram() { return FmmlxDiagram.this; }
+		          public FmmlxDiagramView getDiagram() { return FmmlxDiagramView.this; }
 		@Override public Affine getCanvasTransform() { return canvasTransform; }
 		@Override public Canvas getCanvas() {	return canvas; }
 		

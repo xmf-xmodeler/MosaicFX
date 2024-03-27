@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -79,8 +79,8 @@ public class NodeLabel extends NodeBaseElement {
 		this.selected = false;
 		this.fontScale = fontScale;
 		
-		textWidth = FmmlxDiagram.calculateTextWidth(text);
-		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
+		textWidth = FmmlxDiagramView.calculateTextWidth(text);
+		textHeight = FmmlxDiagramView.calculateTextHeight()*fontScale;
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class NodeLabel extends NodeBaseElement {
 	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		String textLocal = setTextLocal(text);
-		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
+		g.setFont(Font.font(FmmlxDiagramView.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 
 		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
 		
@@ -138,7 +138,7 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagramView) {
 		boolean hit = false;
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
@@ -163,11 +163,11 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	public double getWidth() {
-		return FmmlxDiagram.calculateTextWidth(text);
+		return FmmlxDiagramView.calculateTextWidth(text);
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	public void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		double x = myTransform.getTx() - BOX_GAP;// + (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		double y = myTransform.getTy() - BOX_GAP;//- Y_BASELINE_DIFF + BOX_GAP;
@@ -227,7 +227,7 @@ public class NodeLabel extends NodeBaseElement {
 
 		if(special) {
 			int length = text.length();
-			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
+			double neededWidth = FmmlxDiagramView.calculateTextWidth(text);
 			if(neededWidth > availableWidth) {
 				textLocal = text + "     " + text;
 				int cycle = length + 5;
@@ -259,14 +259,14 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram) {
 		NodeLabel that = new NodeLabel(alignment, myTransform, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
 		return that;
 	}
 	
 	void setText(String newText) {
 		this.text = newText;
-		textWidth = FmmlxDiagram.calculateTextWidth(text);
+		textWidth = FmmlxDiagramView.calculateTextWidth(text);
 	}
 
 	public Pos getAlignment() {

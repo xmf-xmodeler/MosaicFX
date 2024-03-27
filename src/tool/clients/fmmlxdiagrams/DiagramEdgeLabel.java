@@ -55,7 +55,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	@Deprecated private double getY() {return this.myTransform.getTy();}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane view) {
 		if(!owner.isVisible()) return;		
 		int size=16;
 		g.setTransform(getTotalTransform(view.getCanvasTransform()));
@@ -65,7 +65,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		}
 				
 		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
-		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
+		g.setFont(Font.font(FmmlxDiagramView.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
 		g.fillText(this.text, MARGIN, height - MARGIN-4);
 		if(anchors.size()>=2) {
@@ -162,7 +162,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+	public ContextMenu getContextMenu(FmmlxDiagramView.DiagramViewPane diagram, Point2D absolutePoint) {
 		return menu;
 	}
 
@@ -172,7 +172,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram) {
 		if(!owner.isVisible()) return false;
 		boolean hit = false;
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
@@ -219,7 +219,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagramView diagram) {
 		if(!owner.isVisible()) return;
 		double relativeX = getX();
 		double relativeY = getY();

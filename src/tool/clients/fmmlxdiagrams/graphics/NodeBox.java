@@ -7,7 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -57,7 +57,7 @@ public class NodeBox extends NodeGroup{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagramView) {
 		boolean hit = false;
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
@@ -73,7 +73,7 @@ public class NodeBox extends NodeGroup{
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	public void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
 		group.setAttribute("XModeler", "NodeBox");

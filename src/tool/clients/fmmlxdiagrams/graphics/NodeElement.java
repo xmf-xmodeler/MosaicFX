@@ -14,7 +14,7 @@ import org.apache.batik.anim.dom.SVGOMElement;
 import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -35,9 +35,9 @@ public abstract class NodeElement {
 		public void perform();
 	}
 	
-	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
-	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
-	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
+	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram);
+	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram);
+	abstract void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup);
 	public final void setSelected() { selected = true;}
 	public final void setDeselected() { selected = false;}
 	public final FmmlxProperty getActionObject() { return actionObject;}
@@ -61,7 +61,7 @@ public abstract class NodeElement {
 	 * @param diagramView
 	 * @return whether it has been hit
 	 */
-	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);	
+	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagramView);	
     
 	/**
      * Returns the element's own transform, relative to its parent
@@ -121,7 +121,7 @@ public abstract class NodeElement {
 		SOUTHWEST,   SOUTH,  SOUTHEAST;
 	}
 	
-	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram);
+	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram);
 	
 	protected void saveTransformation(Element myElement) {
 		myElement.setAttribute("xx", myTransform.getMxx()+"");

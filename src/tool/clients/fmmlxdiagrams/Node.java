@@ -66,7 +66,7 @@ public abstract class Node implements CanvasElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane view) {
 		
 		if(hidden) return;		
 //		if(requiresReLayout) layout(view.getDiagram());
@@ -88,7 +88,7 @@ public abstract class Node implements CanvasElement {
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagramView diagram) {
 
 		if(hidden) return;
 
@@ -104,7 +104,7 @@ public abstract class Node implements CanvasElement {
 	}
 	
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram) {
 		if(hidden) return false;
 		if(rootNodeElement != null){
 			if(rootNodeElement.isHit(mouseX, mouseY, diagram)) return true;
@@ -112,9 +112,9 @@ public abstract class Node implements CanvasElement {
 		return false;
 	}
 
-	protected abstract void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
+	protected abstract void layout(FmmlxDiagramView diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
 	
-	protected void layout(FmmlxDiagram diagram) {
+	protected void layout(FmmlxDiagramView diagram) {
 		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
 	}	
 	
@@ -191,7 +191,7 @@ public abstract class Node implements CanvasElement {
 		setY(y);
 	}
   
-	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane view) {
 		if(p == null) return;
 		NodeElement.Action action = null;
 		if(rootNodeElement != null) if(action == null) {

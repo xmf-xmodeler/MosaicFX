@@ -11,7 +11,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractFmmlxObjectDisplay;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
@@ -21,7 +21,7 @@ import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 
 public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
-	public UmlObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
+	public UmlObjectDisplay(FmmlxDiagramView diagram, FmmlxObject object) {
 		super(diagram, object);
 	}
 

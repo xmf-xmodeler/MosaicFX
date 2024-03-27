@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement.Action;
@@ -16,7 +16,7 @@ public class ActionInfo {
 		this.actionType = actionType;
 	}
 
-	public Action getAction(FmmlxObject object, FmmlxDiagram diagram) {
+	public Action getAction(FmmlxObject object, FmmlxDiagramView diagram) {
 		String[] actionInfo = actionType.split(":");
 		if("CHANGE_SLOT_VALUE".equals(actionInfo[0])) {
 			final FmmlxSlot slot = object.getSlot(actionInfo[1]);

@@ -1,16 +1,16 @@
 package tool.clients.fmmlxdiagrams.newpalette;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 
 public abstract class PaletteTool {
 	
-		private FmmlxDiagram diagram;	
+		private FmmlxDiagramView diagram;	
 		private String name;
 		private String  path;
 		private String  icon;
 		private final int level;
 		private final boolean isAbstract;
 
-		public PaletteTool(FmmlxDiagram diagram, String name, String id, int level, boolean isAbstract, String icon) {
+		public PaletteTool(FmmlxDiagramView diagram, String name, String id, int level, boolean isAbstract, String icon) {
 		    super();
 		    this.diagram = diagram;
 		    this.name = name;
@@ -20,7 +20,7 @@ public abstract class PaletteTool {
 		    this.icon = icon;
 		}
 	  
-		public FmmlxDiagram getDiagram() {
+		public FmmlxDiagramView getDiagram() {
 			return diagram;
 		}
 		

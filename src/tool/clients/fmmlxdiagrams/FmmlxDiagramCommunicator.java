@@ -38,7 +38,7 @@ public class FmmlxDiagramCommunicator {
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
-	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
+	private static final Vector<FmmlxDiagramView> diagrams = new Vector<>();
 	static TabPane tabPane;
 	private static int nonReturningMessageId = -1;
 	private static int nextMsgID() {if(nonReturningMessageId < -10000) nonReturningMessageId=-1; nonReturningMessageId-=1; return nonReturningMessageId;}
@@ -93,7 +93,7 @@ public class FmmlxDiagramCommunicator {
 //		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions, umlMode);
+			FmmlxDiagramView diagram = new FmmlxDiagramView(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions, umlMode);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -226,7 +226,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public void triggerUpdate() {
-		for(FmmlxDiagram diagram : diagrams) {
+		for(FmmlxDiagramView diagram : diagrams) {
 			diagram.updateDiagram();
 		}
 	}
@@ -1732,7 +1732,7 @@ public class FmmlxDiagramCommunicator {
         sendMessage("updateAssociationInstance", message);
     }
 
-    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel<?> l) {
+    public void storeLabelInfo(FmmlxDiagramView diagram, DiagramEdgeLabel<?> l) {
         sendMessage("storeLabelInfo", l.getInfo4XMF());
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
@@ -2132,7 +2132,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, String> findAllOperations(FmmlxDiagram diagram) throws TimeOutException {
+	public HashMap<String, String> findAllOperations(FmmlxDiagramView diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagram.getID(), "findAllOperations");
 		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
@@ -2146,7 +2146,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
+	public HashMap<String, String> findOperationUsage(FmmlxDiagramView diagram, String name, String model) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagram.getID(), "findOperationUsage", new Value(name), // opNames
 				new Value(model)// model
 		);
@@ -2188,7 +2188,7 @@ public class FmmlxDiagramCommunicator {
 
 	// ########################## Tab ### Stage #######################
 		
-	private void createStage(javafx.scene.Node node, String name, String packagePath, int id, final FmmlxDiagram diagram) {
+	private void createStage(javafx.scene.Node node, String name, String packagePath, int id, final FmmlxDiagramView diagram) {
 		Stage stage = new Stage();
 		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
@@ -2210,12 +2210,12 @@ public class FmmlxDiagramCommunicator {
 		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
 	}
 
-	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
+	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagramView diagram) {
 		close(diagram, true);
 	}
 
 	private String copyFilePath(String packagePath) {
-		for (FmmlxDiagram diagram: diagrams){
+		for (FmmlxDiagramView diagram: diagrams){
 			if(diagram.getPackagePath().equals(packagePath)){
 				String file = diagram.getFilePath();
 				if(file != null && file.length()>0){
@@ -2408,8 +2408,8 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("isSaved", message);
 	}
 
-	public static FmmlxDiagram getDiagram(Integer id) {
-		for(FmmlxDiagram diagram : diagrams) {
+	public static FmmlxDiagramView getDiagram(Integer id) {
+		for(FmmlxDiagramView diagram : diagrams) {
 			if(id == diagram.diagramID) {
 				return diagram;
 			}

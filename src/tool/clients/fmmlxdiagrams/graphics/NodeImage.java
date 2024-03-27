@@ -12,7 +12,7 @@ import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -38,12 +38,12 @@ public class NodeImage extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagram) {
 		return false;
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	public void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
 		xmlHandler.addXmlElement(parentGroup, group);
@@ -79,7 +79,7 @@ public class NodeImage extends NodeBaseElement {
 	public void updateBounds() {}
 
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram) {
 		throw new RuntimeException("Not yet implemented!");
 	}
 

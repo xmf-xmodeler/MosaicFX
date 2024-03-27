@@ -33,7 +33,7 @@ import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
@@ -237,7 +237,7 @@ public class DiagramActions {
 		});
 	}
 	
-	public void addNote(FmmlxDiagram fmmlxDiagram, Point2D canvasPosition) {
+	public void addNote(FmmlxDiagramView fmmlxDiagram, Point2D canvasPosition) {
 		Platform.runLater(() -> {
 			NoteCreationDialog dialog = new NoteCreationDialog();
 			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
@@ -1121,10 +1121,10 @@ public class DiagramActions {
 		File file = fc.showSaveDialog(XModeler.getStage());
 
 		if(file!= null){
-			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
+			if(!(diagram instanceof FmmlxDiagramView)) throw new IllegalArgumentException();
 			Platform.runLater(() -> {
 				String filePath = file.getPath();
-				FmmlxDiagram diagram2 = (FmmlxDiagram) diagram;
+				FmmlxDiagramView diagram2 = (FmmlxDiagramView) diagram;
 				Bounds bounds = diagram2.getBounds();
 				double extraHeight = getExtraHeight();
 				SvgExporter svgExporter;
@@ -1141,7 +1141,7 @@ public class DiagramActions {
 	
 	public void exportPNG() {
 		
-		DiagramViewPane mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
+		DiagramViewPane mainViewPane = ((FmmlxDiagramView) diagram).getActiveDiagramViewPane();
 		
 		mainViewPane.setMaxZoom();
 
@@ -1273,7 +1273,7 @@ public class DiagramActions {
 	}
 	
 	public void centerViewOnObject() {
-		DiagramViewPane viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
+		DiagramViewPane viewPane = ((FmmlxDiagramView)diagram).getActiveDiagramViewPane();
 		
 		String dialogTitle = "Center view on specific Object";
 		Optional<FmmlxObject> result = showChooseFmmlxObjectsDialog(dialogTitle, true);

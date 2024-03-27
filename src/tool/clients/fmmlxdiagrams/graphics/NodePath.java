@@ -17,7 +17,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -116,7 +116,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagramView) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
@@ -127,7 +127,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	public void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, getMatrix4svg());
 		group.setAttribute("XModeler", "NodePath");
@@ -238,7 +238,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	protected NodePath createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodePath createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram) {
 		NodePath n = new NodePath(new Affine(myTransform), textPath, actionObject, action, styleDeclaration, type);
 		return n;
 	}

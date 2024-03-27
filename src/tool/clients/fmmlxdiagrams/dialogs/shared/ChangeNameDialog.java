@@ -63,7 +63,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		}
 	}
 
-	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public ChangeNameDialog(final FmmlxDiagramView diagram, FmmlxObject object, PropertyType type) {
 		this(diagram, object, type, null);
 	}
 

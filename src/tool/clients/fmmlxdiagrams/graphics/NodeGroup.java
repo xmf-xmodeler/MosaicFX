@@ -14,7 +14,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -66,7 +66,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagramView.DiagramViewPane diagram) {
 		for(NodeElement n : new Vector<>(nodeElements)) {
 			if(n.isHit(mouseX, mouseY, diagram)) return true;
 		}
@@ -74,7 +74,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram) {
 		NodeElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
 			 hitLabel =  e.getHitElement(mouse, g, currentTransform, diagram);
@@ -84,7 +84,7 @@ public class NodeGroup extends NodeElement {
 	}
 	
 	@Override
-	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram) {
 		Action action = null;
 		for(NodeElement e : nodeElements) if(action == null) {
 			action =  e.getAction(mouse, g, currentTransform, diagram);
@@ -94,7 +94,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+	public void paintToSvg(FmmlxDiagramView diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix("+ getMyTransform().getMxx() +","+ getMyTransform().getMxy()+","+getMyTransform().getMyx()+","+getMyTransform().getMyy()+","+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
@@ -175,7 +175,7 @@ public class NodeGroup extends NodeElement {
 		return null;
 	}
 	
-	private static Action findAction(Vector<ActionInfo> actions, NodeElement nodeElement, FmmlxObject object, FmmlxDiagram diagram)  {
+	private static Action findAction(Vector<ActionInfo> actions, NodeElement nodeElement, FmmlxObject object, FmmlxDiagramView diagram)  {
 		for(ActionInfo a : actions) {
 			if(nodeElement.matchID(a.id, a.localId))
 				return a.getAction(object, diagram);
@@ -184,7 +184,7 @@ public class NodeGroup extends NodeElement {
 	}
 	
 	@Override
-	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagramView diagram) {
 		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
 		for(NodeElement nodeElement : this.nodeElements) {
 			Modification mod = findMod(modifications, nodeElement);

@@ -8,16 +8,16 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public interface CanvasElement {
 
-	void paintOn(GraphicsContext g, Affine currentAffine, FmmlxDiagram.DiagramViewPane fmmlxDiagram);
+	void paintOn(GraphicsContext g, Affine currentAffine, FmmlxDiagramView.DiagramViewPane fmmlxDiagram);
 
-	ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint);
+	ContextMenu getContextMenu(FmmlxDiagramView.DiagramViewPane fmmlxDiagram, Point2D absolutePoint);
 
-	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagramView.DiagramViewPane diagram);
 
 	void highlightElementAt(Point2D mouse, Affine canvasTransform);
 	void unHighlight();
 
-    void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
+    void paintToSvg(XmlHandler xmlHandler, FmmlxDiagramView diagram);
 
 	boolean isHidden();
 

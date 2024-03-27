@@ -77,7 +77,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		return parentAssociationId;
 	}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override protected void layoutLabels(FmmlxDiagramView diagram) {
 		if( sourceNode == targetNode) {
 			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {

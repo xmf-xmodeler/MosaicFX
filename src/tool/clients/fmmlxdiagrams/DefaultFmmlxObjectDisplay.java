@@ -35,11 +35,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	final int EXTRA_Y_PER_LINE = 3;
 
 	
-	public DefaultFmmlxObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
+	public DefaultFmmlxObjectDisplay(FmmlxDiagramView diagram, FmmlxObject object) {
 		super(diagram, object);
 	}
 
-	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {
+	public Color getLevelBackgroundColor(FmmlxDiagramView diagram) {
 		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
 			        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
 			        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
@@ -47,7 +47,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
         return diagram.levelColorScheme.getLevelBgColor(level);
 	}
 
-	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {
+	public Color getLevelFontColor(double opacity, FmmlxDiagramView diagram) {
 		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
 	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
 	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
@@ -62,7 +62,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);
 		
 		//determine text height
-		double textHeight = FmmlxDiagram.calculateTextHeight();
+		double textHeight = FmmlxDiagramView.calculateTextHeight();
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double currentY = 0;		
 
@@ -392,28 +392,28 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		return object.getParentsPaths().size() != 0;
 	}
 
-	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 
+	private double calculateNeededWidth(FmmlxDiagramView diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		double neededWidth = FmmlxDiagramView.calculateTextWidth(object.getRelativeName()); 
 
 		try {
 			String ofName = FmmlxObject.getRelativePath(diagram.packagePath, object.getOfPath());
 //			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
+			neededWidth = Math.max(neededWidth, FmmlxDiagramView.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^???^"));
+			neededWidth = Math.max(neededWidth, FmmlxDiagramView.calculateTextWidth(object.getLevel() + "^???^"));
 		}
 		
 		neededWidth += 30; // for level number;
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
 				String ownerName = att.ownerPath;
 				try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
@@ -421,7 +421,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperation o : object.getOwnOperations()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS)  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+				neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 				}
 			}	
 			for (FmmlxOperation o : object.getOtherOperations()) {
@@ -429,7 +429,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 					}
 				}
 			}	
@@ -438,7 +438,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 					}
 				}
 			}
@@ -447,7 +447,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).name;} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
 					}
 				}
 			}
@@ -455,33 +455,33 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		//determine maximal width of slots
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && object.slots.size() > 0) {
 			for (FmmlxSlot slot : object.slots) {
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
+				neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
 
 			}
 		}
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES)) {
 			for (FmmlxOperationValue opValue : object.getAllOperationValues()) {
 				if (opValue.getValue().length() > 40) {
-					neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + " Double click for value"), neededWidth);
-				} else neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
+					neededWidth = Math.max(2+FmmlxDiagramView.calculateTextWidth(opValue.getName() + " -> " + " Double click for value"), neededWidth);
+				} else neededWidth = Math.max(2+FmmlxDiagramView.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
 		
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTS)) {
 			for (Constraint con : object.getConstraints()) {
-				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(con.getName()) + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(2+FmmlxDiagramView.calculateTextWidth(con.getName()) + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 
 		if (hasParents()) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(getParentsList(diagram)), neededWidth);
+			neededWidth = Math.max(FmmlxDiagramView.calculateTextWidth(getParentsList(diagram)), neededWidth);
 		}
 
 		//if minimum width is not reached just paint minimum
 		return Math.max(neededWidth + 2 * GAP, minWidth);
 	}
 	
-	private String getParentsList(FmmlxDiagram diagram) {
+	private String getParentsList(FmmlxDiagramView diagram) {
 		StringBuilder parentsList = new StringBuilder("extends ");
 //		System.err.println(object.ownPath + "-> " + object.getParentsPaths());
 		for (String parentName : object.getParentsPaths()) {

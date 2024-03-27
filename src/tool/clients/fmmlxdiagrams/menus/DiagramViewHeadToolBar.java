@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
@@ -35,12 +35,12 @@ import tool.xmodeler.ControlCenterClient;
 public class DiagramViewHeadToolBar extends VBox {
 	
 	private DiagramDisplayModel diagramDisplayModel;
-	private FmmlxDiagram fmmlxDiagram;
+	private FmmlxDiagramView fmmlxDiagram;
 	private DiagramActions diagramActions;
 	private Button updateButton;
 	private Node updateSvg;
 		
-	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
+	public DiagramViewHeadToolBar(FmmlxDiagramView fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
 		diagramActions = fmmlxDiagram.getActions();
 		diagramDisplayModel = new DiagramDisplayModel(this);
@@ -306,7 +306,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		alert.show();
 	}
 
-	public FmmlxDiagram getFmmlxDiagram() {
+	public FmmlxDiagramView getFmmlxDiagram() {
 		return fmmlxDiagram;
 	}
 	

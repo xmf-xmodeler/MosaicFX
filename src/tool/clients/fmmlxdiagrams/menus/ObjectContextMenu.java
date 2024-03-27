@@ -20,11 +20,11 @@ import java.util.Vector;
 public class ObjectContextMenu extends ContextMenu {
 
 	private final FmmlxObject object;
-	private final FmmlxDiagram diagram;
+	private final FmmlxDiagramView diagram;
 	private final DiagramActions actions;
 	private final FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagramView.DiagramViewPane view, Point2D mouse) {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
@@ -74,7 +74,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
-		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		changeOfItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		getItems().add(changeOfItem);
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
@@ -193,7 +193,7 @@ public class ObjectContextMenu extends ContextMenu {
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
-		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		changeOwnerItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, null, object.getOwnAttributes()));
 		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -308,12 +308,12 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Operation));
 		MenuItem changeNameItem = new MenuItem("Change name (use Change body instead)");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Operation));
-		changeNameItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		changeNameItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
 		MenuItem changeTypeItem = new MenuItem("Change type (use Change body instead)");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation, null, object.getOwnOperations()));
-		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		changeTypeItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		
 		/*MenuItem showBodyItem = new MenuItem("Show body in editor");
 		if(activeProperty != null && activeProperty instanceof FmmlxOperation) {
@@ -356,10 +356,10 @@ public class ObjectContextMenu extends ContextMenu {
 		addValueItem.setOnAction(e -> diagram.setDrawEdgeMode(object, PropertyType.AssociationInstance));
 		MenuItem removeValueItem = new MenuItem("Remove link");
 		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
-		removeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		removeValueItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeValueItem = new MenuItem("Change link");
 		changeValueItem.setOnAction(e -> System.out.println("OCM: change association instance value called"));
-		changeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		changeValueItem.setDisable(!FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 
 		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
@@ -368,7 +368,7 @@ public class ObjectContextMenu extends ContextMenu {
 	private Menu createDelegationSubMenu() {
 		Menu delegationMenu = new Menu("Delegate");
 		addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
-		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagramView.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
 //		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;

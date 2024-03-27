@@ -10,7 +10,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramView.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
@@ -88,7 +88,7 @@ public class Note extends Node implements CanvasElement {
 		return new NoteContextMenu(fmmlxDiagram.getDiagram(), this);
 	}
 
-	public void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+	public void layout(FmmlxDiagramView diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
 //		requiresReLayout = false;
 		checkForDiagramMapping();
 		
@@ -183,7 +183,7 @@ public class Note extends Node implements CanvasElement {
 	 * Removes note from diagram. Backendinformation is also deleted.
 	 * @param diagram references the diagram the note should be deleted from
 	 */
-	public void remove(FmmlxDiagram diagram) {
+	public void remove(FmmlxDiagramView diagram) {
 		Value[] xmfParam = new Value[] {new Value(getId())};
 		FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator(); 
 		comm.xmfRequestAsync(comm.getHandle(), diagram.getID(), "removeNoteFromDiagram", (r)-> {}, xmfParam);
