@@ -64,10 +64,18 @@ public class XMLUtil {
 		Element childElm = null;
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			node = nodeList.item(i);
+//			System.err.println("Tag Nmae ist:"+tagName+" sollte:"+node.getNodeName());
+			
 			if (node.getNodeType() == Node.ELEMENT_NODE && tagName.equals(node.getNodeName())) {
 				childElm = (Element) node;
+//				System.err.println("TRUE Tag Name ist:"+tagName+" sollte:"+node.getNodeName());
 				break;
 			}
+			else
+			{
+//				System.err.println("FALSE Tag Name ist:"+tagName+" sollte:"+node.getNodeName());
+			}
+			
 		}
 
 		if ((childElm == null) && (create)) {

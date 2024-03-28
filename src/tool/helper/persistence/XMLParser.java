@@ -60,15 +60,18 @@ public class XMLParser {
 		PropertyManager.setProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString(),inputFile.get().getAbsolutePath());
 		return inputFile.get();
 	}
-
-	XMLParser(File inputFile) {
+	
+	public XMLParser(File inputFile) {
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
 			//overrride importFile with transformed Version
 			inputFile = new ModelInputTransformer().transform(inputFile, importVersion);
 		}
+		// [XModelerPackage: null]
 		root = initParser(inputFile);
+		System.err.println(root);
     	ModelInputTransformer.deleteTempFiles();
+    	
 	}
 	
 	private int getVersion(File inputFile) {
@@ -112,9 +115,14 @@ public class XMLParser {
 				
 				Element diagrams = XMLUtil.getChildElement(root, XMLTags.DIAGRAMS.getName());
 				NodeList diagramList = diagrams.getChildNodes();
-
-				for (int i = 0; i < diagramList.getLength() - 1; i++) {
+				System.err.println(diagramList.getLength());
+				
+// hier lag der Fehler weil ein -1 vorhanden war !!!!!!!
+				
+				for (int i = 0; i < diagramList.getLength() ; i++) {
+					System.err.println("in for schleife ");
 					Node node = diagramList.item(i);
+					System.err.println(node.getNodeName());
 					if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.DIAGRAM.getName()) ) {
 						buildDiagram((Element)node);
 					}
@@ -132,7 +140,10 @@ public class XMLParser {
 		//Only imports version 4 or higher contains Imports. If Import-Tag is not found an empty element is returned (see getChildElement()) and because this has no children no action is performed.
 		Element importElement = XMLUtil.getChildElement(root, XMLTags.IMPORTS.getName());
 		NodeList importList  = importElement.getChildNodes();
-		for (int i = 0; i < importList.getLength() - 1; i++) {
+		
+//		-1 wurde entfernt
+		
+		for (int i = 0; i < importList.getLength() ; i++) {
 			Node node = importList.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.PACKAGE_IMPORT.getName()) ) {
 				//add your needed action for an import here
@@ -157,7 +168,10 @@ public class XMLParser {
 	private void sendModelDataToXMF(Integer diagramId) {
 		Element model = XMLUtil.getChildElement(root, XMLTags.MODEL.getName());
 		NodeList logList = model.getChildNodes();
-		for (int i = 0; i < logList.getLength() - 1; i++) {
+		
+//		-1 wurde entfernt
+		
+		for (int i = 0; i < logList.getLength() ; i++) {
 			if (logList.item(i).getNodeType() == Node.ELEMENT_NODE) {
 				Element modelElement = (Element) logList.item(i);
 				// Every request is added to a sorted list on XMF side. Because the request are processed in a ordered way it is ensured, that the first operations are finished before the next one it started. So there should be no error because one Object is waiting for another to be created.
