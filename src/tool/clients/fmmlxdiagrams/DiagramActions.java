@@ -45,6 +45,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AutoMLMDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
@@ -314,6 +315,16 @@ public class DiagramActions {
 			diagram.updateDiagram();
 		});
 		
+	}
+	
+	// FH 23.02.2024
+	// opens the gui for the AutoMLM gui
+	public void addAutoMLMDialog() {
+		Platform.runLater(() -> {
+			AutoMLMDialog dlg = new AutoMLMDialog(diagram);
+			dlg.setTitle("AutoMLM Case Navigator Tool");
+			dlg.showAndWait();
+		});
 	}
 	
 	public void editEnumerationDialog(String string, String enumName) {
