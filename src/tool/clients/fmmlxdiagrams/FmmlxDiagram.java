@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.application.Platform;
@@ -76,6 +77,7 @@ import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.persistence.XMLUtil;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -281,6 +283,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
 					actions.redo();
+				}
+				//Used for test purposes
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.T) {
+					XMLCreator creator = new XMLCreator();
+					ReturnCall<Document> onDocumentCreated = doc ->	System.err.println(XMLUtil.getStringFromDocument(doc));
+					creator.getXmlRepresentation(packagePath, onDocumentCreated);
+				}
+				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
+						getActiveDiagramViewPane().escapeLinkCreationMode();	
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();

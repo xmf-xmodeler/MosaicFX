@@ -45,6 +45,19 @@ public class XMLCreator {
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
 	
+	/**
+	 * Return an XML representation of an model. The representation can only be used inside the ReturnCall, that is defined in the signature
+	 * 
+	 * @param packagePath of the diagram that should be represented as XML
+	 * @param onDocumentCreated return call, that will give back the document. Any action can be performed on the doc
+	 */
+	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated) {
+		this.packagePath = packagePath;
+		Document doc = initXML();
+		// calls save operation after representation is build
+		getData(packagePath, onDocumentReturned -> {onDocumentCreated.run(doc);});
+	}
+
 	private void saveToFile(Document doc) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Choose save location");
