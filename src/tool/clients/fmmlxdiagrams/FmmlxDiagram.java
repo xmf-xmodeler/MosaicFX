@@ -291,7 +291,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					creator.getXmlRepresentation(packagePath, onDocumentCreated);
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
-						getActiveDiagramViewPane().escapeLinkCreationMode();	
+						getActiveDiagramViewPane().escapeCreationMode();	
 				}
 				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
