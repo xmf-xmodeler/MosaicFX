@@ -50,11 +50,10 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
-import tool.helper.persistence.ModelInputTransformer;
 import tool.helper.persistence.StartupModelLoader;
-import tool.helper.persistence.XMLParser;
 import tool.helper.userProperties.PropertyManager;
 import tool.helper.userProperties.UserProperty;
 
@@ -281,6 +280,12 @@ public class ControlCenter extends Stage {
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
 		grid.add(concreteSyntaxWizardStart, 3, 4);
+		Button howToStart = new Button("How to...");
+		howToStart.setOnAction(e -> {
+			HowToDialog d = new HowToDialog();
+			d.showAndWait();
+		});		
+		grid.add(howToStart, 4, 4);
 //		grid.add(newDiagram2, 4, 4);
 		
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});

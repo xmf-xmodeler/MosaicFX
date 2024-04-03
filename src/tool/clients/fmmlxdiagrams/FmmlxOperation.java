@@ -16,9 +16,10 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 	private Vector<String> paramNames;
 	private Vector<String> paramTypes;
 	private boolean delegateToClassAllowed;
+	private final boolean isGetterOrSetter;
 
 
-	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored, boolean delegateToClassAllowed) {
+	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored, boolean delegateToClassAllowed, boolean isGetterOrSetter) {
 		this.name = name;
 		this.level = level==null?-1:level;
 		this.type = type;
@@ -29,6 +30,7 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		this.body = body;
 		this.paramNames = paramNames;
 		this.paramTypes = paramTypes;
+		this.isGetterOrSetter = isGetterOrSetter;
 	}
 	
 	public Vector<String> getParamNames() {
@@ -100,5 +102,9 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		if(this.level > that.level) return -1; 
 		if(this.level < that.level) return 1;
 		return this.name.compareTo(that.name);
+	}
+
+	public boolean isGetterOrSetter() {
+		return isGetterOrSetter;
 	}
 }
