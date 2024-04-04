@@ -878,7 +878,8 @@ public class FmmlxDiagramCommunicator {
 								(String) opInfo.get(7), // owner
 								null, // multiplicity
 								(Boolean) opInfo.get(9), // isMonitored
-								(Boolean) opInfo.get(10) // delToClass
+								(Boolean) opInfo.get(10), // delToClass
+								opInfo.size()>11?((Boolean) opInfo.get(11)):false // is getter or setter
 							);
 						result.add(op);
 						}

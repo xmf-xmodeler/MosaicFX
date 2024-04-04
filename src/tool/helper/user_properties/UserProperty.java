@@ -1,4 +1,4 @@
-package tool.helper.userProperties;
+package tool.helper.user_properties;
 
 public enum UserProperty {
 	TOOL_HEIGHT("toolHeight"),

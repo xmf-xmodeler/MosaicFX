@@ -1,3 +1,6 @@
+export XMODELER_STAGE=dev
+
+
 JAVA_VER=$(java -version 2>&1 | sed -n ';s/.* version "\(.*\)\.\(.*\)\..*".*/\1\2/p;')
 if [ $JAVA_VER -le 18 ]
 then

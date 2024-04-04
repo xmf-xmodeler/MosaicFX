@@ -1,14 +1,16 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.w3c.dom.Document;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -25,12 +27,18 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.communication.java_to_python.MissingPythonRespondException;
+import tool.communication.java_to_python.PythonFunction;
+import tool.communication.java_to_python.PythonRequestWrapper;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 
@@ -41,6 +49,9 @@ public class DiagramViewHeadToolBar extends VBox {
 	private DiagramActions diagramActions;
 	private Button updateButton;
 	private Node updateSvg;
+	
+	// changes between a dev and a productive mode regarding the items in the menu
+	private static final boolean DEBUG = false;
 		
 	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
@@ -55,14 +66,70 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu modelMenu = new Menu("Model");		
 		Menu viewMenu = new Menu("View");
 		viewMenu.setOnShowing(e -> renderHideNotesItem(viewMenu));
+		Menu refactorMenu = new Menu("Refactor");
+		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, helpMenu);
+		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+//		setMenuBarOpenMenusOnHover(hBox, menuBar);
+		
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);	
-//		buildRefactorMenu(refactorMenu);
+		//buildRefactorMenu(refactorMenu);
+		buildAutoMlmMenu(autoMlmMenu);
 		buildHelpMenu(helpMenu);
+		
 		ToolBar toolBar = buildToolBar();
 		this.getChildren().addAll(hBox, toolBar);
+	}
+
+	private void buildAutoMlmMenu(Menu autoMlmMenu) {
+		
+		buildGUIMainButon(autoMlmMenu);
+		
+		if (DEBUG) {
+			buildProcessStringButton(autoMlmMenu);
+			buildIllegalArgumentsButton(autoMlmMenu);
+			buildSimulateLostFielButton(autoMlmMenu);
+		}
+		
+		
+	}
+	// FH main GUI für AutoMLM
+	private void buildGUIMainButon(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			diagramActions.addAutoMLMDialog();;
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Main GUI", onButtonClicked);
+	}
+	
+	private void buildSimulateLostFielButton(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.SIMULATE_LOST_FILE, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Test file loss", onButtonClicked);
+	}
+
+	private void buildIllegalArgumentsButton(Menu autoMlmMenu) {
+		 EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.ILLEGAL_ARGUMENTS, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+	     };
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Illegal Arguments",  onButtonClicked);
+	}
+
+	private void buildProcessStringButton(Menu autoMlmMenu) {
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = {"foo"};
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROCESS_STRIGN, args);
+			wrapper.execute();
+			System.err.println(wrapper.getResponse());
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Process String", onButtonClicked);
 	}
 
 	/**
@@ -300,19 +367,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 	
 	private void showShortcutDialog() {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setHeaderText("List of Shortcuts");
-		String content = "F5: Update Diagram\n"
-				+ "Strg + S: Save Diagram\n"
-				+ "Strg + A: Select all Elements\n"
-				+ "Strg + F: Find Objects\n"
-				+ "Strg + Z: Undo\n"
-				+ "Strg + Y: Redo\n"
-				+ "\n"
-				+ "Mouse ombinations:\n"
-				+ "Mouse + Space or Alt: Move Canvas";
-		alert.setContentText(content);
-		alert.show();
+		new ShortcutDialog().show();
 	}
 
 	public FmmlxDiagram getFmmlxDiagram() {

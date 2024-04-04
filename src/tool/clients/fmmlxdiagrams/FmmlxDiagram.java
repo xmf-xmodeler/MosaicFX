@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.application.Platform;
@@ -74,6 +75,7 @@ import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.persistence.XMLUtil;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -255,55 +257,33 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         zoomView = new DiagramViewPane("", true);
         
         tabPane.setFocusTraversable(true);
-        tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-            @Override
-            public void handle(javafx.scene.input.KeyEvent event) {
-            	pressedKeys.remove(event.getCode());
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.M) {
-					getActiveDiagramViewPane().canvasTransform.prependScale(-1, 1,
-							new Point2D(getActiveDiagramViewPane().canvas.getWidth() / 2, getActiveDiagramViewPane().canvas.getHeight() / 2));
-					redraw();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
-					getActiveDiagramViewPane().canvasTransform.prependRotation(10,
-							new Point2D(getActiveDiagramViewPane().canvas.getWidth() / 2, getActiveDiagramViewPane().canvas.getHeight() / 2));
-					redraw();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
-					actions.centerViewOnObject();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Z) {
-					actions.undo();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
-					actions.redo();
-				}
-				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
-					Vector<CanvasElement> hitObjects = getSelectedObjects();
-					for (CanvasElement element : hitObjects) {
-						if (element instanceof FmmlxObject) {
-							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
-						}
+		tabPane.setOnKeyReleased(keyEvent -> {
+			pressedKeys.remove(keyEvent.getCode());
+
+			if (keyEvent.isControlDown()) {
+				FmmlxDiagramControlKeyHandler handler = new FmmlxDiagramControlKeyHandler(
+						FmmlxDiagramCommunicator.getDiagram(diagramID));
+				handler.handle(keyEvent.getCode());
+			}
+
+			if (keyEvent.getCode() == javafx.scene.input.KeyCode.F5) {
+				getComm().triggerUpdate();
+			}
+
+			if (keyEvent.getCode() == javafx.scene.input.KeyCode.DELETE) {
+				Vector<CanvasElement> hitObjects = getSelectedObjects();
+				for (CanvasElement element : hitObjects) {
+					if (element instanceof FmmlxObject) {
+						new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
-			
 			}
-        });
-        tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
+		});
+		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
 				pressedKeys.add(e.getCode());
-				if (getPressedKeys().contains(KeyCode.CONTROL) &&
-					getPressedKeys().contains(KeyCode.A)) {
-					selectAll();
-				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
-					}
-				if (getPressedKeys().contains(KeyCode.F5)) {
-						getComm().triggerUpdate();
-					}
 			}
 		});
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
@@ -561,7 +541,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		selectedObjects.clear();
 	}
 	
-	private void selectAll() {
+	void selectAll() {
 		deselectAll();
 		for (Node object : getObjectsReadOnly()) {
 			selectedObjects.add(object);
@@ -911,7 +891,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		Canvas canvas;
 		private double zoom = 1.;
-		private Affine canvasTransform = new Affine();
+		Affine canvasTransform = new Affine();
 		private final boolean isZoomView;
 		private String name;
 		
