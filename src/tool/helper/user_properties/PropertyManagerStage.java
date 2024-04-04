@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.helper.user_properties;
 
 import java.io.File;
 import java.util.Optional;
@@ -23,8 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
 
 public class PropertyManagerStage extends Stage {
 

@@ -23,8 +23,8 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 /*
  * FH 19.02.2024
