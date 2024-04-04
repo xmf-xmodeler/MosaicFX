@@ -8,14 +8,15 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
@@ -39,6 +40,7 @@ import tool.xmodeler.ControlCenterClient;
 public class XMLParser {
 	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
 	private Element root;
+	private Document doc;
 	private String projectPath;
 	private static final boolean DEBUG = false;
 
@@ -70,27 +72,31 @@ public class XMLParser {
 	}
 
 	XMLParser(File inputFile) {
-		root = initParser(inputFile);
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
 			//overrride importFile with transformed Version
 			inputFile = new ModelInputTransformer().transform(inputFile, importVersion);
-			//used to clean disc from temporary used files for transformation
-			ModelInputTransformer.deleteTempFiles();
 		}
+		root = getRoot(inputFile);
+		if (DEBUG == true) {
+			XMLUtil.saveDocumentToFile(doc, new File("testXMLTransformation.xml"));
+		}
+		//used to clean disc from temporary used files for transformation
+		ModelInputTransformer.deleteTempFiles();
 		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
 	private int getVersion(File inputFile) {
 		String importVersion = null;
+		Element rootTemp = getRoot(inputFile);		
 		try {
-			importVersion = root.getAttribute(XMLAttributes.EXPORT_VERSION.getName());	
+			importVersion = rootTemp.getAttribute(XMLAttributes.EXPORT_VERSION.getName());	
 			return Integer.valueOf(importVersion);
 		} catch (Exception e) {
 			// Version is not 4
 		}
 		try {
-			Element versionElement = XMLUtil.getChildElement(root,"Version");
+			Element versionElement = XMLUtil.getChildElement(rootTemp,"Version");
 			importVersion = versionElement.getTextContent();
 			return Integer.valueOf(importVersion);
 		} catch (Exception e) {
@@ -100,9 +106,8 @@ public class XMLParser {
 		throw new IllegalArgumentException("InputFile has wrong Version number");
 	}
 
-	private Element initParser(File inputFile) {
-		Document doc = XMLUtil.getDocumentFromFile(inputFile);
-
+	private Element getRoot(File inputFile) {
+		doc = XMLUtil.getDocumentFromFile(inputFile);
 		if (DEBUG == true) {
 			XMLUtil.saveDocumentToFile(doc, new File("testXMLImport.xml"));
 		}
@@ -303,45 +308,6 @@ public class XMLParser {
 		return positions;
 	}
   
-	/*
-    public void _ALIGN_LABELS(Element edgesNode, Integer diagramId) {
-    	FmmlxDiagram diagram = FmmlxDiagramCommunicator.getDiagram(diagramId);
-        Vector<DiagramEdgeLabel<?>>labels = diagram.getLabels();
-        for(DiagramEdgeLabel<?> label : labels){
-            Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
-            Point2D coordinate = getLabelCoordinate(edgesNode, label, initCoordinate);
-            if(validateLabelName(label.getText())){
-
-                label.setRelativePosition(coordinate.getX(), coordinate.getY());
-                label.getOwner().updatePosition(label);
-                fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
-            }
-
-            label.getOwner().updatePosition(label);
-            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
-        }
-        fmmlxDiagram.objectsMoved = true;
-    }
-    
-    private Point2D getLabelCoordinate(Element edgesNode, DiagramEdgeLabel<?> label, Point2D initCoordinate) {
-//        Element labelsElement = getLabelsElement(diagramElement);
-    	Vector<Element> label
-        NodeList labelList_XML = labelsElement.getChildNodes();
-
-        for (int i = 0 ; i < labelList_XML.getLength() ; i++){
-            if (labelList_XML.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element label_xml_element = (Element) labelList_XML.item(i);
-                if(label_xml_element.getAttribute("ownerID").equals(label.getOwner().path) &&
-                   label_xml_element.getAttribute("localID").equals(label.localID+"")) {
-                    double x = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
-                    return new Point2D(x, y);
-                }
-            }
-        }
-        return initCoordinate;
-    }*/
-    
     private void _ALIGN_EDGES(Element edgesNode, int diagramID) {
 
         NodeList edgeList = edgesNode.getChildNodes();

@@ -590,7 +590,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		String[] fromPath = fullPathNameSource.split("::");
 		String[] toPath = fullPathNameTarget.split("::");
 		int i = 0; 
-		while(fromPath.length > i && toPath.length > i && fromPath[i].equals(toPath[i])) i++;
+		while(fromPath.length > i && toPath.length > i && fromPath[i].equals(toPath[i])
+				&& !(fromPath.length == i && toPath.length == i)) i++;
 		String path = "";
 		while(toPath.length > i ) {
 			path += "::" + toPath[i];

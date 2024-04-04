@@ -32,6 +32,10 @@ public class Level{
 	public boolean isFixedLevelClass() {
 		return minLevel.equals(maxLevel) && minLevel > 0;
 	}
+	
+	public boolean isFixedLevel() {
+		return minLevel.equals(maxLevel);
+	}
 
 	public boolean isEqual(int level) {
 		return maxLevel == level && minLevel == level;

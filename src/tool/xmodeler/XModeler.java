@@ -605,6 +605,8 @@ public class XModeler extends Application {
     public static void bringControlCenterToBack() {
         Platform.runLater(() -> controlCenterStage.toBack());
     }
+    
+    public static boolean isAlphaMode() {return "true".equals(PropertyManager.getProperty("alphaMode"));}
 }
 
 @SuppressWarnings("unchecked")
@@ -631,4 +633,5 @@ class AllModulesToAllModulesExporter {
 //    		exc.printStackTrace();
     	}
     }
+    
 }

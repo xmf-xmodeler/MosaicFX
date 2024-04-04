@@ -54,7 +54,7 @@ public class InstanceWizard extends Dialog<Object> {
 	
 	public InstanceWizard(AbstractPackageViewer diagram, FmmlxObject theClass, int level) {
 		this.diagram = diagram;
-		this.theClass = theClass;		
+		this.theClass = theClass;
 		
 		for(FmmlxAttribute att : theClass.getAllAttributes()) if(att.getLevel() == level) {
 			AttributeTab t = new AttributeTab(att, diagram);
@@ -62,17 +62,22 @@ public class InstanceWizard extends Dialog<Object> {
 		}
 		
 		this.setResizable(true);
-		VBox constraintBox = new VBox();
+		VBox constraintBox = new VBox(5);
+		VBox constraintBox1 = new VBox(2);
+		VBox constraintBox2 = new VBox(2);
 		constraintBox.getChildren().add(new Separator());
-		constraintBox.getChildren().add(new Label("Select constraints which must be met:"));
-		constraintBox.getChildren().add(new Label("If failed, the instance is discarded and tried again."));
-		for(Constraint c : theClass.getConstraints()) { // TODO: gather all constraints from meta-classes as well
+		constraintBox1.getChildren().add(new Label("Select constraints which must be met:"));
+		constraintBox1.getChildren().add(new Label("If failed, the instance is discarded and tried again."));
+		constraintBox.getChildren().add(constraintBox1);
+		constraintBox.getChildren().add(constraintBox2);
+		for(Constraint c : theClass.getAllConstraints()) if(c.getLevel() == theClass.getLevel().getMinLevel()-1){ 
+			
 			CheckBox checkBox = new CheckBox(c.getName());
-			constraintBox.getChildren().add(checkBox);
+			constraintBox2.getChildren().add(checkBox);
 			constraintBoxes.put(c, checkBox);
 		}
 		
-		tabPane.setMinHeight(600);
+		tabPane.setMinHeight(500);
 		tabPane.setMinWidth(450);
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
@@ -97,12 +102,14 @@ public class InstanceWizard extends Dialog<Object> {
 		VBox vBox = new VBox(
 				new Label("Instance Generator for " + theClass.getName()), 
 				spinnerPane, 
-				tabPane, 
+//				tabPane, 
 				constraintBox);
 		vBox.setSpacing(5.);
 		vBox.setPadding(new Insets(5.));
 		
-		getDialogPane().setContent(new ScrollPane(vBox));
+		HBox hBox = new HBox(vBox, tabPane);
+		
+		getDialogPane().setContent(new ScrollPane(hBox));
 		
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		

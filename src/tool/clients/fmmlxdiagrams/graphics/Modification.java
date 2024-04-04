@@ -21,7 +21,7 @@ public class Modification{
 	
 	public static enum Consequence{
 		SHOW_ALWAYS, SHOW_NEVER,
-		SHOW_IF, SHOW_IF_NOT,
+		SHOW_IF, SHOW_IF_NOT, SHOW_ON_FAIL,
 		READ_FROM_SLOT,
 		SET_COLOR}		
 	

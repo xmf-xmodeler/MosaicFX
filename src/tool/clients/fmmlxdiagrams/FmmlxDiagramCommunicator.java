@@ -241,7 +241,7 @@ public class FmmlxDiagramCommunicator {
 	 *          Otherwise it is dropped, as no operation is waiting for a response.
 	 */
 	@SuppressWarnings("unchecked")
-	public void sendMessageToJava(Object msgAsObj) {
+	public synchronized void sendMessageToJava(Object msgAsObj) {
 		if (msgAsObj instanceof java.util.Vector) {
 			// First the message is unwrapped.
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
@@ -450,6 +450,20 @@ public class FmmlxDiagramCommunicator {
 		};
 		xmfRequestAsync(handle, diagramId, "getImportedPackages", localReturn);
 	} 
+	
+	@SuppressWarnings("unchecked")
+	public void getAllPackages(Integer diagramId, boolean onlyFmmlx, 
+			ReturnCall<Vector<String>> availablePackagesReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<String> result = new Vector<>();
+			for (Object responseItem : responseContent) {
+				result.add((String)responseItem);
+			}
+			availablePackagesReturn.run(result);
+		};
+	xmfRequestAsync(handle, diagramId, "getAvailablePackages", localReturn, new Value(onlyFmmlx));
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void getAssociationTypes(AbstractPackageViewer diagram,
@@ -755,17 +769,21 @@ public class FmmlxDiagramCommunicator {
 	
 				Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 				
-				FmmlxLink object = new FmmlxLink(
-						(String) edgeInfoAsList.get(0), // id
-						(String) edgeInfoAsList.get(1), // startId //TODO
-						(String) edgeInfoAsList.get(2), // endId //TODO
-						(String) edgeInfoAsList.get(3), // ofId	//TODO
-						listOfPoints, // points
-						startRegion, endRegion,
-						labelPositions,
-						diagram);
-	
-				result.add(object);
+				try{				
+					FmmlxLink object = new FmmlxLink(
+							(String) edgeInfoAsList.get(0), // id
+							(String) edgeInfoAsList.get(1), // startId //TODO
+							(String) edgeInfoAsList.get(2), // endId //TODO
+							(String) edgeInfoAsList.get(3), // ofId	//TODO
+							listOfPoints, // points
+							startRegion, endRegion,
+							labelPositions,
+							diagram);
+		
+					result.add(object);				
+				} catch (AbstractPackageViewer.PathNotFoundException e) {
+					System.err.println("Ignoring old link: " + edgeInfoAsList.get(0));
+				}
 			}
 			linksReceivedReturn.run(result);
 		};
@@ -860,7 +878,8 @@ public class FmmlxDiagramCommunicator {
 								(String) opInfo.get(7), // owner
 								null, // multiplicity
 								(Boolean) opInfo.get(9), // isMonitored
-								(Boolean) opInfo.get(10) // delToClass
+								(Boolean) opInfo.get(10), // delToClass
+								opInfo.size()>11?((Boolean) opInfo.get(11)):false // is getter or setter
 							);
 						result.add(op);
 						}
@@ -912,7 +931,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
     @SuppressWarnings("unchecked")
-    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
+    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, boolean extended, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
     	ReturnCall<Vector<Object>> returnCall = response -> {
     		Vector<Object> issueList = (Vector<Object>) (response.get(0));
 
@@ -932,7 +951,7 @@ public class FmmlxDiagramCommunicator {
 		    }
 		    issuesReceivedReturn.run(result);
     	};        
-        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall);
+        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall, new Value(extended));
     }
 
     @SuppressWarnings("unchecked")
@@ -1623,8 +1642,12 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.dashArrayLink),
                 new Value(aType.startDecoLink), new Value(aType.endDecoLink),
                 new Value(aType.sourcePath), new Value(aType.targetPath),
-                new Value(aType.sourceLevel.getMinLevel()), new Value(aType.sourceLevel.getMaxLevel()),
-                new Value(aType.targetLevel.getMinLevel()), new Value(aType.targetLevel.getMaxLevel())
+                new Value(aType.sourceLevel.getMinLevel()), 
+                new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.targetLevel.getMinLevel()), 
+                new Value(aType.targetLevel.getMaxLevel()),
+                new Value(aType.sourceMult), 
+                new Value(aType.targetMult)
                 };
 //        sendMessage("addAssociationType", message);
         xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
@@ -2754,4 +2777,10 @@ public class FmmlxDiagramCommunicator {
     		parser.parseXMLDocument();   		
     	});
     }
+    
+	public void setImports(Integer diagramID, Vector<String> imports) {
+        sendMessage("setImportedPackages", new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(createValueArray(imports))});
+	}
 }

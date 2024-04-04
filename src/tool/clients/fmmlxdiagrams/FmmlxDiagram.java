@@ -126,8 +126,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
-	//Only used for mouse listener. Should be removed over time. Use getActiveDiagramViewPane() instead.
-	//@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
@@ -753,12 +751,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if (issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity().name())))
 				nextIssue = issues.get(i);
 		}
-
+/*
 		if (nextIssue != null) {
 			final Issue ISSUE = nextIssue;
-			Platform.runLater(() -> ISSUE.performResolveAction(this));
+			Platform.runLater(() -> {
+				System.err.println("performResolveAction");
+				ISSUE.performResolveAction(this);
+			});
 		}
-
+*/
 		tableView.getItems().clear();
 		tableView.refresh();
 		tableView.getItems().addAll(issues);

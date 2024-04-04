@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
+import tool.xmodeler.XModeler;
 
 public class DefaultContextMenu extends ContextMenu {
 
@@ -49,6 +50,9 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem(), addAssocType);
+		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem());
+		if(XModeler.isAlphaMode()) {
+			getItems().add(addAssocType);
+		}
 	}
 }

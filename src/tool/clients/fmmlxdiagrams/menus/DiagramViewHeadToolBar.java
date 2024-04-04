@@ -18,6 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -39,6 +40,7 @@ import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.XModeler;
 
 public class DiagramViewHeadToolBar extends VBox {
 	
@@ -72,7 +74,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);	
-		buildRefactorMenu(refactorMenu);
+		//buildRefactorMenu(refactorMenu);
 		buildAutoMlmMenu(autoMlmMenu);
 		buildHelpMenu(helpMenu);
 		
@@ -157,6 +159,9 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
 		updateButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.updateDiagram(), "resources/png/update.24.png");
 		updateSvg = updateButton.getGraphic();
+		ToggleButton extendedConstraintButton = new ToggleButton("Ext. Constr.");
+		extendedConstraintButton.setSelected(fmmlxDiagram.extendedConstraintCheck);
+		extendedConstraintButton.setOnAction(e -> fmmlxDiagram.extendedConstraintCheck = extendedConstraintButton.isSelected());
 		
 		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
@@ -164,7 +169,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()), "resources/png/save.24.png");
 		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 		
-		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton );
+		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton, extendedConstraintButton);
 		return toolBar;
 	}
 		
@@ -347,8 +352,14 @@ public class DiagramViewHeadToolBar extends VBox {
 		modelMenu.getItems().add(exportMenu);
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "SVG", e -> diagramActions.exportSvg());
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "PNG", e -> diagramActions.exportPNG());
+
+		if(XModeler.isAlphaMode()) {
+//			JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Merge Models",e -> diagramActions.mergeModels());
+			JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Import Models",e -> diagramActions.importModels());
+		}
+
 		
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Merge Models",e -> diagramActions.mergeModels());	
+		
 	}
 	
 	private void buildHelpMenu(Menu helpMenu) {

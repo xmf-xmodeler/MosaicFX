@@ -34,6 +34,5 @@ user.properties
 
 #ignore log files
 logs/*
-!logs/java/
 /testXMLImport.xml
-AutoMLM/
+/testXMLTransformation.xml

@@ -110,7 +110,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialog.Result> {
 			errorLabel.setText(StringValue.ErrorMessage.levelUnparseable);
 			return false;			
 		}
-		if(!newLevelComboBox.getLevel().isFixedLevelClass()) {
+		if(!newLevelComboBox.getLevel().isFixedLevel()) {
 			errorLabel.setText(StringValue.ErrorMessage.levelMustNotBeContingent);
 			return false;			
 		}
@@ -127,7 +127,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialog.Result> {
 			errorLabel.setText(StringValue.ErrorMessage.levelUnparseable);
 			return false;			
 		}
-		if(!newLevelComboBox.getLevel().isFixedLevelClass()) {
+		if(!newLevelComboBox.getLevel().isFixedLevel()) {
 			errorLabel.setText(StringValue.ErrorMessage.levelMustNotBeContingent);
 			return false;			
 		}
@@ -144,7 +144,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialog.Result> {
 			errorLabel.setText(StringValue.ErrorMessage.levelUnparseable);
 			return false;			
 		}
-		if(!newLevelComboBox.getLevel().isFixedLevelClass()) {
+		if(!newLevelComboBox.getLevel().isFixedLevel()) {
 			errorLabel.setText(StringValue.ErrorMessage.levelMustNotBeContingent);
 			return false;			
 		}
