@@ -1,11 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
@@ -261,64 +259,33 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         zoomView = new DiagramViewPane("", true);
         
         tabPane.setFocusTraversable(true);
-        tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-            @Override
-            public void handle(javafx.scene.input.KeyEvent event) {
-            	pressedKeys.remove(event.getCode());
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.M) {
-					getActiveDiagramViewPane().canvasTransform.prependScale(-1, 1,
-							new Point2D(getActiveDiagramViewPane().canvas.getWidth() / 2, getActiveDiagramViewPane().canvas.getHeight() / 2));
-					redraw();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
-					getActiveDiagramViewPane().canvasTransform.prependRotation(10,
-							new Point2D(getActiveDiagramViewPane().canvas.getWidth() / 2, getActiveDiagramViewPane().canvas.getHeight() / 2));
-					redraw();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
-					actions.centerViewOnObject();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Z) {
-					actions.undo();
-				}
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.Y) {
-					actions.redo();
-				}
-				//Used for test purposes
-				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.T) {
-					XMLCreator creator = new XMLCreator();
-					ReturnCall<Document> onDocumentCreated = doc ->	System.err.println(XMLUtil.getStringFromDocument(doc));
-					creator.getXmlRepresentation(packagePath, onDocumentCreated);
-				}
-				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE  &&  (mouseMode == MouseMode.DRAW_EDGE)) {
-						getActiveDiagramViewPane().escapeCreationMode();	
-				}
-				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
-					Vector<CanvasElement> hitObjects = getSelectedObjects();
-					for (CanvasElement element : hitObjects) {
-						if (element instanceof FmmlxObject) {
-							new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
-						}
+		tabPane.setOnKeyReleased(keyEvent -> {
+			pressedKeys.remove(keyEvent.getCode());
+
+			if (keyEvent.isControlDown()) {
+				FmmlxDiagramControlKeyHandler handler = new FmmlxDiagramControlKeyHandler(
+						FmmlxDiagramCommunicator.getDiagram(diagramID));
+				handler.handle(keyEvent.getCode());
+			}
+
+			if (keyEvent.getCode() == javafx.scene.input.KeyCode.F5) {
+				getComm().triggerUpdate();
+			}
+
+			if (keyEvent.getCode() == javafx.scene.input.KeyCode.DELETE) {
+				Vector<CanvasElement> hitObjects = getSelectedObjects();
+				for (CanvasElement element : hitObjects) {
+					if (element instanceof FmmlxObject) {
+						new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
-			
 			}
-        });
-        tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
+		});
+		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
 				pressedKeys.add(e.getCode());
-				if (getPressedKeys().contains(KeyCode.CONTROL) &&
-					getPressedKeys().contains(KeyCode.A)) {
-					selectAll();
-				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
-					}
-				if (getPressedKeys().contains(KeyCode.F5)) {
-						getComm().triggerUpdate();
-					}
 			}
 		});
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
@@ -576,7 +543,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		selectedObjects.clear();
 	}
 	
-	private void selectAll() {
+	void selectAll() {
 		deselectAll();
 		for (Node object : getObjectsReadOnly()) {
 			selectedObjects.add(object);
@@ -923,7 +890,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		Canvas canvas;
 		private double zoom = 1.;
-		private Affine canvasTransform = new Affine();
+		Affine canvasTransform = new Affine();
 		private final boolean isZoomView;
 		private String name;
 		

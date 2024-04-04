@@ -11,8 +11,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -30,6 +28,7 @@ import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.communication.java_to_python.MissingPythonRespondException;
 import tool.communication.java_to_python.PythonFunction;
@@ -357,19 +356,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 	
 	private void showShortcutDialog() {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setHeaderText("List of Shortcuts");
-		String content = "F5: Update Diagram\n"
-				+ "Strg + S: Save Diagram\n"
-				+ "Strg + A: Select all Elements\n"
-				+ "Strg + F: Find Objects\n"
-				+ "Strg + Z: Undo\n"
-				+ "Strg + Y: Redo\n"
-				+ "\n"
-				+ "Mouse ombinations:\n"
-				+ "Mouse + Space or Alt: Move Canvas";
-		alert.setContentText(content);
-		alert.show();
+		new ShortcutDialog().show();
 	}
 
 	public FmmlxDiagram getFmmlxDiagram() {
