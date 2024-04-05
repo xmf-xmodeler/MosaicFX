@@ -276,6 +276,7 @@ public class XModeler extends Application {
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";
 	
+    //for testing setups the launch method will lead to thread errors
     String envVariableValue = System.getenv("XMODELER_TEST");
     if (envVariableValue != null && envVariableValue.equals("true")) {
     	return;
