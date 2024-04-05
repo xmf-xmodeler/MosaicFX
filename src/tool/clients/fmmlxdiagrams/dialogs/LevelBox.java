@@ -18,6 +18,7 @@ public class LevelBox extends HBox {
 	
 	public LevelBox(Level oldlevel) {
 		super(3);
+		levelTextField.setId("levelTextField");
 		getChildren().add(levelTextField);
 		getChildren().add(levelButton);
 		levelTextField.setEditable(true);

@@ -52,6 +52,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		Label parentLabel = new Label("Parent");
 
 		nameTextField = new TextField();
+		nameTextField.setId("metaClassNameField");
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		levelComboBox = new LevelBox();
 		levelComboBox.setLevelListener(level -> {

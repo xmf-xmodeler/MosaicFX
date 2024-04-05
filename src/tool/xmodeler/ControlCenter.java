@@ -224,6 +224,7 @@ public class ControlCenter extends Stage {
 		grid.add(projectLabel, 2, 1);
 				
 		Button newProject = new Button("Create Project");
+		newProject.setId("createProjectButton");
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
@@ -252,6 +253,7 @@ public class ControlCenter extends Stage {
 //		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
 		
 		Button newDiagram = new Button("Create FMMLx Diagram");
+		newDiagram.setId("createNewDiagramButton");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
@@ -262,6 +264,7 @@ public class ControlCenter extends Stage {
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
+		projectTree.setId("projectTreeView");
 		grid.add(projectTree, 2, 2);
 		TreeItem<String> loading = new TreeItem<String>("Loading");
 		projectTree.setRoot(loading);
