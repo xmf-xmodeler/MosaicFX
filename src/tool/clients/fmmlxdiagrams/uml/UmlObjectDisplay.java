@@ -38,6 +38,30 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	private final static NodeBaseElement.Action NO_ACTION = null;
+	
+	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {	//Black should be fine for now
+//		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
+//	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
+//	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
+//	        (this.object.level.isContingentLevelClass()?LevelColorScheme.LEVEL_CONTINGENT_CLASS:this.object.level.getMinLevel());
+		return Color.BLACK; //diagram.levelColorScheme.getLevelFgColor(level, opacity);
+	}
+	
+	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {		//rewrote original function to fit for UML and be simpler
+		int level = this.object.getLevel().getMaxLevel();
+		Color colour = Color.RED; 	//if red something went wrong
+		
+		switch(level) {
+		case 1: 
+			colour = Color.WHITE;
+			break;
+		case 0:
+			colour = Color.LIGHTGREY;
+			break;
+		}
+		
+        return colour;
+	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
 		//determine text height
@@ -52,8 +76,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.getX(), 0, 1, object.getY()));
 		object.rootNodeElement = group;	
 
-		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, Color.LIGHTGRAY, Color.BLACK, (x) -> 1., PropertyType.Class);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER,  neededWidth / 2, textHeight * 2, Color.DARKBLUE, null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
 		header.setAction( ()-> {
 			Vector<String> models = new Vector<>(); 
 			models.add(diagram.getPackagePath());
@@ -61,8 +84,16 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
 		});
 		
-		header.addNodeElement(nameLabel);
 		group.addNodeElement(header);
+		
+		String ofName = "^" + FmmlxObject.getRelativePath(object.getPath(), object.getOfPath()) + "^";
+		if(ofName.equals("^FMMLx::MetaClass^")) ofName = "";	//We only want this for objects so classes should remain empty
+		
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		
+		header.addNodeElement(metaclassLabel);
+		header.addNodeElement(nameLabel);
 		
 		currentY += headerLines * textHeight + EXTRA_Y_PER_LINE;
 		
@@ -76,7 +107,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort());
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 //			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Attribute);
 //			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.getLevel() == -1 ? " " : att.getLevel() + "");
@@ -87,7 +118,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attY += lineHeight;
 			String ownerName = att.getOwnerPath();
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort());
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 //			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.getLevel() == -1 ? " " : att.getLevel() + "");
 //			attBox.addNodeElement(attLevelLabel);
@@ -207,7 +238,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^???^"));
 		}
 		
-		neededWidth += 30; // for level number;
+		//neededWidth += 30; // for level number;
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : object.getOwnAttributes()) {

@@ -18,11 +18,15 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
+	private TabPane tabPane = new TabPane();	//ToDo Parameters?
+	
 	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 
 	private TextField classTextField; 
+	private TextField umlFunctionSignature;	//only for umlMode
 	private ComboBox<Integer> levelComboBox;
+	private VBox mainBox;
 
 	ObservableList<String> classList;
 	private CodeBoxPair codeBoxPair;	
@@ -45,6 +49,10 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(oldOp);
 		setResizable(true);
+		
+		if(diagram.getUMLMode()) {	//Regular and Expert mode
+			
+		}
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -109,25 +117,66 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		defaultOperationButton.setPrefWidth(150);
 
 		GridPane theGrid = new GridPane();
+		if(!diagram.getUMLMode()) {
 		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
-		theGrid.add(new Label("Operation body"), 0, 2);
 		theGrid.add(classTextField, 1, 0);
 		theGrid.add(levelComboBox, 1, 1);
-		theGrid.add(defaultOperationButton, 1, 2);
+		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
+
+		}
 		theGrid.setHgap(5);
 		theGrid.setVgap(5);
+		theGrid.add(new Label("Operation body"), 0, 2);
+		//theGrid.add(defaultOperationButton, 1, 2);
 		
-		VBox mainBox = new VBox(5, 
+
+		if(!diagram.getUMLMode()) {
+		mainBox = new VBox(5, 
 			theGrid, 
 			codeBoxPair.getBodyScrollPane(),
 			new Label("Parse result"),
 			codeBoxPair.getErrorTextArea(),
+			defaultOperationButton,
 			statusLabel
 			);
+		}
+		else {
+			umlFunctionSignature = new TextField();
+			umlFunctionSignature.setPrefWidth(200);
+			//umlFunctionSignature.;
+			if(oldOpName!=null) {
+			umlFunctionSignature.setText(oldOpName + "():Integer");
+			}
+			else {
+				umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");
+			}
+			GridPane theGrid2 = new GridPane();
+			theGrid2.add(umlFunctionSignature, 0, 0);
+			
+			Tab normalModeTab = new Tab("Normal Mode",theGrid2);
+			
+			VBox expertBox = new VBox(5,  
+					codeBoxPair.getBodyScrollPane(),
+					new Label("Parse result"),
+					codeBoxPair.getErrorTextArea(),
+					defaultOperationButton
+					);
+			
+			Tab expertTab = new Tab("Expert Mode",expertBox);
+			
+			tabPane.getTabs().addAll(normalModeTab,expertTab);
+		mainBox = new VBox(5,  
+				theGrid,
+				tabPane,
+				statusLabel
+					);
+		tabPane.setMinHeight(500);
+		tabPane.setMinWidth(450);
+		VBox.setVgrow(tabPane, Priority.ALWAYS);
+		}
 		VBox.setVgrow(codeBoxPair.getBodyScrollPane(), Priority.ALWAYS);
-		
-		dialogPane.setContent(mainBox);
+
+		dialogPane.setContent(mainBox);		//Code feld hinzugefuegt
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {

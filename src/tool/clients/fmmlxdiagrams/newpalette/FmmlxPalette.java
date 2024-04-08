@@ -127,8 +127,15 @@ public class FmmlxPalette {
 					new DefaultTool("Link", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
 			DefaultTool delegationTool = 
 					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
-			DefaultTool metaClassTool = 
+			DefaultTool metaClassTool;
+			if(!fmmlxDiagram.getUMLMode()) {
+			metaClassTool = 
 					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+			}
+			else {
+			metaClassTool = 
+						new DefaultTool("Class", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+			}
 			DefaultTool noteTool = 
 					new DefaultTool("Note", "resources/png/note.16.png", point -> fmmlxDiagram.activateNoteCreationMode());
 			
@@ -155,7 +162,13 @@ public class FmmlxPalette {
 			HashMap<Integer, TreeItem<AbstractTreeType>> levels = new HashMap<>();
 			for (int i : levelList) {
 				if(i!=0) {
-					TreeItem<AbstractTreeType> levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
+					TreeItem<AbstractTreeType> levelGroup;
+					if(!fmmlxDiagram.getUMLMode()) {
+					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
+					}
+					else {
+					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Classes"));
+					}
 					levels.put(i, levelGroup);
 					levelGroup.setExpanded(true);
 					elements.getChildren().add(levelGroup);

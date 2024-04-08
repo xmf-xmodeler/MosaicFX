@@ -86,8 +86,10 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
 		
+		if(!diagram.umlMode) {	//Have to be hidden for uml Diagrams
 		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK,diagram);
 		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK, diagram); 
+		}
 		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT, diagram);
 		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT, diagram);
 		layoutingFinishedSuccesfully = true;

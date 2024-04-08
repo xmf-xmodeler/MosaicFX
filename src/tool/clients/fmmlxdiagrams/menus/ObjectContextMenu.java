@@ -42,9 +42,11 @@ public class ObjectContextMenu extends ContextMenu {
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 
+		if(!diagram.getUMLMode()) {
 		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
 		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
+		}
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
@@ -72,10 +74,12 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		}
 		
+		if(!diagram.getUMLMode()) {
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		getItems().add(changeOfItem);
+		}
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
@@ -83,6 +87,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
 		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
 		
+		if(!diagram.getUMLMode()) {
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 //		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
@@ -95,6 +100,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
 		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
 		if(object.getLevel().isClass()) getItems().add(singletonClassItem);
+		}
 	
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -147,7 +153,12 @@ public class ObjectContextMenu extends ContextMenu {
 		});
 		
 		//add all items, that are used for all Objects
-		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);			
+		if(!diagram.getUMLMode()) {
+		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);		
+		}
+		else {
+		getItems().addAll(slotMenu, associationInstanceMenu);		
+		}
 		//add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
 		getItems().addAll(delegationMenu);
@@ -159,6 +170,7 @@ public class ObjectContextMenu extends ContextMenu {
 			actions.hide(v, true);
 		}, ALWAYS);
 
+		if(!diagram.getUMLMode()) {
 		MenuItem mergeProperties = new MenuItem("Merge Properties");
 		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
 		getItems().add(mergeProperties);
@@ -166,6 +178,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
 		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
 		getItems().add(assignToGlobalVariable);
+		}
 	}
 
 	private void addRunMenu() {

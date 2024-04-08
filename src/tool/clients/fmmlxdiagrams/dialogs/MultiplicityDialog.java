@@ -104,10 +104,12 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 		grid.add(maximumComboBox, 1, 1);
 		grid.add(labelUpperLimit, 0, 2);
 		grid.add(isUpperLimitCheckBox, 1, 2);
+		/*			//commented out instead of using an if statement because we cant access a diagram/AbstractPackageViewer object from here
 		grid.add(labelOrdered, 0, 3);
 		grid.add(orderedCheckBox, 1, 3);
 		grid.add(labelDuplicates, 0, 4);
 		grid.add(duplicatesCheckBox, 1, 4);
+		*/
 	}
 
 	private boolean validateInput() {

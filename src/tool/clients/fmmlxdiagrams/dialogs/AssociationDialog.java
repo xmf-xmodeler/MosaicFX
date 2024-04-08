@@ -264,50 +264,61 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
 
-
-		labels.add(new Label("Association Type"));
+		if(!diagram.getUMLMode()) {			//these need to be set individually to not disrupt the order of the elements
+		labels.add(new Label("Association Type"));		}
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
+		if(!diagram.getUMLMode()) {			//these need to be set individually to not disrupt the order of the elements
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
-		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
+		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));}
 		labels.add(new Label(" "));
 		labels.add(new Label(" "));
 		labels.add(new Label(LabelAndHeaderTitle.type));
+		if(!diagram.getUMLMode()) {
 		labels.add(new Label(LabelAndHeaderTitle.instLevel));
-		labels.add(new Label(LabelAndHeaderTitle.identifier));
+		labels.add(new Label(LabelAndHeaderTitle.identifier));}
 		labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+		if(!diagram.getUMLMode()) {
 		labels.add(new Label("Visibility"));
 		labels.add(new Label("Generate Getter"));
-		labels.add(new Label("Generate Setter"));
+		labels.add(new Label("Generate Setter"));}
 		
-		sourceNodes.add(associationTypeBox);
+		if(!diagram.getUMLMode()) {			//these need to be set individually to not disrupt the order of the elements
+		sourceNodes.add(associationTypeBox);		}
 		sourceNodes.add(newDisplayName);
+		if(!diagram.getUMLMode()) {
 		sourceNodes.add(selectedObject);
-		sourceNodes.add(selectAssociationComboBox);
+		sourceNodes.add(selectAssociationComboBox);}
 		sourceNodes.add(new Label(" "));
 		sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 		sourceNodes.add(newTypeSource);
+		if(!diagram.getUMLMode()) {
 		sourceNodes.add(newInstLevelSource);
-		sourceNodes.add(newIdentifierSource);
+		sourceNodes.add(newIdentifierSource);}
 		sourceNodes.add(multTargetToSourceBox);
+		if(!diagram.getUMLMode()) {
 		sourceNodes.add(sourceVisibleFromTargetBox);
 		sourceNodes.add(sourceGetterField);
-		sourceNodes.add(sourceSetterField);
+		sourceNodes.add(sourceSetterField);}
 //		sourceNodes.add(symmetricBox);
 //		sourceNodes.add(transitiveBox);
 		
+		if(!diagram.getUMLMode()) {			//these need to be set individually to not disrupt the order of the elements
+		targetNodes.add(new Label(" "));		}
 		targetNodes.add(new Label(" "));
+		if(!diagram.getUMLMode()) {
 		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
+		targetNodes.add(new Label(" "));}
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label (LabelAndHeaderTitle.end));
 		targetNodes.add(newTypeTarget);
+		if(!diagram.getUMLMode()) {
 		targetNodes.add(newInstLevelTarget);
-		targetNodes.add(newIdentifierTarget);
+		targetNodes.add(newIdentifierTarget);}
 		targetNodes.add(multSourceToTargetBox);
+		if(!diagram.getUMLMode()) {
 		targetNodes.add(targetVisibleFromSourceBox);
 		targetNodes.add(targetGetterField);
-		targetNodes.add(targetSetterField);
+		targetNodes.add(targetSetterField);}
 
 		
 		addNodesToGrid(labels, 0);
@@ -346,7 +357,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel().getMinLevel()-1));
 			return false;
 			} 
-		}else {
+		}else if (!diagram.getUMLMode()) {		//modified to else if to include umlMode
 			  if (!AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
 					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel().getMinLevel()-1));
 					return false;
@@ -370,7 +381,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierTarget() {
 		String name = newIdentifierTarget.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
@@ -382,7 +393,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierSource() {
 		String name = newIdentifierSource.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {	//modified to check for umlMode
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
@@ -394,7 +405,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewDisplayName() {
 		String name = newDisplayName.getText();
 
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {
@@ -425,6 +436,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				if(!diagram.getUMLMode()) {
 				return new Result(association,
 						source,
 						target,
@@ -445,6 +457,29 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 						targetGetterField.getText().orElse(null),
 						targetSetterField.getText().orElse(null)
 				);
+				}
+				else {
+					return new Result(association,
+							source,
+							target,
+							0,
+							0,
+							newDisplayName.getText(),
+							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
+							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							source.getName().toLowerCase() + newDisplayName.getText(),
+							multTargetToSourceBox.getMultiplicity(),
+							multSourceToTargetBox.getMultiplicity(),
+							true,	
+							true,	//both visibilities false to prevent the arrows from appearing. should be irrelevant anyway since uml only supports function signatures
+							false,
+							false,
+							sourceGetterField.getText().orElse(null),
+							sourceSetterField.getText().orElse(null),
+							targetGetterField.getText().orElse(null),
+							targetSetterField.getText().orElse(null)
+							);
+				}
 			}
 			return null;
 		});		
