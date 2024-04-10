@@ -2253,8 +2253,9 @@ public class FmmlxDiagramCommunicator {
 	public static class DiagramInfo {
 		public final Integer id;
 		public final String diagramName;
+	//	public final boolean umlMode;
 
-		public DiagramInfo(Integer id, String diagramName) {
+		public DiagramInfo(Integer id, String diagramName /*, boolean umlMode*/) {
 			super();
 			this.id = id;
 			this.diagramName = diagramName;

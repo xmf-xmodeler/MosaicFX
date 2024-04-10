@@ -88,10 +88,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 					return new Result(
 							selectedObject.getPath(),
 							nameTextField.getText(),
-							new Level(0),
+							new Level(0,0),
 							getComboBoxStringValue(typeComboBox),
 							multiplicity,
-							false,
+							true,
 							false,
 							false);
 				}

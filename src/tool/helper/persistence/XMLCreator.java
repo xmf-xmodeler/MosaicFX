@@ -18,6 +18,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
@@ -37,10 +39,19 @@ public class XMLCreator {
 	private Element root;
 	private static final int EXPORT_VERSION = 4;
 	private String packagePath;
+	private FmmlxDiagram currentDiagram;
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
+		// calls save operation after representation is build
+		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
+	}
+	
+	public void createAndSaveXMLRepresentation(String packagePath, AbstractPackageViewer diagram) {	//overload method to not break anything. Need diagram to check for uml mode. Simpler than going the XMF route.
+		this.packagePath = packagePath;
+		Document doc = initXML();
+		currentDiagram = (FmmlxDiagram) diagram;
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
@@ -342,6 +353,11 @@ public class XMLCreator {
 	private Element createDiagramElement(DiagramInfo diagramInfo, Element diagrams) {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
+		if(currentDiagram!=null) {
+			if(currentDiagram.getUMLMode()) {
+				diagram.setAttribute("umlMode", currentDiagram.getUMLMode()+"");	//should always be true but cleaner to do it this way.
+			}
+		}
 		XMLUtil.createChildElement(diagram, XMLTags.INSTANCES.getName());
 		return diagram;
 	}
