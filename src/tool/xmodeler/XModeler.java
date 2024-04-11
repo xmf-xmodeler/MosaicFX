@@ -91,6 +91,8 @@ public class XModeler extends Application {
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
+  static boolean appIsRunning = false;
+  
   public static ControlCenter  controlCenterStage            = null;
 
   public static String getVersion() {
@@ -448,28 +450,29 @@ public class XModeler extends Application {
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  //ClassBrowserClient.start();
   }
-  
-    @Override
-  public void start(Stage primaryStage) throws Exception {
-      stage = primaryStage;
-      buildXmodelerStage();
-	  startXOS(copyOfArgs[0]);
-	  singleton = this;
-	  initClients();
-      startClients();
-      controlCenterStage = new ControlCenter();
-      int toolX = Integer.valueOf(PropertyManager.getProperty("toolX"));
-      controlCenterStage.setX(toolX);
-      int toolY = Integer.valueOf(PropertyManager.getProperty("toolY"));
-      controlCenterStage.setY(toolY);
-      stage= controlCenterStage;
-      controlCenterStage.show(); 
-      
-  }
     
-  
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		stage = primaryStage;
+		buildXmodelerStage();
+		initClients();
 
-
+		//needed in the testframework. There the start method is called several times. To avoid concurrency exceptions these methods should not be called twice
+		if (!appIsRunning) {
+			startXOS(copyOfArgs[0]);
+			singleton = this;
+			startClients();
+			controlCenterStage = new ControlCenter();
+			appIsRunning = true;
+		}
+		int toolX = Integer.valueOf(PropertyManager.getProperty("toolX"));
+		controlCenterStage.setX(toolX);
+		int toolY = Integer.valueOf(PropertyManager.getProperty("toolY"));
+		controlCenterStage.setY(toolY);
+		stage = controlCenterStage;
+		controlCenterStage.show();
+	}
+    
     public void buildXmodelerStage() throws Exception {
 	  		outerSplitPane = new SplitPane();
 			// Tabs for projects
