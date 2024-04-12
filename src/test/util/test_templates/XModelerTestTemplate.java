@@ -1,0 +1,53 @@
+package test.util.test_templates;
+
+import java.util.concurrent.TimeoutException;
+
+import org.junit.After;
+import org.junit.jupiter.api.BeforeAll;
+import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationTest;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.stage.Stage;
+import test.util.TestUtils;
+import tool.xmodeler.XModeler;
+
+/**
+ * This is the most generic Template in the XModelerTestFramework.
+ * Every other test should inherit from this class.
+ * The class defined the basic test-setup and tear-down mechanism.
+ * 
+ *  Please mind to set the needed environmental variables before starting a test class.
+ *  XMODELER_TEST=true
+ *  
+ *  Please mind to use the right virtual machine arguments for testing.
+ *  -ea
+ *  --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+ */
+public class XModelerTestTemplate extends ApplicationTest {
+	
+	@BeforeAll
+	public static void initXModeler() {
+		String[] programmArgs = { "./ini3.txt" };
+		XModeler.main(programmArgs);
+	}
+	
+	@Override
+	public void start(Stage stage) {
+		XModeler x = new XModeler();
+		try {
+			x.start(stage);
+		} catch (Exception e) {
+			throw new RuntimeException();
+		}
+		TestUtils.waitMilliSeconds(1000);
+	}
+	
+	@After
+    public void cleanup() throws TimeoutException {
+        FxToolkit.cleanupStages();
+        release(new KeyCode[]{});
+        release(new MouseButton[]{});
+    }
+}
