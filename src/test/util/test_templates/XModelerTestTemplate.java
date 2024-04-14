@@ -10,6 +10,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
+import test.util.ControlCenterTestUtils;
 import test.util.TestUtils;
 import tool.xmodeler.XModeler;
 
@@ -17,6 +18,7 @@ import tool.xmodeler.XModeler;
  * This is the most generic Template in the XModelerTestFramework.
  * Every other test should inherit from this class.
  * The class defined the basic test-setup and tear-down mechanism.
+ * All waiting times in the Framework are a result of experiments.
  * 
  *  Please mind to set the needed environmental variables before starting a test class.
  *  XMODELER_TEST=true
@@ -26,6 +28,8 @@ import tool.xmodeler.XModeler;
  *  --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
  */
 public class XModelerTestTemplate extends ApplicationTest {
+	
+	protected ControlCenterTestUtils controlCenterTestUtils = new ControlCenterTestUtils();
 	
 	@BeforeAll
 	public static void initXModeler() {
@@ -41,7 +45,7 @@ public class XModelerTestTemplate extends ApplicationTest {
 		} catch (Exception e) {
 			throw new RuntimeException();
 		}
-		TestUtils.waitMilliSeconds(1000);
+		TestUtils.waitWithoutCatch(4000);
 	}
 	
 	@After
