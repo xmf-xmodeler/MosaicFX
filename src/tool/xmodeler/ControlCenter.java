@@ -277,6 +277,7 @@ public class ControlCenter extends Stage {
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		
+		diagramLV.setId("diagramListView");
 		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);

@@ -16,7 +16,7 @@ import xos.Value;
 
 public class ControlCenterClient {
 	
-	private ControlCenterClient() {}
+	public ControlCenterClient() {}
 
 	private static ControlCenterClient self;
 	private ControlCenter controlCenter;
@@ -120,15 +120,19 @@ public class ControlCenterClient {
 		if (result.isPresent()) {
 			if(InputChecker.isValidIdentifier(result.get())) {
 				projectName = result.get();
-				Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
-				message.args[0] = new Value(projectName);
-				WorkbenchClient.theClient().getHandler().raiseEvent(message);
+				createProject(projectName);
 			} else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
 					new ButtonType("OK", ButtonData.YES)).showAndWait();
 			}
 		}
+	}
+
+	public void createProject(String projectName) {
+		Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
+		message.args[0] = new Value(projectName);
+		WorkbenchClient.theClient().getHandler().raiseEvent(message);
 	}
 
 	public ControlCenter getControlCenter() {
