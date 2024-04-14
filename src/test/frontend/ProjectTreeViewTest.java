@@ -14,27 +14,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
+import test.util.test_templates.XModelerTestTemplate;
 import tool.xmodeler.XModeler;
 
-public class ProjectTreeViewTest extends ApplicationTest {
+/**
+ * Example frontend test. Please rewrite this code.s
+ */
+public class ProjectTreeViewTest extends XModelerTestTemplate {
 
-	@Override
-	public void start(Stage stage) {
-		String[] programmArgs = { "./ini3.txt" };
-		XModeler.main(programmArgs);
-		XModeler xModeler = new XModeler();
-		try {
-			xModeler.start(new Stage());
-		} catch (Exception e) {
-			throw new RuntimeException();
-		}
-	}
 
 	@Test
 	public void checkProjectNameInTreeView() {
 		Button button = (Button) lookup("#createProjectButton").query();
 		clickOn(button);
-		write("testProj");
+		write("frontEndTest");
 		clickOn("OK");
 
 		try {
@@ -45,7 +38,7 @@ public class ProjectTreeViewTest extends ApplicationTest {
 		}
 
 		TreeView<String> projectLV = (TreeView<String>) lookup("#projectTreeView").query();
-		assertTrue(getAllItems(projectLV).contains("testProj"));
+		assertTrue(getAllItems(projectLV).contains("frontEndTest"));
 	}
 
 	public static <T> List<T> getAllItems(TreeView<T> treeView) {

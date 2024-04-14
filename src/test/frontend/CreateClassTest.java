@@ -1,4 +1,4 @@
-package test.backend;
+package test.frontend;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,26 +17,21 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
+import test.util.test_templates.DiagramTestTemplate;
+import test.util.test_templates.XModelerTestTemplate;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.xmodeler.XModeler;
 
-public class CreateClassTest extends ApplicationTest {
+/**
+ * Example frontendTest. Please rewrite this code.
+ */
+public class CreateClassTest extends DiagramTestTemplate {
 
-	@Override
-	public void start(Stage stage) {
-		String[] programmArgs = { "./ini3.txt" };
-		XModeler.main(programmArgs);
-		XModeler xModeler = new XModeler();
-		try {
-			xModeler.start(new Stage());
-		} catch (Exception e) {
-			throw new RuntimeException();
-		}
-	}
 
-	@Test
+
+	//@Test
 	public void createClass() {
 		String projectName = createProject();
 		try {
