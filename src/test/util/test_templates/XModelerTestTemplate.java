@@ -15,28 +15,45 @@ import test.util.TestUtils;
 import tool.xmodeler.XModeler;
 
 /**
- * This is the most generic Template in the XModelerTestFramework.
- * Every other test should inherit from this class.
- * The class defined the basic test-setup and tear-down mechanism.
- * All waiting times in the Framework are a result of experiments.
+ * This is the most generic Template in the XModelerTestFramework. Every other
+ * test should inherit from this class. The class defined the basic test-setup
+ * and tear-down mechanism. All waiting times in the Framework are a result of
+ * experiments.
  * 
- *  Please mind to set the needed environmental variables before starting a test class.
- *  XMODELER_TEST=true
- *  
- *  Please mind to use the right virtual machine arguments for testing.
- *  -ea
- *  --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+ * Please mind to set the needed environmental variables before starting a test
+ * class. XMODELER_TEST=true
+ * 
+ * Please mind to use the right virtual machine arguments for testing. -ea
+ * --add-modules
+ * javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+ *
+ * If you want to execute tests in headless modus please add the headless
+ * environmental variable. HEADLESS=true
+ *
  */
 public class XModelerTestTemplate extends ApplicationTest {
-	
+
 	protected ControlCenterTestUtils controlCenterTestUtils = new ControlCenterTestUtils();
-	
+
 	@BeforeAll
 	public static void initXModeler() {
+		String envVariableValue = System.getenv("HEADLESS");
+		if (envVariableValue != null && envVariableValue.equals("true")) {
+			setHeadlessProperties();
+		}
 		String[] programmArgs = { "./ini3.txt" };
 		XModeler.main(programmArgs);
 	}
-	
+
+	private static void setHeadlessProperties() {
+		System.setProperty("testfx.robot", "glass");
+		System.setProperty("testfx.headless", "true");
+		System.setProperty("prism.order", "sw");
+		System.setProperty("prism.text", "t2k");
+		System.setProperty("java.awt.headless", "true");
+
+	}
+
 	@Override
 	public void start(Stage stage) {
 		XModeler x = new XModeler();
@@ -47,11 +64,11 @@ public class XModelerTestTemplate extends ApplicationTest {
 		}
 		TestUtils.waitWithoutCatch(4000);
 	}
-	
+
 	@After
-    public void cleanup() throws TimeoutException {
-        FxToolkit.cleanupStages();
-        release(new KeyCode[]{});
-        release(new MouseButton[]{});
-    }
+	public void cleanup() throws TimeoutException {
+		FxToolkit.cleanupStages();
+		release(new KeyCode[] {});
+		release(new MouseButton[] {});
+	}
 }

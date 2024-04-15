@@ -72,5 +72,6 @@
 	<classpathentry kind="lib" path="lib/testfx-core-4.0.18.jar"/>
 	<classpathentry kind="lib" path="lib/testfx-junit5-4.0.18.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="lib/openjfx-monocle-17.0.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
