@@ -13,14 +13,14 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import test.util.ControlCenterTestUtils;
 import test.util.TestUtils;
-import test.util.test_templates.DiagramTestTemplate;
+import test.util.test_templates.DiagramsTestTemplate;
 import test.util.test_templates.XModelerTestTemplate;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Level.UnparseableException;
 
-public class FmmlxDiagramTest extends DiagramTestTemplate {
+public class FmmlxDiagramTest extends DiagramsTestTemplate {
 	
 	//parameterize for different combinations of metaclasses
 	@Test
