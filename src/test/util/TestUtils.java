@@ -1,7 +1,12 @@
 package test.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import tool.xmodeler.ControlCenterClient;
 
 public class TestUtils {
@@ -62,8 +67,28 @@ public class TestUtils {
 	 * alive. If you find a smarter solution go for it!
 	 */
 	public static void keepAliveAfterTest() {
-		System.err.println("Testbody was executed. Application will stay alive for one hour.");
+		System.err.println("Testbody was executed. Application will stay alive for one hour. Shutdown-time: " + getTimeInOneHour());
 		int hourToMilisec = 3600000;
 		waitWithoutCatch(hourToMilisec);
 	}
+	
+	private static String getTimeInOneHour() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime oneHourLater = currentTime.plusHours(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return oneHourLater.format(formatter);		
+	}
+	
+	public static Stage getFocusedStage() {
+        List<Window> windows = Window.getWindows();
+        for (Window window : windows) {
+            if (window instanceof Stage) {
+                Stage stage = (Stage) window;
+                if (stage.isFocused()) {
+                    return stage;
+                }
+            }
+        }
+        return null;
+    }	
 }
