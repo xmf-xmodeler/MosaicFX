@@ -1,37 +1,27 @@
 package test.frontend;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.control.LabeledMatchers.hasText;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.testfx.framework.junit5.ApplicationTest;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
-import javafx.stage.Stage;
-import test.util.test_templates.DiagramTestTemplate;
 import test.util.test_templates.XModelerTestTemplate;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.xmodeler.XModeler;
 
 /**
  * Example frontendTest. Please rewrite this code.
  */
-public class CreateClassTest extends DiagramTestTemplate {
+public class CreateClassTest extends XModelerTestTemplate {
 
 
 
-	//@Test
+	@Test
 	public void createClass() {
 		String projectName = createProject();
 		try {
