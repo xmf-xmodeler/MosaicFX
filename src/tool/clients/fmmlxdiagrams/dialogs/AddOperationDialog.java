@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -103,7 +105,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			levelComboBox.getSelectionModel().selectLast();
 			codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
 			defaultOperationButton.setOnAction(event -> {
-				AddOperationDialog.this.resetOperationBody("op0", false);});
+				AddOperationDialog.this.codeBoxPair.bodyCodeBox.setText(oldOpName);});
 		} else {
 			levelComboBox = new ComboBox<>(FXCollections.observableArrayList(oldOp.getLevel()));
 			levelComboBox.getSelectionModel().selectLast();
@@ -139,11 +141,43 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			defaultOperationButton,
 			statusLabel
 			);
+		
 		}
 		else {
 			umlFunctionSignature = new TextField();
 			umlFunctionSignature.setPrefWidth(200);
-			//umlFunctionSignature.;
+			umlFunctionSignature.setOnKeyTyped(event -> {
+				String[] codeBody;
+				codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+				String finalCode = "";
+				String nextLine = "";
+				for(int i = 0; i < codeBody.length;i++){
+					if(i==0) {
+						nextLine = "@Operation " + umlFunctionSignature.getText() +"\n";
+					}
+					else if (!codeBody[i].equals("end")) {
+						nextLine = nextLine + codeBody[i] + "\n";
+					}
+					else {
+						nextLine = nextLine + codeBody[i];
+					}
+				}
+				finalCode = nextLine;
+				codeBoxPair.setBodyText(finalCode);
+			});
+			
+			codeBoxPair.getBodyScrollPane().setOnKeyTyped(e -> {
+				String[] codeBody;
+				codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+				codeBody = codeBody[0].split(" ");
+				 String signature = "";
+				for(int i = 1;i<codeBody.length;i++) {
+					signature = signature + codeBody[i];
+				}
+			
+				umlFunctionSignature.setText(signature);
+			});
+			
 			if(oldOpName!=null) {
 			umlFunctionSignature.setText(oldOpName + "():Integer");
 			}

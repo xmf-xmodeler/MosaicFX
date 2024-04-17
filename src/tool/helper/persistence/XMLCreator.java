@@ -40,14 +40,14 @@ public class XMLCreator {
 	private static final int EXPORT_VERSION = 4;
 	private String packagePath;
 	private FmmlxDiagram currentDiagram;
-	
+	/*		//This would cause prevent the umlMode Attribute from being ad
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
-	
+	*/	
 	public void createAndSaveXMLRepresentation(String packagePath, AbstractPackageViewer diagram) {	//overload method to not break anything. Need diagram to check for uml mode. Simpler than going the XMF route.
 		this.packagePath = packagePath;
 		Document doc = initXML();
@@ -353,10 +353,8 @@ public class XMLCreator {
 	private Element createDiagramElement(DiagramInfo diagramInfo, Element diagrams) {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
-		if(currentDiagram!=null) {
-			if(currentDiagram.getUMLMode()) {
+		if(currentDiagram!=null) { 	//just here to preven crashes. Maybe not overloading the method but just changing the signature makes more sense.
 				diagram.setAttribute("umlMode", currentDiagram.getUMLMode()+"");	//should always be true but cleaner to do it this way.
-			}
 		}
 		XMLUtil.createChildElement(diagram, XMLTags.INSTANCES.getName());
 		return diagram;

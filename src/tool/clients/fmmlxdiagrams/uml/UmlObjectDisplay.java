@@ -224,8 +224,29 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			}
 		}
 		currentY = yAfterOpsBox;
+		
+		double yAfterSlotBox = currentY;
+		int slotSize = object.getSlots().size();
+		double slotBoxHeight = Math.max(lineHeight * slotSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double slotsY = 0;
+		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Slot);
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && slotSize > 0) {
+			yAfterSlotBox = currentY + slotBoxHeight;
+			group.addNodeElement(slotsBox);
+			for (FmmlxSlot s : object.getSlots()) {
+				slotsY += lineHeight;
+				NodeLabel.Action changeSlotValueAction = () -> diagram.getActions().changeSlotValue(object, s);
+				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ");
+				slotsBox.addNodeElement(slotNameLabel);
+				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), s, changeSlotValueAction, "" + s.getValue());
+				slotsBox.addNodeElement(slotValueLabel);
+			}
+		}
+		currentY = yAfterSlotBox;
 
 	}
+	
+
 	
 	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
 		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 

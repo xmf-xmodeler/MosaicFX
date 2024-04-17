@@ -227,7 +227,10 @@ public class XMLParser {
 
 	private void buildDiagram(Element diagram) {
 		String diagramName = diagram.getAttribute(XMLAttributes.NAME.getName());
-		boolean umlMode = Boolean.parseBoolean(diagram.getAttribute(XMLAttributes.UML_Mode.getName()));
+		boolean umlMode = false;
+		if(!diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals(null) || !diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals("")) {	//making sure the attribute exists in the xml
+		umlMode = Boolean.parseBoolean(diagram.getAttribute(XMLAttributes.UML_Mode.getName()));
+		}
 		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, umlMode, 
 				newDiagramId -> sendDiagramDataToXMF(newDiagramId, diagram));
 	}
