@@ -40,10 +40,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	private final static NodeBaseElement.Action NO_ACTION = null;
 	
 	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {	//Black should be fine for now
-//		int level = "CLASS".equals(this.object.type)?LevelColorScheme.LEVEL_AGNOSTIC_CLASS:
-//	        "ENUM".equals(this.object.type)?LevelColorScheme.ENUM:
-//	        this.object.getIssues().size()>0?LevelColorScheme.OBJECT_HAS_ISSUES:
-//	        (this.object.level.isContingentLevelClass()?LevelColorScheme.LEVEL_CONTINGENT_CLASS:this.object.level.getMinLevel());
 		return Color.BLACK; //diagram.levelColorScheme.getLevelFgColor(level, opacity);
 	}
 	
@@ -109,9 +105,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
-//			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Attribute);
-//			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.getLevel() == -1 ? " " : att.getLevel() + "");
-//			attBox.addNodeElement(attLevelLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
@@ -120,8 +113,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
-//			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.getLevel() == -1 ? " " : att.getLevel() + "");
-//			attBox.addNodeElement(attLevelLabel);
 			}
 		}
 		currentY = yAfterAttBox;
@@ -138,9 +129,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperation o : object.getOwnOperations()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
-//					NodeLabel.Action changeOpLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Operation);
-//					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "");
-//					opsBox.addNodeElement(opLevelLabel);
 					int labelX = 14;
 					if(o.isDelegateToClassAllowed()) {
 						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
@@ -156,15 +144,12 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
-//						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
-//						opsBox.addNodeElement(oLevelLabel);
 						try{
 							NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.getLevel()) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
 							opsBox.addNodeElement(inhIcon);
 						} catch (Exception e) {
 							NodeImage inhIcon = new NodeImage(14, opsY, "resources/gif/user/Query2.gif", o, NO_ACTION);
 							opsBox.addNodeElement(inhIcon);	
-//							System.err.println("Could not determine Icon, because path was not found.");
 						}
 						int labelX = 30;
 						if(o.isDelegateToClassAllowed()) {
@@ -178,7 +163,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 						} catch (Exception e) {
 							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + o.getOwner() + ")");
 							opsBox.addNodeElement(oLabel);
-//							System.err.println("Could not determine Icon, because path was not found.");
 						}
 					}
 				}
@@ -187,13 +171,10 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 					opsY += lineHeight;
-//					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
-//					opsBox.addNodeElement(oLevelLabel);
 					String iconS = "resources/gif/Inheritance.gif";
 					try{
 						if(diagram.getObjectByPath(object.getOfPath()).getAllOperations().contains(o)) iconS = "resources/gif/Dependency.gif";
 					} catch (PathNotFoundException pnfe) {}
-//					if(diagram.getObjectByPath(ofPath) != null && 
 					if(object.getDelegatesTo(false) != null && object.getDelegatesTo(false).getAllOperations().contains(o)) iconS = "resources/gif/XCore/delegation.png";
 						
 					NodeImage delIcon = new NodeImage(14, opsY, iconS, o, NO_ACTION);
@@ -215,8 +196,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 						opsY += lineHeight;
 						NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).getName() + ")");
 						opsBox.addNodeElement(oLabel);
-//						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
-//						opsBox.addNodeElement(oLevelLabel);
 						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationUp.png", o, NO_ACTION);
 						opsBox.addNodeElement(delIcon);
 					}
@@ -253,14 +232,11 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 		try {
 			String ofName = FmmlxObject.getRelativePath(diagram.getPackagePath(), object.getOfPath());
-//			FmmlxObject of = diagram.getObjectByPath(object.ofPath);
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^" + ofName + "^"));
 		} catch (PathNotFoundException e) {
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(object.getLevel() + "^???^"));
 		}
 		
-		//neededWidth += 30; // for level number;
-
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
@@ -379,12 +355,10 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
 	private String getParentsList(FmmlxDiagram diagram) {
 		StringBuilder parentsList = new StringBuilder("extends ");
-//		System.err.println(object.ownPath + "-> " + object.getParentsPaths());
 		for (String parentName : object.getParentsPaths()) {
 			try {
 				FmmlxObject parent = null;
 				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {
-//					System.err.println(parentName + " not found (must be external)");
 					if(!("Root::XCore::Object".equals(parentName) 
 							|| "Root::FMMLx::MetaClass".equals(parentName)
 							|| "Root::FMMLx::FmmlxObject".equals(parentName)))
@@ -401,7 +375,6 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				parentsList.append(parentName).append(", ");
 			}
 		}
-//		System.err.println(parentsList);
 		if(!("extends ".equals(parentsList.toString()))) return parentsList.substring(0, parentsList.length() - 2);
 		
 		return "";

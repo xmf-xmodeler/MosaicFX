@@ -54,7 +54,6 @@ public class DefaultContextMenu extends ContextMenu {
 		}
 		else {
 		getItems().addAll(addMenu, searchMenu, unhideItem);
-
 		}
 	}
 }
