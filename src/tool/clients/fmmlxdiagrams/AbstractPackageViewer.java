@@ -43,6 +43,10 @@ public abstract class AbstractPackageViewer {
 		this.comm = comm;
 		actions = new DiagramActions(this);
 	}
+	
+	public boolean getUMLMode() {
+		return umlMode;
+	}
 
 	public FmmlxDiagramCommunicator getComm() {
 		return comm;

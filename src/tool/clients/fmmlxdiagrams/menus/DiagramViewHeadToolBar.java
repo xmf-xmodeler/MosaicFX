@@ -166,7 +166,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F");
-		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()), "resources/png/save.24.png");
+		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram), "resources/png/save.24.png");
 		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 		
 		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton, extendedConstraintButton);
@@ -336,7 +336,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildModelMenu(Menu modelMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath()));
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
 		modelMenu.getItems().add(new SeparatorMenuItem());
 				
 		Menu enumMenu = new Menu("Enumeration");

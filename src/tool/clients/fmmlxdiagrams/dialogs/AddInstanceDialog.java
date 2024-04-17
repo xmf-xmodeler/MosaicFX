@@ -105,12 +105,14 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.of), 0, 1);
 		grid.add(ofComboBox, 1, 1);
+		if(!diagram.getUMLMode()) {	//hide for uml diagrams
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 2);
 		grid.add(levelBox, 1, 2);
-		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
-		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Singleton"), 0, 4);
 		grid.add(singletonCheckBox, 1, 4);
+		}
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
+		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 5);
 		grid.add(parentListView, 1, 5);
 	}
@@ -132,11 +134,20 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 		    	Level level = levelBox.getLevel();
 		    	if(level != null) {
+		    		if(!diagram.getUMLMode()) {
 		    		return new Result(nameTextField.getText(), level, 
 					parentListView.getSelectionModel().getSelectedItems(), 
 					selectedObject.getPath(),
 					abstractCheckBox.isSelected(),
 					singletonCheckBox.isSelected());
+		    		}
+		    		else {
+			    		return new Result(nameTextField.getText(), new Level(0,0), 
+								parentListView.getSelectionModel().getSelectedItems(), 
+								selectedObject.getPath(),
+								abstractCheckBox.isSelected(),
+								false);
+		    		}
 		    	}
 			}
 			return null;

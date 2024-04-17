@@ -50,9 +50,13 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
 		
+		if(!diagram.getUMLMode()) {
 		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem());
-		if(XModeler.isAlphaMode()) {
-			getItems().add(addAssocType);
+				if(XModeler.isAlphaMode()) {
+		getItems().add(addAssocType);}
+		}
+		else {
+		getItems().addAll(addMenu, searchMenu, unhideItem);
 		}
 	}
 }

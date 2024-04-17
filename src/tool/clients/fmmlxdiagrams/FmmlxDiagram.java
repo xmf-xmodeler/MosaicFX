@@ -284,6 +284,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			@Override
 			public void handle(KeyEvent e) {
 				pressedKeys.add(e.getCode());
+				if (getPressedKeys().contains(KeyCode.CONTROL) &&
+					getPressedKeys().contains(KeyCode.A)) {
+					selectAll();
+				}
+				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
+					new XMLCreator().createAndSaveXMLRepresentation(packagePath, FmmlxDiagram.this);
+					}
+				if (getPressedKeys().contains(KeyCode.F5)) {
+						getComm().triggerUpdate();
+					}
 			}
 		});
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {

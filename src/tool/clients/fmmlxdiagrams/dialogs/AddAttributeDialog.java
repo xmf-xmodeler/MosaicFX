@@ -35,6 +35,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private CheckBox isIncompleteBox;
 	private CheckBox isOptionalBox;
 
+	private AbstractPackageViewer diagram;
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
 	private Multiplicity multiplicity = Multiplicity.MANDATORY;
@@ -47,7 +48,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 	public AddAttributeDialog(final AbstractPackageViewer diagram, FmmlxObject selectedObject) {
 		super();
-
+		this.diagram = diagram;
 		types = diagram.getAvailableTypes();
 
 		DialogPane dialogPane = getDialogPane();
@@ -72,7 +73,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-
+				if(!diagram.getUMLMode()) {
 				return new Result(
 						selectedObject.getPath(),
 						nameTextField.getText(),
@@ -82,6 +83,18 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 						isIntrinsicBox.isSelected(),
 						isIncompleteBox.isSelected(),
 						isOptionalBox.isSelected());
+				}
+				else {
+					return new Result(
+							selectedObject.getPath(),
+							nameTextField.getText(),
+							new Level(0,0),
+							getComboBoxStringValue(typeComboBox),
+							multiplicity,
+							true,
+							false,
+							false);
+				}
 			}
 			return null;
 		});
@@ -194,22 +207,26 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(classLabel, 0, 1);
+		if(!diagram.getUMLMode()) {
 		grid.add(levelLabel, 0, 2);
-		grid.add(typeLabel, 0, 3);
 		grid.add(multiplicityLabel, 0, 4);
 		grid.add(isIntrinsicLabel, 0, 6);
 		grid.add(isIncompleteLabel, 0, 7);
 		grid.add(isOptionalLabel, 0, 8);
-		
-		grid.add(nameTextField, 1, 0);
-		grid.add(classTextField, 1, 1);
 		grid.add(levelComboBox, 1, 2);
-		grid.add(typeComboBox, 1, 3);
-		grid.add(multiplicityButton, 1, 4);
-		grid.add(displayMultiplicityLabel, 1, 5);
 		grid.add(isIntrinsicBox, 1, 6);
 		grid.add(isIncompleteBox, 1, 7);
 		grid.add(isOptionalBox, 1, 8);
+		}
+		grid.add(typeLabel, 0, 3);
+
+		
+		grid.add(nameTextField, 1, 0);
+		grid.add(classTextField, 1, 1);
+		grid.add(typeComboBox, 1, 3);
+		grid.add(multiplicityButton, 1, 4);
+		grid.add(displayMultiplicityLabel, 1, 5);
+		
 		
 		
 //		List<Node> labelNode = new ArrayList<Node>();

@@ -74,12 +74,17 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(nameTextField, 1, 0);
-		grid.add(levelLabel, 0, 1);
-		grid.add(levelComboBox, 1, 1);
+
 		grid.add(abstractLabel, 0, 2);
 		grid.add(abstractCheckbox, 1, 2);
+		
+		if(!diagram.getUMLMode()) {	//hidden for UMLMode
 		grid.add(singletonLabel, 0, 3);
 		grid.add(singletonCheckbox, 1, 3);
+		grid.add(levelLabel, 0, 1);
+		grid.add(levelComboBox, 1, 1);
+		}
+		
 		grid.add(parentLabel, 0, 4);
 		grid.add(parentListView, 1, 4);
 	}
@@ -87,11 +92,20 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				if(!diagram.getUMLMode()) {	//exception for uml mode
 				return new Result(nameTextField.getText(),
 						levelComboBox.getLevel(), 
 						abstractCheckbox.isSelected(), 
 						singletonCheckbox.isSelected(), 
 						parentListView.getSelectionModel().getSelectedItems());
+				}
+				else {
+					return new Result(nameTextField.getText(),
+							new Level(1,1), 
+							abstractCheckbox.isSelected(), 
+							false, 
+							parentListView.getSelectionModel().getSelectedItems());
+				}
 			}
 			return null;
 		});
@@ -112,7 +126,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 //			errorLabel.setText("Enter level as integer!");
 //			return false;
 		}
-		try { Level.parseLevel(levelComboBox.levelTextField.getText()); }
+		try {if(!diagram.getUMLMode()) { Level.parseLevel(levelComboBox.levelTextField.getText());} }	//circumvent error message in UML mode
 		catch(Level.UnparseableException le) {
 			errorLabel.setText(le.getMessage());
 			return false;

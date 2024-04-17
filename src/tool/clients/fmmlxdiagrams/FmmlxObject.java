@@ -336,7 +336,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}	
 
 	public FmmlxSlot getSlot(String slotName) {
-		for(FmmlxSlot slot : slots) {
+		for(FmmlxSlot slot : getSlots()) {
 			if(slot.getName().equals(slotName)) return slot;
 		}
 		return null;
@@ -412,7 +412,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 	
 	public Vector<FmmlxSlot> getAllSlots(){
-		return new Vector<FmmlxSlot> (slots);
+		return new Vector<FmmlxSlot> (getSlots());
 	}
 
 	public Vector<FmmlxOperationValue> getAllOperationValues(){
@@ -646,6 +646,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			if(i.getName().equals(constraintName)) return true;
 		}
 		return false;
+	}
+
+	public Vector<FmmlxSlot> getSlots() {
+		return slots;
 	}
 
 }

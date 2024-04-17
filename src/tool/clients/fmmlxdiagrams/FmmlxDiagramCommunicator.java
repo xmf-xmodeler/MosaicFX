@@ -34,7 +34,7 @@ import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
-	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
+	private static final boolean DEBUG = true; // while setting debug-modus you will receive logs, that help with error detection
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
@@ -2258,8 +2258,9 @@ public class FmmlxDiagramCommunicator {
 	public static class DiagramInfo {
 		public final Integer id;
 		public final String diagramName;
+	//	public final boolean umlMode;
 
-		public DiagramInfo(Integer id, String diagramName) {
+		public DiagramInfo(Integer id, String diagramName /*, boolean umlMode*/) {
 			super();
 			this.id = id;
 			this.diagramName = diagramName;

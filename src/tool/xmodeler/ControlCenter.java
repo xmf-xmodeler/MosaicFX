@@ -244,12 +244,13 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-//		Button newDiagram2 = new Button("Create UML Diagram");
-//		newDiagram2.setDisable(true);
-//		newDiagram2.disableProperty().bind(
-//				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-//				);
-//		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
+		Button newDiagram2 = new Button("Create UML Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
+		newDiagram2.setDisable(true);
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
+		grid.add(newDiagram2, 4, 4);
 		
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
@@ -258,7 +259,7 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-		grid.add(newDiagram, 4, 1);
+//		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -287,7 +288,7 @@ public class ControlCenter extends Stage {
 			d.showAndWait();
 		});		
 		grid.add(howToStart, 4, 4);
-//		grid.add(newDiagram2, 4, 4);
+//		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
 		grid.add(loadModelDir, 2, 4);

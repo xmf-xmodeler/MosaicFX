@@ -27,6 +27,8 @@ import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.xmodeler.XModeler;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 /**
  * This class is used to create an XML representation of a package.
@@ -37,6 +39,8 @@ public class XMLCreator {
 	private Element root;
 	private static final int EXPORT_VERSION = 4;
 	private String packagePath;
+	private FmmlxDiagram currentDiagram;
+
 	
 	public void createAndSaveXMLRepresentation(String packagePath) {
 		this.packagePath = packagePath;
@@ -50,8 +54,9 @@ public class XMLCreator {
 	 * 
 	 * @param packagePath of the diagram that should be represented as XML
 	 * @param onDocumentCreated return call, that will give back the document. Any action can be performed on the doc
+	 * @param diagram used to check if a diagram is in umlMode
 	 */
-	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated) {
+	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated, AbstractPackageViewer diagram) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
 		// calls save operation after representation is build
