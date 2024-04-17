@@ -119,7 +119,7 @@ public class AutoMLMDialog extends Dialog {
 //		// add button execue and get dummy xml file
 //		Button buttonExecuteAndOpen = new Button("Execute and open XML");
 //		grid.add(buttonExecuteAndOpen, 1, 8);
-//		buttonExecuteAndOpen.setOnAction(e -> {
+//		buttonExecuteAndOpen.setOnAxction(e -> {
 //			buttonExecuteAndOpenPressed();
 //		});
 
@@ -170,7 +170,8 @@ public class AutoMLMDialog extends Dialog {
 		fileChooser.setTitle("Select location of fxml");
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("XML File", "*.xml"));
 
-		File file = fileChooser.showSaveDialog(stage);
+		File file = fileChooser.showOpenDialog(stage);
+				//fileChooser.showSaveDialog(stage);
 		if (file == null) {
 			path = "";
 		} else {
@@ -209,7 +210,8 @@ public class AutoMLMDialog extends Dialog {
 				return;
 			}
 		}
-	}
+		
+		this.close();	}
 
 	// func for button execute
 	private void buttonExecutePressed() {
