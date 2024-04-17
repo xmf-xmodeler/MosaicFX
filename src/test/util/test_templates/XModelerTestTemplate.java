@@ -23,12 +23,13 @@ import tool.xmodeler.XModeler;
  * Please mind to set the needed environmental variables before starting a test
  * class. XMODELER_TEST=true
  * 
- * Please mind to use the right virtual machine arguments for testing. -ea
- * --add-modules
- * javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
+ * Please mind to use the right virtual machine arguments for testing.
+ * -ea
+ * --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web
  *
  * If you want to execute tests in headless modus please add the headless
- * environmental variable. HEADLESS=true
+ * environmental variable.
+ * HEADLESS=true
  *
  */
 public class XModelerTestTemplate extends ApplicationTest {
