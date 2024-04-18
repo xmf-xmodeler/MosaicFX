@@ -289,7 +289,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					selectAll();
 				}
 				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					new XMLCreator().createAndSaveXMLRepresentation(packagePath, FmmlxDiagram.this);
+					//new XMLCreator().createAndSaveXMLRepresentation(packagePath, FmmlxDiagram.this);
 					}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 						getComm().triggerUpdate();
