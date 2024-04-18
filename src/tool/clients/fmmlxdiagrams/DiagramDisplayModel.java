@@ -3,7 +3,8 @@ package tool.clients.fmmlxdiagrams;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
+
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.DiagramViewHeadToolBar;
 import xos.Value;
 
 public class DiagramDisplayModel {

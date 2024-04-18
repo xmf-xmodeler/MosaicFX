@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
@@ -15,7 +14,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -26,20 +24,14 @@ import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -92,7 +84,6 @@ import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
-import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -138,7 +129,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
-	private Vector<DiagramViewPane> views = new Vector<>();
+	Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	
 	static{
@@ -217,15 +208,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
         	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
         	dvp.canvasTransform = new Affine(xx, 0, tx, 0, xx, ty);
-        	tabPane.getTabs().add(new MyTab(dvp));
+        	tabPane.getTabs().add(new MyTab(this, dvp));
         }
         
         if(listOfViews.size() == 0) {
         	DiagramViewPane dvp = new DiagramViewPane("default view", false);
-        	tabPane.getTabs().add(new MyTab(dvp));
+        	tabPane.getTabs().add(new MyTab(this, dvp));
         }
 
-        tabPane.getTabs().add(new MyTab());
+        tabPane.getTabs().add(new MyTab(this));
        
         
         tabPane.setFocusTraversable(true);
@@ -271,7 +262,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
         	if(newTabItem.getContent() == null) {
         		// pane with star selected
-        		tabPane.getTabs().add(new MyTab());
+        		tabPane.getTabs().add(new MyTab(this));
         		final DiagramViewPane newView = new DiagramViewPane("new View", false);
         		((MyTab)newTabItem).setText("");
         		((MyTab)newTabItem).setView(newView);
@@ -960,7 +951,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private double zoom = 1.;
 		public Affine canvasTransform = new Affine();
 		private final boolean isZoomView;
-		private String name;
+		String name;
 		
 		private DiagramViewPane(String name, boolean isZoomView) {
 			super();
@@ -1691,71 +1682,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			deselectPalette();
 			redraw();
 		}
-	}
-
-	private class MyTab extends Tab {
-		final Label label;
-		DiagramViewPane view;
-		
-		private MyTab(DiagramViewPane view) {
-			super("", view);
-			this.view = view;
-			this.label = new Label(view.name);
-			setLabel();
-			setCloseListener();
-		    
-			
-		}
-		
-		public void setCloseListener() {
-			this.setOnCloseRequest(new EventHandler<Event>() {
-
-		        public void handle(Event e) {
-		        	Alert alert = new Alert(AlertType.CONFIRMATION);
-		        	alert.setTitle("Confirmation Dialog");
-		        	alert.setHeaderText("Close Tab");
-		        	alert.setContentText("Press OK to close the tab!");
-
-		        	Optional<ButtonType> result = alert.showAndWait();
-		        	if (result.get() == ButtonType.OK){
-		        	   views.remove(view);
-		        	} else {
-		        		e.consume();
-		        	}
-		        }
-		    });
-		}
-
-		public void setView(DiagramViewPane newView) {
-			this.view = newView;
-    		setContent(newView);
-    		label.setText(view.name);
-			setLabel();
-		}
-
-		private void setLabel() {			
-			setGraphic(label);
-			label.setOnMouseClicked((event) -> {
-				if (event.getClickCount() == 2) {
-					TextInputDialog dialog = new TextInputDialog("new tab name");
-					dialog.setTitle("Change tab name");
-					dialog.setHeaderText("Change tab name");
-					dialog.setContentText("Please enter the new name for this tab:");
-					java.util.Optional<String> result = dialog.showAndWait();
-					if (result.isPresent()) {
-						view.name = result.get();
-						label.setText(view.name);
-					}
-				}
-			});
-		}
-
-		public MyTab() {
-			super("*", null);
-			this.label = new Label("void");
-			setCloseListener();
-			
-		}		
 	}
 
 
