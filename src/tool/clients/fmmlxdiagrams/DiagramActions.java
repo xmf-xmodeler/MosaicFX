@@ -65,6 +65,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -1076,6 +1077,21 @@ public class DiagramActions {
 			
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
+	}
+	/**
+	 * @author Nicolas Engel
+	 */
+	public void exportToDB()
+	{
+		Platform.runLater(() -> {XMLDatabase db = 
+			new XMLDatabase();
+			try {
+				db.writeToDB((FmmlxDiagram)this.diagram);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public void exportSvg() {

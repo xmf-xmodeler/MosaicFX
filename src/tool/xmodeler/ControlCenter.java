@@ -50,6 +50,9 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.ModelInputTransformer;
@@ -138,6 +141,23 @@ public class ControlCenter extends Stage {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
+			
+			Menu DatabaseMenu = new Menu("Database");
+			getMenus().add(DatabaseMenu);
+			buildDatabaseMenu(DatabaseMenu);
+			
+			
+		}
+		
+		private void buildDatabaseMenu(Menu DatabaseMenu)
+		{
+			MenuItem getProjectsFromDB = new MenuItem("Get Projects from Database");
+			getProjectsFromDB.setOnAction(e->getProjectsFromDB());
+			
+			MenuItem dbConsole = new MenuItem("Database Console");
+			dbConsole.setOnAction(e-> dBConsole());
+			
+			DatabaseMenu.getItems().addAll(getProjectsFromDB,dbConsole);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -155,6 +175,30 @@ public class ControlCenter extends Stage {
 							
 			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
+		
+		private void getProjectsFromDB()
+		{
+			XMLDatabase database = new XMLDatabase();
+			try 
+			{
+				database.getDiagramsFromDB();
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		private void dBConsole()
+		{
+			XMLDatabaseConsole console = new XMLDatabaseConsole();
+			try
+			{
+				console.startConsole();
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
 		
 		private void openWebpage(String url) {
 			Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -449,4 +493,5 @@ public class ControlCenter extends Stage {
 			diagramLV.getItems().addAll(vec);
 		});
 	}
+	
 }

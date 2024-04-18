@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 
+
 public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu(DiagramViewPane view) {
@@ -32,6 +33,10 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Classes...", e -> actions.openFindClassDialog());
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Senders...", e -> actions.openFindSendersDialog());
 
+		
+		
+		
+		
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
 		
