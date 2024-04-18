@@ -86,14 +86,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 
 	// The elements which the diagram consists of GUI-wise
-	private SplitPane splitPane;
+	private SplitPane rootPane;
 	private SplitPane splitPane2;
 	private SplitPane splitPane3;
 	private ScrollPane scrollPane;
 	private VBox mainView;
 	private TableView<Issue> tableView;
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
-	private TabPane tabPane;
+	private TabPane diagramViewPane;
 	private DiagramViewPane zoomView;
 	public  static final Font FONT;
 	static{
@@ -148,95 +148,47 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		diagramViewToolBarModel.setProperties(listOfOptions);
 		
 		this.diagramName = name;
-		splitPane = new SplitPane();
-		splitPane2 = new SplitPane();
+		
+		
+		
+		
+		
+		
+		rootPane = buildRootPane();
+		splitPane2 = buildSplitPane2();
+		
 		mainView = new VBox();
 		
-		tableView = new TableView<Issue>();
-		TableColumn<Issue, FmmlxObject> objectColumn = new TableColumn<>("Object");
-		TableColumn<Issue, Issue> issueColumn = new TableColumn<>("Issue");
-		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        objectColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
-        issueColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
-		tableView.getColumns().add(objectColumn);
-		tableView.getColumns().add(issueColumn);
-		tableView.getSelectionModel().setCellSelectionEnabled(true);
-		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent click) {
-				if (click.getClickCount() == 2) {
-					getActiveDiagramViewPane().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
-				}
-			}
-		});
 		
-		objectColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,FmmlxObject>, ObservableValue<FmmlxObject>>() {
-
-			@Override
-			public ObservableValue<FmmlxObject> call(CellDataFeatures<Issue, FmmlxObject> f) {
-				try {
-				return new ReadOnlyObjectWrapper<FmmlxObject>(f.getValue().getAffectedObject(FmmlxDiagram.this));
-				} catch(Exception e) {
-					return null;
-				}
-			}			
-		});
-		objectColumn.setCellFactory((listView) -> {
-			return new TableCell<Issue,FmmlxObject>() {
-
-				@Override
-	            protected void updateItem(FmmlxObject o, boolean empty) {
-	                super.updateItem(o, empty);
-	                if (o != null) {
-	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
-	                	
-	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel().getMinLevel()));
-	                } else { setText(""); setGraphic(null); }
-	            }
-	        };
-	    });
-		
-		issueColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,Issue>, ObservableValue<Issue>>() {
-
-			@Override
-			public ObservableValue<Issue> call(CellDataFeatures<Issue, Issue> f) {
-				try {
-				return new ReadOnlyObjectWrapper<Issue>(f.getValue());
-				} catch(Exception e) {
-					return null;
-				}
-			}			
-		});
-		
-		
-		issueColumn.setCellFactory((listView) -> {
-			return new TableCell<Issue,Issue>() {
-				@Override
-	            protected void updateItem(Issue issue, boolean empty) {
-	                super.updateItem(issue, empty);
-	                if(issue!=null) {
-                		if(Issue.Severity.FATAL.equals(issue.getSeverity())) {
-                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
-                		}
-                		if(Issue.Severity.NORMAL.equals(issue.getSeverity())) {
-                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
-                		}
-                		if(Issue.Severity.BAD_PRACTICE.equals(issue.getSeverity())) {
-                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/User/Warning.gif").toURI().toString())));
-                		}
-                		if(Issue.Severity.USER_DEFINED.equals(issue.getSeverity())) {
-                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/MDC/Listener.gif").toURI().toString())));
-                		}
-                		setText(issue.getText());
-                		} else { setText(""); setGraphic(null); }
-	            }
-	        };
-	    });
+		tableView = buildTableView();
 		
 		newFmmlxPalette = new FmmlxPalette(this);
 		
-        tabPane = new TabPane();
+        diagramViewPane = buildDiagramViewPane(listOfViews);
+        
+        scrollPane = new ScrollPane(tableView);
+         
+		mainView.getChildren().addAll(diagramViewToolbar, diagramViewPane);
+		
+		
+		splitPane2.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
+		SplitPane.setResizableWithParent(zoomView, false);
+
+		
+		rootPane.getItems().addAll(splitPane2, mainView);
+		
+		
+		
+		switchTableOnAndOffForIssues();
+		Thread t = new Thread( () -> {
+			this.fetchDiagramData( a -> { } );
+			updateConcreteSyntaxes();
+		});
+		t.start();		
+	}
+
+	private TabPane buildDiagramViewPane(Vector<Vector<Object>> listOfViews) {
+		TabPane tabPane = new TabPane();
         
         for(Vector<Object> view : listOfViews) {
         	DiagramViewPane dvp = new DiagramViewPane((String) view.get(0), false);
@@ -318,22 +270,107 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         // Resize of Canvas on rescale
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
-        
-        scrollPane = new ScrollPane(tableView);
-         
-		mainView.getChildren().addAll(diagramViewToolbar, tabPane);
+        return tabPane;
+	}
+
+	private TableView<Issue> buildTableView() {
+		TableView<Issue> tableView = new TableView<Issue>();
+		TableColumn<Issue, FmmlxObject> objectColumn = new TableColumn<>("Object");
+		TableColumn<Issue, Issue> issueColumn = new TableColumn<>("Issue");
+		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        objectColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
+        issueColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
+		tableView.getColumns().add(objectColumn);
+		tableView.getColumns().add(issueColumn);
+		tableView.getSelectionModel().setCellSelectionEnabled(true);
+		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() == 2) {
+					getActiveDiagramViewPane().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
+				}
+			}
+		});
 		
+		objectColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,FmmlxObject>, ObservableValue<FmmlxObject>>() {
+
+			@Override
+			public ObservableValue<FmmlxObject> call(CellDataFeatures<Issue, FmmlxObject> f) {
+				try {
+				return new ReadOnlyObjectWrapper<FmmlxObject>(f.getValue().getAffectedObject(FmmlxDiagram.this));
+				} catch(Exception e) {
+					return null;
+				}
+			}			
+		});
+		objectColumn.setCellFactory((listView) -> {
+			return new TableCell<Issue,FmmlxObject>() {
+
+				@Override
+	            protected void updateItem(FmmlxObject o, boolean empty) {
+	                super.updateItem(o, empty);
+	                if (o != null) {
+	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
+	                	
+	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel().getMinLevel()));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+	    });
+		
+		issueColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,Issue>, ObservableValue<Issue>>() {
+
+			@Override
+			public ObservableValue<Issue> call(CellDataFeatures<Issue, Issue> f) {
+				try {
+				return new ReadOnlyObjectWrapper<Issue>(f.getValue());
+				} catch(Exception e) {
+					return null;
+				}
+			}			
+		});
+		
+		
+		issueColumn.setCellFactory((listView) -> {
+			return new TableCell<Issue,Issue>() {
+				@Override
+	            protected void updateItem(Issue issue, boolean empty) {
+	                super.updateItem(issue, empty);
+	                if(issue!=null) {
+                		if(Issue.Severity.FATAL.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.NORMAL.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.BAD_PRACTICE.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/User/Warning.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.USER_DEFINED.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/MDC/Listener.gif").toURI().toString())));
+                		}
+                		setText(issue.getText());
+                		} else { setText(""); setGraphic(null); }
+	            }
+	        };
+	    });
+		return tableView;
+	}
+
+	private SplitPane buildSplitPane2() {
+		SplitPane splitPane2 = new SplitPane();
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);
-		splitPane2.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
-		SplitPane.setResizableWithParent(zoomView, false);
-
-		splitPane.setOrientation(Orientation.HORIZONTAL);
-		splitPane.setDividerPosition(0, 0.2);
-		splitPane.getItems().addAll(splitPane2, mainView);
 		SplitPane.setResizableWithParent(splitPane2, false);
-		
-		splitPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
+		return splitPane2;
+	}
+
+	private SplitPane buildRootPane() {
+		SplitPane rootPane = new SplitPane();
+		rootPane.setOrientation(Orientation.HORIZONTAL);
+		rootPane.setDividerPosition(0, 0.2);
+		rootPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
 			/**
 			 * Handles KeyEvent on the hole Stage
 			 * @param event KeyEvent that is handled
@@ -346,13 +383,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			}
 		});
-		
-		switchTableOnAndOffForIssues();
-		Thread t = new Thread( () -> {
-			this.fetchDiagramData( a -> { } );
-			updateConcreteSyntaxes();
-		});
-		t.start();		
+		return rootPane;
 	}
 
 	private void updateConcreteSyntaxes() {
@@ -435,7 +466,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 // Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
 	public javafx.scene.Node getView() {
-		return splitPane;
+		return rootPane;
 	}
 
 	private void updateDiagramLater() {
@@ -808,7 +839,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	public DiagramViewPane getActiveDiagramViewPane() {
-		return (DiagramViewPane) tabPane.getSelectionModel().getSelectedItem().getContent();
+		return (DiagramViewPane) diagramViewPane.getSelectionModel().getSelectedItem().getContent();
 	}
 	
 	public BoundingBox getBounds() {
@@ -861,11 +892,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
 			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
 	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
-			splitPane3 = new SplitPane(tabPane, scrollPane);
+			splitPane3 = new SplitPane(diagramViewPane, scrollPane);
 			splitPane3.setOrientation(Orientation.VERTICAL);
 			mainView.getChildren().addAll(diagramViewToolbar, splitPane3);
 		} else {
-			mainView.getChildren().addAll(diagramViewToolbar, tabPane);
+			mainView.getChildren().addAll(diagramViewToolbar, diagramViewPane);
 		}
 		Thread t = new Thread(() -> {
 			try {
