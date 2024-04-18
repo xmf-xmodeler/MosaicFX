@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
@@ -29,7 +30,8 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override
+	public void layoutLabels(FmmlxDiagram diagram) {
 		try{
 			createLabel(getAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;

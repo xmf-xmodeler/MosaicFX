@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public interface CanvasElement {

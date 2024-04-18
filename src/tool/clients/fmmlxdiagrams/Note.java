@@ -10,8 +10,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
@@ -236,7 +237,7 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	@Override
-	protected void updatePositionInBackend(int diagramID) {
+	public void updatePositionInBackend(int diagramID) {
 		sendCurrentNoteMappingToXMF(diagramID, r -> {});
 		
 	}

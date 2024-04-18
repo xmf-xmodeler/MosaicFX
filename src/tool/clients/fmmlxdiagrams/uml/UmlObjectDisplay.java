@@ -13,6 +13,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;

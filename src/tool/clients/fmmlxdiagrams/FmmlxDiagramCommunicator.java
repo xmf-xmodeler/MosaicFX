@@ -25,6 +25,7 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;

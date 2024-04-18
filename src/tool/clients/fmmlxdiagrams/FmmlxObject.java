@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
@@ -521,7 +522,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+	public void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
 		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
 			if(diagram.umlMode) {
 				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
@@ -620,7 +621,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
   
 	@Override
-	protected void updatePositionInBackend(int diagramID) {
+	public void updatePositionInBackend(int diagramID) {
 		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
 		
 	}

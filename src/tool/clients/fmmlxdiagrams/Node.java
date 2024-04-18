@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public abstract class Node implements CanvasElement {
 		this.y = y;
 	}
 
-	protected boolean hidden;
+	public boolean hidden;
 	protected double x;
 	protected double y;
 	protected transient Point2D lastClick = null;
@@ -112,7 +113,7 @@ public abstract class Node implements CanvasElement {
 		return false;
 	}
 
-	protected abstract void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
+	public abstract void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) ;
 	
 	protected void layout(FmmlxDiagram diagram) {
 		layout(diagram, diagram.getDiagramViewToolBarModel().getDisplayPropertiesMap());
@@ -174,7 +175,7 @@ public abstract class Node implements CanvasElement {
 		setHidden(mapping.isHidden());
 	}
 
-	protected abstract void updatePositionInBackend(int diagramID);
+	public abstract void updatePositionInBackend(int diagramID);
 
 	/**
 	 * Must include the backend update

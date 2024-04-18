@@ -11,6 +11,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 

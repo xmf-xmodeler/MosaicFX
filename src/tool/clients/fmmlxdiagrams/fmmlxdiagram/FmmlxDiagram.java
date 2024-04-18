@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram;
 
 import java.io.File;
 import java.util.Collections;
@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.application.Platform;
@@ -63,6 +62,28 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.util.Callback;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.CanvasElement;
+import tool.clients.fmmlxdiagrams.DiagramActions;
+import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
+import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
+import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
+import tool.clients.fmmlxdiagrams.Edge;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramControlKeyHandler;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.InheritanceEdge;
+import tool.clients.fmmlxdiagrams.Issue;
+import tool.clients.fmmlxdiagrams.LevelColorScheme;
+import tool.clients.fmmlxdiagrams.Node;
+import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
+import tool.clients.fmmlxdiagrams.Issue.Severity;
+import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
@@ -74,33 +95,25 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
-import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLUtil;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
-
-	enum MouseMode {
-		MULTISELECT, STANDARD, DRAW_EDGE
-	}
 
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane rootPane;
-	private SplitPane splitPane2;
+	private SplitPane palettSideBar;
 	private SplitPane splitPane3;
-	private ScrollPane scrollPane;
-	private VBox mainView;
-	private TableView<Issue> tableView;
+	private ScrollPane issueScrollPane;
+	private VBox canvasContainer;
+	private TableView<Issue> issueTable;
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
 	private TabPane diagramViewPane;
 	private DiagramViewPane zoomView;
 	public  static final Font FONT;
-	static{
-		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-	}
-	DiagramViewHeadToolBar diagramViewToolbar;
-	DiagramDisplayModel diagramViewToolBarModel;
+
+	private DiagramViewHeadToolBar diagramViewToolbar;
+	private DiagramDisplayModel diagramViewToolBarModel;
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -116,18 +129,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxProperty lastHitProperty = null;
 	private transient boolean diagramRequiresUpdate = false;
 		
-	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 	public final String diagramName;
 	private final FmmlxPalette newFmmlxPalette;
 	private String filePath;
 	public String updateID = null;
-	String edgeCreationType = null;
-	String nodeCreationType = null;
+	private String edgeCreationType = null;
+	private String nodeCreationType = null;
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
 	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
+	
+	static{
+		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+	}
 
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -135,57 +151,61 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
-	public DiagramDisplayModel getDiagramViewToolBarModel() {
-		return diagramViewToolBarModel;
-	}
-
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews, 
 			Vector<Vector<Object>> listOfOptions, boolean umlMode) {
+		
 		super(comm,diagramID,packagePath);
+	
 		this.umlMode = umlMode; // <- TODO move to abstract, change to enum anyway
+		diagramName = name;	
+			
 		diagramViewToolbar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = diagramViewToolbar.getModel();
-//		diagramViewToolBarModel.setProperties(listOfOptions);
-		
-		this.diagramName = name;
-		
-		
-		
-		
-		
-		
-		rootPane = buildRootPane();
-		splitPane2 = buildSplitPane2();
-		
-		mainView = new VBox();
-		
-		
-		tableView = buildTableView();
-		
 		newFmmlxPalette = new FmmlxPalette(this);
 		
-        diagramViewPane = buildDiagramViewPane(listOfViews);
-        
-        scrollPane = new ScrollPane(tableView);
-         
-		mainView.getChildren().addAll(diagramViewToolbar, diagramViewPane);
-		
-		
-		splitPane2.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
-		SplitPane.setResizableWithParent(zoomView, false);
-
-		
-		rootPane.getItems().addAll(splitPane2, mainView);
-		
-		
-		
+		buildRootPane(listOfViews);
+		buildIssuePane();
 		switchTableOnAndOffForIssues();
+		initConcreteSyntax();		
+	}
+
+	private void initConcreteSyntax() {
 		Thread t = new Thread( () -> {
 			this.fetchDiagramData( a -> { } );
 			updateConcreteSyntaxes();
 		});
-		t.start();		
+		t.start();
 	}
+
+	private void buildRootPane(Vector<Vector<Object>> listOfViews) {
+		rootPane = buildRootPane();
+		composeCanvasContainer(listOfViews);
+		composePaletSideBar();
+		rootPane.getItems().addAll(palettSideBar, canvasContainer);		
+	}
+
+	private void composePaletSideBar() {
+		palettSideBar = buildPalettSideBar();	    
+		zoomView = buildZoomView();
+		palettSideBar.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
+	}
+
+	private void composeCanvasContainer(Vector<Vector<Object>> listOfViews) {
+		canvasContainer = new VBox();
+		diagramViewPane = buildDiagramViewPane(listOfViews);
+		canvasContainer.getChildren().addAll(diagramViewToolbar, diagramViewPane);
+	}
+
+	private void buildIssuePane() {
+		issueTable = buildIssueTable();
+	    issueScrollPane = new ScrollPane(issueTable);
+	}
+
+	public DiagramDisplayModel getDiagramViewToolBarModel() {
+		return diagramViewToolBarModel;
+	}
+
+	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
 	private TabPane buildDiagramViewPane(Vector<Vector<Object>> listOfViews) {
 		TabPane tabPane = new TabPane();
@@ -206,7 +226,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         }
 
         tabPane.getTabs().add(new MyTab());
-        zoomView = new DiagramViewPane("", true);
+       
         
         tabPane.setFocusTraversable(true);
 		tabPane.setOnKeyReleased(keyEvent -> {
@@ -273,22 +293,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         return tabPane;
 	}
 
-	private TableView<Issue> buildTableView() {
-		TableView<Issue> tableView = new TableView<Issue>();
+	private DiagramViewPane buildZoomView() {
+		DiagramViewPane zoomView = new DiagramViewPane("", true);
+        SplitPane.setResizableWithParent(zoomView, false);
+        return zoomView;
+	}
+
+	private TableView<Issue> buildIssueTable() {
+		TableView<Issue> issueTable = new TableView<Issue>();
 		TableColumn<Issue, FmmlxObject> objectColumn = new TableColumn<>("Object");
 		TableColumn<Issue, Issue> issueColumn = new TableColumn<>("Issue");
 		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        objectColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
-        issueColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
-		tableView.getColumns().add(objectColumn);
-		tableView.getColumns().add(issueColumn);
-		tableView.getSelectionModel().setCellSelectionEnabled(true);
-		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        objectColumn.prefWidthProperty().bind(issueTable.widthProperty().multiply(0.3));
+        issueColumn.prefWidthProperty().bind(issueTable.widthProperty().multiply(0.7));
+		issueTable.getColumns().add(objectColumn);
+		issueTable.getColumns().add(issueColumn);
+		issueTable.getSelectionModel().setCellSelectionEnabled(true);
+		issueTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent click) {
 				if (click.getClickCount() == 2) {
-					getActiveDiagramViewPane().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
+					getActiveDiagramViewPane().centerObject(issueTable.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
 				}
 			}
 		});
@@ -355,15 +381,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	            }
 	        };
 	    });
-		return tableView;
+		return issueTable;
 	}
 
-	private SplitPane buildSplitPane2() {
-		SplitPane splitPane2 = new SplitPane();
-		splitPane2.setOrientation(Orientation.VERTICAL);
-		splitPane2.setDividerPosition(0, 0.8);
-		SplitPane.setResizableWithParent(splitPane2, false);
-		return splitPane2;
+	private SplitPane buildPalettSideBar() {
+		SplitPane palettSideBar = new SplitPane();
+		palettSideBar.setOrientation(Orientation.VERTICAL);
+		palettSideBar.setDividerPosition(0, 0.8);
+		SplitPane.setResizableWithParent(palettSideBar, false);
+		return palettSideBar;
 	}
 
 	private SplitPane buildRootPane() {
@@ -582,7 +608,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		selectedObjects.clear();
 	}
 	
-	void selectAll() {
+	public void selectAll() {
 		deselectAll();
 		for (Node object : getObjectsReadOnly()) {
 			selectedObjects.add(object);
@@ -801,9 +827,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			});
 		}
 */
-		tableView.getItems().clear();
-		tableView.refresh();
-		tableView.getItems().addAll(issues);
+		issueTable.getItems().clear();
+		issueTable.refresh();
+		issueTable.getItems().addAll(issues);
 		redraw();
 	}
 
@@ -888,15 +914,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
   }
   
 	public void switchTableOnAndOffForIssues() {
-		mainView.getChildren().clear();
+		canvasContainer.getChildren().clear();
 		if (diagramViewToolBarModel.getPropertieValue(DiagramDisplayProperty.ISSUETABLE)) {
-			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
-	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
-			splitPane3 = new SplitPane(diagramViewPane, scrollPane);
+			issueTable.prefHeightProperty().bind(issueScrollPane.heightProperty());
+	        issueTable.prefWidthProperty().bind(issueScrollPane.widthProperty());
+			splitPane3 = new SplitPane(diagramViewPane, issueScrollPane);
 			splitPane3.setOrientation(Orientation.VERTICAL);
-			mainView.getChildren().addAll(diagramViewToolbar, splitPane3);
+			canvasContainer.getChildren().addAll(diagramViewToolbar, splitPane3);
 		} else {
-			mainView.getChildren().addAll(diagramViewToolbar, diagramViewPane);
+			canvasContainer.getChildren().addAll(diagramViewToolbar, diagramViewPane);
 		}
 		Thread t = new Thread(() -> {
 			try {
@@ -930,9 +956,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public class DiagramViewPane extends Pane implements View {
 		
-		Canvas canvas;
+		public Canvas canvas;
 		private double zoom = 1.;
-		Affine canvasTransform = new Affine();
+		public Affine canvasTransform = new Affine();
 		private final boolean isZoomView;
 		private String name;
 		

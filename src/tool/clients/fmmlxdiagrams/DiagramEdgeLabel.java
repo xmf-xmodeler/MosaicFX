@@ -13,13 +13,14 @@ import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 import xos.Value;
 
 public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElement {
 	
-	final Edge<ConcreteNode> owner;
+	public final Edge<ConcreteNode> owner;
 	public final int localID;
 	private final Runnable action;
 	private final String text;

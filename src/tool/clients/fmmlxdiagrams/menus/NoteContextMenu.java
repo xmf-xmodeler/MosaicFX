@@ -3,8 +3,8 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class NoteContextMenu extends ContextMenu {
 	

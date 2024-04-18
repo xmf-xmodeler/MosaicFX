@@ -10,6 +10,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -349,7 +350,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	public abstract HeadStyle getTargetDecoration();
 	public abstract HeadStyle getSourceDecoration();
 
-	protected Vector<Point2D> getAllPoints() {
+	public Vector<Point2D> getAllPoints() {
 		Vector<Point2D> allPoints = new Vector<>();
 		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
@@ -357,7 +358,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return allPoints;
 	}
 
-	protected abstract void layoutLabels(FmmlxDiagram diagram);
+	public abstract void layoutLabels(FmmlxDiagram diagram);
 
 	public void align() {
 		checkVisibilityMode();

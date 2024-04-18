@@ -14,9 +14,9 @@ import org.apache.batik.anim.dom.SVGOMElement;
 import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class NodeElement {
