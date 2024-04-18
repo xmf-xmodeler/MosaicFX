@@ -206,7 +206,8 @@ public class DiagramViewHeadToolBar extends VBox {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText("List of Shortcuts");
 		String content = "F5: Update Diagram\n"
-				+ "Strg + S: Save Diagram\n"
+				+ "Strg + S: Save Diagram to Database\n"
+				+ "Strg + Alt + S: Save Diagram to Database\n"
 				+ "Strg + A: Select all Elements\n"
 				+ "Strg + F: Find Objects\n"
 				+ "Strg + Z: Undo\n"

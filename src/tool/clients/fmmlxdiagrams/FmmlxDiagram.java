@@ -317,8 +317,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
+				if (getPressedKeys().contains(KeyCode.CONTROL) &&  getPressedKeys().contains(KeyCode.ALT)&& getPressedKeys().contains(KeyCode.S)) {
 					new XMLCreator().createAndSaveXMLRepresentation(packagePath);
+					}
+				else if (getPressedKeys().contains(KeyCode.CONTROL)&& getPressedKeys().contains(KeyCode.S)){
+					Platform.runLater(()-> actions.exportToDB());
 					}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 						getComm().triggerUpdate();

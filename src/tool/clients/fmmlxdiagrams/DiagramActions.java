@@ -1078,7 +1078,9 @@ public class DiagramActions {
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
-	
+	/**
+	 * @author Nicolas Engel
+	 */
 	public void exportToDB()
 	{
 		Platform.runLater(() -> {XMLDatabase db = 
