@@ -42,9 +42,10 @@ public class XMLCreator {
 	private FmmlxDiagram currentDiagram;
 
 	
-	public void createAndSaveXMLRepresentation(String packagePath) {
+	public void createAndSaveXMLRepresentation(String packagePath, AbstractPackageViewer diagram) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
+		currentDiagram = (FmmlxDiagram) diagram;
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
@@ -360,6 +361,9 @@ public class XMLCreator {
 	private Element createDiagramElement(DiagramInfo diagramInfo, Element diagrams) {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
+		if(currentDiagram!=null) { 	//just here to preven crashes. Maybe not overloading the method but just changing the signature makes more sense.
+			diagram.setAttribute("umlMode", currentDiagram.getUMLMode()+"");	//should always be true but cleaner to do it this way.
+	}
 		XMLUtil.createChildElement(diagram, XMLTags.INSTANCES.getName());
 		return diagram;
 	}

@@ -46,7 +46,7 @@ public class FmmlxDiagramControlKeyHandler {
 	}
 
 	private void handleS() {
-		new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath());
+		new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(),diagram);
 	}
 
 	private void handleA() {

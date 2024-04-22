@@ -1701,5 +1701,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}		
 	}
 
+	public boolean getUMLMode() {
+		// TODO Auto-generated method stub
+		return umlMode;
+	}
+
 
 }
