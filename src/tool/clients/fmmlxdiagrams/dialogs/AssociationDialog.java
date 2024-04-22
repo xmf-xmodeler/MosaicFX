@@ -136,7 +136,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	}
 
 	private void layoutContent() {
-		
+		if(!diagram.getUMLMode()) {
+		layoutStandard();
+		}
+		layoutUML();
 	}
 	
 	
@@ -438,7 +441,12 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			});
 			
 			multTargetToSourceBox.setMultiplicity(new Multiplicity(0, -1, false, false, false));
+			if(!diagram.getUMLMode()) {
 			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);
+			}
+			else {
+			multSourceToTargetBox.setMultiplicity(new Multiplicity(0,-1,false,false,false));
+			}
 		}
 		
 		Vector<AssociationType> assocTypeItems = new Vector<>();
