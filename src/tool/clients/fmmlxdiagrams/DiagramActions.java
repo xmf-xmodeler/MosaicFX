@@ -1037,10 +1037,10 @@ public class DiagramActions {
 	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram.getID());diagram.updateDiagram();}
 	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram.getID());diagram.updateDiagram();}
 
-	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelRaiseRelated(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelLowerRelated(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelInsertBelow(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelRemoveThis(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
 
 	public void assignToGlobalVariable(FmmlxObject object) {
 		TextInputDialog dialog = new TextInputDialog("");
@@ -1327,8 +1327,16 @@ public class DiagramActions {
 		diagram.getComm().redo(diagram.diagramID);
 	}
 
-	public void generateGetter(FmmlxObject object, FmmlxAttribute attribute) {
+	public void generateGetter(final FmmlxObject object, final FmmlxAttribute attributeParam) {
 		Platform.runLater(() -> {
+			FmmlxAttribute attribute = attributeParam;
+			if(attribute == null) {
+				ChoiceDialog<FmmlxAttribute> cd = new ChoiceDialog<>(null, object.getAllAttributes());
+				Optional<FmmlxAttribute> a = cd.showAndWait();
+				if(!a.isPresent() || a.get() == null) return;
+				attribute = a.get();
+			}
+			
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
 			dlg.initAttributeSetter(attribute);
 			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
@@ -1342,7 +1350,7 @@ public class DiagramActions {
 	}	
 	
 	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
-		throw new RuntimeException("Not yet implemented!");
+		new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();
 	}
 
 	public void generateAssocGetter(
