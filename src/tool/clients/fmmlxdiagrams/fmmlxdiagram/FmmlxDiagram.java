@@ -154,7 +154,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		diagramViewToolBarModel = diagramViewToolbar.getModel();
 		newFmmlxPalette = new FmmlxPalette(this);
 		
-		buildRootPane(listOfViews);
+		rootPane = buildRootPane(listOfViews);
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
 		initConcreteSyntax();		
@@ -168,11 +168,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		t.start();
 	}
 
-	private void buildRootPane(Vector<Vector<Object>> listOfViews) {
-		rootPane = buildRootPane();
+	private SplitPane buildRootPane(Vector<Vector<Object>> listOfViews) {
+		SplitPane splitPane = buildRootPane();
 		composeCanvasContainer(listOfViews);
 		composePaletSideBar();
-		rootPane.getItems().addAll(palettSideBar, canvasContainer);		
+		splitPane.getItems().addAll(palettSideBar, canvasContainer);	
+		return splitPane;
 	}
 
 	private void composePaletSideBar() {
