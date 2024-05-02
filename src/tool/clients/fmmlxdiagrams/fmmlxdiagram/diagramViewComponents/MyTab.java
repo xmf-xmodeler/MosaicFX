@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.fmmlxdiagram;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
 import java.util.Optional;
 
@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 
 class MyTab extends Tab {

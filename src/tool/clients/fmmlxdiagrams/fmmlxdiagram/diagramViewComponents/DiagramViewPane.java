@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.fmmlxdiagram;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
 import java.io.File;
 import java.util.HashMap;
@@ -34,6 +34,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Issue;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
@@ -51,8 +52,9 @@ public class DiagramViewPane extends SplitPane {
 	private ScrollPane issueScrollPane;
 	private DiagramViewHeadToolBar diagramViewToolbar;
 	private DiagramCanvas zoomView;
-	private final FmmlxPalette newFmmlxPalette;
+	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
+	private Vector<Vector<Object>> listOfViews;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -60,48 +62,63 @@ public class DiagramViewPane extends SplitPane {
 	public DiagramViewPane(FmmlxDiagram fmmlxDiagram, Vector<Vector<Object>> listOfViews,
 			DiagramViewHeadToolBar toolBar) {
 
-		diagram = fmmlxDiagram;
+		this.listOfViews = listOfViews;
 		diagramViewToolbar = toolBar;
-		newFmmlxPalette = new FmmlxPalette(this);
-
-		buildRootPane();
-		composeCanvasContainer(listOfViews);
-		composePaletSideBar();
-		getItems().addAll(palettSideBar, canvasContainer);
+		diagram = fmmlxDiagram;
 	
+		
+		int testPrecedenz = 2; 
+		buildViewComponents(testPrecedenz);
+	}
+	
+	private void buildViewComponents(int testPrecedenz) {
+		configPane();
+		palettSideBar = buildPalettSideBar();
+		zoomView = buildZoomView();
+		
+		fmmlxPalette = new FmmlxPalette(this, testPrecedenz);
+		
+		palettSideBar.getItems().clear();
+		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
+	
+		composeCanvasContainer(listOfViews);
+	
+		getItems().clear();
+	
+		getItems().addAll(palettSideBar, canvasContainer);
+		//bug... by update the divider position is slightly different to original position
+		setDividerPosition(0, 0.2);
+		
+		//state invariant operations 
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
 		initConcreteSyntax();
 
 	}
-	
-	public DiagramViewPane() {
 
-		super();
-	this.newFmmlxPalette = null;
-	}
-
-	private void buildRootPane() {
+	private void configPane() {
 		setOrientation(Orientation.HORIZONTAL);
-		setDividerPosition(0, 0.2);
-		setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
-			/**
-			 * Handles KeyEvent on the hole Stage
-			 * 
-			 * @param event KeyEvent that is handled
-			 */
-			@Override
-			public void handle(javafx.scene.input.KeyEvent event) {
-				if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
-					diagram.getActiveDiagramViewPane().escapeCreationMode();
-				}
-			}
-		});
+		setOnKeyReleased(this::handleKeyReleasedGlobal);
+	}
+	
+	/**
+	 * handles released keys on the hole pane
+	 * @param key to be handled
+	 */
+	private void handleKeyReleasedGlobal(KeyEvent event) {
+	    if (event.getCode() == KeyCode.ESCAPE) {
+	        diagram.getActiveDiagramViewPane().escapeCreationMode();
+	    }
+	    
+	    if (event.getCode() == KeyCode.DIGIT1) {
+	        updateView();
+	    }
 	}
 
 	private void composeCanvasContainer(Vector<Vector<Object>> listOfViews) {
 		canvasContainer = new VBox();
 		diagramViewPane = buildDiagramViewPane(listOfViews);
+		canvasContainer.getChildren().clear();
 		canvasContainer.getChildren().addAll(diagramViewToolbar, diagramViewPane);
 	}
 
@@ -202,12 +219,6 @@ public class DiagramViewPane extends SplitPane {
 		tabPane.heightProperty().addListener((observable, x, y) -> diagram.redraw());
 		tabPane.widthProperty().addListener((observable, x, y) -> diagram.redraw());
 		return tabPane;
-	}
-
-	private void composePaletSideBar() {
-		palettSideBar = buildPalettSideBar();
-		zoomView = buildZoomView();
-		palettSideBar.getItems().addAll(getNewFmmlxPalette().getToolBar(), zoomView);
 	}
 
 	private DiagramCanvas buildZoomView() {
@@ -388,6 +399,10 @@ public class DiagramViewPane extends SplitPane {
 			}
 		}
 	}
+	
+	public void updateView() {
+		buildViewComponents(2);
+	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
 		return (DiagramCanvas) diagramViewPane.getSelectionModel().getSelectedItem().getContent();
@@ -405,12 +420,8 @@ public class DiagramViewPane extends SplitPane {
 		return diagramViewToolbar;
 	}
 
-	public FmmlxPalette getPalette() {
-		return getNewFmmlxPalette();
-	}
-
-	public FmmlxPalette getNewFmmlxPalette() {
-		return newFmmlxPalette;
+	public FmmlxPalette getFmmlxPalette() {
+		return fmmlxPalette;
 	}
 
 	public TableView<Issue> getIssueTable() {

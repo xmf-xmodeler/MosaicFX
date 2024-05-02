@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.DiagramViewHeadToolBar;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
 import xos.Value;
 
 public class DiagramDisplayModel {

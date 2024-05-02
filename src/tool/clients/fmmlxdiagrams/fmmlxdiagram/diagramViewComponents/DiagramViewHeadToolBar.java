@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.fmmlxdiagram;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
 
 import java.util.EnumSet;
@@ -29,6 +29,7 @@ import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.communication.java_to_python.MissingPythonRespondException;
 import tool.communication.java_to_python.PythonFunction;

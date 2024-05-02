@@ -78,6 +78,8 @@ import tool.clients.fmmlxdiagrams.Issue.Severity;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
@@ -118,7 +120,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 
-	Vector<DiagramCanvas> views = new Vector<>();
+	public Vector<DiagramCanvas> views = new Vector<>();
 
 	static {
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
@@ -165,7 +167,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		edgeCreationType = null;
 		nodeCreationType = null;
 		// if the palette is not updated no new actions could be performed
-		viewPane.getPalette().update();
+		viewPane.getFmmlxPalette().update();
 	}
 
 	public void setEdgeCreationType(String edgeCreationType) {
@@ -540,7 +542,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		triggerOverallReLayout();
-		viewPane.getNewFmmlxPalette().update();
+		viewPane.getFmmlxPalette().update();
 
 		Issue nextIssue = null;
 		for (int i = 0; i < issues.size() && nextIssue == null; i++) {
@@ -671,9 +673,9 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		private double zoom = 1.;
 		public Affine canvasTransform = new Affine();
 		private final boolean isZoomView;
-		String name;
+		public String name;
 
-		DiagramCanvas(String name, boolean isZoomView) {
+		public DiagramCanvas(String name, boolean isZoomView) {
 			super();
 
 			this.name = name;
@@ -1327,19 +1329,19 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			return null;
 		}
 
-		void zoomIn() {
+		public void zoomIn() {
 			zoomBy(getZoom() * ZOOM_STEP, new Point2D(canvas.getWidth() / 2, canvas.getHeight() / 2));
 			redraw();
 			sendViewStatus();
 		}
 
-		void zoomOut() {
+		public void zoomOut() {
 			zoomBy(getZoom() / ZOOM_STEP, new Point2D(canvas.getWidth() / 2, canvas.getHeight() / 2));
 			redraw();
 			sendViewStatus();
 		}
 
-		void zoomOne() {
+		public void zoomOne() {
 			canvasTransform = new Affine();
 			redraw();
 			sendViewStatus();
@@ -1441,7 +1443,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		 * If a user chooses to create something but then decides that he does not need
 		 * it, the canvas can be reset to normal by this function call.
 		 */
-		void escapeCreationMode() {
+		public void escapeCreationMode() {
 			mouseMode = MouseMode.STANDARD;
 			setPaneCursor(Cursor.DEFAULT);
 			deselectPalette();

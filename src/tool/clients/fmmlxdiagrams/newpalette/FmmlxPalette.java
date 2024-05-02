@@ -26,17 +26,18 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
 
 public class FmmlxPalette {
 
 	private final VBox node;
 	private final TreeView<AbstractTreeType> treeView;
 	private final FmmlxDiagram fmmlxDiagram;
-	private TreeItem<AbstractTreeType> root;
+	private TreeItem<AbstractTreeType> root = new TreeItem<AbstractTreeType>();
 	private TreeItem<AbstractTreeType> relationships = new TreeItem<AbstractTreeType>(new TreeGroup("Relationships"));
 	private TreeItem<AbstractTreeType> elements = new TreeItem<AbstractTreeType>(new TreeGroup("Elements"));
+	private TreeItem<AbstractTreeType> miscs = new TreeItem<AbstractTreeType>(new TreeGroup("Miscellaneous"));
 	private boolean showMetaClassName = false;
 
 	// Vector<FmmlxObject> objects = diagram.getObjects();
@@ -45,7 +46,7 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(DiagramViewPane diagramRootPane) {
+	public FmmlxPalette(DiagramViewPane diagramRootPane, int testPrecedenz) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
 		this.fmmlxDiagram = diagramRootPane.getDiagram();
@@ -91,20 +92,22 @@ public class FmmlxPalette {
 			if(newValue != null) {
 				newValue.getValue().action.perform(null);
 			}
-//			if (newValue.getValue().toString().equals("MetaClass")) {
-//				fmmlxDiagram.setNodeCreationType("MetaClass");
-//			} else if (newValue.getValue().toString().equals("Association")) {
-//				fmmlxDiagram.setEdgeCreationType("association");
-//			} else if (newValue.getValue().toString().equals("Link")) {
-//				fmmlxDiagram.setEdgeCreationType("associationInstance");
-//			} else if (newValue.getValue().toString().equals("Delegation")) {
-//				fmmlxDiagram.setEdgeCreationType("delegation");
-//			} else {
-//				newValue.getValue().action.perform(null);
-////				
-////				fmmlxDiagram.setNodeCreationType(newValue.getValue().toString());
-//			}
 		});
+		
+		addNoteToMisc();
+		
+		if (testPrecedenz > 1) {
+			root.getChildren().add(relationships);			
+		}
+		root.getChildren().add(miscs);
+		root.getChildren().add(elements);
+		treeView.setRoot(root);
+	}
+
+	private void addNoteToMisc() {
+		DefaultTool noteTool = new DefaultTool("Note", "resources/png/note.16.png", point -> fmmlxDiagram.activateNoteCreationMode());
+		TreeItem<AbstractTreeType> note = new TreeItem<AbstractTreeType>(noteTool);
+		miscs.getChildren().add(note);
 	}
 
 	public synchronized void update() {
@@ -112,16 +115,8 @@ public class FmmlxPalette {
 			treeView.getSelectionModel().clearSelection();
 			elements.getChildren().clear();
 			relationships.getChildren().clear();
-
-			treeView.setRoot(null);
-			this.root = new TreeItem<AbstractTreeType>();
-			treeView.setRoot(root);
 			treeView.setShowRoot(false);
-			root.getChildren().add(relationships);
-			TreeItem<AbstractTreeType> miscs = new TreeItem<AbstractTreeType>(new TreeGroup("Miscellaneous"));
-			root.getChildren().add(miscs);
-			root.getChildren().add(elements);
-			
+		
 			DefaultTool associationTool = 
 					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
 			DefaultTool linkTool = 
@@ -137,21 +132,15 @@ public class FmmlxPalette {
 			metaClassTool = 
 						new DefaultTool("Class", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 			}
-			DefaultTool noteTool = 
-					new DefaultTool("Note", "resources/png/note.16.png", point -> fmmlxDiagram.activateNoteCreationMode());
 			
-			
-
 			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
 			TreeItem<AbstractTreeType> delegation = new TreeItem<AbstractTreeType>(delegationTool);
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
-			TreeItem<AbstractTreeType> note = new TreeItem<AbstractTreeType>(noteTool);
-
+			
 			elements.getChildren().add(metaClass);
 			relationships.getChildren().addAll(association, link, delegation);
-			miscs.getChildren().add(note);
-	
+			
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
 			for (FmmlxObject o : objects) {
