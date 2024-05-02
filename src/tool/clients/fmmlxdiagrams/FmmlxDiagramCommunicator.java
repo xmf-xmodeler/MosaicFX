@@ -95,7 +95,7 @@ public class FmmlxDiagramCommunicator {
 //		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions, umlMode, DiagramViewState.FULL_GUI);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions, umlMode);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {

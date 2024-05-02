@@ -133,7 +133,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	}
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath,
-			Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode, DiagramViewState diagramViewState) {
+			Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode) {
 
 		super(comm, diagramID, packagePath);
 
@@ -143,7 +143,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		//Build Gui
 		DiagramViewHeadToolBar toolBar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = toolBar.getModel();
-		viewPane = new DiagramViewPane(this, listOfViews, toolBar, diagramViewState);
+		viewPane = new DiagramViewPane(this, listOfViews, toolBar);
 	}
 
 	public DiagramViewPane getRootPane() {
@@ -418,7 +418,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	// Some useful methods for queries:
 
 	public String getDiagramLabel() {
-		return diagramName;
+		return getDiagramName();
 	}
 
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
@@ -666,6 +666,10 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 	public static Font getFont() {
 		return FONT;
+	}
+
+	public String getDiagramName() {
+		return diagramName;
 	}
 
 	public class DiagramCanvas extends Pane implements View {

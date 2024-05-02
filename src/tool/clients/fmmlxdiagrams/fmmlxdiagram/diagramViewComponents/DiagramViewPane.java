@@ -55,22 +55,37 @@ public class DiagramViewPane extends SplitPane {
 	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
+	private DiagramViewState diagramViewState = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
 
 	public DiagramViewPane(FmmlxDiagram fmmlxDiagram, Vector<Vector<Object>> listOfViews,
-			DiagramViewHeadToolBar toolBar, DiagramViewState state) {
+			DiagramViewHeadToolBar toolBar) {
 
 		this.listOfViews = listOfViews;
 		diagramViewToolbar = toolBar;
 		diagram = fmmlxDiagram;
-	
 		
-		int testPrecedenz = 2; 
-		buildViewComponents(state);
+		
+		setDiagramViewState();
+		
+
+		buildViewComponents(diagramViewState);			
+		
 	}
 	
+	/**
+	 * As Daniel would say evil hack
+	 */
+	private void setDiagramViewState() {
+		if (diagram.getDiagramName().equals("crazyTestName")) {
+			diagramViewState = DiagramViewState.CREATE_CLASS;
+		} else {
+			diagramViewState = DiagramViewState.FULL_GUI;
+		}
+	}
+
 	private void buildViewComponents(DiagramViewState state) {
 		configPane();
 		palettSideBar = buildPalettSideBar();
@@ -432,4 +447,7 @@ public class DiagramViewPane extends SplitPane {
 		this.issueTable = issueTable;
 	}
 
+	public void setDiagramViewState(DiagramViewState diagramViewState) {
+		this.diagramViewState = diagramViewState;
+	}
 }
