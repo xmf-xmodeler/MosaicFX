@@ -60,7 +60,7 @@ public class DiagramViewPane extends SplitPane {
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
 
 	public DiagramViewPane(FmmlxDiagram fmmlxDiagram, Vector<Vector<Object>> listOfViews,
-			DiagramViewHeadToolBar toolBar) {
+			DiagramViewHeadToolBar toolBar, DiagramViewState state) {
 
 		this.listOfViews = listOfViews;
 		diagramViewToolbar = toolBar;
@@ -68,15 +68,15 @@ public class DiagramViewPane extends SplitPane {
 	
 		
 		int testPrecedenz = 2; 
-		buildViewComponents(testPrecedenz);
+		buildViewComponents(state);
 	}
 	
-	private void buildViewComponents(int testPrecedenz) {
+	private void buildViewComponents(DiagramViewState state) {
 		configPane();
 		palettSideBar = buildPalettSideBar();
 		zoomView = buildZoomView();
 		
-		fmmlxPalette = new FmmlxPalette(this, testPrecedenz);
+		fmmlxPalette = new FmmlxPalette(this, state);
 		
 		palettSideBar.getItems().clear();
 		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
@@ -401,7 +401,7 @@ public class DiagramViewPane extends SplitPane {
 	}
 	
 	public void updateView() {
-		buildViewComponents(2);
+		buildViewComponents(DiagramViewState.FULL_GUI);
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {

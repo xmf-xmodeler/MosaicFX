@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewState;
 
 public class FmmlxPalette {
 
@@ -46,7 +47,7 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(DiagramViewPane diagramRootPane, int testPrecedenz) {
+	public FmmlxPalette(DiagramViewPane diagramRootPane, DiagramViewState diagramViewState) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
 		this.fmmlxDiagram = diagramRootPane.getDiagram();
@@ -96,7 +97,7 @@ public class FmmlxPalette {
 		
 		addNoteToMisc();
 		
-		if (testPrecedenz > 1) {
+		if (diagramViewState.getPrecedence() > 1) {
 			root.getChildren().add(relationships);			
 		}
 		root.getChildren().add(miscs);

@@ -80,6 +80,7 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewState;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
@@ -132,7 +133,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	}
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath,
-			Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode) {
+			Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions, boolean umlMode, DiagramViewState diagramViewState) {
 
 		super(comm, diagramID, packagePath);
 
@@ -142,7 +143,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		//Build Gui
 		DiagramViewHeadToolBar toolBar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModel = toolBar.getModel();
-		viewPane = new DiagramViewPane(this, listOfViews, toolBar);
+		viewPane = new DiagramViewPane(this, listOfViews, toolBar, diagramViewState);
 	}
 
 	public DiagramViewPane getRootPane() {
