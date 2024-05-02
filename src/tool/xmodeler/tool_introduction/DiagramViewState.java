@@ -8,9 +8,12 @@ package tool.xmodeler.tool_introduction;
  */
 public enum DiagramViewState {
 
-	CREATE_CLASS(1), FULL_GUI(100),
+	CREATE_CLASS(1, "FirstTask"),
+	DUMMY(2, "SecondTask"),
+	
+	FULL_GUI(100, ""),
 	// could be used for testing new feat as "Feat-Flag"
-	FEAT_GUI(101),;
+	FEAT_GUI(101, ""),;
 
 	/**
 	 * The gui is build consecutive. So the next gui needs all elements of the gui
@@ -18,9 +21,17 @@ public enum DiagramViewState {
 	 * value 100. In between all states can be inserted.
 	 */
 	private int precedence;
+	private String taskDescritpion;
 
-	private DiagramViewState(int precedence) {
+
+
+	public String getTaskDescritpion() {
+		return taskDescritpion;
+	}
+
+	private DiagramViewState(int precedence, String taskDescritpion) {
 		this.precedence = precedence;
+		this.taskDescritpion = taskDescritpion;
 	}
 
 	public int getPrecedence() {
@@ -28,8 +39,7 @@ public enum DiagramViewState {
 	}
 
 	public DiagramViewState getNextState() {
-		int currentPrecedence = getPrecedence();
-		int nextPrecedence = currentPrecedence++;
+		int nextPrecedence = getPrecedence() + 1;
 		return getViewStatusFromPrecedence(nextPrecedence);
 	}
 

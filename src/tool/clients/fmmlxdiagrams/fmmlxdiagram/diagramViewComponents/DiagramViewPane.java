@@ -15,8 +15,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -53,11 +53,11 @@ public class DiagramViewPane extends SplitPane {
 	private SplitPane splitPane3;
 	private ScrollPane issueScrollPane;
 	private DiagramViewHeadToolBar diagramViewToolbar;
-	private DiagramCanvas zoomView;
 	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
 	private DiagramViewState diagramViewState = null;
+	private TaskTab taskTab = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -92,7 +92,7 @@ public class DiagramViewPane extends SplitPane {
 	private void buildViewComponents(DiagramViewState state) {
 		configPane();
 		palettSideBar = buildPalettSideBar();
-		zoomView = buildZoomView();
+		DiagramCanvas zoomView = buildZoomView();
 		
 		fmmlxPalette = new FmmlxPalette(this, state);
 		
@@ -107,10 +107,18 @@ public class DiagramViewPane extends SplitPane {
 		//bug... by update the divider position is slightly different to original position
 		setDividerPosition(0, 0.2);
 		
+		if (state.getPrecedence() < 100) {
+			taskTab = new TaskTab(diagramViewState.getTaskDescritpion());
+			getItems().add(1, taskTab);
+		}
+		
 		//state invariant operations 
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
 		initConcreteSyntax();
+		
+		
+		
 
 	}
 
@@ -420,6 +428,12 @@ public class DiagramViewPane extends SplitPane {
 	
 	public void loadNextStage() {
 		buildViewComponents(diagramViewState.getNextState());
+		updateTaskTabText();
+		diagramViewState = diagramViewState.getNextState();
+	}
+
+	private void updateTaskTabText() {
+		taskTab.appendTask(diagramViewState.getNextState().getTaskDescritpion());	
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {

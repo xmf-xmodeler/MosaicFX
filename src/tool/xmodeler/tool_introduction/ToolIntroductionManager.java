@@ -24,6 +24,10 @@ public class ToolIntroductionManager {
 		}
 		return instance;
 	}
+	
+	public static boolean isInitialized() {
+		return (instance != null);
+	}
 
 	private void generateIntroductionDiagram(ControlCenter controlCenter) {
 		String projectName = "intro";
