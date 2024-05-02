@@ -50,17 +50,13 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.clients.workbench.WorkbenchClient;
 import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
-import tool.helper.persistence.XMLParser;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
-import xos.Message;
-import xos.Value;
 
 public class ControlCenter extends Stage {
 	
@@ -117,7 +113,7 @@ public class ControlCenter extends Stage {
 	}
 	
 	protected void testDiagramViewIntro() {
-		new ToolIntroductionManager().start();
+		new ToolIntroductionManager(this).start();
 	}
 
 	private void showCloseWarningDialog(Event event) {

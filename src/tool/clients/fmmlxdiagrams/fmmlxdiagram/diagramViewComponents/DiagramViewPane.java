@@ -40,6 +40,8 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
+import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class DiagramViewPane extends SplitPane {
 
@@ -68,7 +70,7 @@ public class DiagramViewPane extends SplitPane {
 		diagram = fmmlxDiagram;
 		
 		
-		setDiagramViewState();
+		initDiagramViewState();
 		
 
 		buildViewComponents(diagramViewState);			
@@ -78,9 +80,10 @@ public class DiagramViewPane extends SplitPane {
 	/**
 	 * As Daniel would say evil hack
 	 */
-	private void setDiagramViewState() {
+	private void initDiagramViewState() {
 		if (diagram.getDiagramName().equals("crazyTestName")) {
 			diagramViewState = DiagramViewState.CREATE_CLASS;
+			ToolIntroductionManager.getInstance().setDiagram(diagram);
 		} else {
 			diagramViewState = DiagramViewState.FULL_GUI;
 		}
@@ -126,7 +129,7 @@ public class DiagramViewPane extends SplitPane {
 	    }
 	    
 	    if (event.getCode() == KeyCode.DIGIT1) {
-	        updateView();
+	        loadNextStage();
 	    }
 	}
 
@@ -415,8 +418,8 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 	
-	public void updateView() {
-		buildViewComponents(DiagramViewState.FULL_GUI);
+	public void loadNextStage() {
+		buildViewComponents(diagramViewState.getNextState());
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
@@ -450,4 +453,8 @@ public class DiagramViewPane extends SplitPane {
 	public void setDiagramViewState(DiagramViewState diagramViewState) {
 		this.diagramViewState = diagramViewState;
 	}
+
+	public DiagramViewState getDiagramViewState() {
+		return diagramViewState;
+	}	
 }

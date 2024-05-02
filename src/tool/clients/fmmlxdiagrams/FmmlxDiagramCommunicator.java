@@ -26,12 +26,12 @@ import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewState;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
+import tool.xmodeler.tool_introduction.DiagramViewState;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {

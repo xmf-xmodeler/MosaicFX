@@ -80,7 +80,6 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewState;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
@@ -89,6 +88,8 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
 
@@ -647,6 +648,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		// Performs the diagram update with empty return call
 		super.updateDiagram(getView(), r -> {
 		});
+		ToolIntroductionManager.getInstance().checkSucessCondition();
 	}
 
 	@Override
@@ -1454,5 +1456,9 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			deselectPalette();
 			redraw();
 		}
+	}
+
+	public DiagramViewPane getViewPane() {
+		return viewPane;
 	}
 }
