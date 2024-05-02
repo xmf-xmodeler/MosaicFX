@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 
 class MyTab extends Tab {
 	/**
@@ -18,11 +18,11 @@ class MyTab extends Tab {
 	 */
 	private final FmmlxDiagram fmmlxDiagram;
 	final Label label;
-	DiagramViewPane view;
+	DiagramCanvas view;
 	
-	MyTab(FmmlxDiagram fmmlxDiagram, DiagramViewPane view) {
+	MyTab(DiagramViewPane diagramRootPane, DiagramCanvas view) {
 		super("", view);
-		this.fmmlxDiagram = fmmlxDiagram;
+		this.fmmlxDiagram = diagramRootPane.getDiagram();
 		this.view = view;
 		this.label = new Label(view.name);
 		setLabel();
@@ -50,7 +50,7 @@ class MyTab extends Tab {
 	    });
 	}
 
-	public void setView(DiagramViewPane newView) {
+	public void setView(DiagramCanvas newView) {
 		this.view = newView;
 		setContent(newView);
 		label.setText(view.name);
@@ -74,9 +74,9 @@ class MyTab extends Tab {
 		});
 	}
 
-	public MyTab(FmmlxDiagram fmmlxDiagram) {
+	public MyTab(DiagramViewPane diagramRootPane) {
 		super("*", null);
-		this.fmmlxDiagram = fmmlxDiagram;
+		this.fmmlxDiagram = diagramRootPane.getDiagram();
 		this.label = new Label("void");
 		setCloseListener();
 		

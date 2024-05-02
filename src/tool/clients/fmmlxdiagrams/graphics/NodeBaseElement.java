@@ -29,12 +29,12 @@ public abstract class NodeBaseElement extends NodeElement {
 		this.styleDeclaration = null;
 	}
 
-	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
 	
-	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this.action;
 		return null;

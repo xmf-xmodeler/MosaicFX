@@ -26,6 +26,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class FmmlxPalette {
@@ -44,10 +45,10 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(FmmlxDiagram fmmlxDiagram) {
+	public FmmlxPalette(DiagramViewPane diagramRootPane) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
-		this.fmmlxDiagram = fmmlxDiagram;
+		this.fmmlxDiagram = diagramRootPane.getDiagram();
 
 		treeView.setCellFactory(param -> new TreeCell<AbstractTreeType>() {
 			protected void updateItem(AbstractTreeType item, boolean empty) {
@@ -71,10 +72,10 @@ public class FmmlxPalette {
 					} else {
 						setTextFill(Color.WHITE);
 						setBorder(new Border(new BorderStroke(
-								fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()), BorderStrokeStyle.SOLID,
+								diagramRootPane.getDiagram().levelColorScheme.getLevelBgColor(item.getLevel()), BorderStrokeStyle.SOLID,
 								new CornerRadii(10), new BorderWidths(1), new Insets(2, 5, 2, 25))));
 						setBackground(new Background(
-								new BackgroundFill(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()),
+								new BackgroundFill(diagramRootPane.getDiagram().levelColorScheme.getLevelBgColor(item.getLevel()),
 										new CornerRadii(10), new Insets(2, 5, 2, 25))));
 					}
 					if (item instanceof DefaultTool && item.getLevel() != 1000 || item instanceof TreeGroup) {

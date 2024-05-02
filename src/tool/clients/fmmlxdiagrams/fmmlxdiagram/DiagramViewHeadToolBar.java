@@ -190,7 +190,7 @@ public class DiagramViewHeadToolBar extends VBox {
 				setText();
 				//IssueTable is the only DiagramDisplayProperty which visualization is not requested from XMF
 				if (property.equals(DiagramDisplayProperty.ISSUETABLE)) {
-					setOnAction(e -> {toggleItem(); fmmlxDiagram.switchTableOnAndOffForIssues();});	
+					setOnAction(e -> {toggleItem(); fmmlxDiagram.getRootPane().switchTableOnAndOffForIssues();});	
 				} else {					
 					setOnAction(e -> toggleItem());
 				}

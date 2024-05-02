@@ -25,7 +25,7 @@ public class ObjectContextMenu extends ContextMenu {
 	private final DiagramActions actions;
 	private final FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse) {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
@@ -41,7 +41,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}
 	}
 	
-	private void constructorStandard(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse){
+	private void constructorStandard(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse){
 
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
@@ -180,7 +180,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}, ALWAYS);
 	}
 	
-	private void constructorUML(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
+	private void constructorUML(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse) {
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 				MenuItem execUI = new MenuItem("Execute UI");
 				execUI.setOnAction( e -> actions.executeUI(object) );

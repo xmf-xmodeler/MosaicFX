@@ -139,7 +139,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 	
 	@Override
-	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(view.getDiagram()); 
@@ -419,7 +419,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		if(!isVisible()) return false;
 		return null != isHit(new Point2D(mouseX, mouseY), 2.5, view.getCanvasTransform());
 	}
@@ -453,7 +453,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramCanvas diagram, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
 		//if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		//MenuItem repairItem = new MenuItem("Repair Edge Alignment");
@@ -464,7 +464,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
-	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas view) {
 	  try {
 		Point2D mouse = new Point2D(mouseX, mouseY);
 		Point2D raw = view.getCanvasTransform().inverseTransform(mouse);

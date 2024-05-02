@@ -137,7 +137,7 @@ public abstract class AbstractPackageViewer {
 		return fetchingData;
 	}
 
-	protected void fetchDiagramData( ReturnCall<Object> onDataFetched ) {
+	public void fetchDiagramData( ReturnCall<Object> onDataFetched ) {
 		final boolean TIMER = false;
 		final long START = System.currentTimeMillis();
 		

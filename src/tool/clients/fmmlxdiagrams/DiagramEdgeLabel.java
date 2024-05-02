@@ -56,7 +56,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	@Deprecated private double getY() {return this.myTransform.getTy();}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		if(!owner.isVisible()) return;		
 		int size=16;
 		g.setTransform(getTotalTransform(view.getCanvasTransform()));
@@ -163,7 +163,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+	public ContextMenu getContextMenu(FmmlxDiagram.DiagramCanvas diagram, Point2D absolutePoint) {
 		return menu;
 	}
 
@@ -173,7 +173,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram) {
 		if(!owner.isVisible()) return false;
 		boolean hit = false;
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
