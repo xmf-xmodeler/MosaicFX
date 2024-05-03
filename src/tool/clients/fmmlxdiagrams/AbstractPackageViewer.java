@@ -420,6 +420,10 @@ public abstract class AbstractPackageViewer {
 		return packagePath;
 	}
 	
+	public final String getProjectName() {
+		return getPackagePath().substring(6);
+	}
+	
 	public final Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge<?> e : edges)

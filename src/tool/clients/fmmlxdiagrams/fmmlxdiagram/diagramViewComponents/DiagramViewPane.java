@@ -77,16 +77,22 @@ public class DiagramViewPane extends SplitPane {
 		
 	}
 	
-	/**
-	 * As Daniel would say evil hack
-	 */
+	
 	private void initDiagramViewState() {
-		if (diagram.getDiagramName().equals("crazyTestName")) {
+		if (isIntroductionMode()) {
 			diagramViewState = DiagramViewState.CREATE_CLASS;
 			ToolIntroductionManager.getInstance().setDiagram(diagram);
 		} else {
 			diagramViewState = DiagramViewState.FULL_GUI;
 		}
+	}
+
+	/**
+	 * As Daniel would say evil hack
+	 */
+	private boolean isIntroductionMode() {
+		return diagram.getProjectName().equals("ToolIntroductionABC")
+				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
 
 	private void buildViewComponents(DiagramViewState state) {

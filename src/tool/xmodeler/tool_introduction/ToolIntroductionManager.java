@@ -30,7 +30,7 @@ public class ToolIntroductionManager {
 	}
 
 	private void generateIntroductionDiagram(ControlCenter controlCenter) {
-		String projectName = "intro";
+		String projectName = "ToolIntroductionABC";
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject", 1);
 		message.args[0] = new Value(projectName);
 		WorkbenchClient.theClient().getHandler().raiseEvent(message);
@@ -39,7 +39,7 @@ public class ToolIntroductionManager {
 		} catch (InterruptedException e) {
 				throw new RuntimeException();
 		}
-		String diagramName = "crazyTestName";
+		String diagramName = "ToolIntroductionDiagramXYZ";
 		FmmlxDiagramCommunicator.getCommunicator().createDiagram(projectName, diagramName, "",
 				FmmlxDiagramCommunicator.DiagramType.ClassDiagram, true, diagramID -> {
 					controlCenter.getControlCenterClient().getDiagrams(diagramName);

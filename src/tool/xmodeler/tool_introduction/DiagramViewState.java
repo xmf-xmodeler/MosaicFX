@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.management.RuntimeErrorException;
 
@@ -53,7 +54,7 @@ public enum DiagramViewState {
 	public String getTaskDescritpion() {
 		String taskDescriptionPath = buildTaskDescriptionPath();
 		StringBuilder contentBuilder = new StringBuilder();
-		try (BufferedReader br = new BufferedReader(new FileReader(taskDescriptionPath))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(taskDescriptionPath, StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				contentBuilder.append(line);

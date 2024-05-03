@@ -16,7 +16,7 @@ public class SucessCondition {
 	}
 		
 	static boolean isClassCreated(FmmlxDiagram diagram) {
-		String objPath = diagram.getPackagePath() + "::" + "test";
+		String objPath = diagram.getPackagePath() + "::" + "Movie";
 		
 		FmmlxObject obj = null;
 		try {
