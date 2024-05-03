@@ -1,5 +1,12 @@
 package tool.xmodeler.tool_introduction;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import javax.management.RuntimeErrorException;
+
 /**
  * This enum is used in the DiagramViewIntroduction. There different states of
  * the diagramView are needed to help new users to deal with the XModeler. The
@@ -8,12 +15,11 @@ package tool.xmodeler.tool_introduction;
  */
 public enum DiagramViewState {
 
-	CREATE_CLASS(1, "FirstTask"),
-	DUMMY(2, "SecondTask"),
-	
-	FULL_GUI(100, ""),
+	CREATE_CLASS(1), DUMMY(2),
+
+	FULL_GUI(100),
 	// could be used for testing new feat as "Feat-Flag"
-	FEAT_GUI(101, ""),;
+	FEAT_GUI(101);
 
 	/**
 	 * The gui is build consecutive. So the next gui needs all elements of the gui
@@ -21,17 +27,9 @@ public enum DiagramViewState {
 	 * value 100. In between all states can be inserted.
 	 */
 	private int precedence;
-	private String taskDescritpion;
 
-
-
-	public String getTaskDescritpion() {
-		return taskDescritpion;
-	}
-
-	private DiagramViewState(int precedence, String taskDescritpion) {
+	private DiagramViewState(int precedence) {
 		this.precedence = precedence;
-		this.taskDescritpion = taskDescritpion;
 	}
 
 	public int getPrecedence() {
@@ -50,5 +48,29 @@ public enum DiagramViewState {
 			}
 		}
 		throw new IllegalArgumentException("No DiagramViewState for the precedenceValue" + precedence);
+	}
+
+	public String getTaskDescritpion() {
+		String taskDescriptionPath = buildTaskDescriptionPath();
+		StringBuilder contentBuilder = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(taskDescriptionPath))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				contentBuilder.append(line);
+			}
+			return contentBuilder.toString();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Can not find file for DiagramViewState " + getPrecedence());
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+	private String buildTaskDescriptionPath() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("resources/txt/ToolIntroduction/"); // basic path
+		stringBuilder.append(getPrecedence()); // append number of current state
+		stringBuilder.append(".txt");
+		return stringBuilder.toString();
 	}
 }
