@@ -16,7 +16,12 @@ import javax.management.RuntimeErrorException;
  */
 public enum DiagramViewState {
 
-	CREATE_CLASS(1), DUMMY(2),
+	CREATE_CLASS(1),
+	ADD_ATTRIBUTES(2),
+	CREATE_SECOND_CLASS(3),
+	DUMMY(4),
+	
+	
 
 	FULL_GUI(100),
 	// could be used for testing new feat as "Feat-Flag"

@@ -1,0 +1,3 @@
+We must now add an association between the class ‘Movie’ and the class ‘MovieShowing” so that instantiated objects can be linked to one another. We can name the association “shown_in”. Hint: the black arrow next to the association name indicates the intendend reading direction. In this example, we want to express that a particular movie is show_in a particular movie showing.
+…
+We must still add the cardinality on each end of the association. One movie (object) can be shown in multiple movie showings. It might also appear in none. We therefore enter a cardinality of 0…*. One movie showing, on the other hand, must always show exactly one movie. We therefore enter a cardinality of 1..1.

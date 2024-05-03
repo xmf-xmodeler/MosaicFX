@@ -114,8 +114,7 @@ public class DiagramViewPane extends SplitPane {
 		setDividerPosition(0, 0.2);
 		
 		if (state.getPrecedence() < 100) {
-			taskTab = new TaskTab(diagramViewState.getTaskDescritpion());
-			getItems().add(1, taskTab);
+			addTaskTab();
 		}
 		
 		//state invariant operations 
@@ -126,6 +125,16 @@ public class DiagramViewPane extends SplitPane {
 		
 		
 
+	}
+
+
+	private void addTaskTab() {
+		//if there is a instance of taksTab this should not be overwritten to keep the history of tasks in the textArea
+		if (taskTab == null) {
+			taskTab = new TaskTab(diagramViewState.getTaskDescritpion());				
+		}
+		taskTab.setVvalue(1.0);
+		getItems().add(1, taskTab);
 	}
 
 	private void configPane() {

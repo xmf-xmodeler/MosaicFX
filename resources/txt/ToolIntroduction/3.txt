@@ -1,0 +1,5 @@
+Movies are shown to users in a showing that happens on a particular date.
+Class ‘NewClass’ with attribute date: Date is added automatically.
+The class ‘NewClass’ serves to represent such showings. The name of the class and its attribute is unintuitive, though. Let’s change the class name to ‘MovieShowing’
+ … 
+And the attribute name to showDate: Date. 
