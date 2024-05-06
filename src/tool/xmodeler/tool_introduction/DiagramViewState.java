@@ -16,10 +16,11 @@ import javax.management.RuntimeErrorException;
  */
 public enum DiagramViewState {
 
-	CREATE_CLASS(1),
-	ADD_ATTRIBUTES(2),
-	CREATE_SECOND_CLASS(3),
-	DUMMY(4),
+	CREATE_CLASS_MOVIE(1),
+	ADD_ATTRIBUTES_TO_MOVIE(2),
+	CREATE_CLASS_MOVIE_SHOWING(3),
+	ADD_ASSOC(4),
+	ADD_OBJECT(5),
 	
 	
 

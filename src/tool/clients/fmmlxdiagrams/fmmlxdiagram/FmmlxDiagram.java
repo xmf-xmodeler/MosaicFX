@@ -2,22 +2,15 @@ package tool.clients.fmmlxdiagrams.fmmlxdiagram;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
 import org.w3c.dom.Element;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
@@ -25,23 +18,12 @@ import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -53,17 +35,13 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
-import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
-import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
-import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.Edge;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramControlKeyHandler;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
@@ -73,22 +51,13 @@ import tool.clients.fmmlxdiagrams.LevelColorScheme;
 import tool.clients.fmmlxdiagrams.Node;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
-import tool.clients.fmmlxdiagrams.Issue.Severity;
-import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
-import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
-import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
-import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
-import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
@@ -649,8 +618,8 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		super.updateDiagram(getView(), r -> {
 		});
 		if (ToolIntroductionManager.isInitialized()) {
-			ToolIntroductionManager.getInstance().checkSucessCondition();			
-		}
+			ToolIntroductionManager.getInstance().checkSucessCondition();
+		}	
 	}
 
 	@Override

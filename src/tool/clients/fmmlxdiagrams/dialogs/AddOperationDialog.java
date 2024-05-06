@@ -52,7 +52,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		layoutContent(oldOp);
 		setResizable(true);
 		
-		if(diagram.getUMLMode()) {	//Regular and Expert mode
+		if(diagram.isUMLMode()) {	//Regular and Expert mode
 			
 		}
 
@@ -119,7 +119,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		defaultOperationButton.setPrefWidth(150);
 
 		GridPane theGrid = new GridPane();
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
 		theGrid.add(classTextField, 1, 0);
 		theGrid.add(levelComboBox, 1, 1);
@@ -131,7 +131,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		//theGrid.add(defaultOperationButton, 1, 2);
 		
 
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 			layoutStandard(defaultOperationButton,theGrid);
 		}
 		else {

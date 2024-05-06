@@ -73,7 +73,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				if(!diagram.getUMLMode()) {
+				if(!diagram.isUMLMode()) {
 				return new Result(
 						selectedObject.getPath(),
 						nameTextField.getText(),
@@ -207,7 +207,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(classLabel, 0, 1);
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		grid.add(levelLabel, 0, 2);
 		grid.add(multiplicityLabel, 0, 4);
 		grid.add(isIntrinsicLabel, 0, 6);

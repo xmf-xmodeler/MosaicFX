@@ -80,7 +80,7 @@ public class DiagramViewPane extends SplitPane {
 	
 	private void initDiagramViewState() {
 		if (isIntroductionMode()) {
-			diagramViewState = DiagramViewState.CREATE_CLASS;
+			diagramViewState = DiagramViewState.CREATE_CLASS_MOVIE;
 			ToolIntroductionManager.getInstance().setDiagram(diagram);
 		} else {
 			diagramViewState = DiagramViewState.FULL_GUI;

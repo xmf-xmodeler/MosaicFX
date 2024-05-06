@@ -125,7 +125,7 @@ public class FmmlxPalette {
 			DefaultTool delegationTool = 
 					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
 			DefaultTool metaClassTool;
-			if(!fmmlxDiagram.getUMLMode()) {
+			if(!fmmlxDiagram.isUMLMode()) {
 			metaClassTool = 
 					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 			}
@@ -154,7 +154,7 @@ public class FmmlxPalette {
 			for (int i : levelList) {
 				if(i!=0) {
 					TreeItem<AbstractTreeType> levelGroup;
-					if(!fmmlxDiagram.getUMLMode()) {
+					if(!fmmlxDiagram.isUMLMode()) {
 					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
 					}
 					else {

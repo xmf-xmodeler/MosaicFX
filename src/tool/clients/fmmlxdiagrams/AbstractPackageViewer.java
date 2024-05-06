@@ -11,6 +11,8 @@ import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
+
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
@@ -44,7 +46,7 @@ public abstract class AbstractPackageViewer {
 		actions = new DiagramActions(this);
 	}
 	
-	public boolean getUMLMode() {
+	public boolean isUMLMode() {
 		return umlMode;
 	}
 
@@ -588,5 +590,28 @@ public abstract class AbstractPackageViewer {
 		nodes.addAll(objects.values());
 		nodes.addAll(notes);
 		return nodes;
+	}
+	
+	/**
+	 * Searches in edges for edges of the type FmmlxAssociation
+	 * @return all FmmlxAssociations associates with this AbstractpackageViewer
+	 */
+	public Vector<FmmlxAssociation> getFmmlxAssociations() {
+		Vector<FmmlxAssociation> assocs = new Vector<>();
+		for (Edge<?> edge : edges) {
+			if (edge instanceof FmmlxAssociation) {
+				assocs.add((FmmlxAssociation) edge);
+			}
+		}
+		return assocs;
+	}
+	
+	public FmmlxObject getObjectByName(String name) {
+		String objPath = getPackagePath() + "::" + name;
+		try {
+			return getObjectByPath(objPath);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

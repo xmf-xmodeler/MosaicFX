@@ -298,4 +298,18 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
 	}
+	
+	public static FmmlxAssociation getFmmlxAssociation(FmmlxDiagram diagram, String source, String target, String name) {
+		FmmlxAssociation returnAssoc = null;
+		Vector<FmmlxAssociation> associations = diagram.getFmmlxAssociations();
+
+		for (FmmlxAssociation assoc : associations) {
+			if (assoc.sourceNode.name.equals(source)
+					&& (assoc.getTargetNode().name.equals(target)) &&
+						assoc.name.equals(name)) {
+				returnAssoc = assoc;
+			}
+		}
+		return returnAssoc;
+	}
 }

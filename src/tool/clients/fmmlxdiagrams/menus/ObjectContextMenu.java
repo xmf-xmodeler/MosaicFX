@@ -33,7 +33,7 @@ public class ObjectContextMenu extends ContextMenu {
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 		
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		constructorStandard(object,view,mouse);
 		}
 		else {

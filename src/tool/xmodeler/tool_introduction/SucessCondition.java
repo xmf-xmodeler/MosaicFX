@@ -2,42 +2,63 @@ package tool.xmodeler.tool_introduction;
 
 import java.util.Vector;
 
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class SucessCondition {
 
-	public static boolean checkSucessCondition(FmmlxDiagram diagram) {
+	private FmmlxDiagram diagram;
+
+	public SucessCondition(FmmlxDiagram diagram) {
+		super();
+		this.diagram = diagram;
+	}
+
+	public boolean checkSucessCondition(FmmlxDiagram diagram) {
 		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
 		case 1:
-			return isClassCreated(diagram);
+			return isClassMovieCreated();
 		case 2:
-			return areAttributesAddes(diagram);
+			return areAttributesAddedToMovie();
 		case 3:
-			return isSecondClassCreated(diagram);
+			return isMovieShowingCreated();
+		case 4:
+			return containsShownInAssoc();
 
 		default:
 			return false;
 		}
 	}
 
-	private static boolean isSecondClassCreated(FmmlxDiagram diagram) {
-		if (!containsClass(diagram, "MovieShowing")) {
+	private boolean containsShownInAssoc() {
+		FmmlxAssociation assoc = FmmlxAssociation.getFmmlxAssociation(diagram, "Movie", "MovieShowing", "shown_in");
+		if (assoc == null) {
 			return false;
 		}
-		Vector<FmmlxAttribute> ownAttributes = requestObject(diagram, "MovieShowing").getOwnAttributes();
+		boolean cardinalityOfMovieIsRight = assoc.getMultiplicityStartToEnd().checkForEquality(0, 2147483647);
+		boolean cardinalityOfMovieShowingIsRight = assoc.getMultiplicityEndToStart().checkForEquality(1, 1);
+
+		return cardinalityOfMovieIsRight && cardinalityOfMovieShowingIsRight;
+	}
+
+	private boolean isMovieShowingCreated() {
+		if (!DiagramsConditionChecks.containsClass(diagram, "MovieShowing")) {
+			return false;
+		}
+		Vector<FmmlxAttribute> ownAttributes = diagram.getObjectByName("MovieShowing").getOwnAttributes();
 		boolean containsShowDate = false;
 		for (FmmlxAttribute fmmlxAttribute : ownAttributes) {
 			if (!containsShowDate) {
-				containsShowDate = fmmlxAttribute.hasNameAndType("showDate", "Date");				
+				containsShowDate = fmmlxAttribute.hasNameAndType("showDate", "Date");
 			}
 		}
 		return containsShowDate;
 	}
 
-	private static boolean areAttributesAddes(FmmlxDiagram diagram) {
-		FmmlxObject obj = requestObject(diagram, "Movie");
+	private boolean areAttributesAddedToMovie() {
+		FmmlxObject obj = diagram.getObjectByName("Movie");
 		Vector<FmmlxAttribute> ownAttributes = obj.getOwnAttributes();
 		boolean containsTitle = false;
 		boolean containsDurationInMinutes = false;
@@ -46,27 +67,17 @@ public class SucessCondition {
 				containsDurationInMinutes = fmmlxAttribute.hasNameAndType("durationInMinutes", "Integer");
 			}
 			if (!containsTitle) {
-				containsTitle = fmmlxAttribute.hasNameAndType("title", "String");			
+				containsTitle = fmmlxAttribute.hasNameAndType("title", "String");
 			}
 		}
 		return containsTitle && containsDurationInMinutes;
 	}
 
-	static boolean isClassCreated(FmmlxDiagram diagram) {
-		return containsClass(diagram, "Movie");
+	private boolean isClassMovieCreated() {
+		return DiagramsConditionChecks.containsClass(diagram, "Movie");
 	}
 
-	private static boolean containsClass(FmmlxDiagram diagram, String name) {
-		FmmlxObject obj = requestObject(diagram, name);
-		return (obj != null);
-	}
 
-	private static FmmlxObject requestObject(FmmlxDiagram diagram, String name) {
-		String objPath = diagram.getPackagePath() + "::" + name;
-		try {
-			return diagram.getObjectByPath(objPath);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+
+	
 }

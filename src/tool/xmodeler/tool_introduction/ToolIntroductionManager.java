@@ -10,8 +10,10 @@ import xos.Value;
 public class ToolIntroductionManager {
 
 	private static ToolIntroductionManager instance;
-	private FmmlxDiagram diagram;
-
+	private static FmmlxDiagram diagram;
+	private static String projectName = "ToolIntroductionABC";
+	private static String diagramName = "ToolIntroductionDiagramXYZ";
+		
 	public ToolIntroductionManager(ControlCenter controlCenter) {
 		instance = this;
 		System.err.println("StartIntoductionMan");
@@ -30,7 +32,6 @@ public class ToolIntroductionManager {
 	}
 
 	private void generateIntroductionDiagram(ControlCenter controlCenter) {
-		String projectName = "ToolIntroductionABC";
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject", 1);
 		message.args[0] = new Value(projectName);
 		WorkbenchClient.theClient().getHandler().raiseEvent(message);
@@ -39,7 +40,6 @@ public class ToolIntroductionManager {
 		} catch (InterruptedException e) {
 				throw new RuntimeException();
 		}
-		String diagramName = "ToolIntroductionDiagramXYZ";
 		FmmlxDiagramCommunicator.getCommunicator().createDiagram(projectName, diagramName, "",
 				FmmlxDiagramCommunicator.DiagramType.ClassDiagram, true, diagramID -> {
 					controlCenter.getControlCenterClient().getDiagrams(diagramName);
@@ -49,13 +49,10 @@ public class ToolIntroductionManager {
 		} catch (InterruptedException e) {
 			throw new RuntimeException();
 		}
-		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
 	}
 
 	public void start() {
-		// TODO Auto-generated method stub
-
-	}
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);	}
 
 	public void checkSucessCondition() {
 		//is needed because otherwise the changes of the update are not reflected in the check
@@ -64,9 +61,9 @@ public class ToolIntroductionManager {
 		} catch (InterruptedException e) {
 			throw new RuntimeException();
 		}
-		System.err.println("Check success condition.");
-		if (SucessCondition.checkSucessCondition(diagram)) {
-			System.err.println("correct");
+
+		if (new SucessCondition(diagram).checkSucessCondition(diagram)) {
+
 			diagram.getViewPane().loadNextStage();
 		}
 	}

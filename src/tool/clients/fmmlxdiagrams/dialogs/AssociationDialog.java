@@ -136,10 +136,11 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	}
 
 	private void layoutContent() {
-		if (diagram.getUMLMode()) {
+		if (diagram.isUMLMode()) {
 			layoutUML();
+		} else {
+			layoutStandard();			
 		}
-		layoutStandard();
 	}
 	
 	private void layoutStandard() {
@@ -462,7 +463,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel().getMinLevel()-1));
 			return false;
 			} 
-		}else if (!diagram.getUMLMode()) {		//modified to else if to include umlMode
+		}else if (!diagram.isUMLMode()) {		//modified to else if to include umlMode
 			  if (!AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
 					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel().getMinLevel()-1));
 					return false;
@@ -486,7 +487,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierTarget() {
 		String name = newIdentifierTarget.getText();
 		
-		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
@@ -498,7 +499,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierSource() {
 		String name = newIdentifierSource.getText();
 		
-		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {	//modified to check for umlMode
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {	//modified to check for umlMode
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
@@ -510,7 +511,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewDisplayName() {
 		String name = newDisplayName.getText();
 
-		if (!InputChecker.isValidIdentifier(name) && !diagram.getUMLMode()) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {
@@ -541,7 +542,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				if(!diagram.getUMLMode()) {
+				if(!diagram.isUMLMode()) {
 				return new Result(association,
 						source,
 						target,
