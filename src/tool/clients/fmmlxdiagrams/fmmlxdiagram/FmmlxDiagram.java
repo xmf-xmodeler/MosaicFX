@@ -59,6 +59,7 @@ import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.xmodeler.tool_introduction.SucessCondition;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
@@ -620,7 +621,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		});
 		if (ToolIntroductionManager.isInitialized()) {
 			ToolIntroductionManager.getInstance().checkSucessCondition();
-		}				
+		}	
 	}
 
 	@Override

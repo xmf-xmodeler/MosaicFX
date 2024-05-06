@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
@@ -31,12 +32,41 @@ public class SucessCondition {
 			return hasLinkBetweenMovieAndMovieShowing();
 		case 6:
 			return true;
+		case 7:
+			return isRatingEnumAdded();
 
 		default:
 			return false;
 		}
 	}
-	
+
+	public boolean isRatingEnumAdded() {
+		boolean enumContainsG = false;
+		boolean enumContainsPG13 = false;
+		boolean enumContainsR = false;
+
+		FmmlxEnum enumInst = diagram.getEnum("RatingEnum");
+		if (enumInst == null) {
+			return false;
+		}
+		
+		
+		
+		Vector<String> enumItems = enumInst.getItems();
+		for (String string : enumItems) {
+			if (string.equals("G")) {
+				enumContainsG = true;
+			}
+			if (string.equals("PG_13")) {
+				enumContainsPG13 = true;
+			}
+			if (string.equals("R")) {
+				enumContainsR = true;
+			}
+		}
+		return enumContainsG && enumContainsPG13 && enumContainsR;
+	}
+
 	private boolean hasLinkBetweenMovieAndMovieShowing() {
 		FmmlxLink link = FmmlxLink.getFmmlxLink(diagram, "movie1", "movieShowing1", "shown_in");
 		if (link == null) {
@@ -90,7 +120,4 @@ public class SucessCondition {
 		return DiagramsConditionChecks.containsClass(diagram, "Movie");
 	}
 
-
-
-	
 }
