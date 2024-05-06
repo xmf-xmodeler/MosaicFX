@@ -43,6 +43,7 @@ import tool.clients.fmmlxdiagrams.Edge;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.InheritanceEdge;
@@ -619,7 +620,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		});
 		if (ToolIntroductionManager.isInitialized()) {
 			ToolIntroductionManager.getInstance().checkSucessCondition();
-		}	
+		}				
 	}
 
 	@Override

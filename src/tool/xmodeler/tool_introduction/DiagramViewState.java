@@ -20,7 +20,8 @@ public enum DiagramViewState {
 	ADD_ATTRIBUTES_TO_MOVIE(2),
 	CREATE_CLASS_MOVIE_SHOWING(3),
 	ADD_ASSOC(4),
-	ADD_OBJECT(5),
+	ADD_LINK(5),
+	
 	
 	
 

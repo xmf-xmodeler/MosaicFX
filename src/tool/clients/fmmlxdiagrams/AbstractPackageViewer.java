@@ -614,4 +614,14 @@ public abstract class AbstractPackageViewer {
 			return null;
 		}
 	}
+	
+	public Vector<FmmlxLink> getFmmlxLinks() {
+		Vector<FmmlxLink> links = new Vector<>();
+		for (Edge<?> edge : edges) {
+			if (edge instanceof FmmlxLink) {
+				links.add((FmmlxLink) edge);
+			}
+		}
+		return links;
+	}
 }

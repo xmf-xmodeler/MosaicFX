@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
@@ -26,10 +27,22 @@ public class SucessCondition {
 			return isMovieShowingCreated();
 		case 4:
 			return containsShownInAssoc();
+		case 5:
+			return hasLinkBetweenMovieAndMovieShowing();
+		case 6:
+			return true;
 
 		default:
 			return false;
 		}
+	}
+	
+	private boolean hasLinkBetweenMovieAndMovieShowing() {
+		FmmlxLink link = FmmlxLink.getFmmlxLink(diagram, "movie1", "movieShowing1", "shown_in");
+		if (link == null) {
+			return false;
+		}
+		return true;
 	}
 
 	private boolean containsShownInAssoc() {
