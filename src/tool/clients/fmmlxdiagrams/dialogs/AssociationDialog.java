@@ -136,9 +136,11 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	}
 
 	private void layoutContent() {
-		
+		if (diagram.getUMLMode()) {
+			layoutUML();
+		}
+		layoutStandard();
 	}
-	
 	
 	private void layoutStandard() {
 		if(editMode) {
@@ -167,29 +169,11 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		targetGetterField = new OptionalTextField("", false);
 		targetSetterField = new OptionalTextField("", false);
 		
-		/*newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.source = newValue;
-				setLevelList(newInstLevelSource, source);
-				setIdentifier(newIdentifierSource, source.getName());
-			}
-		});
-		newTypeTarget.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.target = newValue;
-				setLevelList(newInstLevelTarget, target);
-				setIdentifier(newIdentifierTarget, newValue.getName());
-			}
-		});*/
 		newInstLevelSource = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelSource.setEditable(true);
-//		newInstLevelSource.getSelectionModel().select(0);
 		newInstLevelTarget = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelTarget.setEditable(true);
-//		newInstLevelTarget.getSelectionModel().select(0);
 		newDisplayName = new TextField();
-//		newDisplayNameTarget = new TextField();
-//		newDisplayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		newIdentifierSource = new TextField();
 		newIdentifierTarget = new TextField();
 		
@@ -216,9 +200,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.getSelectionModel().selectFirst();
-//		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//			if (newValue != null) {				
-//				selectedAssociation = newValue;
+
 		if(association!=null) {
 			FmmlxObject startNode = association.getSourceNode();
 			FmmlxObject targetNode = association.getTargetNode();
@@ -296,8 +278,6 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes.add(sourceVisibleFromTargetBox);
 		sourceNodes.add(sourceGetterField);
 		sourceNodes.add(sourceSetterField);
-//		sourceNodes.add(symmetricBox);
-//		sourceNodes.add(transitiveBox);
 		
 		targetNodes.add(new Label(" "));		
 		targetNodes.add(new Label(" "));
@@ -346,30 +326,12 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceSetterField = new OptionalTextField("", false);
 		targetGetterField = new OptionalTextField("", false);
 		targetSetterField = new OptionalTextField("", false);
-		
-		/*newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.source = newValue;
-				setLevelList(newInstLevelSource, source);
-				setIdentifier(newIdentifierSource, source.getName());
-			}
-		});
-		newTypeTarget.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.target = newValue;
-				setLevelList(newInstLevelTarget, target);
-				setIdentifier(newIdentifierTarget, newValue.getName());
-			}
-		});*/
+
 		newInstLevelSource = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelSource.setEditable(true);
-//		newInstLevelSource.getSelectionModel().select(0);
 		newInstLevelTarget = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelTarget.setEditable(true);
-//		newInstLevelTarget.getSelectionModel().select(0);
 		newDisplayName = new TextField();
-//		newDisplayNameTarget = new TextField();
-//		newDisplayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		newIdentifierSource = new TextField();
 		newIdentifierTarget = new TextField();
 		
@@ -396,9 +358,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.getSelectionModel().selectFirst();
-//		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//			if (newValue != null) {				
-//				selectedAssociation = newValue;
+
 		if(association!=null) {
 			FmmlxObject startNode = association.getSourceNode();
 			FmmlxObject targetNode = association.getTargetNode();
@@ -461,9 +421,6 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 		sourceNodes.add(newTypeSource);
 		sourceNodes.add(multTargetToSourceBox);
-
-//		sourceNodes.add(symmetricBox);
-//		sourceNodes.add(transitiveBox);
 		
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
