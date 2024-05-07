@@ -51,8 +51,8 @@ public class AssociationTypeDialog extends Dialog<AssociationType>{
 			nameField.setText("MyNewAssociationType");
 			sClassField.setText("Object");
 			tClassField.setText("Object");
-			sMultField.setText("0,null,0,null");
-			tMultField.setText("0,null,0,null");
+			sMultField.setText("[0,null,0,null]");
+			tMultField.setText("[0,null,0,null]");
 			colorField.setValue(Color.BLACK);
 			colorFieldLink.setValue(Color.GRAY);
 			sDecoField.setText("arrow");
