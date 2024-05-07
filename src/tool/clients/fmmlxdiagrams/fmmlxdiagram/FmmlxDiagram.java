@@ -636,7 +636,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			viewPane.getDiagramViewToolbar().toggleUpdateButton(false);
 			break;
 		}
-
 	}
 
 	public static Font getFont() {

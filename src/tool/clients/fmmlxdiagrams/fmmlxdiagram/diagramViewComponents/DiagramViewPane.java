@@ -40,6 +40,7 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
+import tool.xmodeler.tool_introduction.DiagramPreperationActions;
 import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
@@ -152,7 +153,7 @@ public class DiagramViewPane extends SplitPane {
 	    }
 	    
 	    if (event.getCode() == KeyCode.DIGIT1) {
-	        loadNextStage();
+	        DiagramPreperationActions.addCustomerAndTicket(diagram);
 	    }
 	}
 
@@ -442,6 +443,7 @@ public class DiagramViewPane extends SplitPane {
 	}
 	
 	public void loadNextStage() {
+		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
 		updateTaskTabText();
 		diagramViewState = diagramViewState.getNextState();

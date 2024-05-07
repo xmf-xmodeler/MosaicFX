@@ -101,15 +101,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 	}
 
-
-//	private Integer getIntLevel() {
-//		try{
-//			return Integer.parseInt(levelComboBox.getSelectionModel().getSelectedItem());
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
-
 	private boolean validateUserInput() {
 		if (!validateName()) {
 			return false;
@@ -151,9 +142,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-//		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-//			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
-//			return false;
 		} else {
 			errorLabel.setText("");
 			return true;
@@ -176,15 +164,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-//		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
-//		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel()-1));
-//		levelComboBox = new ComboBox<>();
-//		for(int i = selectedObject.getLevel().getMinLevel()-1; i >= 0; i--) {
-//			levelComboBox.getItems().add(""+i);
-//		}
-//		levelComboBox.getSelectionModel().selectLast();
-//		if(selectedObject.getLevel().isContingentLevelClass()) levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
@@ -225,29 +205,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		grid.add(classTextField, 1, 1);
 		grid.add(typeComboBox, 1, 3);
 		grid.add(multiplicityButton, 1, 4);
-		grid.add(displayMultiplicityLabel, 1, 5);
-		
-		
-		
-//		List<Node> labelNode = new ArrayList<Node>();
-//		List<Node> editorNode = new ArrayList<Node>();
-//		
-//		labelNode.add(nameLabel);
-//		labelNode.add(classLabel);
-//		labelNode.add(levelLabel);
-//		labelNode.add(typeLabel);
-//		labelNode.add(multiplicityLabel);
-//		
-//		editorNode.add(nameTextField);
-//		editorNode.add(classTextField);
-//		editorNode.add(levelComboBox);
-//		editorNode.add(typeComboBox);
-//		editorNode.add(multiplicityButton);
-//		editorNode.add(displayMultiplicityLabel);
-//		
-//		addNodesToGrid(labelNode, 0);
-//		addNodesToGrid(editorNode, 1);
-		
+		grid.add(displayMultiplicityLabel, 1, 5);		
 	}
 
 	private void showMultiplicityDialog() {

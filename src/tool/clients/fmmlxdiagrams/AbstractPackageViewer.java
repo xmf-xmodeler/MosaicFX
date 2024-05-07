@@ -624,4 +624,21 @@ public abstract class AbstractPackageViewer {
 		}
 		return links;
 	}
+	
+	public String getClassPath(String className) {
+		StringBuilder sb = new StringBuilder("Root::");
+		sb.append(getProjectName());
+		sb.append("::");
+		sb.append(className);
+		return sb.toString();
+	}
+	
+	public AssociationType getDefaultAssociation() {
+		for (AssociationType type : getAssociationTypes()) {
+			if (type.getDisplayName().equals("DefaultAssociation")) {
+				return type;
+			}
+		}
+		return null;
+	}
 }

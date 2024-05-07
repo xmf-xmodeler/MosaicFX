@@ -85,4 +85,7 @@ public class AssociationType implements Comparable<AssociationType> {
 		return this.displayName.compareTo(that.displayName);
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
 }

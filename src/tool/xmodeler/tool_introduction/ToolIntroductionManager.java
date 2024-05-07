@@ -62,8 +62,7 @@ public class ToolIntroductionManager {
 			throw new RuntimeException();
 		}
 
-		if (new SucessCondition(diagram).checkSucessCondition(diagram)) {
-
+		if (new SucessCondition(diagram).checkSucessCondition()) {
 			diagram.getViewPane().loadNextStage();
 		}
 	}

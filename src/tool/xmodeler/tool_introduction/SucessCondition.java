@@ -18,7 +18,7 @@ public class SucessCondition {
 		this.diagram = diagram;
 	}
 
-	public boolean checkSucessCondition(FmmlxDiagram diagram) {
+	public boolean checkSucessCondition() {
 		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
 		case 1:
 			return isClassMovieCreated();
@@ -87,7 +87,7 @@ public class SucessCondition {
 	}
 
 	private boolean isMovieShowingCreated() {
-		if (!DiagramsConditionChecks.containsClass(diagram, "MovieShowing")) {
+		if (!DiagramConditionChecks.containsClass(diagram, "MovieShowing")) {
 			return false;
 		}
 		Vector<FmmlxAttribute> ownAttributes = diagram.getObjectByName("MovieShowing").getOwnAttributes();
@@ -117,7 +117,7 @@ public class SucessCondition {
 	}
 
 	private boolean isClassMovieCreated() {
-		return DiagramsConditionChecks.containsClass(diagram, "Movie");
+		return DiagramConditionChecks.containsClass(diagram, "Movie");
 	}
 
 }
