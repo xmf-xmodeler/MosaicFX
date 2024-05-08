@@ -652,5 +652,4 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxSlot> getSlots() {
 		return slots;
 	}
-
 }

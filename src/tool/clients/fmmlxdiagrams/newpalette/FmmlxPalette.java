@@ -97,7 +97,7 @@ public class FmmlxPalette {
 		
 		addNoteToMisc();
 		
-		if (diagramViewState.getPrecedence() > 1) {
+		if (diagramViewState.getPrecedence() > 3) {
 			root.getChildren().add(relationships);			
 		}
 		root.getChildren().add(miscs);
@@ -111,7 +111,7 @@ public class FmmlxPalette {
 		miscs.getChildren().add(note);
 	}
 
-	public synchronized void update() {
+	public synchronized void update(DiagramViewPane viewPane) {
 		Platform.runLater(() -> {
 			treeView.getSelectionModel().clearSelection();
 			elements.getChildren().clear();
@@ -140,7 +140,7 @@ public class FmmlxPalette {
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
 			
 			elements.getChildren().add(metaClass);
-			relationships.getChildren().addAll(association, link, delegation);
+			addChildrenToRelationship(association, link, delegation, viewPane);
 			
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
@@ -178,6 +178,18 @@ public class FmmlxPalette {
 			elements.setExpanded(true);
 			miscs.setExpanded(true);
 		});
+	}
+
+	private void addChildrenToRelationship(TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
+			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
+
+			relationships.getChildren().add(association);			
+		if (viewPane.getDiagramViewState().getPrecedence() > 4) {
+			relationships.getChildren().add(link);			
+		}
+		if (viewPane.getDiagramViewState().getPrecedence() >= 100) {
+			relationships.getChildren().addAll(delegation);			
+		}
 	}
 
 	public TreeView getToolBar() {

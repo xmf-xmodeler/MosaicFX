@@ -149,7 +149,6 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		String nameString = name + "#" + source + "#" + target;
 		Vector<FmmlxLink> associations = diagram.getFmmlxLinks();
 
-		
 		for (FmmlxLink link : associations) {
 			if (link.sourceNode.name.equals(source)
 					&& (link.getTargetNode().name.equals(target)) &&

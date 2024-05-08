@@ -70,14 +70,9 @@ public class DiagramViewPane extends SplitPane {
 		diagramViewToolbar = toolBar;
 		diagram = fmmlxDiagram;
 		
-		
 		initDiagramViewState();
-		
-
-		buildViewComponents(diagramViewState);			
-		
+		buildViewComponents(diagramViewState);				
 	}
-	
 	
 	private void initDiagramViewState() {
 		if (isIntroductionMode()) {

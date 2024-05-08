@@ -64,8 +64,4 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		return name;
 		
 	}
-	
-	public boolean hasNameAndType(String name, String type) {
-		return getName().equals(name) && getType().equals(type);
-	}
 }

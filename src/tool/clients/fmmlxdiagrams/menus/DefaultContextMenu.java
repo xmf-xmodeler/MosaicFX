@@ -17,10 +17,7 @@ public class DefaultContextMenu extends ContextMenu {
 		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
 
-		Menu addMenu = new Menu("Add");
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
+		Menu addMenu = buildAddMenu(view, diagram, actions);
 
 		/*TS 2023-03-29: This code block is commented out because the assumption is, that the functionality is right now not used
 		 * 
@@ -49,14 +46,28 @@ public class DefaultContextMenu extends ContextMenu {
 
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
-		
-		if(!diagram.isUMLMode()) {
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem());
-				if(XModeler.isAlphaMode()) {
-		getItems().add(addAssocType);}
+			
+		addMenues(diagram, addMenu, searchMenu, unhideItem, enumerationMenu, addAssocType);
+	}
+
+	private Menu buildAddMenu(DiagramCanvas view, FmmlxDiagram diagram, DiagramActions actions) {
+		Menu addMenu = new Menu("Add");
+		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
 		}
-		else {
+		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
+		return addMenu;
+	}
+
+	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
+			Menu enumerationMenu, MenuItem addAssocType) {
 		getItems().addAll(addMenu, searchMenu, unhideItem);
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
+			getItems().addAll(enumerationMenu);			
+		}
+		if (XModeler.isAlphaMode()) {
+			getItems().addAll(new SeparatorMenuItem(), addAssocType);
 		}
 	}
 }

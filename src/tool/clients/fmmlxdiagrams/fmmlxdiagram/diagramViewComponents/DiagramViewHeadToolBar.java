@@ -169,10 +169,20 @@ public class DiagramViewHeadToolBar extends VBox {
 	//	Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram), "resources/png/save.24.png");
 	//	JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 		
-		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton,
-				//saveButton,
-				extendedConstraintButton);
+		addMenues(toolBar, undoButton, redoButton, zoomInButton, zoomOneButton, zoomOutButton, extendedConstraintButton,
+				centerViewButton);
 		return toolBar;
+	}
+
+	private void addMenues(ToolBar toolBar, Button undoButton, Button redoButton, Button zoomInButton,
+			Button zoomOneButton, Button zoomOutButton, ToggleButton extendedConstraintButton,
+			Button centerViewButton) {
+		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton
+				//,saveButton
+				);
+		if (!fmmlxDiagram.isUMLMode()) {
+			toolBar.getItems().addAll(extendedConstraintButton);			
+		}
 	}
 		
 	private void buildViewMenu(Menu viewMenu) {
@@ -341,11 +351,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	//	JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
 		modelMenu.getItems().add(new SeparatorMenuItem());
 				
-		Menu enumMenu = new Menu("Enumeration");
-		modelMenu.getItems().add(enumMenu);
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Create", e -> diagramActions.addEnumerationDialog());
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Edit", e -> diagramActions.editEnumerationDialog("edit_element",""));
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Delete", e -> diagramActions.deleteEnumerationDialog());
+		addEnumMenue(modelMenu);
 			
 		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variabel", e -> diagramActions.assignGlobalVariable());
 		modelMenu.getItems().add(new SeparatorMenuItem());
@@ -362,6 +368,17 @@ public class DiagramViewHeadToolBar extends VBox {
 
 		
 		
+	}
+
+	private void addEnumMenue(Menu modelMenu) {
+		Menu enumMenu = new Menu("Enumeration");
+		//TODO diagram view pane is null at the time the head bar is build
+		//		if (fmmlxDiagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
+		//		}
+		modelMenu.getItems().add(enumMenu);			
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Create", e -> diagramActions.addEnumerationDialog());
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Edit", e -> diagramActions.editEnumerationDialog("edit_element",""));
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Delete", e -> diagramActions.deleteEnumerationDialog());
 	}
 	
 	private void buildHelpMenu(Menu helpMenu) {

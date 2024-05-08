@@ -1556,7 +1556,6 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassLevel", message);
     }
 
-
     public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),

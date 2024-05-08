@@ -641,4 +641,8 @@ public abstract class AbstractPackageViewer {
 		}
 		return null;
 	}
+	
+	public Vector<Issue> getIssues() {
+		return issues;		
+	}
 }

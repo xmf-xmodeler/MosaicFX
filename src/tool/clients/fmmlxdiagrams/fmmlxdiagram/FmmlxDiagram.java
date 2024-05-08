@@ -140,7 +140,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		edgeCreationType = null;
 		nodeCreationType = null;
 		// if the palette is not updated no new actions could be performed
-		viewPane.getFmmlxPalette().update();
+		viewPane.getFmmlxPalette().update(viewPane);
 	}
 
 	public void setEdgeCreationType(String edgeCreationType) {
@@ -515,7 +515,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		triggerOverallReLayout();
-		viewPane.getFmmlxPalette().update();
+		viewPane.getFmmlxPalette().update(viewPane);
 
 		Issue nextIssue = null;
 		for (int i = 0; i < issues.size() && nextIssue == null; i++) {
@@ -621,7 +621,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		});
 		if (ToolIntroductionManager.isInitialized()) {
 			ToolIntroductionManager.getInstance().checkSucessCondition();
-		}	
+		}
 	}
 
 	@Override

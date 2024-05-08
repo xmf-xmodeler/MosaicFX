@@ -1,17 +1,14 @@
 package tool.xmodeler.tool_introduction;
 
-import java.util.Vector;
-
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class SucessCondition {
 
 	private FmmlxDiagram diagram;
+	private static final String MOVIE_CLASS_NAME = "Movie";
 
 	public SucessCondition(FmmlxDiagram diagram) {
 		super();
@@ -31,52 +28,70 @@ public class SucessCondition {
 		case 5:
 			return hasLinkBetweenMovieAndMovieShowing();
 		case 6:
-			return true;
+			return containsUserDefinedLinkForSecondTicket();
 		case 7:
 			return isRatingEnumAdded();
+		case 8:
+			return isEnumDefinedAsDataType();
+		case 9:
+			return isEnumDefinedAsDataType();
 
 		default:
 			return false;
 		}
 	}
 
-	public boolean isRatingEnumAdded() {
-		boolean enumContainsG = false;
-		boolean enumContainsPG13 = false;
-		boolean enumContainsR = false;
+	private boolean isEnumDefinedAsDataType() {
+		FmmlxObject obj = diagram.getObjectByName(MOVIE_CLASS_NAME);
+		return DiagramConditionChecks.hasAttributeOfType(obj, "rating", "RatingEnum");
+	}
 
+	private boolean containsUserDefinedLinkForSecondTicket() {
+		//idea check for not having issues. Normally by correct set cardinalities there should be an issue if i can check for this it would be easier.
+		//problem the creation of the other objects and links is not checked right now
+		FmmlxAssociation assoc = FmmlxAssociation.getFmmlxAssociation(diagram, "Customer", "Ticket", "buys");
+		boolean assocCardinalitRight = assoc.getMultiplicityStartToEnd().checkForEquality(0, 2147483647);
+	
+		String objectName = "ticket2";
+		FmmlxObject obj = diagram.getObjectByName(objectName);
+		boolean priceNotNull = !DiagramConditionChecks.hasMatchingSlotValue(diagram, objectName, "price", "0.0");
+		
+		return 
+				assocCardinalitRight && 
+					priceNotNull &&
+						DiagramConditionChecks.containsLink(diagram, "customer1", "ticket2", "buys");
+	}
+
+	private boolean isRatingEnumAdded() {
 		FmmlxEnum enumInst = diagram.getEnum("RatingEnum");
 		if (enumInst == null) {
 			return false;
 		}
-		
-		
-		
-		Vector<String> enumItems = enumInst.getItems();
-		for (String string : enumItems) {
-			if (string.equals("G")) {
-				enumContainsG = true;
-			}
-			if (string.equals("PG_13")) {
-				enumContainsPG13 = true;
-			}
-			if (string.equals("R")) {
-				enumContainsR = true;
-			}
-		}
+		boolean enumContainsG = enumInst.contains("G");
+		boolean enumContainsPG13 = enumInst.contains("PG_13");
+		boolean enumContainsR = enumInst.contains("R");
 		return enumContainsG && enumContainsPG13 && enumContainsR;
 	}
 
 	private boolean hasLinkBetweenMovieAndMovieShowing() {
-		FmmlxLink link = FmmlxLink.getFmmlxLink(diagram, "movie1", "movieShowing1", "shown_in");
-		if (link == null) {
-			return false;
+		//precondition
+		if (hasMovieInstanceJoker() && 	hasMovieShowingInstance()) {
+			return DiagramConditionChecks.containsLink(diagram, "movie1", "movieShowing1", "shown_in" );			
 		}
-		return true;
+		return false;
+	}
+
+	private boolean hasMovieShowingInstance() {
+		return DiagramConditionChecks.hasMatchingSlotValue(diagram, "movieShowing1", "showDate", "07 Nov 2024" );
+	}
+
+	private boolean hasMovieInstanceJoker() {
+		return DiagramConditionChecks.hasMatchingSlotValue(diagram, "movie1", "title", "Joker")
+				&& DiagramConditionChecks.hasMatchingSlotValue(diagram, "movie1", "durationInMinutes", "122");
 	}
 
 	private boolean containsShownInAssoc() {
-		FmmlxAssociation assoc = FmmlxAssociation.getFmmlxAssociation(diagram, "Movie", "MovieShowing", "shown_in");
+		FmmlxAssociation assoc = FmmlxAssociation.getFmmlxAssociation(diagram, MOVIE_CLASS_NAME, "MovieShowing", "shown_in");
 		if (assoc == null) {
 			return false;
 		}
@@ -87,37 +102,20 @@ public class SucessCondition {
 	}
 
 	private boolean isMovieShowingCreated() {
-		if (!DiagramConditionChecks.containsClass(diagram, "MovieShowing")) {
-			return false;
-		}
-		Vector<FmmlxAttribute> ownAttributes = diagram.getObjectByName("MovieShowing").getOwnAttributes();
-		boolean containsShowDate = false;
-		for (FmmlxAttribute fmmlxAttribute : ownAttributes) {
-			if (!containsShowDate) {
-				containsShowDate = fmmlxAttribute.hasNameAndType("showDate", "Date");
-			}
-		}
-		return containsShowDate;
+		FmmlxObject obj = diagram.getObjectByName("MovieShowing");
+		return DiagramConditionChecks.containsClass(diagram, "MovieShowing") &&
+				DiagramConditionChecks.hasAttributeOfType(obj, "showDate", "Date");
 	}
 
 	private boolean areAttributesAddedToMovie() {
-		FmmlxObject obj = diagram.getObjectByName("Movie");
-		Vector<FmmlxAttribute> ownAttributes = obj.getOwnAttributes();
-		boolean containsTitle = false;
-		boolean containsDurationInMinutes = false;
-		for (FmmlxAttribute fmmlxAttribute : ownAttributes) {
-			if (!containsDurationInMinutes) {
-				containsDurationInMinutes = fmmlxAttribute.hasNameAndType("durationInMinutes", "Integer");
-			}
-			if (!containsTitle) {
-				containsTitle = fmmlxAttribute.hasNameAndType("title", "String");
-			}
-		}
+		//create of movie has been checked in state before
+		FmmlxObject obj = diagram.getObjectByName(MOVIE_CLASS_NAME);
+		boolean containsTitle = DiagramConditionChecks.hasAttributeOfType(obj, "title", "String");
+		boolean containsDurationInMinutes = DiagramConditionChecks.hasAttributeOfType(obj, "durationInMinutes", "Integer");
 		return containsTitle && containsDurationInMinutes;
 	}
 
 	private boolean isClassMovieCreated() {
-		return DiagramConditionChecks.containsClass(diagram, "Movie");
+		return DiagramConditionChecks.containsClass(diagram, MOVIE_CLASS_NAME);
 	}
-
 }
