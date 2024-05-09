@@ -42,9 +42,7 @@ public class ToolIntroductionManager {
 				throw new RuntimeException();
 		}
 		FmmlxDiagramCommunicator.getCommunicator().createDiagram(projectName, diagramName, "",
-				FmmlxDiagramCommunicator.DiagramType.ClassDiagram, true, diagramID -> {
-			//		controlCenter.getControlCenterClient().getDiagrams(diagramName);
-				});
+				FmmlxDiagramCommunicator.DiagramType.ClassDiagram, true, diagramID -> {});
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

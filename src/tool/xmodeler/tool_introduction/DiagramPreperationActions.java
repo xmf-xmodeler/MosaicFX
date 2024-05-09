@@ -20,11 +20,27 @@ public class DiagramPreperationActions {
 		case 5:
 			addCustomerAndTicket(diagram);
 			return;
+		case 8:
+			addReturnAgeForRatingFun(diagram);
+			return;
 
 		default:
 			return;
 		}
 
+	}
+
+	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {
+		String funBody = "@Operation op0[monitor=true,delToClassAllowed=false]():XCore::Integer\r\n"
+				+ "  if rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"PG_13\")\r\n"
+				+ "  then 13\r\n"
+				+ "  elseif rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"R\")\r\n"
+				+ "  then 17\r\n"
+				+ "  else 0\r\n"
+				+ "  end \r\n"
+				+ "end\r\n"
+				+ "";
+		diagram.getComm().addOperation(diagram.getID(), diagram.getClassPath("Movie"), 0, funBody);	
 	}
 
 	public static void addCustomerAndTicket(FmmlxDiagram diagram) {
