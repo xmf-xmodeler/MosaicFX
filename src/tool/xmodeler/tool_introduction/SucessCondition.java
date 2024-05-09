@@ -34,7 +34,8 @@ public class SucessCondition {
 		case 8:
 			return isEnumDefinedAsDataType();
 		case 9:
-			return isEnumDefinedAsDataType();
+			//No user task
+			return true;
 
 		default:
 			return false;

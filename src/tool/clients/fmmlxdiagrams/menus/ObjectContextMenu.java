@@ -60,6 +60,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
+		getItems().add(new SeparatorMenuItem());
 				
 		if(diagram.getSelectedObjects().size() > 1) {
 			boolean classifyPossible = true;
@@ -159,10 +160,13 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 
 	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
-			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem) {
+			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem, MenuItem removeItem, MenuItem changeNameItem) {
 		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {		
 			if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 		}
+		getItems().add(changeNameItem);
+		getItems().add(removeItem);
+		getItems().add(new SeparatorMenuItem());
 		// add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
 			if (diagram.getViewPane().getDiagramViewState().getPrecedence() >= 100) {
@@ -194,11 +198,9 @@ public class ObjectContextMenu extends ContextMenu {
 				
 				MenuItem removeItem = new MenuItem("Remove");
 				removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
-				getItems().add(removeItem);
 				
 				MenuItem changeNameItem = new MenuItem("Change name");
 				changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
-				getItems().add(changeNameItem);
 						
 				if(diagram.getSelectedObjects().size() > 1) {
 					boolean classifyPossible = true;
@@ -256,7 +258,7 @@ public class ObjectContextMenu extends ContextMenu {
 				});
 				
 				addMenus(object, changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu,
-						constraintMenu, delegationMenu,slotMenu, associationInstanceMenu, addInstanceItem);
+						constraintMenu, delegationMenu,slotMenu, associationInstanceMenu, addInstanceItem, removeItem, changeNameItem);
 				
 				addNewMenuItem(this, "Hide", e -> {
 					Vector<FmmlxObject> v = new Vector<>();
@@ -303,7 +305,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem genSetterItem = new MenuItem("Generate Setter");
 		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
 
-		getItems().add(new SeparatorMenuItem());
+		
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeLevelItem, changeMulItem,
 				new SeparatorMenuItem(),

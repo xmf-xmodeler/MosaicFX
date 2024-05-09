@@ -13,13 +13,6 @@ public class ToolIntroductionManager {
 	private static FmmlxDiagram diagram;
 	private static String projectName = "ToolIntroductionABC";
 	private static String diagramName = "ToolIntroductionDiagramXYZ";
-	/**
-	 * After a check is started this variable is set to true. It is used to avoid loops.
-	 * If the DiagramPrepairActions are used there are diagram updates in the functions.
-	 * Normally the SucessConditionCheck is executed on diagram update. If this var is true
-	 * a diagram update will not trigger a condition check
-	 */
-	private static boolean checkingProcessStarted;
 		
 	public ToolIntroductionManager(ControlCenter controlCenter) {
 		instance = this;
@@ -63,20 +56,16 @@ public class ToolIntroductionManager {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);	}
 
 	public void checkSucessCondition() {
-		
-		if (!checkingProcessStarted) {
-			checkingProcessStarted = true;
-			//is needed because otherwise the changes of the update are not reflected in the check
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				throw new RuntimeException();
-			}
-			
-			if (new SucessCondition(diagram).checkSucessCondition()) {
-				diagram.getViewPane().loadNextStage();
-			}
-			checkingProcessStarted = false;
+		// is needed because otherwise the changes of the update are not reflected in
+		// the check...just for security if the user clicks fast
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			throw new RuntimeException();
+		}
+
+		if (new SucessCondition(diagram).checkSucessCondition()) {
+			diagram.getViewPane().loadNextStage();
 		}
 	}
 

@@ -111,6 +111,7 @@ public class DiagramViewPane extends SplitPane {
 		
 		if (state.getPrecedence() < 100) {
 			addTaskTab();
+			diagramViewToolbar.addCheckConditionButton();
 		}
 		
 		//state invariant operations 

@@ -1,3 +1,3 @@
-Okay, let us begin with a simple example: A local cinema wants to manage its ticket selling system.
+1. Okay, let us begin with a simple example: A local cinema wants to manage its ticket selling system.
 Create a class that serves to represent movies. Per convention, classes always begin with an uppercase letter and are in the singular form. Hence, name the class “Movie” and not “movies”.
 Remember that a class serves as an abstraction over a set of objects. In our small example, we assume that each particular movie object has a title and a duration. To enable this, we must add the respective attributes to our created class.

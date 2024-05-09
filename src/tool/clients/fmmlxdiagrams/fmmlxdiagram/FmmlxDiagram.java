@@ -619,9 +619,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		// Performs the diagram update with empty return call
 		super.updateDiagram(getView(), r -> {
 		});
-		if (ToolIntroductionManager.isInitialized()) {
-			ToolIntroductionManager.getInstance().checkSucessCondition();
-		}
 	}
 
 	@Override
