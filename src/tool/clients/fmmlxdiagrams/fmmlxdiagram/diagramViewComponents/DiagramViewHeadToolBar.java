@@ -181,24 +181,22 @@ public class DiagramViewHeadToolBar extends VBox {
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
 				e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F");
-		// Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e ->
-		// new
-		// XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram),
-		// "resources/png/save.24.png");
-		// JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
+		 Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e ->
+		 new
+		 XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram),
+		 "resources/png/save.24.png");
+		 JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
 
 		addMenues(toolBar, undoButton, redoButton, zoomInButton, zoomOneButton, zoomOutButton, extendedConstraintButton,
-				centerViewButton);
+				centerViewButton, saveButton);
 		return toolBar;
 	}
 
 	private void addMenues(ToolBar toolBar, Button undoButton, Button redoButton, Button zoomInButton,
 			Button zoomOneButton, Button zoomOutButton, ToggleButton extendedConstraintButton,
-			Button centerViewButton) {
+			Button centerViewButton, Button saveButton) {
 		toolBar.getItems().addAll(undoButton, redoButton, new Separator(), zoomInButton, zoomOneButton, zoomOutButton,
-				new Separator(), updateButton, centerViewButton
-		// ,saveButton
-		);
+				new Separator(), updateButton, centerViewButton, saveButton);
 		if (!fmmlxDiagram.isUMLMode()) {
 			toolBar.getItems().addAll(extendedConstraintButton);
 		}
@@ -371,8 +369,8 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildModelMenu(Menu modelMenu) {
-		// JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new
-		// XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
+		 JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new
+		 XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
 		modelMenu.getItems().add(new SeparatorMenuItem());
 
 		addEnumMenue(modelMenu);

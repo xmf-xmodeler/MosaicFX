@@ -153,7 +153,7 @@ public class DiagramViewPane extends SplitPane {
 	    }
 	    
 	    if (event.getCode() == KeyCode.DIGIT1) {
-	        DiagramPreperationActions.addCustomerAndTicket(diagram);
+	    	//Use for tests
 	    }
 	}
 
