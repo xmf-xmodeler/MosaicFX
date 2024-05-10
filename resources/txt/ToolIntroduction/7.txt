@@ -1,0 +1,5 @@
+7. The customer Josie Dough has bought a ticket for the showing of Joker on 7 Nov 2024. But Joker is rated R and may not be watched from any one under the age of 17. To automatically verify a customer is old enough to watch a particular movie, we must capture a customer’s age and the movie’s rating. Josie’s age is calculated automatically based on here dateOfBirth. We must still capture the rating of movie objects, though.
+First, we add an attribute rating: String to the our class movie. …
+Note, however, that now any string is valid for this attribute. A rating system is restricted to particular set of values, though. To restrict our attribute to this set of values, we add an enumeration.
+Create an enumeration with the name “RatingEnum”. It is good practice to end the name of each enumeration with Enum, so it will not be confused with other data types.
+We add three values to our RatingEnum: “G” for general audiences, “PG_13” for parents strongly cautioned, and “R” for restricted. We must change the data type of our attribute rating from String to RatingEnum.

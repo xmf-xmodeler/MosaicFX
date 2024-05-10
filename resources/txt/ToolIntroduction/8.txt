@@ -1,0 +1,1 @@
+8. We add three values to our RatingEnum: “G” for general audiences, “PG-13” for parents strongly cautioned, and “R” for restricted. We must change the data type of our attribute rating from String to RatingEnum.

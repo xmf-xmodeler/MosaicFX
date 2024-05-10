@@ -54,9 +54,9 @@ import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
-import tool.helper.persistence.XMLParser;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
 	
@@ -105,13 +105,17 @@ public class ControlCenter extends Stage {
 			public void handle(KeyEvent event) {	
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
-					System.err.println("Testing functinality");
+					testDiagramViewIntro();
 				}		
 			}
 		});
 				
 	}
 	
+	protected void testDiagramViewIntro() {
+		new ToolIntroductionManager(this).start();
+	}
+
 	private void showCloseWarningDialog(Event event) {
 		if (!Boolean.valueOf(PropertyManager.getProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString()))){
 			return;

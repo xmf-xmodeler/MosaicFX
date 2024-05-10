@@ -20,6 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
@@ -28,7 +29,6 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.xmodeler.XModeler;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 /**
  * This class is used to create an XML representation of a package.
@@ -362,7 +362,7 @@ public class XMLCreator {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
 		if(currentDiagram!=null) { 	//just here to preven crashes. Maybe not overloading the method but just changing the signature makes more sense.
-			diagram.setAttribute("umlMode", currentDiagram.getUMLMode()+"");	//should always be true but cleaner to do it this way.
+			diagram.setAttribute("umlMode", currentDiagram.isUMLMode()+"");	//should always be true but cleaner to do it this way.
 	}
 		XMLUtil.createChildElement(diagram, XMLTags.INSTANCES.getName());
 		return diagram;

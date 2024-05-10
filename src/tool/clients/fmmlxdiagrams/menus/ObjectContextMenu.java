@@ -11,6 +11,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 
@@ -24,7 +25,7 @@ public class ObjectContextMenu extends ContextMenu {
 	private final DiagramActions actions;
 	private final FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse) {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
@@ -32,7 +33,7 @@ public class ObjectContextMenu extends ContextMenu {
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 		
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		constructorStandard(object,view,mouse);
 		}
 		else {
@@ -40,7 +41,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}
 	}
 	
-	private void constructorStandard(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse){
+	private void constructorStandard(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse){
 
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
@@ -51,7 +52,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
-
+		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
@@ -59,6 +60,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
+		getItems().add(new SeparatorMenuItem());
 				
 		if(diagram.getSelectedObjects().size() > 1) {
 			boolean classifyPossible = true;
@@ -115,26 +117,6 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu delegationMenu = createDelegationSubMenu();
 		
-		/*
-		Menu levelMenu = new Menu("Levels");
-		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
-		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
-		MenuItem levelLowerAllItem = new MenuItem("Lower all");
-		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
-		MenuItem levelRaiseHereItem = new MenuItem("Raise related");
-		levelRaiseHereItem.setOnAction(e -> actions.levelRaiseAll());
-		levelRaiseHereItem.setDisable(true);
-		MenuItem levelLowerHereItem = new MenuItem("Lower related");
-		levelLowerHereItem.setOnAction(e -> actions.levelLowerAll());
-		levelLowerHereItem.setDisable(true);
-		MenuItem levelSplitItem = new MenuItem("Split level here");
-		levelSplitItem.setOnAction(e -> actions.levelRaiseAll());
-		levelSplitItem.setDisable(true);
-		MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
-		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
-		levelMergeItem.setDisable(true);
-		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
-		
 		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 		editConcreteSyntaxItem.setOnAction(e -> {
 			Vector<Integer> choices = new Vector<>();
@@ -145,9 +127,7 @@ public class ObjectContextMenu extends ContextMenu {
 				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel().getMinLevel()-1, choices);
 				dialog.setTitle("Edit Concrete Syntax");
 				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + " on which level?" );
-//				dialog.setContentText("Choose level:");
-	
-				// Traditional way to get the response value.
+
 				Optional<Integer> result = dialog.showAndWait();
 				if (result.isPresent()){
 					ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, object, result.get());
@@ -168,9 +148,9 @@ public class ObjectContextMenu extends ContextMenu {
 		getItems().add(assignToGlobalVariable);
 
 		//add items, that are used only for Objects that are not on level 0
-		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
-		getItems().addAll(delegationMenu);
-		addRunMenu();
+				if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
+				getItems().addAll(delegationMenu);
+				addRunMenu();
 		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<>();
@@ -178,8 +158,35 @@ public class ObjectContextMenu extends ContextMenu {
 			actions.hide(v, true);
 		}, ALWAYS);
 	}
-	
-	private void constructorUML(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
+
+	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
+			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem, MenuItem removeItem, MenuItem changeNameItem) {
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {		
+			if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
+		}
+		getItems().add(changeNameItem);
+		getItems().add(removeItem);
+		getItems().add(new SeparatorMenuItem());
+		// add items, that are used only for Objects that are not on level 0
+		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() >= 100) {
+				getItems().addAll(changeParentItem, browseInstanceItem, constraintMenu, operationMenu);
+			}
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 1) {
+				getItems().add(attributeMenu);
+			}
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+				getItems().add(associationMenu);
+			}	
+		}
+		//add all items, that are used for all Objects		
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {
+			getItems().addAll(slotMenu, associationInstanceMenu);		
+		}	
+		addRunMenu();
+	}
+
+	private void constructorUML(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse) {
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 				MenuItem execUI = new MenuItem("Execute UI");
 				execUI.setOnAction( e -> actions.executeUI(object) );
@@ -188,15 +195,12 @@ public class ObjectContextMenu extends ContextMenu {
 						
 				MenuItem addInstanceItem = new MenuItem("Add instance");
 				addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
-				if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
-
+				
 				MenuItem removeItem = new MenuItem("Remove");
 				removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
-				getItems().add(removeItem);
 				
 				MenuItem changeNameItem = new MenuItem("Change name");
 				changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
-				getItems().add(changeNameItem);
 						
 				if(diagram.getSelectedObjects().size() > 1) {
 					boolean classifyPossible = true;
@@ -232,26 +236,6 @@ public class ObjectContextMenu extends ContextMenu {
 				Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 				Menu delegationMenu = createDelegationSubMenu();
 				
-				/*
-				Menu levelMenu = new Menu("Levels");
-				MenuItem levelRaiseAllItem = new MenuItem("Raise all");
-				levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
-				MenuItem levelLowerAllItem = new MenuItem("Lower all");
-				levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
-				MenuItem levelRaiseHereItem = new MenuItem("Raise related");
-				levelRaiseHereItem.setOnAction(e -> actions.levelRaiseAll());
-				levelRaiseHereItem.setDisable(true);
-				MenuItem levelLowerHereItem = new MenuItem("Lower related");
-				levelLowerHereItem.setOnAction(e -> actions.levelLowerAll());
-				levelLowerHereItem.setDisable(true);
-				MenuItem levelSplitItem = new MenuItem("Split level here");
-				levelSplitItem.setOnAction(e -> actions.levelRaiseAll());
-				levelSplitItem.setDisable(true);
-				MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
-				levelMergeItem.setOnAction(e -> actions.levelLowerAll());
-				levelMergeItem.setDisable(true);
-				levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
-				
 				MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
 				editConcreteSyntaxItem.setOnAction(e -> {
 					Vector<Integer> choices = new Vector<>();
@@ -273,12 +257,8 @@ public class ObjectContextMenu extends ContextMenu {
 					}
 				});
 				
-				//add all items, that are used for all Objects
-				getItems().addAll(slotMenu, associationInstanceMenu);		
-				//add items, that are used only for Objects that are not on level 0
-				if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
-				getItems().addAll(delegationMenu);
-				addRunMenu();
+				addMenus(object, changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu,
+						constraintMenu, delegationMenu,slotMenu, associationInstanceMenu, addInstanceItem, removeItem, changeNameItem);
 				
 				addNewMenuItem(this, "Hide", e -> {
 					Vector<FmmlxObject> v = new Vector<>();
@@ -325,7 +305,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem genSetterItem = new MenuItem("Generate Setter");
 		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
 
-		getItems().add(new SeparatorMenuItem());
+		
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeLevelItem, changeMulItem,
 				new SeparatorMenuItem(),

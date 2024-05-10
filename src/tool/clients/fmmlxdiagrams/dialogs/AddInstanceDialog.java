@@ -105,7 +105,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.of), 0, 1);
 		grid.add(ofComboBox, 1, 1);
-		if(!diagram.getUMLMode()) {	//hide for uml diagrams
+		if(!diagram.isUMLMode()) {	//hide for uml diagrams
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 2);
 		grid.add(levelBox, 1, 2);
 		grid.add(new Label("Singleton"), 0, 4);
@@ -134,7 +134,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 		    	Level level = levelBox.getLevel();
 		    	if(level != null) {
-		    		if(!diagram.getUMLMode()) {
+		    		if(!diagram.isUMLMode()) {
 		    		return new Result(nameTextField.getText(), level, 
 					parentListView.getSelectionModel().getSelectedItems(), 
 					selectedObject.getPath(),

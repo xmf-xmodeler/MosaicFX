@@ -10,8 +10,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
@@ -58,7 +59,7 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, DiagramViewPane view) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, DiagramCanvas view) {
 		if (hidden) return;
 		if(rootNodeElement == null) return;
 		// needs to be called before every paint because there is no mechanism to remove
@@ -84,7 +85,7 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramViewPane fmmlxDiagram, Point2D absolutePoint) {
+	public ContextMenu getContextMenu(DiagramCanvas fmmlxDiagram, Point2D absolutePoint) {
 		return new NoteContextMenu(fmmlxDiagram.getDiagram(), this);
 	}
 
@@ -236,7 +237,7 @@ public class Note extends Node implements CanvasElement {
 	}
 
 	@Override
-	protected void updatePositionInBackend(int diagramID) {
+	public void updatePositionInBackend(int diagramID) {
 		sendCurrentNoteMappingToXMF(diagramID, r -> {});
 		
 	}

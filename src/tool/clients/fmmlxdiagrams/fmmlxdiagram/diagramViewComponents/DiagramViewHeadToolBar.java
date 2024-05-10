@@ -1,5 +1,4 @@
-package tool.clients.fmmlxdiagrams.menus;
-
+package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -26,10 +25,10 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.communication.java_to_python.MissingPythonRespondException;
 import tool.communication.java_to_python.PythonFunction;
@@ -41,29 +40,31 @@ import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class DiagramViewHeadToolBar extends VBox {
-	
+
 	private DiagramDisplayModel diagramDisplayModel;
 	private FmmlxDiagram fmmlxDiagram;
 	private DiagramActions diagramActions;
 	private Button updateButton;
 	private Node updateSvg;
-	
+	private ToolBar toolBar;
+
 	// changes between a dev and a productive mode regarding the items in the menu
 	private static final boolean DEBUG = false;
-		
+
 	public DiagramViewHeadToolBar(FmmlxDiagram fmmlxDiagram) {
 		this.fmmlxDiagram = fmmlxDiagram;
 		diagramActions = fmmlxDiagram.getActions();
 		diagramDisplayModel = new DiagramDisplayModel(this);
-				
+
 		HBox hBox = new HBox();
 		MenuBar menuBar = new MenuBar();
 		menuBar.setStyle("-fx-background-color: #F3F3F3");
 		hBox.getChildren().add(menuBar);
-				
-		Menu modelMenu = new Menu("Model");		
+
+		Menu modelMenu = new Menu("Model");
 		Menu viewMenu = new Menu("View");
 		viewMenu.setOnShowing(e -> renderHideNotesItem(viewMenu));
 		Menu refactorMenu = new Menu("Refactor");
@@ -71,40 +72,41 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu helpMenu = new Menu("Help");
 		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
-		
+
 		buildModelMenu(modelMenu);
-		buildViewMenu(viewMenu);	
-		//buildRefactorMenu(refactorMenu);
+		buildViewMenu(viewMenu);
+		// buildRefactorMenu(refactorMenu);
 		buildAutoMlmMenu(autoMlmMenu);
 		buildHelpMenu(helpMenu);
-		
-		ToolBar toolBar = buildToolBar();
+
+		toolBar = buildToolBar();
 		this.getChildren().addAll(hBox, toolBar);
 	}
 
 	private void buildAutoMlmMenu(Menu autoMlmMenu) {
-		
+
 		buildGUIMainButon(autoMlmMenu);
-		
+
 		if (DEBUG) {
 			buildProcessStringButton(autoMlmMenu);
 			buildIllegalArgumentsButton(autoMlmMenu);
 			buildSimulateLostFielButton(autoMlmMenu);
 		}
-		
-		
+
 	}
+
 	// FH main GUI für AutoMLM
 	private void buildGUIMainButon(Menu autoMlmMenu) {
 		EventHandler<ActionEvent> onButtonClicked = e -> {
-			diagramActions.addAutoMLMDialog();;
+			diagramActions.addAutoMLMDialog();
+			;
 		};
 		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Main GUI", onButtonClicked);
 	}
-	
+
 	private void buildSimulateLostFielButton(Menu autoMlmMenu) {
 		EventHandler<ActionEvent> onButtonClicked = e -> {
-			String[] args = {"foo"};
+			String[] args = { "foo" };
 			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.SIMULATE_LOST_FILE, args);
 			wrapper.execute();
 			System.err.println(wrapper.getResponse());
@@ -113,18 +115,18 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildIllegalArgumentsButton(Menu autoMlmMenu) {
-		 EventHandler<ActionEvent> onButtonClicked = e -> {
-			String[] args = {"foo"};
+		EventHandler<ActionEvent> onButtonClicked = e -> {
+			String[] args = { "foo" };
 			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.ILLEGAL_ARGUMENTS, args);
 			wrapper.execute();
 			System.err.println(wrapper.getResponse());
-	     };
-		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Illegal Arguments",  onButtonClicked);
+		};
+		JavaFxMenuAuxiliary.addMenuItem(autoMlmMenu, "Illegal Arguments", onButtonClicked);
 	}
 
 	private void buildProcessStringButton(Menu autoMlmMenu) {
 		EventHandler<ActionEvent> onButtonClicked = e -> {
-			String[] args = {"foo"};
+			String[] args = { "foo" };
 			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROCESS_STRIGN, args);
 			wrapper.execute();
 			System.err.println(wrapper.getResponse());
@@ -133,68 +135,102 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	/**
-	 * Was an idea to open Menus on hover. Was decided to not use this. Could be used later
+	 * Was an idea to open Menus on hover. Was decided to not use this. Could be
+	 * used later
 	 */
 	private void setMenuBarOpenMenusOnHover(HBox hBox, MenuBar menuBar) {
-		for(int i = 0 ; i < hBox.getChildren().size() ; i++) {
-            Node parentNode = hBox.getChildren().get(i);
-            Menu menu = menuBar.getMenus().get(i);
-            parentNode.setOnMouseEntered(e->{
-                menu.show();
-            });
-        }
+		for (int i = 0; i < hBox.getChildren().size(); i++) {
+			Node parentNode = hBox.getChildren().get(i);
+			Menu menu = menuBar.getMenus().get(i);
+			parentNode.setOnMouseEntered(e -> {
+				menu.show();
+			});
+		}
 	}
 
 	private ToolBar buildToolBar() {
-		ToolBar toolBar = new ToolBar();		
-		
-		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.undo(); fmmlxDiagram.updateDiagram();}, "resources/png/undo.24.png");
-		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {diagramActions.redo();fmmlxDiagram.updateDiagram();}, "resources/png/redo.24.png");
-		
+		ToolBar toolBar = new ToolBar();
+
+		Button undoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {
+			diagramActions.undo();
+			fmmlxDiagram.updateDiagram();
+		}, "resources/png/undo.24.png");
+		Button redoButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> {
+			diagramActions.redo();
+			fmmlxDiagram.updateDiagram();
+		}, "resources/png/redo.24.png");
+
 		JavaFxTooltipAuxilary.addTooltip(undoButton, "Undo last action(Strg + Z)");
 		JavaFxTooltipAuxilary.addTooltip(redoButton, "Redo last action(Strg + Y)");
-		
-		Button zoomInButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomIn(), "resources/png/magnifier+.24.png");
-		Button zoomOneButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOne(), "resources/png/magnifier1.24.png");
-		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
-		updateButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.updateDiagram(), "resources/png/update.24.png");
+
+		Button zoomInButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
+				e -> fmmlxDiagram.getActiveDiagramViewPane().zoomIn(), "resources/png/magnifier+.24.png");
+		Button zoomOneButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
+				e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOne(), "resources/png/magnifier1.24.png");
+		Button zoomOutButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
+				e -> fmmlxDiagram.getActiveDiagramViewPane().zoomOut(), "resources/png/magnifier-.24.png");
+		updateButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> fmmlxDiagram.updateDiagram(),
+				"resources/png/update.24.png");
 		updateSvg = updateButton.getGraphic();
 		ToggleButton extendedConstraintButton = new ToggleButton("Ext. Constr.");
 		extendedConstraintButton.setSelected(fmmlxDiagram.extendedConstraintCheck);
-		extendedConstraintButton.setOnAction(e -> fmmlxDiagram.extendedConstraintCheck = extendedConstraintButton.isSelected());
-		
+		extendedConstraintButton
+				.setOnAction(e -> fmmlxDiagram.extendedConstraintCheck = extendedConstraintButton.isSelected());
+
 		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
-		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
+		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
+				e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
 		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F");
-		Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram), "resources/png/save.24.png");
-		JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
-		
-		toolBar.getItems().addAll(undoButton, redoButton, new Separator(),zoomInButton, zoomOneButton, zoomOutButton, new Separator(), updateButton, centerViewButton, saveButton, extendedConstraintButton);
+		// Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e ->
+		// new
+		// XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram),
+		// "resources/png/save.24.png");
+		// JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
+
+		addMenues(toolBar, undoButton, redoButton, zoomInButton, zoomOneButton, zoomOutButton, extendedConstraintButton,
+				centerViewButton);
 		return toolBar;
 	}
-		
+
+	private void addMenues(ToolBar toolBar, Button undoButton, Button redoButton, Button zoomInButton,
+			Button zoomOneButton, Button zoomOutButton, ToggleButton extendedConstraintButton,
+			Button centerViewButton) {
+		toolBar.getItems().addAll(undoButton, redoButton, new Separator(), zoomInButton, zoomOneButton, zoomOutButton,
+				new Separator(), updateButton, centerViewButton
+		// ,saveButton
+		);
+		if (!fmmlxDiagram.isUMLMode()) {
+			toolBar.getItems().addAll(extendedConstraintButton);
+		}
+	}
+
 	private void buildViewMenu(Menu viewMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Hide/Unhide Elements...", e -> diagramActions.showUnhideElementsDialog());
+		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Hide/Unhide Elements...",
+				e -> diagramActions.showUnhideElementsDialog());
 		viewMenu.getItems().add(new SeparatorMenuItem());
-				
+
 		class ToggleMenuItem extends MenuItem {
 			final String visibleText;
 			final String invisibleText;
 			final DiagramDisplayProperty property;
-			
+
 			private ToggleMenuItem(DiagramDisplayProperty property) {
 				this.property = property;
 				visibleText = "Hide " + property.getLabel();
 				invisibleText = "Show " + property.getLabel();
 				setText();
-				//IssueTable is the only DiagramDisplayProperty which visualization is not requested from XMF
+				// IssueTable is the only DiagramDisplayProperty which visualization is not
+				// requested from XMF
 				if (property.equals(DiagramDisplayProperty.ISSUETABLE)) {
-					setOnAction(e -> {toggleItem(); fmmlxDiagram.switchTableOnAndOffForIssues();});	
-				} else {					
+					setOnAction(e -> {
+						toggleItem();
+						fmmlxDiagram.getRootPane().switchTableOnAndOffForIssues();
+					});
+				} else {
 					setOnAction(e -> toggleItem());
 				}
 			}
-			
+
 			private void setText() {
 				if (diagramDisplayModel.getPropertieValue(property)) {
 					setText(visibleText);
@@ -202,7 +238,7 @@ public class DiagramViewHeadToolBar extends VBox {
 					setText(invisibleText);
 				}
 			}
-			
+
 			private void toggleItem() {
 				diagramDisplayModel.toggleDisplayProperty(property);
 				setText();
@@ -210,41 +246,39 @@ public class DiagramViewHeadToolBar extends VBox {
 				fmmlxDiagram.redraw();
 			}
 		}
-		
+
 		Map<DiagramDisplayProperty, MenuItem> itemMap = new HashMap<DiagramDisplayProperty, MenuItem>();
 		EnumSet.allOf(DiagramDisplayProperty.class)
-			.forEach(property -> itemMap.put(property,(MenuItem)new ToggleMenuItem(property)));
-				
+				.forEach(property -> itemMap.put(property, (MenuItem) new ToggleMenuItem(property)));
+
 		Menu operationsMenu = new Menu("Operations");
-		operationsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.OPERATIONS), itemMap.get(DiagramDisplayProperty.OPERATIONVALUES), itemMap.get(DiagramDisplayProperty.DERIVEDOPERATIONS));
-		
+		operationsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.OPERATIONS),
+				itemMap.get(DiagramDisplayProperty.OPERATIONVALUES),
+				itemMap.get(DiagramDisplayProperty.DERIVEDOPERATIONS));
+
 		Menu constraintsMenu = new Menu("Constraints");
-		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS), itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));		
-		
-		viewMenu.getItems().addAll(
-				operationsMenu,
-				itemMap.get(DiagramDisplayProperty.SLOTS),
+		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS),
+				itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));
+
+		viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
 				itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
-				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES),
-				constraintsMenu,
-				itemMap.get(DiagramDisplayProperty.METACLASSNAME),
-				itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
-				itemMap.get(DiagramDisplayProperty.ISSUETABLE)				
-		);
-		
+				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu,
+				itemMap.get(DiagramDisplayProperty.METACLASSNAME), itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
+				itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+
 		viewMenu.getItems().add(new SeparatorMenuItem());
-		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", 
-		e -> {
+		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", e -> {
 			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(fmmlxDiagram, null, null);
 			wizard.start(new Stage());
-			});
-		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Model Browser",
-				e -> {
-					Vector<String> models = new Vector<>(); 
-					models.add(fmmlxDiagram.getPackagePath());
-					ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", fmmlxDiagram.getPackagePath(), models);});		
+		});
+		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Model Browser", e -> {
+			Vector<String> models = new Vector<>();
+			models.add(fmmlxDiagram.getPackagePath());
+			ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)",
+					fmmlxDiagram.getPackagePath(), models);
+		});
 	}
-	
+
 	/**
 	 * Defines local class which is used to create MenuItem
 	 */
@@ -297,14 +331,15 @@ public class DiagramViewHeadToolBar extends VBox {
 	 */
 	private void renderHideNotesItem(Menu viewMenu) {
 		// Checks if the Menu already contains item
-		HideNotesItem item = (HideNotesItem)DiagramViewHeadToolBar.findMenuItemByContainingText(viewMenu, "Note");
+		HideNotesItem item = (HideNotesItem) DiagramViewHeadToolBar.findMenuItemByContainingText(viewMenu, "Note");
 		if (item == null) {
 			item = new HideNotesItem();
-			//Position is set via hard coded number. If more elements are added to the Menu, this could lead to a wrong position of this item.
-			viewMenu.getItems().add(9, item);				
+			// Position is set via hard coded number. If more elements are added to the
+			// Menu, this could lead to a wrong position of this item.
+			viewMenu.getItems().add(9, item);
 		}
-		
-		//if no notes on the diagram the menu is disabled
+
+		// if no notes on the diagram the menu is disabled
 		if (fmmlxDiagram.getNotes().isEmpty()) {
 			item.setDisable(true);
 		} else {
@@ -336,36 +371,44 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildModelMenu(Menu modelMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
+		// JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new
+		// XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
 		modelMenu.getItems().add(new SeparatorMenuItem());
-				
-		Menu enumMenu = new Menu("Enumeration");
-		modelMenu.getItems().add(enumMenu);
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Create", e -> diagramActions.addEnumerationDialog());
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Edit", e -> diagramActions.editEnumerationDialog("edit_element",""));
-		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Delete", e -> diagramActions.deleteEnumerationDialog());
-			
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variabel", e -> diagramActions.assignGlobalVariable());
+
+		addEnumMenue(modelMenu);
+
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variabel",
+				e -> diagramActions.assignGlobalVariable());
 		modelMenu.getItems().add(new SeparatorMenuItem());
-				
+
 		Menu exportMenu = new Menu("Export as...");
 		modelMenu.getItems().add(exportMenu);
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "SVG", e -> diagramActions.exportSvg());
 		JavaFxMenuAuxiliary.addMenuItem(exportMenu, "PNG", e -> diagramActions.exportPNG());
 
-		if(XModeler.isAlphaMode()) {
+		if (XModeler.isAlphaMode()) {
 //			JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Merge Models",e -> diagramActions.mergeModels());
-			JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Import Models",e -> diagramActions.importModels());
+			JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Import Models", e -> diagramActions.importModels());
 		}
 
-		
-		
 	}
-	
+
+	private void addEnumMenue(Menu modelMenu) {
+		Menu enumMenu = new Menu("Enumeration");
+		// TODO diagram view pane is null at the time the head bar is build
+		// if (fmmlxDiagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
+		// }
+		modelMenu.getItems().add(enumMenu);
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Create", e -> diagramActions.addEnumerationDialog());
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Edit",
+				e -> diagramActions.editEnumerationDialog("edit_element", ""));
+		JavaFxMenuAuxiliary.addMenuItem(enumMenu, "Delete", e -> diagramActions.deleteEnumerationDialog());
+	}
+
 	private void buildHelpMenu(Menu helpMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcutlist", e -> showShortcutDialog());
 	}
-	
+
 	private void showShortcutDialog() {
 		new ShortcutDialog().show();
 	}
@@ -373,11 +416,11 @@ public class DiagramViewHeadToolBar extends VBox {
 	public FmmlxDiagram getFmmlxDiagram() {
 		return fmmlxDiagram;
 	}
-	
-	 public DiagramDisplayModel getModel() {
-		 return diagramDisplayModel;
-	 }
-	
+
+	public DiagramDisplayModel getModel() {
+		return diagramDisplayModel;
+	}
+
 	public void toggleUpdateButton(boolean loading) {
 		Platform.runLater(() -> {
 			if (loading) {
@@ -389,7 +432,7 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 		});
 	}
-	
+
 	/**
 	 * Helper function needed for adding the notesHideMenuItem. Be careful this is
 	 * only a heuristic. If new elements are added that may contain the same
@@ -410,5 +453,25 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 		}
 		return null;
+	}
+
+	public void addCheckConditionButton() {
+		if (containsCheckConsitionButton()) {
+			return;
+		}
+		Button checkCondButton = new Button("Check Cond.");
+		checkCondButton.setOnAction(e -> {
+			ToolIntroductionManager.getInstance().checkSucessCondition();
+		});
+		toolBar.getItems().add(checkCondButton);
+	}
+
+	public boolean containsCheckConsitionButton() {
+	
+			return toolBar.getItems().stream().
+					filter(node -> node instanceof Button)
+				    .map(node -> (Button) node)
+				    .filter(button -> button.getText() != null)
+				    .anyMatch(button -> button.getText().equals("Check Cond."));			
 	}
 }

@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.application.Platform;
@@ -65,17 +64,16 @@ import javafx.scene.transform.Translate;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
-import tool.clients.fmmlxdiagrams.menus.DiagramViewHeadToolBar;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLUtil;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
