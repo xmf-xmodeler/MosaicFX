@@ -31,16 +31,10 @@ public class ObjectContextMenu extends ContextMenu {
 		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
-		
-		if(!diagram.getUMLMode()) {
-		constructorStandard(object,view,mouse);
-		}
-		else {
-		constructorUML(object,view,mouse);
-		}
+		constructor(object,view,mouse);
 	}
 	
-	private void constructorStandard(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse){
+	private void constructor(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse){
 
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
@@ -78,6 +72,7 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		}
 					
+		if(!diagram.getUMLMode()) {
 		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
 		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
@@ -98,6 +93,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
 		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
 		if(object.getLevel().isClass()) getItems().add(singletonClassItem);
+		}
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
@@ -158,7 +154,8 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		//add all items, that are used for all Objects
 
-		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);	
+		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);
+		if(!diagram.getUMLMode()) {		//Second if statement here. Alternatives would have been to either change the order of the elements in the menu or to change position of ever getitems().add() in this method
 		MenuItem mergeProperties = new MenuItem("Merge Properties");
 		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
 		getItems().add(mergeProperties);
@@ -166,6 +163,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
 		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
 		getItems().add(assignToGlobalVariable);
+		}
 
 		//add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
@@ -179,114 +177,6 @@ public class ObjectContextMenu extends ContextMenu {
 		}, ALWAYS);
 	}
 	
-	private void constructorUML(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
-		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
-				MenuItem execUI = new MenuItem("Execute UI");
-				execUI.setOnAction( e -> actions.executeUI(object) );
-				if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
-				// End custom UI
-						
-				MenuItem addInstanceItem = new MenuItem("Add instance");
-				addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
-				if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
-
-				MenuItem removeItem = new MenuItem("Remove");
-				removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
-				getItems().add(removeItem);
-				
-				MenuItem changeNameItem = new MenuItem("Change name");
-				changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
-				getItems().add(changeNameItem);
-						
-				if(diagram.getSelectedObjects().size() > 1) {
-					boolean classifyPossible = true;
-					Vector<FmmlxObject> objs = new Vector<>();
-					for(CanvasElement ce : diagram.getSelectedObjects()) {
-						if(! (ce instanceof FmmlxObject))  classifyPossible = false;
-						else {
-							FmmlxObject o = (FmmlxObject) ce;
-							objs.add(o);
-							if(!("Root::FMML::MetaClass".equals(o.getOfPath())))  classifyPossible = false;
-						}
-					}
-					if(classifyPossible) {
-						MenuItem classify = new MenuItem("Classify");
-						getItems().add(classify);
-						classify.setOnAction(e -> actions.classify(objs));
-					}
-				}
-				
-				MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
-				changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-				
-				MenuItem browseInstanceItem = new MenuItem("Browse Instances");
-				browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
-				
-			
-				Menu attributeMenu = createAttributeSubMenu();
-				Menu associationMenu = createAssociationSubMenu();
-				Menu operationMenu = createOperationSubMenu();
-				Menu constraintMenu = createConstraintSubMenu();
-				MenuItem slotMenu = new MenuItem("Change Slot Value");
-				slotMenu.setOnAction(e -> diagram.getActions().changeSlotValue(object, null));
-				Menu associationInstanceMenu = createAssociationInstanceSubMenu();
-				Menu delegationMenu = createDelegationSubMenu();
-				
-				/*
-				Menu levelMenu = new Menu("Levels");
-				MenuItem levelRaiseAllItem = new MenuItem("Raise all");
-				levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
-				MenuItem levelLowerAllItem = new MenuItem("Lower all");
-				levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
-				MenuItem levelRaiseHereItem = new MenuItem("Raise related");
-				levelRaiseHereItem.setOnAction(e -> actions.levelRaiseAll());
-				levelRaiseHereItem.setDisable(true);
-				MenuItem levelLowerHereItem = new MenuItem("Lower related");
-				levelLowerHereItem.setOnAction(e -> actions.levelLowerAll());
-				levelLowerHereItem.setDisable(true);
-				MenuItem levelSplitItem = new MenuItem("Split level here");
-				levelSplitItem.setOnAction(e -> actions.levelRaiseAll());
-				levelSplitItem.setDisable(true);
-				MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
-				levelMergeItem.setOnAction(e -> actions.levelLowerAll());
-				levelMergeItem.setDisable(true);
-				levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
-				
-				MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
-				editConcreteSyntaxItem.setOnAction(e -> {
-					Vector<Integer> choices = new Vector<>();
-					for(Integer i = 0; i < object.getLevel().getMinLevel(); i++) {
-						choices.add(i);
-					}
-					if(choices.size() > 0) {
-						ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel().getMinLevel()-1, choices);
-						dialog.setTitle("Edit Concrete Syntax");
-						dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + " on which level?" );
-//						dialog.setContentText("Choose level:");
-			
-						// Traditional way to get the response value.
-						Optional<Integer> result = dialog.showAndWait();
-						if (result.isPresent()){
-							ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, object, result.get());
-							wizard.start(new Stage());
-						}
-					}
-				});
-				
-				//add all items, that are used for all Objects
-				getItems().addAll(slotMenu, associationInstanceMenu);		
-				//add items, that are used only for Objects that are not on level 0
-				if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
-				getItems().addAll(delegationMenu);
-				addRunMenu();
-				
-				addNewMenuItem(this, "Hide", e -> {
-					Vector<FmmlxObject> v = new Vector<>();
-					v.add(object); 
-					actions.hide(v, true);
-				}, ALWAYS);
-	}
-
 	private void addRunMenu() {
 		Vector<String> names = object.getAvailableNoArgumentOperationNames();
 		if(names.isEmpty()) return;
