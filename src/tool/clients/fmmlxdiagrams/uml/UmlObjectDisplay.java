@@ -80,12 +80,12 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		object.rootNodeElement = group;	
 
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
-		header.setAction( ()-> {
-			Vector<String> models = new Vector<>(); 
-			models.add(diagram.getPackagePath());
-			ModelBrowser modelBrowser = ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", diagram.getPackagePath(), models);
-			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
-		});
+//		header.setAction( ()-> {
+//			Vector<String> models = new Vector<>(); 
+//			models.add(diagram.getPackagePath());
+//			ModelBrowser modelBrowser = ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", diagram.getPackagePath(), models);
+//			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
+//		});
 		
 		group.addNodeElement(header);
 		
@@ -230,6 +230,9 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			}
 		}
 		currentY = yAfterSlotBox;
+		
+		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> selected?3:1, PropertyType.Selection);
+		group.addNodeElement(selectionBox);
 
 	}
 	
@@ -322,8 +325,12 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 	
 	private int countAttributesToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		return (diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
-	}
+		int count = (diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
+		if(count == 0) {
+			count = 1;
+		}
+		return count;
+				}
 	
 	private boolean hasParents() {
 		return object.getParentsPaths().size() != 0;
@@ -357,6 +364,9 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				counter++;
 				}
 			}
+		}
+		if(counter==0) {
+			counter = 1;
 		}
 		return counter;
 	}
