@@ -141,6 +141,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		} else if (!editMode){
 			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.newAssociation);
 		}
+		dialogPane.setId("associationDialog");
 		
 		associations = new Vector<>(); associations.add(association);//source.getAllRelatedAssociations();
 		ObservableList<FmmlxAssociation> associationList;
@@ -156,6 +157,9 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		newTypeSource =  initializeComboBox(diagram.getPossibleAssociationEnds());
 		newTypeTarget =  initializeComboBox(diagram.getPossibleAssociationEnds());
+		newTypeSource.setId("associationStartComboBox");
+		newTypeTarget.setId("associationEndComboBox");
+
 
 		sourceGetterField = new OptionalTextField("", false);
 		sourceSetterField = new OptionalTextField("", false);
@@ -178,11 +182,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		});*/
 		newInstLevelSource = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelSource.setEditable(true);
+		newInstLevelSource.setId("sourceLevel");
 //		newInstLevelSource.getSelectionModel().select(0);
 		newInstLevelTarget = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelTarget.setEditable(true);
+		newInstLevelTarget.setId("targetLevel");
 //		newInstLevelTarget.getSelectionModel().select(0);
 		newDisplayName = new TextField();
+		newDisplayName.setId("associationNameField");
 //		newDisplayNameTarget = new TextField();
 //		newDisplayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		newIdentifierSource = new TextField();
