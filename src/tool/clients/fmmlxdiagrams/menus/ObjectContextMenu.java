@@ -216,10 +216,16 @@ public class ObjectContextMenu extends ContextMenu {
 		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
 
 		getItems().add(new SeparatorMenuItem());
+		if(!diagram.getUMLMode()) {
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeLevelItem, changeMulItem,
 				new SeparatorMenuItem(),
-				genGetterItem, genSetterItem);
+				genGetterItem, genSetterItem);}
+		else {
+			attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
+					new SeparatorMenuItem(),
+					genGetterItem, genSetterItem);
+		}
 
 		return attributeMenu;
 	}
