@@ -14,9 +14,9 @@ import org.apache.batik.anim.dom.SVGOMElement;
 import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class NodeElement {
@@ -35,8 +35,8 @@ public abstract class NodeElement {
 		public void perform();
 	}
 	
-	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
-	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram);
+	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram);
 	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
 	public final void setSelected() { selected = true;}
 	public final void setDeselected() { selected = false;}
@@ -61,7 +61,7 @@ public abstract class NodeElement {
 	 * @param diagramView
 	 * @return whether it has been hit
 	 */
-	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);	
+	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagramView);	
     
 	/**
      * Returns the element's own transform, relative to its parent

@@ -81,7 +81,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				if(!diagram.getUMLMode()) {
+				if(!diagram.isUMLMode()) {
 				return new Result(
 						selectedObject.getPath(),
 						nameTextField.getText(),
@@ -108,15 +108,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		});
 
 	}
-
-
-//	private Integer getIntLevel() {
-//		try{
-//			return Integer.parseInt(levelComboBox.getSelectionModel().getSelectedItem());
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
 
 	private boolean validateUserInput() {
 		if (!validateName()) {
@@ -183,9 +174,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-//		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-//			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
-//			return false;
 		} else {
 			errorLabel.setText("");
 			return true;
@@ -210,8 +198,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-//		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
-//		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel()-1));
 //		levelComboBox = new ComboBox<>();
 //		for(int i = selectedObject.getLevel().getMinLevel()-1; i >= 0; i--) {
@@ -222,8 +208,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		
 		// initial values for the combobox are only primitive types, selecting the checkbox can change that
 		typeComboBox = new ComboBox<>(primitiveTypeList);
-		
-		
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
@@ -246,7 +230,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(classLabel, 0, 1);
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		grid.add(levelLabel, 0, 3);
 		grid.add(multiplicityLabel, 0, 5);
 		grid.add(isIntrinsicLabel, 0, 7);

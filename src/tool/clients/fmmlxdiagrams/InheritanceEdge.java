@@ -5,6 +5,7 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.InheritanceEdgeContextMenu;
 
 public class InheritanceEdge extends Edge<FmmlxObject> {
@@ -22,7 +23,7 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 		visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	public void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 

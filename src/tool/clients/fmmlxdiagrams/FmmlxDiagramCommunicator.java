@@ -25,16 +25,18 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
+import tool.xmodeler.tool_introduction.DiagramViewState;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
-	private static final boolean DEBUG = true; // while setting debug-modus you will receive logs, that help with error detection
+	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
 	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>(); // new response map
@@ -1554,7 +1556,6 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassLevel", message);
     }
 
-
     public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -2108,7 +2109,7 @@ public class FmmlxDiagramCommunicator {
 
     @Deprecated // use async below
     @SuppressWarnings("unchecked")
-    public ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
+    private ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new ModelActionsList(responseContent);

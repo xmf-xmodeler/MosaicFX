@@ -33,7 +33,6 @@ import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
@@ -65,6 +64,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
@@ -1170,7 +1171,7 @@ public class DiagramActions {
 	
 	public void exportPNG() {
 		
-		DiagramViewPane mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
+		DiagramCanvas mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
 		
 		mainViewPane.setMaxZoom();
 
@@ -1295,14 +1296,14 @@ public class DiagramActions {
 		new UnhideElementsDialog(diagram).showDialog();
 	}
 
-	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
+	public void openInstanceWizard(FmmlxObject theClass, DiagramCanvas view) {
 		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel().getMinLevel()-1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}
 	
 	public void centerViewOnObject() {
-		DiagramViewPane viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
+		DiagramCanvas viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
 		
 		String dialogTitle = "Center view on specific Object";
 		Optional<FmmlxObject> result = showChooseFmmlxObjectsDialog(dialogTitle, true);

@@ -1,0 +1,3 @@
+2. Next, we add the attribute “title”. A title can be any text, so we choose the data type String.
+Also, we add an attribute “durationInMinutes”. It is good practice to add the measurement unit to the attribute name in cases where it might be ambiguous. If we call the attribute “duration” only, it might be unclear whether the value of duration serves to represent minutes or hours. It is sufficient if we only capture the duration in minutes through integers, so we select Integer as our data type.
+Now that you have added the “durationInMinutes” attribute, you may notice that it is put above our “title” attribute. In the XModelerML, the attributes are automatically ordered by their name from A to Z for improved legibility.

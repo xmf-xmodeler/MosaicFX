@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
 
 /**

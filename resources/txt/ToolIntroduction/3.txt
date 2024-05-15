@@ -1,0 +1,2 @@
+3. Movies are shown to users in a showing that happens on a particular date.
+Add another class with the name "MovieShowing". This class should have a attribute "showDate" of the Type Date.

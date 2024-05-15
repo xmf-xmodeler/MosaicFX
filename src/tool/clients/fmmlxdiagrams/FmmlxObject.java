@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
@@ -460,11 +461,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	@Override
-	public ObjectContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint) {
+	public ObjectContextMenu getContextMenu(FmmlxDiagram.DiagramCanvas fmmlxDiagram, Point2D absolutePoint) {
 		return new ObjectContextMenu(this, fmmlxDiagram, absolutePoint);
 	}
 	
-	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram.DiagramViewPane view, GraphicsContext g, Affine currentTransform) {
+	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram.DiagramCanvas view, GraphicsContext g, Affine currentTransform) {
 		if(relativePoint == null) return null;
 		if(!view.getDiagram().isSelected(this)) {
 			lastClick = null; return null;
@@ -482,7 +483,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return null;
 	}
 
-	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		NodeElement hitLabel = null;
 		if(rootNodeElement != null) if(hitLabel == null) {
 			 hitLabel = rootNodeElement.getHitElement(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
@@ -521,7 +522,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
+	public void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramToolBarProperties) {
 		if (!diagramToolBarProperties.get(DiagramDisplayProperty.CONCRETESYNTAX)){
 			if(diagram.umlMode) {
 				new UmlObjectDisplay(diagram, this).layout(diagramToolBarProperties);
@@ -549,7 +550,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	private ConcreteSyntax findMyConcreteSyntax(FmmlxDiagram diagram, int levelDiff) {
 		ConcreteSyntax myConcreteSyntax = null;
-		for(ConcreteSyntax c : new Vector<>(diagram.syntaxes.values())) if(myConcreteSyntax == null) {
+		for(ConcreteSyntax c : new Vector<>(diagram.getRootPane().syntaxes.values())) if(myConcreteSyntax == null) {
 			try{
 				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
 				if(this.isInstanceOf(classs, this.level.getMinLevel()) && this.level.getMinLevel() == c.level+levelDiff) {
@@ -620,7 +621,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
   
 	@Override
-	protected void updatePositionInBackend(int diagramID) {
+	public void updatePositionInBackend(int diagramID) {
 		FmmlxDiagramCommunicator.getCommunicator().sendObjectInformation(diagramID, getPath(), (int)Math.round(getX()), (int)Math.round(getY()), hidden);
 		
 	}
@@ -651,5 +652,4 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxSlot> getSlots() {
 		return slots;
 	}
-
 }

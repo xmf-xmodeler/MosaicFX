@@ -6,6 +6,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Optional;
@@ -77,7 +78,8 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		return parentAssociationId;
 	}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override
+	public void layoutLabels(FmmlxDiagram diagram) {
 		if( sourceNode == targetNode) {
 			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {
@@ -295,5 +297,18 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	@Override
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
+	}
+	
+	public static FmmlxAssociation getFmmlxAssociation(FmmlxDiagram diagram, String source, String target, String name) {
+		Vector<FmmlxAssociation> associations = diagram.getFmmlxAssociations();
+
+		for (FmmlxAssociation assoc : associations) {
+			if (assoc.sourceNode.name.equals(source)
+					&& (assoc.getTargetNode().name.equals(target)) &&
+						assoc.name.equals(name)) {
+				return assoc;
+			}
+		}
+		return null;
 	}
 }
