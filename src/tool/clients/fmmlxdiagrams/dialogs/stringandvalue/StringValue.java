@@ -11,6 +11,7 @@ public class StringValue {
 		public static final String selectLevel = "Select Level!";
 		public static final String selectNewLevel = "Select new Level!";
 		public static final String selectType = "Select Type!";
+		public static final String selectCorrectType = "Select a valid type!";
 		public static final String selectNewType = "Select New Type!";
 		public static final String selectAnotherType = "Select Another Type!";
 		public static final String selectNewParent = "Select New Parent!";
