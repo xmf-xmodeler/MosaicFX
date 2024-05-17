@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
@@ -47,6 +48,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private Vector<String> types;
 	private Vector<String> primitiveTypes;
 	private Vector<FmmlxObject> diagramObjects;
+	private Vector<FmmlxEnum> diagramEnums;
 
 	public AddAttributeDialog(final AbstractPackageViewer diagram) {
 		this(diagram, null);
@@ -58,6 +60,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		types = diagram.getAvailableTypes();
 		primitiveTypes = new Vector<String>(List.of("Boolean", "Integer", "Float", "String", "Date"));
 		diagramObjects = diagram.getObjectsReadOnly();
+		diagramEnums = diagram.getEnums();
 
 		DialogPane dialogPane = getDialogPane();
 		this.selectedObject = selectedObject;
@@ -125,6 +128,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		// used for checking whether the type is correct
 		Vector<String> classNames = new Vector<>();
 		Vector<String> validTypes = new Vector<>();
+		Vector<String> enumNames = new Vector<>();
 		
 		// FH check for valid type
 		if (!(showNonPrimitive.isSelected())) {
@@ -139,6 +143,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 					classNames.add(o.toString());
 				}
 			}
+			for (FmmlxEnum e : diagramEnums) {
+				enumNames.add(e.getName());
+			}
+			
+			validTypes.addAll(enumNames);
 			validTypes.addAll(classNames);
 			validTypes.addAll(types);
 		}
