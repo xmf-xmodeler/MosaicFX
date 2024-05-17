@@ -16,9 +16,6 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
 
-// FH 15.05.2024 - Updated dialog to allow selection of only primitive data types
-// FH 15.05.2024 - Added exception handling on front-end regarding data type input
-
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> {
 
 	private Label nameLabel;
@@ -208,12 +205,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
 		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel()-1));
-//		levelComboBox = new ComboBox<>();
-//		for(int i = selectedObject.getLevel().getMinLevel()-1; i >= 0; i--) {
-//			levelComboBox.getItems().add(""+i);
-//		}
-//		levelComboBox.getSelectionModel().selectLast();
-//		if(selectedObject.getLevel().isContingentLevelClass()) levelComboBox.setEditable(true);
 		
 		// initial values for the combobox are only primitive types, selecting the checkbox can change that
 		typeComboBox = new ComboBox<>(primitiveTypeList);
@@ -262,24 +253,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		
 		
 		
-//		List<Node> labelNode = new ArrayList<Node>();
-//		List<Node> editorNode = new ArrayList<Node>();
-//		
-//		labelNode.add(nameLabel);
-//		labelNode.add(classLabel);
-//		labelNode.add(levelLabel);
-//		labelNode.add(typeLabel);
-//		labelNode.add(multiplicityLabel);
-//		
-//		editorNode.add(nameTextField);
-//		editorNode.add(classTextField);
-//		editorNode.add(levelComboBox);
-//		editorNode.add(typeComboBox);
-//		editorNode.add(multiplicityButton);
-//		editorNode.add(displayMultiplicityLabel);
-//		
-//		addNodesToGrid(labelNode, 0);
-//		addNodesToGrid(editorNode, 1);
+
 		
 		// Define an event handler for changes in the state of the checkbox showNonPrimitives
 		EventHandler<ActionEvent> changedCheckboxPrimitiveEvent = new EventHandler<ActionEvent>() {
