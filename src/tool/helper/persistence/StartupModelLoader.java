@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 import javafx.application.Platform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class StartupModelLoader {
 

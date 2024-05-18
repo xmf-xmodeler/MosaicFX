@@ -19,11 +19,16 @@ public abstract class NodeBaseElement extends NodeElement {
 	
 	protected NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
 		this.myTransform = myTransform;
-		this.actionObject = actionObject;
-		this.action = action;
+		this.setActionObject(actionObject);
+		this.setAction(action);
 		this.styleDeclaration = styleDeclaration;
 	}	
 	
+	public NodeBaseElement() {
+		super();
+		this.styleDeclaration = null;
+	}
+
 	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;

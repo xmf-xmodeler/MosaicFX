@@ -1,16 +1,17 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EventListener;
 import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Vector;
-
-import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.canvas.Canvas;
+import org.apache.logging.log4j.LogManager;
+import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
 public abstract class AbstractPackageViewer {
@@ -28,6 +29,11 @@ public abstract class AbstractPackageViewer {
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
 	protected boolean umlMode;
+	protected Vector<String> importedPackages = new Vector<>();
+	public boolean extendedConstraintCheck = true;
+  
+	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
+	protected final NoteList notes = new NoteList();
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -63,16 +69,49 @@ public abstract class AbstractPackageViewer {
 		}
 		return allVisibleObjects;
 	}
+
+	/**
+	 * Used to update diagram to backenddata
+	 */
+	public abstract void  updateDiagram();
+			
+	/**
+	 * Used to update diagram to backenddata
+	 * @param onDiagramUpdated defines an action that is performed after the diagram is updated
+	 */
+	public abstract void updateDiagram(ReturnCall<Object> onDiagramUpdated);
 	
-	public void updateDiagram() {
-		updateDiagram( (ReturnCall<Object>) e -> { } );
-	}
-		
-	public void updateDiagram( ReturnCall<Object> a ) {
+	/**
+	 * This function defines the update logic for every diagram. The gui of a diagram will consume all upcoming events. 
+	 * For debug purposes all events are logged.
+	 * @param node main note for which all events will be consumed
+	 * @param onDiagramUpdated action performed after diagram is updated
+	 */
+	public void updateDiagram(javafx.scene.Node node, ReturnCall<Object> onDiagramUpdated) {
 		setViewerStatus(ViewerStatus.DIRTY);
 		
-		Thread t = new Thread( () -> {
-			this.fetchDiagramData( a );
+		List<Event> eventList = new ArrayList<>();
+		//Every event is consumed and the event is added to an event list
+		EventHandler<Event> actionHandler = new EventHandler<Event>() {
+	            @Override
+	            public void handle(Event event) {
+	            	eventList.add(event);
+	            	event.consume();
+	            }
+	        };
+//	    if(!fetchingData) {
+//	    System.err.println("add filter");
+//		node.addEventFilter(Event.ANY, actionHandler); }
+		
+		Thread t = new Thread(() -> {
+			this.fetchDiagramData(r -> {
+				onDiagramUpdated.run(null);
+				//after the update execution the EventFilter is removed from the node
+//				node.removeEventFilter(Event.ANY, actionHandler);
+				//all consumed events are printed to the log file
+				logger.debug("Block events while updating {}", eventList);
+//			    System.err.println("remove filter");
+			});
 		});
 		t.start();
 	}
@@ -137,7 +176,7 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects.values()) {
 				slotNames.put(o, o.getSlotNames());
 			}
-			comm.fetchAllSlots(this, slotNames, slotsReturn);
+			comm.fetchAllSlots(this, slotsReturn);
 		};
 
 		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {
@@ -174,20 +213,22 @@ public abstract class AbstractPackageViewer {
 		ReturnCall<Vector<Issue>> allIssuesReturn = fetchedIssues -> {	
 			issues.addAll(fetchedIssues);
 			Collections.sort(issues);
-			if(TIMER) System.err.println("Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
+			if(TIMER) System.err.println((extendedConstraintCheck?"Extended":"User Defined")+" Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
 			comm.getAllAssociations(this, allAssociationsReturn);
 		};
 				
 		ReturnCall<Vector<FmmlxObject>> allConstraintsReturn = x1 -> {
-			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
-			comm.fetchIssues(this, allIssuesReturn);
+			if(TIMER) System.err.println("Constraints loaded after " + (System.currentTimeMillis() - START) + " ms.");
+			comm.fetchIssues(this, extendedConstraintCheck, allIssuesReturn);
 		};
 		
 		ReturnCall<Vector<FmmlxObject>> allOperationsReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Operations loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllConstraints(this, visibleObjects, allConstraintsReturn);	
 		};
 
 		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = visibleObjects -> {
+			if(TIMER) System.err.println("Attributes loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			comm.fetchAllOperations(this, visibleObjects, allOperationsReturn);	
 		};
 		
@@ -208,13 +249,72 @@ public abstract class AbstractPackageViewer {
 		
 		ReturnCall<Vector<AssociationType>> associationTypesReceivedReturn = associationTypes -> {
 			this.associationTypes = associationTypes;
+			Collections.sort(this.associationTypes);
 			if(TIMER) System.err.println("\nRequesting Objects after            " + (System.currentTimeMillis() - START) + " ms.");
 			comm.getAllObjects(this, allObjectsReturn);
 		};
 		
-		comm.getAssociationTypes(this, associationTypesReceivedReturn);
+		ReturnCall<Vector<String>> importedPackagesReturn = imports -> {
+			this.importedPackages = imports;
+			comm.getAssociationTypes(this, associationTypesReceivedReturn);
+		};
+		
+		comm.getImportedPackages(this.diagramID, importedPackagesReturn);
+		fetchNotes();
 	}
 	
+	/**
+	 * This function asks the backend for all information about diagramNotes. For the most fetching operations the call order does play a huge role. 
+	 * If YOu will not ask in the right order errors will be raised due to missing backend information and interdependencies. For the notes this does not play 
+	 * any role because the loading process is not dependend on other data
+	 */
+	private void fetchNotes() {
+		ReturnCall<Vector<Note>> notesReturned = returnedNotes -> {
+			//reset notesList. Everytime the diagram is loaded all CanvasElements will be fully new loaded from xmf.
+			this.notes.clear();
+			addNewNotesToNoteList(returnedNotes);
+			setNotePositionsFromXMF();
+		};
+		Note.getAllNotes(diagramID, notesReturned);
+	}
+
+	/**
+	 * If you create a note in the frontend all data about the note is send to the backend. Afterward the diagram is updated, what means, that on Java-side there is no more information about the new note. 
+	 * This function checks if the current instance of the diagram holds a reference to all notes that are in the returnedNotes-list. If the note is already contained the loop continues otherwise the reference is added to the diagramNotes-list.
+	 * @param returnedNotes list of all notes associated to the diagram in the backend
+	 */
+	private void addNewNotesToNoteList(Vector<Note> returnedNotes) {
+		for (Note note : returnedNotes) {
+			if (notes.contain(note.getId())) {
+				continue;
+			}
+			this.notes.add(note);
+		}
+	}
+
+	/**
+	 * Beside the data about the note like color and content the backend manages a mapping to the diagram. This mapping contains the information xPosition, yPosition and if the note is hidden.
+	 * This information must be asked separately because it can be updated by movement of the note on the canvas. It is important, that before this function is called the notes-list is updated. Therefore this function 
+	 * is called from a ReturnCall of getAllNotes.
+	 * 
+	 * !!Prerequisite: Get all notes from XMF 
+	 */
+	private void setNotePositionsFromXMF() {
+		ReturnCall<Vector<GraphicalMappingInfo>> noteMappingRetturned = noteMappings -> {
+			for (GraphicalMappingInfo mappingInfo : noteMappings) {
+				//here the reference from the diagram is initialized. If you would have not updates the note list, an exception would occure.
+				try {
+					Note note = notes.getNote(mappingInfo.getNoteIdFromMappingKey());					
+					note.setDiagramMapping(mappingInfo);
+				} catch (NullPointerException e) {
+					System.err.println("Pleas update notes first");
+					e.printStackTrace();
+				}	
+			}
+		};
+		Note.getNotesMappings(diagramID, noteMappingRetturned);	
+	}
+		
 	protected abstract boolean loadOnlyVisibleObjects();
 
 	private void setViewerStatus(ViewerStatus newStatus) {
@@ -462,4 +562,23 @@ public abstract class AbstractPackageViewer {
 		return new Vector<>(associationTypes);
 	}
 	
+	public NoteList getNotes() {
+		return notes;
+	}
+
+	public Vector<String> getImportedPackages() {
+		return new Vector<>(importedPackages);
+	}
+
+	
+	/**
+	 * Returns a list of all nodes, that are contained in the canvas. That are all FmmlxObjects plus all nodes.
+	 * @return list of all node elements
+	 */
+	public ArrayList<Node> getAllNodes() {
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.addAll(objects.values());
+		nodes.addAll(notes);
+		return nodes;
+	}
 }

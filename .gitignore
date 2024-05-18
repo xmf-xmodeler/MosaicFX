@@ -9,7 +9,8 @@
 
 # user
 /user_properties.xml
-*.properties
+/user.properties
+user.properties
 /ini3.txt
 
 # /doc/old/RequirementsAndSpecifications/.gitignore
@@ -22,6 +23,8 @@
 
 # /build/.gitignore
 /build/output/
+/build/build.properties
+
 
 # Test
 /XModeler2.launch
@@ -32,4 +35,4 @@
 #ignore log files
 logs/*
 /testXMLImport.xml
-AutoMLM/
+/testXMLTransformation.xml

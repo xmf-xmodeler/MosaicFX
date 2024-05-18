@@ -23,10 +23,10 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
-import tool.helper.persistence.StartupModelLoader;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
 
+import tool.helper.persistence.StartupModelLoader;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 /*
  * FH 19.02.2024
  * Implementation of the AutoMLM gui, formerly solely in python. GUI is now in java, functionality is still and will remain in python.
@@ -39,7 +39,7 @@ public class AutoMLMDialog extends Dialog {
 
 	private String path = "";
 
-	private Button buttonSelectFile;
+	private Button buttonSelectModel;
 	private Button buttonExecute;
 	private Button buttonUseCurrent;
 
@@ -101,10 +101,10 @@ public class AutoMLMDialog extends Dialog {
 		grid.add(comboboxTechnologySelector, 1, 3, 2, 1);
 
 		// add filechooser
-		buttonSelectFile = new Button("Select File");
-		buttonSelectFile.setMaxWidth(Double.MAX_VALUE);
-		grid.add(buttonSelectFile, 0, 4);
-		buttonSelectFile.setOnAction(e -> {
+		buttonSelectModel = new Button("Select Model");
+		buttonSelectModel.setMaxWidth(Double.MAX_VALUE);
+		grid.add(buttonSelectModel, 0, 4);
+		buttonSelectModel.setOnAction(e -> {
 			buttonSelectFilePressed();
 		});
 
@@ -116,15 +116,8 @@ public class AutoMLMDialog extends Dialog {
 			buttonExecuteAndOpenPressed();
 		});
 
-//		// add button execue and get dummy xml file
-//		Button buttonExecuteAndOpen = new Button("Execute and open XML");
-//		grid.add(buttonExecuteAndOpen, 1, 8);
-//		buttonExecuteAndOpen.setOnAxction(e -> {
-//			buttonExecuteAndOpenPressed();
-//		});
-
-		// use current file button
-		buttonUseCurrent = new Button("Use Current File");
+		// use current model button
+		buttonUseCurrent = new Button("Use Current Model");
 		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
 		grid.add(buttonUseCurrent, 2, 4);
 		buttonUseCurrent.setOnAction(e -> {

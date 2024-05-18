@@ -18,7 +18,7 @@ import javafx.stage.FileChooser;
 import tool.clients.Client;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
-import tool.helper.userProperties.PropertyManager;
+import tool.helper.user_properties.PropertyManager;
 //import tool.clients.dialogs.notifier.NotificationType;
 //import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;

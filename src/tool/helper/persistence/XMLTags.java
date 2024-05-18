@@ -1,5 +1,8 @@
 package tool.helper.persistence;
 
+/**
+ * This Enum contains all Tag-names, that are used in the XML-export of packages.
+ */
 public enum XMLTags {
 	
 	ROOT("XModelerPackage"),
@@ -18,7 +21,20 @@ public enum XMLTags {
 	INSTANCE("Instance"),
 	DIAGRAM_DISPLAY_PROPERTIES("DiagramDisplayProperties"),
 	IMPORTS("Imports"),
-	PACKAGE_IMPORT("PackageImport");
+	PACKAGE_IMPORT("PackageImport"),
+	
+	//Tags for Notes
+	NOTES("Notes"),
+	NOTE("Note"),
+	NOTEID("NoteId"),
+	NOTECOLOR("NoteColor"),
+	NOTECONTENT("NoteContent"),
+	NOTEPOSITION("NotePosition"),
+	
+	XPOSITION("XPosition"),
+	YPOSITION("YPosition")	
+	;
+	
 	
     public final String name;
 

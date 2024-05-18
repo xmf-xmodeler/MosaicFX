@@ -18,6 +18,7 @@ public class AttributeTab extends Tab {
 	private ComboBox<String> generatorChooser;
 	private Generator generator;
 	private FmmlxAttribute attribute;
+	private final String INITVAL = "Select Generator...";
 	
 	public AttributeTab(FmmlxAttribute attribute, final AbstractPackageViewer diagram) {
 		super(attribute.getName());
@@ -28,6 +29,8 @@ public class AttributeTab extends Tab {
 		vBox.setPadding(new Insets(5.));	
 		setContent(vBox);		
 		
+		generatorChooser.getItems().add(INITVAL);
+		
 		if("Integer".equals(attribute.getTypeShort())) {
 			generatorChooser.getItems().add(IntegerEqualGenerator.name);
 		} 
@@ -37,10 +40,6 @@ public class AttributeTab extends Tab {
 			generatorChooser.getItems().add(FloatEqualGenerator.name);
 		} 
 		
-//		if("Integer".equals(attribute.getTypeShort()) || "Float".equals(attribute.getTypeShort())) {
-//			// none yet
-//		} 
-
 		if("Boolean".equals(attribute.getTypeShort())) {
 			generatorChooser.getItems().add(BooleanGenerator.name);
 		}
@@ -49,15 +48,12 @@ public class AttributeTab extends Tab {
 			generatorChooser.getItems().add(EnumWeighedGenerator.name);
 		}
 		
-//		if("String".equals(attribute.getTypeShort())) {
-//			// none yet
-//		}
-
 		generatorChooser.getItems().add(ListGenerator.name);
 		generatorChooser.getItems().add(ExpressionGenerator.name);
-		
+		generatorChooser.getSelectionModel().select(INITVAL);
 		generatorChooser.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
 			// clear 
+			if(oldVal == INITVAL && newVal != INITVAL) generatorChooser.getItems().remove(INITVAL);
 			if(vBox.getChildren().retainAll(generatorChooser));
 			generator = null;
 			
@@ -86,7 +82,7 @@ public class AttributeTab extends Tab {
 			}
 		});		
 		
-		generatorChooser.setValue(null);
+//		generatorChooser.setValue(null);
 		
 	}
 

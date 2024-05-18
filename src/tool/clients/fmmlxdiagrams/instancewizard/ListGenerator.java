@@ -32,6 +32,9 @@ public class ListGenerator extends Generator {
 			new Label("WARNING:"),
 			new Label("This feature fails if the test does "),
 			new Label("not show the list as described"));
+
+		evalResult0.setMaxHeight(200);
+		evalResult1.setMaxHeight(200);
 		
 		exprField.textProperty().addListener((obs, oldVal, newVal) -> {
 			diagram.getComm().evalString(diagram, newVal, (result) -> resultReceived(result));

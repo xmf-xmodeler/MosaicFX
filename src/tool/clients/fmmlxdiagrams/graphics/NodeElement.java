@@ -235,4 +235,16 @@ public abstract class NodeElement {
 		if(dragAffine == null) return new Affine(); // HACK
 		return dragAffine;
 	}
+  
+	protected void setActionObject(FmmlxProperty actionObject) {
+		this.actionObject = actionObject;
+  }
+	
+	public void setPosition(double x, double y) {
+		myTransform = new Affine(1,0,x,0,1,y);
+  }
+
+	protected void setAction(Action action) {
+		this.action = action;
+	}
 }

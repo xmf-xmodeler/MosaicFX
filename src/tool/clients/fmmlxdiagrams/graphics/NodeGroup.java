@@ -45,6 +45,12 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 	
+	public final void addNodeElementAtFirst(NodeElement nodeElement) {
+		nodeElements.add(0, nodeElement);
+		nodeElement.setOwner(this);
+		updateBounds();
+	}
+	
 	public final void addAllNodeElements(Vector<NodeElement> nodeElementList) {
 		nodeElements.addAll(nodeElementList);
 		for(NodeElement e : nodeElements) {
@@ -183,7 +189,7 @@ public class NodeGroup extends NodeElement {
 		for(NodeElement nodeElement : this.nodeElements) {
 			Modification mod = findMod(modifications, nodeElement);
 			Action action = findAction(actions, nodeElement, object, diagram);
-			nodeElement.action = action;
+			nodeElement.setAction(action);
 			boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().evalBool(object)
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().evalBool(object);
@@ -194,7 +200,7 @@ public class NodeGroup extends NodeElement {
 				allMods.addAll(modifications);
 				allMods.addAll(((ConcreteSyntax)nodeElement).getModifications());
 				NodeElement nl = nodeElement.createInstance(object.getOf(), allMods, actions, diagram);
-				nl.action = action;
+				nl.setAction(action);
 				that.addNodeElement(nl);
 			} else
 				
@@ -202,13 +208,13 @@ public class NodeGroup extends NodeElement {
 			if(nodeElement instanceof NodePath) {
 				if(add) {
 					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
-					nl.action = action;
+					nl.setAction(action);
 					that.addNodeElement(nl);
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.SET_COLOR) {
 						NodePath thatPath = ((NodePath)nodeElement).createInstance(object, modifications, actions, diagram);
 						thatPath.setColor((mod.getCondition()).evalString(object));
-						thatPath.action = action;
+						thatPath.setAction(action);
 						that.addNodeElement(thatPath);
 					}
 				}
@@ -218,20 +224,20 @@ public class NodeGroup extends NodeElement {
 			if(nodeElement instanceof NodeLabel) {
 				if(add) {
 					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
-					nl.action = action;
+					nl.setAction(action);
 					that.addNodeElement(nl);
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
 						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications, actions, diagram);
 						thatLabel.setText((mod.getCondition()).evalString(object));
-						thatLabel.action = action;
+						thatLabel.setAction(action);
 						that.addNodeElement(thatLabel);
 					}
 				}
 			} else {
 				if(add) {
 					NodeElement ne = nodeElement.createInstance(object, modifications, actions, diagram);
-					ne.action = action;
+					ne.setAction(action);
 					that.addNodeElement(ne);
 				}
 			}	
@@ -245,7 +251,10 @@ public class NodeGroup extends NodeElement {
 	}	
 
 	public void setAction(Action action) {
-		this.action=action;
+		super.setAction(action);
 	}
 
+	public Vector<NodeElement> getNodeElements() {
+		return nodeElements;
+	}
 }

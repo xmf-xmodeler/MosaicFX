@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
-public class AssociationType {
+public class AssociationType implements Comparable<AssociationType> {
 
 	public String  displayName;
 	public String  path;
@@ -69,9 +69,20 @@ public class AssociationType {
 	
 
 	public String toString() {
-		return displayName + "(" + color + "/" + strokeWidth + "/" + dashArray + ")";
+		return displayName;// + "(" + color + "/" + strokeWidth + "/" + dashArray + ")";
 	}
 	
 	public transient String _error_Mgs_;
+
+	@Override
+	public int compareTo(AssociationType that) {
+		if(this.displayName.equals("DefaultAssociation")) return -1;
+		if(that.displayName.equals("DefaultAssociation")) return 1;
+		if(this.displayName.equals("Aggregation")) return -1;
+		if(that.displayName.equals("Aggregation")) return 1;
+		if(this.displayName.equals("Composition")) return -1;
+		if(that.displayName.equals("Composition")) return 1;
+		return this.displayName.compareTo(that.displayName);
+	}
 
 }

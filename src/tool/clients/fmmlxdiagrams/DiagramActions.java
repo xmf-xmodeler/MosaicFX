@@ -46,6 +46,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AutoMLMDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -55,6 +56,7 @@ import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
@@ -66,7 +68,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.helper.userProperties.PropertyManager;
+import tool.helper.user_properties.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -87,6 +89,24 @@ public class DiagramActions {
 		} else {
 			Platform.runLater(() -> ClassBrowserClient.show(diagram));
 		}
+	}
+	
+
+
+	public void importModels() {
+		Platform.runLater(() -> {
+			tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog dlg = 
+					new tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog(diagram);
+			Optional<tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result> result = 
+					dlg.showAndWait();
+			
+			if (result.isPresent()) {
+				final tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result imdResult = result.get();
+				
+				diagram.getComm().setImports(diagram.getID(), imdResult.imports);
+				diagram.updateDiagram();
+			}
+		});
 	}
 
 	public void addMetaClassDialog(final View view) {
@@ -165,10 +185,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addInstanceDialog(View view) {
-		addInstanceDialog(null, view);
-	}
-
 	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
@@ -236,6 +252,43 @@ public class DiagramActions {
                         aidResult.isSingleton, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 				diagram.updateDiagram();
+			}
+		});
+	}
+	
+	public void addNote(FmmlxDiagram fmmlxDiagram, Point2D canvasPosition) {
+		Platform.runLater(() -> {
+			NoteCreationDialog dialog = new NoteCreationDialog();
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				//1.Note with default id is created
+				Note note = new Note(canvasPosition, result.get());
+				ReturnCall<Integer> onNoteIdReturned = noteId -> {			
+					//3. Set note id to valid id
+					note.setId(noteId);
+					//4. Use the note-instance to send mappingInfos to XMF
+					note.sendCurrentNoteMappingToXMF(fmmlxDiagram.getID(), r -> {});
+					//5. After the update all note information on Java-side is deleted because an update will clear the notes array. Afterwards all notes data is reloaded from backend. 
+					fmmlxDiagram.updateDiagram();
+				};
+				//2. Note with default id is send to XMF. There a note-instance is created. 
+				// The valid id is returned from XMF
+				note.addNoteToDiagram(fmmlxDiagram, onNoteIdReturned);
+				
+			}
+		});
+	}
+
+	public void editNote(Note note) {
+		Platform.runLater(() -> {
+			ChangeNoteDialog dialog = new ChangeNoteDialog(note);
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				note.updateNoteData(diagram, result.get());
 			}
 		});
 	}
@@ -1343,4 +1396,15 @@ public class DiagramActions {
 		});
 	}
 
+	public void hideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.hide(diagram);
+		}
+	}
+	
+	public void unhideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.unhide(diagram);
+		}
+	}
 }

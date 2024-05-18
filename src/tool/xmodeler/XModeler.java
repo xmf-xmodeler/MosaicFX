@@ -31,8 +31,8 @@ import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import xos.OperatingSystem;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -605,6 +605,8 @@ public class XModeler extends Application {
     public static void bringControlCenterToBack() {
         Platform.runLater(() -> controlCenterStage.toBack());
     }
+    
+    public static boolean isAlphaMode() {return "true".equals(PropertyManager.getProperty("alphaMode"));}
 }
 
 @SuppressWarnings("unchecked")
@@ -631,4 +633,5 @@ class AllModulesToAllModulesExporter {
 //    		exc.printStackTrace();
     	}
     }
+    
 }

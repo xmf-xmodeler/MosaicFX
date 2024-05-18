@@ -31,7 +31,7 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 	private TextField minField = new TextField();
 	private TextField maxField = new TextField();
 	private TextField refTextField;
-	public static enum DataType {BOOLEAN, NUMBER, STRING}
+	public static enum DataType {BOOLEAN, STRING}
 	public static enum PropertyType {SLOT, OPVAL, CONSTRAINT}
 	
 	public DefaultModificationDialog(FmmlxObject obj, int level, final Class<?> condition, NodeElement nodeElement) {
@@ -55,6 +55,7 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 		} else if(condition == Condition.BooleanConstraintCondition.class) {
 			type = PropertyType.CONSTRAINT;
 			dataType = DataType.BOOLEAN;
+			cList.add(Consequence.SHOW_ON_FAIL);
 		} else {
 			throw new RuntimeException("Condition not recognized.");
 		}
@@ -77,8 +78,8 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 				for(FmmlxAttribute a : obj.getAllAttributes()) {
 					if(a.getLevel() == level && 
 							("Boolean".equals(a.getType()) && dataType == DataType.BOOLEAN ||
-							 "Integer".equals(a.getType()) && dataType == DataType.NUMBER ||
-							 "Float".equals(a.getType()) && dataType == DataType.NUMBER ||
+							 "Integer".equals(a.getType()) && dataType == DataType.BOOLEAN ||
+							 "Float".equals(a.getType()) && dataType == DataType.BOOLEAN ||
 							 dataType == DataType.STRING)) {
 						atts.add(a);
 					}
@@ -91,8 +92,8 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 				for(FmmlxOperation o : obj.getAllOperations()) {
 					if(o.getLevel() == level && o.isMonitored() && 
 							("Root::XCore::Boolean".equals(o.getType()) && dataType == DataType.BOOLEAN ||
-							 "Root::XCore::Integer".equals(o.getType()) && dataType == DataType.NUMBER ||
-							 "Root::XCore::Float".equals(o.getType()) && dataType == DataType.NUMBER ||
+							 "Root::XCore::Integer".equals(o.getType()) && dataType == DataType.BOOLEAN ||
+							 "Root::XCore::Float".equals(o.getType()) && dataType == DataType.BOOLEAN ||
 							 dataType == DataType.STRING)) {
 						ops.add(o);
 					}
