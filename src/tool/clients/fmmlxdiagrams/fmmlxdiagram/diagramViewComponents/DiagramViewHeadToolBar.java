@@ -452,24 +452,4 @@ public class DiagramViewHeadToolBar extends VBox {
 		}
 		return null;
 	}
-
-	public void addCheckConditionButton() {
-		if (containsCheckConsitionButton()) {
-			return;
-		}
-		Button checkCondButton = new Button("Check Cond.");
-		checkCondButton.setOnAction(e -> {
-			ToolIntroductionManager.getInstance().checkSucessCondition();
-		});
-		toolBar.getItems().add(checkCondButton);
-	}
-
-	public boolean containsCheckConsitionButton() {
-	
-			return toolBar.getItems().stream().
-					filter(node -> node instanceof Button)
-				    .map(node -> (Button) node)
-				    .filter(button -> button.getText() != null)
-				    .anyMatch(button -> button.getText().equals("Check Cond."));			
-	}
 }
