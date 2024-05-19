@@ -1,2 +1,16 @@
-6. Great! Now our local cinema has entered one movie and one movie showing. At last, we want to add customers and tickets. To make things a little easier, we have already done this for you. Because we do not know where you placed your elements this could look ugly. Just move the elements by drag and drop so you have everything in place.
-The cinema wants to allow one customer to buy multiple tickets. Then, one customer object might be linked to multiple ticket objects. Change the cardinality of the “buys” association from 0..1 to 0..*. Show your skills by associating Josie Dough with another movie of your choice. Create all needed elements and links. Do not change the identifier of the objects and set all slot values(is this clear). (Must here be added an instruction of which objects need to be created?
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Customers and Tickets</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+        <h2>Adding Customers and Tickets</h2>
+        <p>Great! Now our local cinema has entered one movie and one movie showing. At last, we want to add customers and tickets. To make things a little easier, we have already done this for you. Because we do not know where you placed your elements this could look ugly. Just move the elements by drag and drop so you have everything in place.</p>
+        <p>The cinema wants to allow one customer to buy multiple tickets. Then, one customer object might be linked to multiple ticket objects. Change the cardinality of the “buys” association from 0..1 to 0..*. Show your skills by associating Josie Dough with another movie of your choice. Create all needed elements and links. Do not change the identifier of the objects and set all slot values.</p>
+    </div>
+</body>
+</html>
