@@ -20,6 +20,7 @@ public class ToolIntroductionManager {
 	private static FmmlxDiagram diagram;
 	private static String projectName = "ToolIntroductionABC";
 	private static String diagramName = "ToolIntroductionDiagramXYZ";
+	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
 		
 	public ToolIntroductionManager(ControlCenter controlCenter) {
 		instance = this;
@@ -64,7 +65,15 @@ public class ToolIntroductionManager {
 	}
 
 	public void start() {
-		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);}
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
+		try {
+			Thread.sleep(2000); //used to wait for the showing of the description viewer. So this one is in front.
+		} catch (InterruptedException e) {
+			throw new RuntimeException();
+		}
+		descriptionViewer.loadHtmlContent(DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion()); //loads first task description
+		descriptionViewer.show();
+	}
 
 	public void checkSucessCondition() {
 		// is needed because otherwise the changes of the update are not reflected in
@@ -77,10 +86,18 @@ public class ToolIntroductionManager {
 
 		if (new SucessCondition(diagram).checkSucessCondition()) {
 			diagram.getViewPane().loadNextStage();
+			descriptionViewer.giveUserFeedback(true);
+			descriptionViewer.loadHtmlContent(diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+		} else {
+			descriptionViewer.giveUserFeedback(false);
 		}
 	}
 
 	public void setDiagram(FmmlxDiagram diagram) {
 		ToolIntroductionManager.diagram = diagram;
+	}
+
+	public static FmmlxDiagram getDiagram() {
+		return diagram;
 	}
 }
