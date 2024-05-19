@@ -62,7 +62,6 @@ public class DiagramViewPane extends SplitPane {
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
 	private DiagramViewState diagramViewState = null;
-	private TaskTab taskTab = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -112,12 +111,7 @@ public class DiagramViewPane extends SplitPane {
 		getItems().addAll(palettSideBar, canvasContainer);
 		//bug... by update the divider position is slightly different to original position
 		setDividerPosition(0, 0.2);
-		
-		if (state.getPrecedence() < 100) {
-			addTaskTab();
-			diagramViewToolbar.addCheckConditionButton();
-		}
-		
+
 		//state invariant operations 
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
@@ -126,16 +120,6 @@ public class DiagramViewPane extends SplitPane {
 		
 		
 
-	}
-
-
-	private void addTaskTab() {
-		//if there is a instance of taksTab this should not be overwritten to keep the history of tasks in the textArea
-		if (taskTab == null) {
-			taskTab = new TaskTab(diagramViewState.getTaskDescritpion());				
-		}
-		taskTab.setVvalue(1.0);
-		getItems().add(1, taskTab);
 	}
 
 	private void configPane() {
@@ -445,12 +429,7 @@ public class DiagramViewPane extends SplitPane {
 	public void loadNextStage() {
 		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
-		updateTaskTabText();
 		diagramViewState = diagramViewState.getNextState();
-	}
-
-	private void updateTaskTabText() {
-		taskTab.appendTask(diagramViewState.getNextState().getTaskDescritpion());	
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
