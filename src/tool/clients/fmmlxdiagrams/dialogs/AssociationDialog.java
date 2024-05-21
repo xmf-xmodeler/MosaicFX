@@ -248,7 +248,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
 
-		if(!diagram.getUMLMode()) {	//This creates a little redundancy but is overall still cleaner than having a dozen if statements. Putting it in a seperate function would also be messy because all the variable would have to be given as parameters
+		if(!diagram.isUMLMode()) {	//This creates a little redundancy but is overall still cleaner than having a dozen if statements. Putting it in a seperate function would also be messy because all the variable would have to be given as parameters
 		labels.add(new Label("Association Type"));		
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
@@ -339,10 +339,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-			}  else if (!diagram.getUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
+			}  else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel().getMinLevel()-1));
 			return false;
-			} else if (!diagram.getUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
+			} else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel().getMinLevel()-1));
 			return false;
 			} 

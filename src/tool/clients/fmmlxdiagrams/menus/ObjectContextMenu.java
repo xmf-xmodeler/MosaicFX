@@ -35,7 +35,7 @@ public class ObjectContextMenu extends ContextMenu {
 		constructor(object,view,mouse);
 	}
 	
-	private void constructor(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse){
+	private void constructor(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse){
 
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
@@ -74,7 +74,7 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		}
 					
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
 		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
@@ -133,28 +133,42 @@ public class ObjectContextMenu extends ContextMenu {
 		});
 		
 		//add all items, that are used for all Objects
-
-		getItems().addAll(slotMenu, associationInstanceMenu, editConcreteSyntaxItem);
-		if(!diagram.getUMLMode()) {		//Second if statement here. Alternatives would have been to either change the order of the elements in the menu or to change position of ever getitems().add() in this method
-		MenuItem mergeProperties = new MenuItem("Merge Properties");
-		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
-		getItems().add(mergeProperties);
-		
-		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Var");
-		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
-		getItems().add(assignToGlobalVariable);
-		}
-
-		//add items, that are used only for Objects that are not on level 0
-				if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) getItems().addAll(changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu, constraintMenu);
-				getItems().addAll(delegationMenu);
-				addRunMenu();
+		//Removed uml if statement since the new implementation seems to not add global var anymore
+		addMenus(object, changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu,
+				constraintMenu, delegationMenu,slotMenu, associationInstanceMenu, addInstanceItem, removeItem, changeNameItem);
 		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<>();
 			v.add(object); 
 			actions.hide(v, true);
 		}, ALWAYS);
+	}
+	
+	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
+			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem, MenuItem removeItem, MenuItem changeNameItem) {
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {		
+			if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
+		}
+		getItems().add(changeNameItem);
+		getItems().add(removeItem);
+		getItems().add(new SeparatorMenuItem());
+		// add items, that are used only for Objects that are not on level 0
+		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() >= 100) {
+				getItems().addAll(changeParentItem, browseInstanceItem, constraintMenu, operationMenu);
+			}
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 1) {
+				getItems().add(attributeMenu);
+			}
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+				getItems().add(associationMenu);
+			}	
+		}
+		//add all items, that are used for all Objects		
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {
+			getItems().addAll(slotMenu, associationInstanceMenu);		
+		}	
+		addRunMenu();
 	}
 
 	private void addRunMenu() {
@@ -196,8 +210,7 @@ public class ObjectContextMenu extends ContextMenu {
 		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
 
 
-		getItems().add(new SeparatorMenuItem());
-		if(!diagram.getUMLMode()) {
+		if(!diagram.isUMLMode()) {
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeLevelItem, changeMulItem,
 				new SeparatorMenuItem(),
