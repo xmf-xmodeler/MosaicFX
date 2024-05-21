@@ -131,7 +131,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		//theGrid.add(defaultOperationButton, 1, 2);
 		
 
-		if(!diagram.isUMLMode()) {
+		if(!diagram.isUMLMode()) {	//Implementation of gui is different enough that it makes sense to keep the different methods for the layout
 			layoutStandard(defaultOperationButton,theGrid);
 		}
 		else {
