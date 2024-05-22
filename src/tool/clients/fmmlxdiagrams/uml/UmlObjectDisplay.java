@@ -16,7 +16,6 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
-import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
@@ -33,9 +32,14 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	final int INST_LEVEL_WIDTH = 7;
 	final int MIN_BOX_HEIGHT = 4;
 	final int EXTRA_Y_PER_LINE = 3;
+	int heightOffset = 0;	//needed to correct for the label position at a different headerBox height because of the missing parent names for classes
+
 	
 	public UmlObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
 		super(diagram, object);
+		if(object.getLevel().getMinLevel()>0) {
+			heightOffset = 17;	//17 seems to be pretty perfectly in the middle
+		}
 	}
 
 	private final static NodeBaseElement.Action NO_ACTION = null;
@@ -68,18 +72,21 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		double textHeight = FmmlxDiagram.calculateTextHeight();
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double currentY = 0;	
-		int headerLines = 2;	//We do not care about parents so this is hard coded now
+		int headerLines = 1;	//We do not care about parents so this is hard coded now
+		if(object.getLevel().getMinLevel()<1) {
+			headerLines = 2;
+		}
 		
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.getX(), 0, 1, object.getY()));
 		object.rootNodeElement = group;	
 
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
-		header.setAction( ()-> {
-			Vector<String> models = new Vector<>(); 
-			models.add(diagram.getPackagePath());
-			ModelBrowser modelBrowser = ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", diagram.getPackagePath(), models);
-			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
-		});
+//		header.setAction( ()-> {
+//			Vector<String> models = new Vector<>(); 
+//			models.add(diagram.getPackagePath());
+//			ModelBrowser modelBrowser = ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", diagram.getPackagePath(), models);
+//			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
+//		});
 		
 		group.addNodeElement(header);
 		
@@ -87,7 +94,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		if(ofName.equals("^FMMLx::MetaClass^")) ofName = "";	//We only want this for objects so classes should remain empty
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2 - heightOffset, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(nameLabel);
@@ -104,7 +111,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -112,7 +119,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attY += lineHeight;
 			String ownerName = att.getOwnerPath();
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 			}
 		}
@@ -130,7 +137,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperation o : object.getOwnOperations()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
-					int labelX = 14;
+					int labelX = 4;
 					if(o.isDelegateToClassAllowed()) {
 						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
 						opsBox.addNodeElement(delIcon);
@@ -146,10 +153,10 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
 						try{
-							NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.getLevel()) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
+							NodeImage inhIcon = new NodeImage(2, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == object.getLevel()) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
 							opsBox.addNodeElement(inhIcon);
 						} catch (Exception e) {
-							NodeImage inhIcon = new NodeImage(14, opsY, "resources/gif/user/Query2.gif", o, NO_ACTION);
+							NodeImage inhIcon = new NodeImage(2, opsY, "resources/gif/user/Query2.gif", o, NO_ACTION);
 							opsBox.addNodeElement(inhIcon);	
 						}
 						int labelX = 30;
@@ -159,6 +166,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 							labelX +=16;
 						}	
 						try{
+							labelX = 16;
 							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).getName() + ")");
 							opsBox.addNodeElement(oLabel);
 						} catch (Exception e) {
@@ -223,6 +231,9 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			}
 		}
 		currentY = yAfterSlotBox;
+		
+		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> selected?3:1, PropertyType.Selection);
+		group.addNodeElement(selectionBox);
 
 	}
 	
@@ -315,8 +326,12 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 	
 	private int countAttributesToBeShown(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
-		return (diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
-	}
+		int count = (diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)?1:0)*object.getOtherAttributes().size() + object.getOwnAttributes().size();
+		if(count == 0) {
+			count = 1;
+		}
+		return count;
+				}
 	
 	private boolean hasParents() {
 		return object.getParentsPaths().size() != 0;
@@ -350,6 +365,9 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				counter++;
 				}
 			}
+		}
+		if(counter==0) {
+			counter = 1;
 		}
 		return counter;
 	}
