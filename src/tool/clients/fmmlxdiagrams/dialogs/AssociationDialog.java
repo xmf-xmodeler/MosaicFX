@@ -459,8 +459,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							source.getName().toLowerCase() + newDisplayName.getText(),
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
-							false,	
-							false,	//both visibilities true as is default in UML
+							true,	
+							true,	//both visibilities true as is default in UML
 							false,
 							false,
 							sourceGetterField.getText().orElse(null),
