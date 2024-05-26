@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,13 +8,18 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialogDataType.AddAttributeDialogMetaDataType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
+
+import org.apache.batik.apps.svgbrowser.JSVGViewerFrame.NewWindowAction;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> {
 
@@ -30,7 +36,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private TextField nameTextField;
 	private TextField classTextField;
 	private LevelBox levelComboBox;
-	private ComboBox<String> typeComboBox;
+	private ComboBox<AddAttributeDialogDataType> typeComboBox;
 	private CheckBox isIntrinsicBox;
 	private CheckBox isIncompleteBox;
 	private CheckBox isOptionalBox;
@@ -40,10 +46,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
 	private Multiplicity multiplicity = Multiplicity.MANDATORY;
-	
-	private Vector<String> types;
-	private Vector<String> primitiveTypes;
+
+	private Vector<AddAttributeDialogDataType> types;
+	private Vector<AddAttributeDialogDataType> primitiveTypes;
 	private Vector<FmmlxObject> diagramObjects;
+	private Vector<FmmlxEnum> diagramEnums;
 
 	public AddAttributeDialog(final AbstractPackageViewer diagram) {
 		this(diagram, null);
@@ -52,8 +59,31 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	public AddAttributeDialog(final AbstractPackageViewer diagram, FmmlxObject selectedObject) {
 		super();
 		this.diagram = diagram;
-		types = diagram.getAvailableTypes();
-		primitiveTypes = new Vector<String>(List.of("Boolean", "Integer", "Float", "String", "Date"));
+		primitiveTypes = new Vector<AddAttributeDialogDataType>();
+		// by this we can differentiate between a type/ name (relevant for XMF) and a
+		// display name
+		primitiveTypes.add(new AddAttributeDialogDataType("Boolean", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("Integer", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.Primitive));
+
+		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
+
+		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
+		types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
+		types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+
+		// add enums to type list
+		diagramEnums = diagram.getEnums();
+		for (FmmlxEnum e : diagramEnums) {
+			types.add(new AddAttributeDialogDataType(e.getName(), AddAttributeDialogMetaDataType.Enum));
+
+		}
+
+		types.add(new AddAttributeDialogDataType("Domainspecific", AddAttributeDialogMetaDataType.Domainspecific));
+
 		diagramObjects = diagram.getObjectsReadOnly();
 
 		DialogPane dialogPane = getDialogPane();
@@ -71,34 +101,24 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 				e.consume();
 			}
 		});
-		
+
 		setResult();
+
 	}
 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				if(!diagram.isUMLMode()) {
-				return new Result(
-						selectedObject.getPath(),
-						nameTextField.getText(),
-						levelComboBox.getLevel(),
-						getComboBoxStringValue(typeComboBox),
-						multiplicity,
-						isIntrinsicBox.isSelected(),
-						isIncompleteBox.isSelected(),
-						isOptionalBox.isSelected());
-				}
-				else {
-					return new Result(
-							selectedObject.getPath(),
-							nameTextField.getText(),
-							new Level(0,0),
-							getComboBoxStringValue(typeComboBox),
-							multiplicity,
-							true,
-							false,
-							false);
+
+				String datatype = typeComboBox.getConverter().fromString(typeComboBox.getEditor().getText()).getName();
+
+				if (!diagram.isUMLMode()) {
+					return new Result(selectedObject.getPath(), nameTextField.getText(), levelComboBox.getLevel(),
+							datatype, multiplicity, isIntrinsicBox.isSelected(), isIncompleteBox.isSelected(),
+							isOptionalBox.isSelected());
+				} else {
+					return new Result(selectedObject.getPath(), nameTextField.getText(), new Level(0, 0), datatype,
+							multiplicity, true, false, false);
 				}
 			}
 			return null;
@@ -116,18 +136,22 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		return validateType();
 	}
 
-
 	private boolean validateType() {
+
 		Label errorLabel = getErrorLabel();
 		// used for checking whether the type is correct
 		Vector<String> classNames = new Vector<>();
 		Vector<String> validTypes = new Vector<>();
-		
+		Vector<String> enumNames = new Vector<>();
+
+		String datatype = typeComboBox.getConverter().fromString(typeComboBox.getEditor().getText()).getName();
+
 		// FH check for valid type
 		if (!(showNonPrimitive.isSelected())) {
 			// if primitive is selected, only those types are valid
-			validTypes.addAll(primitiveTypes);
-
+			for (AddAttributeDialogDataType type : primitiveTypes) {
+				validTypes.add(type.getName());
+			}
 		} else {
 			// if non primitive types are allowed, classnames and all types are valid
 			// classnames can be used as types for attributes
@@ -136,16 +160,25 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 					classNames.add(o.toString());
 				}
 			}
+			for (FmmlxEnum e : diagramEnums) {
+				enumNames.add(e.getName());
+			}
+
+			validTypes.addAll(enumNames);
 			validTypes.addAll(classNames);
-			validTypes.addAll(types);
+
+			for (AddAttributeDialogDataType type : types) {
+				validTypes.add(type.getName());
+			}
+
 		}
 		// check whether entered type is valid
-		if (!validTypes.contains(getComboBoxStringValue(typeComboBox))) {
+		if (!validTypes.contains(datatype)) {
 			errorLabel.setText(StringValue.ErrorMessage.selectCorrectType);
 			return false;
 		}
 
-		if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
+		if (datatype == null || datatype.length() < 1) {
 			errorLabel.setText(StringValue.ErrorMessage.selectType);
 			return false;
 		}
@@ -155,7 +188,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
-		
+
 		if (levelComboBox.getLevel() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
@@ -187,26 +220,86 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		isIntrinsicLabel = new Label("intrinsic");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");
-		
-		ObservableList<String> primitiveTypeList = FXCollections.observableArrayList(primitiveTypes);
-		ObservableList<String> typeList = FXCollections.observableArrayList(types);
+
+		ObservableList<AddAttributeDialogDataType> primitiveTypeList = FXCollections
+				.observableArrayList(primitiveTypes);
+		// add all types
+		ObservableList<AddAttributeDialogDataType> typeList = FXCollections.observableArrayList(types);
 
 		nameTextField = new TextField();
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel()-1));
-		
-		// initial values for the combobox are only primitive types, selecting the checkbox can change that
+		levelComboBox = new LevelBox(new Level(selectedObject.getLevel().getMinLevel() - 1));
+
+		// initial values for the combobox are only primitive types, selecting the
+		// checkbox can change that
 		typeComboBox = new ComboBox<>(primitiveTypeList);
 		typeComboBox.setEditable(true);
+
+		typeComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+			if (newValue.getName().toString().equals("Domainspecific")) {
+
+				Platform.runLater(() -> {
+					DomainspecificDatatypesDialog dlg = new DomainspecificDatatypesDialog(diagram);
+					dlg.setTitle("Select domainspecific datatype");
+					Optional<String> opt = dlg.showAndWait();
+
+					if (opt.isPresent()) {
+						String result = opt.get();
+
+						typeList.add(
+								new AddAttributeDialogDataType(result, AddAttributeDialogMetaDataType.Domainspecific));
+						typeComboBox.setItems(typeList);
+						typeComboBox.setValue(
+								new AddAttributeDialogDataType(result, AddAttributeDialogMetaDataType.Domainspecific));
+
+						dlg.close();
+					}
+				});
+			}
+		});
+
+		typeComboBox.setConverter(new StringConverter<AddAttributeDialogDataType>() {
+
+			@Override
+			public String toString(AddAttributeDialogDataType object) {
+				if (object == null)
+					return "";
+				return object.getDisplayName();
+			}
+
+			@Override
+			public AddAttributeDialogDataType fromString(String string) {
+
+				// try to find the type if the display name is inputted
+				AddAttributeDialogDataType type = typeComboBox.getItems().stream()
+						.filter(dn -> dn.getDisplayName().equals(string)).findFirst().orElse(null);
+
+				// if type is null check the input via the name, e.g. user inouts "Integer"
+				if (type == null) {
+					type = typeComboBox.getItems().stream().filter(dn -> dn.getName().equals(string)).findFirst()
+							.orElse(null);
+				}
+
+				// if type is still not found, check if the string starts with it . input "int"
+				// -> "integer"
+				if (type == null) {
+					type = typeComboBox.getItems().stream().filter(dn -> dn.getName().startsWith(string)).findFirst()
+							.orElse(null);
+				}
+				return type;
+
+			}
+
+		});
+
 		multiplicityButton = new Button();
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			showMultiplicityDialog();
 		});
 		displayMultiplicityLabel = new Label(multiplicity.toString());
-		
 
 		classTextField.setPrefWidth(COLUMN_WIDTH);
 		showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
@@ -221,45 +314,42 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(classLabel, 0, 1);
-		if(!diagram.isUMLMode()) {
-		grid.add(levelLabel, 0, 2);
-		grid.add(multiplicityLabel, 0, 4);
-		grid.add(isIntrinsicLabel, 0, 6);
-		grid.add(isIncompleteLabel, 0, 7);
-		grid.add(isOptionalLabel, 0, 8);
-		grid.add(levelComboBox, 1, 2);
-		grid.add(isIntrinsicBox, 1, 6);
-		grid.add(isIncompleteBox, 1, 7);
-		grid.add(isOptionalBox, 1, 8);
-		grid.add(multiplicityButton, 1, 4);
-		grid.add(displayMultiplicityLabel, 1, 5);
+		if (!diagram.isUMLMode()) {
+			grid.add(levelLabel, 0, 3);
+			grid.add(multiplicityLabel, 0, 5);
+			grid.add(isIntrinsicLabel, 0, 7);
+			grid.add(isIncompleteLabel, 0, 8);
+			grid.add(isOptionalLabel, 0, 9);
+			grid.add(levelComboBox, 1, 3);
+			grid.add(isIntrinsicBox, 1, 7);
+			grid.add(isIncompleteBox, 1, 8);
+			grid.add(isOptionalBox, 1, 9);
+			grid.add(multiplicityButton, 1, 5);
+			grid.add(displayMultiplicityLabel, 1, 6);
 		}
 		grid.add(typeLabel, 0, 4);
 
-		
 		grid.add(nameTextField, 1, 0);
 		grid.add(classTextField, 1, 1);
-		grid.add(showNonPrimitive,1,2);
+		grid.add(showNonPrimitive, 1, 2);
 		grid.add(typeComboBox, 1, 4);
 
-		
-		
-		
-
-		
-		// Define an event handler for changes in the state of the checkbox showNonPrimitives
+		// Define an event handler for changes in the state of the checkbox
+		// showNonPrimitives
 		EventHandler<ActionEvent> changedCheckboxPrimitiveEvent = new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
-		        // switch of the contents of the typecombobox
-		        if (showNonPrimitive.isSelected()) {
-		            typeComboBox.setItems(typeList);
-		        } else {
-		        	 	typeComboBox.setItems(primitiveTypeList);
-		        }
-		    }
+			public void handle(ActionEvent e) {
+				// switch of the contents of the typecombobox
+				if (showNonPrimitive.isSelected()) {
+					typeComboBox.setItems(typeList);
+				} else {
+					typeComboBox.setItems(primitiveTypeList);
+				}
+			}
 		};
+
 		// Attach the event handler to the checkbox
 		showNonPrimitive.setOnAction(changedCheckboxPrimitiveEvent);
+
 	}
 
 	private void showMultiplicityDialog() {
@@ -272,9 +362,9 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			displayMultiplicityLabel.setText(multiplicity.toString());
 		}
 	}
-		
+
 	public static class Result {
-		
+
 		public final String name;
 		public final String type;
 		public final Level level;
@@ -283,11 +373,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		public final boolean isIntrinsic;
 		public final boolean isIncomplete;
 		public final boolean isOptional;
-		
 
-		private Result(String classPath, String name, Level level, String type, Multiplicity multi, 
-				boolean isIntrinsic, boolean isIncomplete, boolean isOptional) {
-			this.classPath= classPath;
+		private Result(String classPath, String name, Level level, String type, Multiplicity multi, boolean isIntrinsic,
+				boolean isIncomplete, boolean isOptional) {
+			this.classPath = classPath;
 			this.name = name;
 			this.level = level;
 			this.type = type;
@@ -295,7 +384,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			this.isIntrinsic = isIntrinsic;
 			this.isIncomplete = isIncomplete;
 			this.isOptional = isOptional;
-				
+
 		}
 	}
 }
