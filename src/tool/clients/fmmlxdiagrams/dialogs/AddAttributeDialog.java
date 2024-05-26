@@ -238,9 +238,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		typeComboBox.setEditable(true);
 
 		typeComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-
-			System.err.println(newValue.toString());
-
 			if (newValue.getName().toString().equals("Domainspecific")) {
 
 				Platform.runLater(() -> {
@@ -248,12 +245,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 					dlg.setTitle("Select domainspecific datatype");
 					Optional<String> opt = dlg.showAndWait();
 
-					System.err.println("before opt");
-
 					if (opt.isPresent()) {
 						String result = opt.get();
-
-						// System.err.println(result);
 
 						typeList.add(
 								new AddAttributeDialogDataType(result, AddAttributeDialogMetaDataType.Domainspecific));
@@ -263,9 +256,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 						dlg.close();
 					}
-
-					System.err.println("nbach ser iff");
-
 				});
 			}
 		});
