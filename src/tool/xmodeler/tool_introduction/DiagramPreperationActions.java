@@ -15,6 +15,11 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
  */
 public class DiagramPreperationActions {
 
+	/**
+	 * Prepairs the diagram for the next task. The case must be the precedence before the task description.
+	 * If in task 6 things should be there, the case must be 5.
+	 * @param diagram
+	 */
 	public static void prepair(FmmlxDiagram diagram) {
 		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
 		case 5:
@@ -23,11 +28,24 @@ public class DiagramPreperationActions {
 		case 8:
 			addReturnAgeForRatingFun(diagram);
 			return;
+		case 9:
+			addTicketConstrain(diagram);
+			return;
 
 		default:
 			return;
 		}
 
+	}
+
+	private static void addTicketConstrain(FmmlxDiagram diagram) {
+		diagram.getComm().addConstraintAsync(diagram.getID(),
+				"Root::ToolIntroductionABC::Ticket",
+				"mayWatchMovie",
+				0,
+				"self.price <> 10.6",
+				"\"Customer not allowed to watch the movie.\"");
+		
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {

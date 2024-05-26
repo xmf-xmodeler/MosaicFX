@@ -9,11 +9,12 @@ import xos.Value;
 
 /**
  * Class used for manage the ToolIntroduction process.
- * This class is used to build up needed models and contains the logic how conditions are checkd 
+ * This class is used to build up needed models and contains the logic how conditions are checked 
  * and will update the diagram view if needed.
  */
 public class ToolIntroductionManager {
 	
+	//use this if you want to load models that already fulfill some success conditions
 	private static boolean TESTMODUS = false;
 
 	private static ToolIntroductionManager instance;
@@ -66,13 +67,12 @@ public class ToolIntroductionManager {
 
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		try {
-			Thread.sleep(2000); //used to wait for the showing of the description viewer. So this one is in front.
-		} catch (InterruptedException e) {
-			throw new RuntimeException();
-		}
 		descriptionViewer.loadHtmlContent(DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion()); //loads first task description
 		descriptionViewer.show();
+	}
+	
+	public void stop() {
+		instance = null;
 	}
 
 	public void checkSucessCondition() {
@@ -85,8 +85,8 @@ public class ToolIntroductionManager {
 		}
 
 		if (new SucessCondition(diagram).checkSucessCondition()) {
-			diagram.getViewPane().loadNextStage();
 			descriptionViewer.giveUserFeedback(true);
+			diagram.getViewPane().loadNextStage();
 			descriptionViewer.loadHtmlContent(diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
 		} else {
 			descriptionViewer.giveUserFeedback(false);
@@ -99,5 +99,9 @@ public class ToolIntroductionManager {
 
 	public static FmmlxDiagram getDiagram() {
 		return diagram;
+	}
+
+	public TaskDescriptionViewer getDescriptionViewer() {
+		return descriptionViewer;
 	}
 }

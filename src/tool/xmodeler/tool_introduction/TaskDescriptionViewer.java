@@ -79,7 +79,7 @@ public class TaskDescriptionViewer extends Stage {
 	 * the Tool Introduction. If he confirms the Tool Intro stage is closed and the
 	 * diagram stage is closed.
 	 */
-	private void showWarningDialog(WindowEvent event) {
+	public void showWarningDialog(WindowEvent event) {
 		event.consume();
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -158,5 +158,19 @@ public class TaskDescriptionViewer extends Stage {
 		};
 		Thread thread = new Thread(task);
 		thread.start();
+	}
+	
+	/**
+	 * This function is used to change the check Button in the last stage to the finish button
+	 */
+	public void exchangeCheckButton() {
+		Platform.runLater(() -> {
+			checkButton.setText("Finish");
+			checkButton.setOnAction((a) -> {
+				closeToolIntoDiagramStage();
+				this.close();
+				ToolIntroductionManager.getInstance().stop();
+			});
+		});		
 	}
 }

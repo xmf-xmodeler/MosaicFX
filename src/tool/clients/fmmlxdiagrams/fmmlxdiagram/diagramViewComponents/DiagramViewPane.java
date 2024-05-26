@@ -40,6 +40,7 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
+import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.tool_introduction.DiagramPreperationActions;
 import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
@@ -86,7 +87,7 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 
-	private boolean isIntroductionMode() {
+	public  boolean isIntroductionMode() {
 		return diagram.getProjectName().equals("ToolIntroductionABC")
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
@@ -208,8 +209,7 @@ public class DiagramViewPane extends SplitPane {
 					diagram.selectAll();
 				}
 				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					// new XMLCreator().createAndSaveXMLRepresentation(packagePath,
-					// FmmlxDiagram.this);
+					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
 				}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 					diagram.getComm().triggerUpdate();
@@ -426,6 +426,9 @@ public class DiagramViewPane extends SplitPane {
 		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
 		diagramViewState = diagramViewState.getNextState();
+		if (diagramViewState.getPrecedence() == 10) {
+			ToolIntroductionManager.getInstance().getDescriptionViewer().exchangeCheckButton();
+		}
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
