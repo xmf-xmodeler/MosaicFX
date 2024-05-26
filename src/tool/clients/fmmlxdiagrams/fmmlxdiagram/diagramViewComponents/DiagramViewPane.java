@@ -45,8 +45,8 @@ import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 /**
- * SplitPane instance that serves as full gui for the diagram view.
- * All diagram view parts are build and controlled in this class.
+ * SplitPane instance that serves as full gui for the diagram view. All diagram
+ * view parts are build and controlled in this class.
  */
 public class DiagramViewPane extends SplitPane {
 
@@ -72,11 +72,11 @@ public class DiagramViewPane extends SplitPane {
 		this.listOfViews = listOfViews;
 		diagramViewToolbar = toolBar;
 		diagram = fmmlxDiagram;
-		
+
 		initDiagramViewState();
-		buildViewComponents(diagramViewState);				
+		buildViewComponents(diagramViewState);
 	}
-	
+
 	private void initDiagramViewState() {
 		if (isIntroductionMode()) {
 			diagramViewState = DiagramViewState.CREATE_CLASS_MOVIE;
@@ -86,9 +86,6 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 
-	/**
-	 * As Daniel would say evil hack
-	 */
 	private boolean isIntroductionMode() {
 		return diagram.getProjectName().equals("ToolIntroductionABC")
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
@@ -98,27 +95,25 @@ public class DiagramViewPane extends SplitPane {
 		configPane();
 		palettSideBar = buildPalettSideBar();
 		DiagramCanvas zoomView = buildZoomView();
-		
+
 		fmmlxPalette = new FmmlxPalette(this, state);
-		
+
 		palettSideBar.getItems().clear();
 		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
-	
+
 		composeCanvasContainer(listOfViews);
-	
+
 		getItems().clear();
-	
+
 		getItems().addAll(palettSideBar, canvasContainer);
-		//bug... by update the divider position is slightly different to original position
+		// bug... by update the divider position is slightly different to original
+		// position
 		setDividerPosition(0, 0.2);
 
-		//state invariant operations 
+		// state invariant operations
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
 		initConcreteSyntax();
-		
-		
-		
 
 	}
 
@@ -126,19 +121,20 @@ public class DiagramViewPane extends SplitPane {
 		setOrientation(Orientation.HORIZONTAL);
 		setOnKeyReleased(this::handleKeyReleasedGlobal);
 	}
-	
+
 	/**
 	 * handles released keys on the hole pane
+	 * 
 	 * @param key to be handled
 	 */
 	private void handleKeyReleasedGlobal(KeyEvent event) {
-	    if (event.getCode() == KeyCode.ESCAPE) {
-	        diagram.getActiveDiagramViewPane().escapeCreationMode();
-	    }
-	    
-	    if (event.getCode() == KeyCode.DIGIT1) {
-	    	//Use for tests
-	    }
+		if (event.getCode() == KeyCode.ESCAPE) {
+			diagram.getActiveDiagramViewPane().escapeCreationMode();
+		}
+
+		if (event.getCode() == KeyCode.DIGIT1) {
+			// Use for tests
+		}
 	}
 
 	private void composeCanvasContainer(Vector<Vector<Object>> listOfViews) {
@@ -425,7 +421,7 @@ public class DiagramViewPane extends SplitPane {
 			}
 		}
 	}
-	
+
 	public void loadNextStage() {
 		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
@@ -466,5 +462,5 @@ public class DiagramViewPane extends SplitPane {
 
 	public DiagramViewState getDiagramViewState() {
 		return diagramViewState;
-	}	
+	}
 }
