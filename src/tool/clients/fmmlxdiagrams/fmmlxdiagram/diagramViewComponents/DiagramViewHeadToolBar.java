@@ -195,7 +195,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void addMenues(ToolBar toolBar, Button undoButton, Button redoButton, Button zoomInButton,
 			Button zoomOneButton, Button zoomOutButton, ToggleButton extendedConstraintButton,
 			Button centerViewButton, Button saveButton) {
-		toolBar.getItems().addAll(undoButton, redoButton, new Separator(), zoomInButton, zoomOneButton, zoomOutButton,
+		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton,
 				new Separator(), updateButton, centerViewButton, saveButton);
 		if (!fmmlxDiagram.isUMLMode()) {
 			toolBar.getItems().addAll(extendedConstraintButton);
