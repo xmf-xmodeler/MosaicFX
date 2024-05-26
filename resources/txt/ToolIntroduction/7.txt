@@ -13,7 +13,7 @@
         <p>We must still capture the rating of movie objects, though. First, we add an attribute rating: String to our class movie.</p>
         <p>Note, however, that now any string is valid for this attribute. A rating system is restricted to a particular set of values, though. To restrict our attribute to this set of values, we add an enumeration.</p>
         <p>Create an enumeration with the name “RatingEnum”. It is good practice to end the name of each enumeration with Enum, so it will not be confused with other data types.</p>
-        <p>We add three values to our RatingEnum: “G” for general audiences, “PG_13” for parents strongly cautioned, and “R” for restricted. We must change the data type of our attribute rating from String to RatingEnum.</p>
+        <p>We add three values to our RatingEnum: “G” for general audiences, “PG_13” for parents strongly cautioned, and “R” for restricted.</p>
     </div>
 </body>
 </html>
