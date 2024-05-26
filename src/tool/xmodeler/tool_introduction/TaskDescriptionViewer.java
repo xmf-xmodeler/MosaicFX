@@ -48,7 +48,7 @@ public class TaskDescriptionViewer extends Stage {
 		setTitle("Task Description");
 		setScene(scene);
 		webView.setContextMenuEnabled(false);
-
+		setCustomCssStyleSheet();
 	}
 
 	private void setCustomCssStyleSheet() {
@@ -115,7 +115,6 @@ public class TaskDescriptionViewer extends Stage {
 
 	public void loadHtmlContent(String content) {
 		webView.getEngine().loadContent(content);
-		setCustomCssStyleSheet();
 	}
 
 	/**

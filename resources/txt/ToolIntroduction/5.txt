@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div>
+    <div class="content">
         <h2>Exemplary Objects Creation</h2>
         <p>Let us create exemplary objects now. First we add the movie “Joker” which has a duration of 122 minutes. Note that the name of a software object should never be confused with the name of the domain object it represents. Object names are unique and essential for the communication between software objects. Domain names for objects may not be unique; there may be multiple movies that share the same title. We leave the object name as it is (movie1) and enter “Joker” as the respective title of the object.</p>
         <p>Let’s say Joker is part of a showing on 7 Nov 2024. We first instantiate a MovieShowing object (please do not change the name) and change the date value.</p>

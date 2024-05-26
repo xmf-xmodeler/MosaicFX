@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div>
+    <div class="content">
         <h2>MovieShowing Class</h2>
         <p>Movies are shown to users in a showing that happens on a particular date.</p>
         <p>Add another class with the name "MovieShowing". This class should have an attribute "showDate" of the type Date.</p>
