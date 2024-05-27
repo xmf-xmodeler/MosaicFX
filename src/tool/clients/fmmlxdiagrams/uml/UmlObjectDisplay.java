@@ -35,14 +35,14 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	protected int minWidth = 100;
 
 	final int INST_LEVEL_WIDTH = 7;
-	final int MIN_BOX_HEIGHT = 4;
-	final int EXTRA_Y_PER_LINE = 3;
+	 int MIN_BOX_HEIGHT = 4;
+	 int EXTRA_Y_PER_LINE = 3;
 	int heightOffset = 0;	//needed to correct for the label position at a different headerBox height because of the missing parent names for classes
 
 	
 	public UmlObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
 		super(diagram, object);
-		if(object.getLevel().getMinLevel()>0) {
+		if(object.getLevel().getMinLevel()>0) {	//differences between level 0 and 1
 			heightOffset = 17;	//17 seems to be pretty perfectly in the middle
 		}
 	}
@@ -155,6 +155,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		int attSize = countAttributesToBeShown(diagramDisplayProperties);		//Attributes code copied from DefaultFmmlxObjectDisplay.java
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		if(object.getLevel().getMinLevel()<1) {
+			attBoxHeight = 0;	}
 		double yAfterAttBox = currentY + attBoxHeight;
 		double attY = 0;
 		NodeBox attBox = new NodeBox(0, currentY, neededWidth, attBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Attribute);
@@ -181,6 +183,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 		int opsSize = countOperationsToBeShown(diagramDisplayProperties);
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		if(object.getLevel().getMinLevel()<1) {
+			opsBoxHeight = 0;	}
 		double opsY = 0;
 		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Operation);
 		if (!object.isHidden() && diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONS) && opsSize > 0) {

@@ -72,6 +72,7 @@ public class FmmlxPalette {
 						setBackground(new Background(
 								new BackgroundFill(Color.WHITE, new CornerRadii(10), new Insets(2, 5, 2, 25))));
 					} else {
+						if(!fmmlxDiagram.isUMLMode()) {
 						setTextFill(Color.WHITE);
 						setBorder(new Border(new BorderStroke(
 								diagramRootPane.getDiagram().levelColorScheme.getLevelBgColor(item.getLevel()), BorderStrokeStyle.SOLID,
@@ -79,6 +80,16 @@ public class FmmlxPalette {
 						setBackground(new Background(
 								new BackgroundFill(diagramRootPane.getDiagram().levelColorScheme.getLevelBgColor(item.getLevel()),
 										new CornerRadii(10), new Insets(2, 5, 2, 25))));
+						}
+						else {
+							setTextFill(Color.BLACK);
+							setBorder(new Border(new BorderStroke(
+									Color.BLACK, BorderStrokeStyle.SOLID,
+									new CornerRadii(10), new BorderWidths(2), new Insets(2, 5, 2, 25))));
+							setBackground(new Background(
+									new BackgroundFill(Color.WHITE,
+											new CornerRadii(10), new Insets(2, 5, 2, 25))));
+						}
 					}
 					if (item instanceof DefaultTool && item.getLevel() != 1000 || item instanceof TreeGroup) {
 						setBorder(null);
