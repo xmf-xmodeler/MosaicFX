@@ -255,7 +255,7 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
 		grid.add(newDiagram2, 4, 4);
-		
+		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
