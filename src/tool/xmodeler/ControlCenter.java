@@ -192,7 +192,7 @@ public class ControlCenter extends Stage {
 			XMLDatabaseConsole console = new XMLDatabaseConsole();
 			try
 			{
-				console.startConsole();
+				console.start();
 			}
 			catch (Exception e) {
 				// TODO: handle exception
