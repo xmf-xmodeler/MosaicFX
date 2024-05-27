@@ -31,7 +31,8 @@ public class ToolIntroductionManager {
 	public static ToolIntroductionManager getInstance() {
 		if (instance == null) {
 			if (TESTMODUS) {
-				instance = new ToolIntroductionManager(null);				
+				instance = new ToolIntroductionManager(null);
+				instance.getDescriptionViewer().show();
 			} else {
 				throw new NullPointerException("ToolIntroductionManager needs to be first intialized.");				
 			}	
