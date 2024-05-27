@@ -1,30 +1,24 @@
 package tool.xmodeler.tool_introduction;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
 
 public class TaskDescriptionViewer extends Stage {
@@ -52,17 +46,9 @@ public class TaskDescriptionViewer extends Stage {
 	}
 
 	private void setCustomCssStyleSheet() {
-		String basePath = XModeler.class.getResource("/").getPath();
-		String parentPath = new File(basePath).getParent();
-		String styleSheetPath = parentPath + "/resources/css/taskDescription.css";
-
-		URL url = null;
-		try {
-			url = new URL("file:" + styleSheetPath);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		webView.getEngine().setUserStyleSheetLocation(url.toExternalForm());
+		String customCssPath = "resources/css/taskDescription.css";
+	    File customCssFile = new File(customCssPath);    
+        webView.getEngine().setUserStyleSheetLocation("file:"+ customCssFile.getAbsolutePath());
 	}
 
 	private Button buildCheckButton() {
