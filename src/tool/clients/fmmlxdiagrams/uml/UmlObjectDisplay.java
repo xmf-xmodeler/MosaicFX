@@ -7,6 +7,9 @@ import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -14,8 +17,10 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.graphics.IssueBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
@@ -65,6 +70,19 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout(Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		
+		boolean isEnum = false;
+		FmmlxEnum representedEnum = null;
+		
+		if("ENUM".equals(this.object.type)) {
+			for(FmmlxEnum e : diagram.getEnums()) {
+				if(representedEnum == null && e.getName().equals(this.object.getName())) { // TODO: check path instead of name
+					representedEnum = e;
+					isEnum = true;
+					break;
+				}
+			}			
+		}
 		//determine text height
 
 		double neededWidth = calculateNeededWidth(diagram, diagramDisplayProperties);
@@ -101,6 +119,40 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		currentY += headerLines * textHeight + EXTRA_Y_PER_LINE;
 		
+		Vector<Issue> issues = diagram.getIssues(object);
+		if(issues.size() > 0 && diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTREPORTS)) {
+			double issueBoxHeight = lineHeight * issues.size() + EXTRA_Y_PER_LINE;
+			NodeBox issueBox = new IssueBox(0, currentY, neededWidth, issueBoxHeight, 
+				Color.BLACK, Color.BLACK, (x) -> 1., PropertyType.Issue);
+			group.addNodeElement(issueBox);
+			double issY = 0;
+			for(Issue i : issues) {
+				issY += lineHeight;
+				
+				NodeLabel issueLabel = new NodeLabel(
+						Pos.BASELINE_LEFT, 
+						IssueBox.BOX_SIZE * .5, 
+						issY, 
+						i.getSeverity().equals(Issue.Severity.BAD_PRACTICE)
+							? new Color(0., .7, .4, 1.)
+							: i.getSeverity().equals(Issue.Severity.FATAL)
+							? new Color(.9, .3, .6, 1.)
+							: i.getSeverity().equals(Issue.Severity.NORMAL)
+							? new Color(1., .1, .1, 1.)
+							: new Color(1., .8, 0., 1.), 
+						null, 
+						object, 
+						() -> i.performResolveAction(diagram), 
+						i.getText(), 
+						true, 
+						i.issueNumber);
+				issueBox.addNodeElement(issueLabel);
+				issueLabel.activateSpecialMode(neededWidth - IssueBox.BOX_SIZE);
+			}
+		
+			currentY += issueBoxHeight;
+		}
+		
 		int attSize = countAttributesToBeShown(diagramDisplayProperties);		//Attributes code copied from DefaultFmmlxObjectDisplay.java
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double yAfterAttBox = currentY + attBoxHeight;
@@ -111,7 +163,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, "- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -119,7 +171,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attY += lineHeight;
 			String ownerName = att.getOwnerPath();
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION,"- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
 			attBox.addNodeElement(attLabel);
 			}
 		}
@@ -144,7 +196,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 						labelX +=16;
 					}					
 					NodeLabel.Action changeOpBodyAction = () -> diagram.getActions().changeBodyDialog(object, o);
-					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpBodyAction, o.getFullString(diagram));
+					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpBodyAction,"+ " + o.getFullString(diagram));
 					opsBox.addNodeElement(opLabel);
 				}
 			}
@@ -167,10 +219,10 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 						}	
 						try{
 							labelX = 16;
-							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).getName() + ")");
+							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION,"+ " + o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).getName() + ")");
 							opsBox.addNodeElement(oLabel);
 						} catch (Exception e) {
-							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + o.getOwner() + ")");
+							NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION,"+ " + o.getFullString(diagram) + " (from " + o.getOwner() + ")");
 							opsBox.addNodeElement(oLabel);
 						}
 					}
@@ -209,9 +261,28 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 						opsBox.addNodeElement(delIcon);
 					}
 				}
-			}
+			}	
 		}
 		currentY = yAfterOpsBox;
+		
+		double yAfterConstraintBox = currentY;
+		int constraintSize = object.getConstraints().size();
+		double constraintBoxHeight = Math.max(lineHeight * constraintSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double constraintY = 0;
+		NodeBox coinstraintsBox = new NodeBox(0, currentY, neededWidth, constraintBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Constraint);
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.CONSTRAINTS) && constraintSize > 0) {
+			yAfterConstraintBox = currentY + constraintBoxHeight;
+			group.addNodeElement(coinstraintsBox);
+			for (Constraint con : object.getConstraints()) {
+				constraintY += lineHeight;
+				NodeLabel.Action editConstraintAction = () -> diagram.getActions().editConstraint(object,con);
+				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, editConstraintAction, con.getName());
+				coinstraintsBox.addNodeElement(constraintLabel);
+				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.getLevel() + "");
+				coinstraintsBox.addNodeElement(constraintLevelLabel);
+			}
+		}
+		currentY = yAfterConstraintBox;
 		
 		double yAfterSlotBox = currentY;
 		int slotSize = object.getSlots().size();
@@ -232,9 +303,65 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		}
 		currentY = yAfterSlotBox;
 		
+		double yAfterOPVBox = currentY;
+		int opvSize = object.getOperationValues().size();
+//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		double opvBoxHeight = Math.max(lineHeight * opvSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double opvY = 0;
+		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.OperationValue);
+		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES) && opvSize > 0) {
+			yAfterOPVBox = currentY + opvBoxHeight;
+			group.addNodeElement(opvBox);
+			for (FmmlxOperationValue opv : object.getOperationValues()) {
+				opvY += lineHeight;
+				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
+				
+				NodeElement opvValueLabel = null;
+				NodeElement.Action action = () -> displayLongMethodReturns(opv.getValue());
+				
+				//40 is here defined as the max length that a method return should have. If this is the case the return value is presented in an alert stage
+				String text = opv.getValue().length() > 40 ? "Double click for value" : opv.getValue();
+				
+				opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, action, "" + text);									
+				
+				opvBox.addNodeElement(opvNameLabel);
+				opvBox.addNodeElement(opvValueLabel);
+			}
+		}
+		currentY = yAfterOPVBox;
+		
+		if(isEnum) {
+			double yAfterEnumItemBox = currentY;
+			int enumSize = representedEnum.getItems().size();
+			double enumBoxHeight = Math.max(lineHeight * enumSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+			double enumY = 0;
+			NodeBox enumBox = new NodeBox(0, currentY, neededWidth, enumBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.OperationValue);
+			if (enumSize > 0) {
+				yAfterEnumItemBox = currentY + enumBoxHeight;
+				group.addNodeElement(enumBox);
+				for (String item : representedEnum.getItems()) {
+					enumY += lineHeight;
+					NodeLabel enumNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, enumY, Color.BLACK, null, null, NO_ACTION, item);
+					enumBox.addNodeElement(enumNameLabel);
+				}
+			}
+			currentY = yAfterEnumItemBox;
+		}
+		
 		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> selected?3:1, PropertyType.Selection);
 		group.addNodeElement(selectionBox);
 
+	}
+	
+	private void displayLongMethodReturns(String value) {
+		//If you do not like the layout feel free to adjust the parameter
+		Alert a = new Alert(AlertType.INFORMATION);
+		a.setTitle("Show too long method return");
+		a.setHeaderText("Return Value:");
+		TextArea text = new TextArea(value);
+		text.setWrapText(true);
+		a.getDialogPane().setContent(text);
+		a.showAndWait();
 	}
 	
 

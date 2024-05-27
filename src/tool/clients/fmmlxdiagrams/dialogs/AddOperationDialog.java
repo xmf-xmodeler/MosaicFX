@@ -157,6 +157,9 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	private void layoutUML(Button defaultOperationButton, GridPane theGrid) {
 		umlFunctionSignature = new TextField();
 		umlFunctionSignature.setPrefWidth(200);
+		AddOperationDialog.this.codeBoxPair.setBodyText(
+				"@Operation " + "methodName[monitor=true,delToClassAllowed=false]():XCore::Element" + "\n" +
+				"null" + "\n" + "end");
 		umlFunctionSignature.setOnKeyTyped(event -> {
 			String[] codeBody;
 			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
