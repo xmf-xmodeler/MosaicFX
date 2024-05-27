@@ -40,13 +40,14 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
+import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.tool_introduction.DiagramPreperationActions;
 import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 /**
- * SplitPane instance that serves as full gui for the diagram view.
- * All diagram view parts are build and controlled in this class.
+ * SplitPane instance that serves as full gui for the diagram view. All diagram
+ * view parts are build and controlled in this class.
  */
 public class DiagramViewPane extends SplitPane {
 
@@ -62,7 +63,6 @@ public class DiagramViewPane extends SplitPane {
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
 	private DiagramViewState diagramViewState = null;
-	private TaskTab taskTab = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -73,11 +73,11 @@ public class DiagramViewPane extends SplitPane {
 		this.listOfViews = listOfViews;
 		diagramViewToolbar = toolBar;
 		diagram = fmmlxDiagram;
-		
+
 		initDiagramViewState();
-		buildViewComponents(diagramViewState);				
+		buildViewComponents(diagramViewState);
 	}
-	
+
 	private void initDiagramViewState() {
 		if (isIntroductionMode()) {
 			diagramViewState = DiagramViewState.CREATE_CLASS_MOVIE;
@@ -87,10 +87,7 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 
-	/**
-	 * As Daniel would say evil hack
-	 */
-	private boolean isIntroductionMode() {
+	public  boolean isIntroductionMode() {
 		return diagram.getProjectName().equals("ToolIntroductionABC")
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
@@ -99,62 +96,46 @@ public class DiagramViewPane extends SplitPane {
 		configPane();
 		palettSideBar = buildPalettSideBar();
 		DiagramCanvas zoomView = buildZoomView();
-		
+
 		fmmlxPalette = new FmmlxPalette(this, state);
-		
+
 		palettSideBar.getItems().clear();
 		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
-	
+
 		composeCanvasContainer(listOfViews);
-	
+
 		getItems().clear();
-	
+
 		getItems().addAll(palettSideBar, canvasContainer);
-		//bug... by update the divider position is slightly different to original position
+		// bug... by update the divider position is slightly different to original
+		// position
 		setDividerPosition(0, 0.2);
-		
-		if (state.getPrecedence() < 100) {
-			addTaskTab();
-			diagramViewToolbar.addCheckConditionButton();
-		}
-		
-		//state invariant operations 
+
+		// state invariant operations
 		buildIssuePane();
 		switchTableOnAndOffForIssues();
 		initConcreteSyntax();
-		
-		
-		
 
-	}
-
-
-	private void addTaskTab() {
-		//if there is a instance of taksTab this should not be overwritten to keep the history of tasks in the textArea
-		if (taskTab == null) {
-			taskTab = new TaskTab(diagramViewState.getTaskDescritpion());				
-		}
-		taskTab.setVvalue(1.0);
-		getItems().add(1, taskTab);
 	}
 
 	private void configPane() {
 		setOrientation(Orientation.HORIZONTAL);
 		setOnKeyReleased(this::handleKeyReleasedGlobal);
 	}
-	
+
 	/**
 	 * handles released keys on the hole pane
+	 * 
 	 * @param key to be handled
 	 */
 	private void handleKeyReleasedGlobal(KeyEvent event) {
-	    if (event.getCode() == KeyCode.ESCAPE) {
-	        diagram.getActiveDiagramViewPane().escapeCreationMode();
-	    }
-	    
-	    if (event.getCode() == KeyCode.DIGIT1) {
-	    	//Use for tests
-	    }
+		if (event.getCode() == KeyCode.ESCAPE) {
+			diagram.getActiveDiagramViewPane().escapeCreationMode();
+		}
+
+		if (event.getCode() == KeyCode.DIGIT1) {
+			// Use for tests
+		}
 	}
 
 	private void composeCanvasContainer(Vector<Vector<Object>> listOfViews) {
@@ -228,8 +209,7 @@ public class DiagramViewPane extends SplitPane {
 					diagram.selectAll();
 				}
 				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					// new XMLCreator().createAndSaveXMLRepresentation(packagePath,
-					// FmmlxDiagram.this);
+					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
 				}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 					diagram.getComm().triggerUpdate();
@@ -441,16 +421,14 @@ public class DiagramViewPane extends SplitPane {
 			}
 		}
 	}
-	
+
 	public void loadNextStage() {
 		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
-		updateTaskTabText();
 		diagramViewState = diagramViewState.getNextState();
-	}
-
-	private void updateTaskTabText() {
-		taskTab.appendTask(diagramViewState.getNextState().getTaskDescritpion());	
+		if (diagramViewState.getPrecedence() == 10) {
+			ToolIntroductionManager.getInstance().getDescriptionViewer().exchangeCheckButton();
+		}
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
@@ -487,5 +465,5 @@ public class DiagramViewPane extends SplitPane {
 
 	public DiagramViewState getDiagramViewState() {
 		return diagramViewState;
-	}	
+	}
 }

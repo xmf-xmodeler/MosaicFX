@@ -1,3 +1,17 @@
-1. Okay, let us begin with a simple example: A local cinema wants to manage its ticket selling system.
-Create a class that serves to represent movies. Per convention, classes always begin with an uppercase letter and are in the singular form. Hence, name the class “Movie” and not “movies”.
-Remember that a class serves as an abstraction over a set of objects. In our small example, we assume that each particular movie object has a title and a duration. To enable this, we must add the respective attributes to our created class.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Class Example</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content">
+        <h1>1. Movie Class Example</h1>
+        <p>Okay, let us begin with a simple example: A local cinema wants to manage its ticket selling system.</p>
+        <p>Create a class that serves to represent movies. Per convention, classes always begin with an uppercase letter and are in the singular form. Hence, name the class <strong>“Movie”</strong> and not <strong>“movies”</strong>.</p>
+        <p>Remember that a class serves as an abstraction over a set of objects. In our small example, we assume that each particular movie object has a title and a duration. To enable this, we must add the respective attributes to our created class.</p>
+    </div>
+</body>
+</html>

@@ -195,7 +195,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void addMenues(ToolBar toolBar, Button undoButton, Button redoButton, Button zoomInButton,
 			Button zoomOneButton, Button zoomOutButton, ToggleButton extendedConstraintButton,
 			Button centerViewButton, Button saveButton) {
-		toolBar.getItems().addAll(undoButton, redoButton, new Separator(), zoomInButton, zoomOneButton, zoomOutButton,
+		toolBar.getItems().addAll(zoomInButton, zoomOneButton, zoomOutButton,
 				new Separator(), updateButton, centerViewButton, saveButton);
 		if (!fmmlxDiagram.isUMLMode()) {
 			toolBar.getItems().addAll(extendedConstraintButton);
@@ -451,25 +451,5 @@ public class DiagramViewHeadToolBar extends VBox {
 			}
 		}
 		return null;
-	}
-
-	public void addCheckConditionButton() {
-		if (containsCheckConsitionButton()) {
-			return;
-		}
-		Button checkCondButton = new Button("Check Cond.");
-		checkCondButton.setOnAction(e -> {
-			ToolIntroductionManager.getInstance().checkSucessCondition();
-		});
-		toolBar.getItems().add(checkCondButton);
-	}
-
-	public boolean containsCheckConsitionButton() {
-	
-			return toolBar.getItems().stream().
-					filter(node -> node instanceof Button)
-				    .map(node -> (Button) node)
-				    .filter(button -> button.getText() != null)
-				    .anyMatch(button -> button.getText().equals("Check Cond."));			
 	}
 }

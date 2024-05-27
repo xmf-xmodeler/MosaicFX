@@ -64,14 +64,20 @@ public class SucessCondition {
 		String objectName = "ticket2";
 		FmmlxObject obj = diagram.getObjectByName(objectName);
 		boolean priceNotNull = !DiagramConditionChecks.hasMatchingSlotValue(diagram, objectName, "price", "0.0");
+		boolean priceNotTenSixty = !DiagramConditionChecks.hasMatchingSlotValue(diagram, objectName, "price", "10.60");
 		
 		return 
 				assocCardinalitRight && 
 					priceNotNull &&
-						DiagramConditionChecks.containsLink(diagram, "customer1", "ticket2", "buys");
+							priceNotTenSixty &&
+								DiagramConditionChecks.containsLink(diagram, "customer1", "ticket2", "buys");
 	}
 
 	private boolean isRatingEnumAdded() {
+		//precond attribute is added
+		FmmlxObject obj = diagram.getObjectByName(MOVIE_CLASS_NAME);
+		boolean ratingAddedToMovie = DiagramConditionChecks.hasAttributeOfType(obj, "title", "String");
+		
 		FmmlxEnum enumInst = diagram.getEnum("RatingEnum");
 		if (enumInst == null) {
 			return false;
@@ -79,7 +85,7 @@ public class SucessCondition {
 		boolean enumContainsG = enumInst.contains("G");
 		boolean enumContainsPG13 = enumInst.contains("PG_13");
 		boolean enumContainsR = enumInst.contains("R");
-		return enumContainsG && enumContainsPG13 && enumContainsR;
+		return ratingAddedToMovie && enumContainsG && enumContainsPG13 && enumContainsR;
 	}
 
 	private boolean hasLinkBetweenMovieAndMovieShowing() {

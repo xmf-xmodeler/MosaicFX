@@ -57,7 +57,9 @@ public class XMLParser {
 		if (PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString()) != null) {
 			String recentlyOpendDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString());
 			File recentlyOpendFile = new File(recentlyOpendDirPath);
-			chooser.setInitialDirectory(recentlyOpendFile.getParentFile());
+			if (recentlyOpendFile.exists()) {
+				chooser.setInitialDirectory(recentlyOpendFile.getParentFile());				
+			}
 		}
 		// choose
 		Optional<File> inputFile = Optional.of(chooser.showOpenDialog(new Stage()));

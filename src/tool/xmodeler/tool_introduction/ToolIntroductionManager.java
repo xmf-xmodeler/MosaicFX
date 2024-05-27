@@ -9,17 +9,19 @@ import xos.Value;
 
 /**
  * Class used for manage the ToolIntroduction process.
- * This class is used to build up needed models and contains the logic how conditions are checkd 
+ * This class is used to build up needed models and contains the logic how conditions are checked 
  * and will update the diagram view if needed.
  */
 public class ToolIntroductionManager {
 	
+	//use this if you want to load models that already fulfill some success conditions
 	private static boolean TESTMODUS = false;
 
 	private static ToolIntroductionManager instance;
 	private static FmmlxDiagram diagram;
 	private static String projectName = "ToolIntroductionABC";
 	private static String diagramName = "ToolIntroductionDiagramXYZ";
+	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
 		
 	public ToolIntroductionManager(ControlCenter controlCenter) {
 		instance = this;
@@ -64,7 +66,14 @@ public class ToolIntroductionManager {
 	}
 
 	public void start() {
-		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);}
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
+		descriptionViewer.loadHtmlContent(DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion()); //loads first task description
+		descriptionViewer.show();
+	}
+	
+	public void stop() {
+		instance = null;
+	}
 
 	public void checkSucessCondition() {
 		// is needed because otherwise the changes of the update are not reflected in
@@ -76,11 +85,23 @@ public class ToolIntroductionManager {
 		}
 
 		if (new SucessCondition(diagram).checkSucessCondition()) {
+			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
+			descriptionViewer.loadHtmlContent(diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+		} else {
+			descriptionViewer.giveUserFeedback(false);
 		}
 	}
 
 	public void setDiagram(FmmlxDiagram diagram) {
 		ToolIntroductionManager.diagram = diagram;
+	}
+
+	public static FmmlxDiagram getDiagram() {
+		return diagram;
+	}
+
+	public TaskDescriptionViewer getDescriptionViewer() {
+		return descriptionViewer;
 	}
 }

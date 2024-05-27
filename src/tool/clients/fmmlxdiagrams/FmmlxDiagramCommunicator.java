@@ -23,6 +23,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
@@ -32,6 +34,7 @@ import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -2231,7 +2234,23 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
+		if (diagram.getViewPane().isIntroductionMode()) {
+			//finds task description pane and shows warning dialog before close
+			stage.setOnCloseRequest((e) -> {
+				for (Window window : Window.getWindows()) {
+					if (window instanceof Stage) {
+						Stage taskDescription = (Stage) window;
+						if ("Task Description".equals(taskDescription.getTitle())) {
+							((TaskDescriptionViewer) taskDescription).showWarningDialog(new WindowEvent(null, null));
+							return;
+						}
+					}
+				}
+			});
+
+		} else {
+			stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
+		}
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {

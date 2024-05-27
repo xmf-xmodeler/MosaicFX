@@ -1,1 +1,15 @@
-8. We add three values to our RatingEnum: “G” for general audiences, “PG-13” for parents strongly cautioned, and “R” for restricted. We must change the data type of our attribute rating from String to RatingEnum.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Values to RatingEnum</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content">
+        <h2>8. Adding Values to RatingEnum</h2>
+        <p>We must change the data type of our attribute rating from String to RatingEnum.</p>
+    </div>
+</body>
+</html>
