@@ -93,7 +93,7 @@ public class DiagramPreperationActions {
 	private static void addMovieShwoingInstance(FmmlxDiagram diagram) {
 		String instanceName = "movieShowing2";
 		diagram.getComm().addNewInstance(diagram.getID(), diagram.getClassPath("MovieShowing"), instanceName,
-				getLevelNull(), new Vector<>(), false, false, 0, 200, false);
+				getLevelNull(), new Vector<>(), false, false, 800, 250, false);
 		diagram.updateDiagram();
 		try {
 			Thread.sleep(1000);
@@ -113,7 +113,7 @@ public class DiagramPreperationActions {
 	private static void addMovieInstance(FmmlxDiagram diagram) {
 		String instanceName = "movie2";
 		diagram.getComm().addNewInstance(diagram.getID(), diagram.getClassPath("Movie"), instanceName,
-				getLevelNull(), new Vector<>(), false, false, 0, 200, false);
+				getLevelNull(), new Vector<>(), false, false, 150, 600, false);
 		diagram.updateDiagram();
 		try {
 			Thread.sleep(1000);
@@ -138,7 +138,7 @@ public class DiagramPreperationActions {
 	private static void addTicketInstance(FmmlxDiagram diagram, String ticketClassName) {
 		String instanceName = "ticket1";
 		diagram.getComm().addNewInstance(diagram.getID(), diagram.getClassPath(ticketClassName), instanceName,
-				getLevelNull(), new Vector<>(), false, false, 0, 200, false);
+				getLevelNull(), new Vector<>(), false, false, 50, 400, false);
 		diagram.updateDiagram();
 		try {
 			Thread.sleep(1000);
@@ -156,7 +156,7 @@ public class DiagramPreperationActions {
 	private static void addCustomerInstance(FmmlxDiagram diagram, String customerClassName) {
 		String instanceName = "customer1";
 		diagram.getComm().addNewInstance(diagram.getID(), diagram.getClassPath(customerClassName), instanceName,
-				getLevelNull(), new Vector<>(), false, false, 400, 200, false);
+				getLevelNull(), new Vector<>(), false, false, 600, 300, false);
 		diagram.updateDiagram();
 		try {
 			Thread.sleep(1000);
@@ -183,9 +183,7 @@ public class DiagramPreperationActions {
 	private static void associateCustomerAndTicket(FmmlxDiagram diagram, String customerClassName,
 			String ticketClassName) {
 		Multiplicity targetToSourceMult = new Multiplicity(1, 1, true, false, false);
-		Multiplicity sourceToTargetMult = new Multiplicity(0, 1, 
-				false //true
-				, false, false);
+		Multiplicity sourceToTargetMult = new Multiplicity(0, 1, true, false, false);
 		addAssociationOnLevelNull(diagram, customerClassName, ticketClassName, "buys", targetToSourceMult, sourceToTargetMult );
 	}
 	
