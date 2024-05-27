@@ -49,7 +49,7 @@ public class DiagramPreperationActions {
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {
-		String funBody = "@Operation op0[monitor=true,delToClassAllowed=false]():XCore::Integer\r\n"
+		String funBody = "@Operation requiredAgeToWatch1	[monitor=true,delToClassAllowed=false]():XCore::Integer\r\n"
 				+ "  if rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"PG_13\")\r\n"
 				+ "  then 13\r\n"
 				+ "  elseif rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"R\")\r\n"

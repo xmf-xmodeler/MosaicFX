@@ -15,7 +15,7 @@ import xos.Value;
 public class ToolIntroductionManager {
 	
 	//use this if you want to load models that already fulfill some success conditions
-	private static boolean TESTMODUS = false;
+	private static boolean TESTMODUS = true;
 
 	private static ToolIntroductionManager instance;
 	private static FmmlxDiagram diagram;
@@ -89,6 +89,15 @@ public class ToolIntroductionManager {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
 			descriptionViewer.loadHtmlContent(diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+			if (diagram.getViewPane().getDiagramViewState().getPrecedence() == 10) {
+				//this time is needed to survive the user feedback
+				try {
+					Thread.sleep(1500);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				descriptionViewer.exchangeCheckButton();
+			}
 		} else {
 			descriptionViewer.giveUserFeedback(false);
 		}

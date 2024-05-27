@@ -426,9 +426,6 @@ public class DiagramViewPane extends SplitPane {
 		DiagramPreperationActions.prepair(diagram);
 		buildViewComponents(diagramViewState.getNextState());
 		diagramViewState = diagramViewState.getNextState();
-		if (diagramViewState.getPrecedence() == 10) {
-			ToolIntroductionManager.getInstance().getDescriptionViewer().exchangeCheckButton();
-		}
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
