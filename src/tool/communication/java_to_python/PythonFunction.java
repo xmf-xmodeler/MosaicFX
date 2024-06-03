@@ -8,7 +8,10 @@ public enum PythonFunction {
 	//Function to test the exception handling for a lost response file
 	SIMULATE_LOST_FILE("simulate_lost_file", 1, ReturnType.STRING),
 	ILLEGAL_ARGUMENTS("illegal_arguments", 1, ReturnType.STRING),
-	CALL_EXECUTION("perform_promotion_process_from_java", 1, ReturnType.STRING);
+	CALL_EXECUTION("perform_promotion_process_from_java", 1, ReturnType.STRING), 
+	GETPROJECTNAME("getProjectName",1,ReturnType.STRING),
+	PROMOTE_DIAGRAM("promoteDiagram", 2, ReturnType.STRING),
+	GETDIAGRAMNAME("getDiagramName",1,ReturnType.STRING);
 
 	
 	

@@ -1,10 +1,10 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Optional;
 
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -14,120 +14,245 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
 
 import tool.helper.persistence.StartupModelLoader;
-import tool.helper.user_properties.PropertyManager;
-import tool.helper.user_properties.UserProperty;
-/*
- * FH 19.02.2024
- * Implementation of the AutoMLM gui, formerly solely in python. GUI is now in java, functionality is still and will remain in python.
- */
+
 public class AutoMLMDialog extends Dialog {
 
+	private GridPane grid;
 	private AbstractPackageViewer diagram;
 
-	private GridPane grid = new GridPane();
+	private Label lblChooseInputModel;
+	private Label lblPromotionCategory;
 
-	private String path = "";
+	private ComboBox<String> cmbPromotionCategory;
+	private ComboBox<String> cmbExampleModel;
 
-	private Button buttonSelectModel;
-	private Button buttonExecute;
-	private Button buttonUseCurrent;
-
-	private ComboBox<String> comboboxCaseSelector;
-	private ComboBox<String> comboboxTechnologySelector;
-
-	private Label lblFilePath;
-	private Label lblHeader;
-	private Label lblSubHeader;
-	private Label lblCaseSelector;
-	private Label lblTechnologySelector;
-
-	private FileChooser fileChooser;
+	private Button butAdjustPromotionOptions;
+	private Button butOpenInputModel;
+	private Button butPerfomModelLifting;
 
 	public AutoMLMDialog(AbstractPackageViewer diagram) {
 		this.diagram = diagram;
+		this.setTitle("AutoMLM");
 
-		// add buttons for dialog
+		this.grid = new GridPane();
+
+		getDialogPane().setContent(buildGridPane());
 		getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-		
-		grid = buildGridPane();
-		getDialogPane().setContent(grid);
 	}
 
-	// creates the grid pane and its objects
 	private GridPane buildGridPane() {
-		
-		// init standard grid
+
 		buildGrid();
 
-		lblFilePath = new Label();
+		// initian definitions of elements
+		lblPromotionCategory = new Label("Promotion Category:");
+		lblChooseInputModel = new Label("Choose Input Model:");
 
-		// add header
-		lblHeader = new Label("MLM Automatic Construction");
-		lblHeader.setFont(new Font("Arial", 24));
-		grid.add(lblHeader, 0, 0, 3, 1);
-		lblSubHeader = new Label("Case Navigator");
-		lblSubHeader.setFont(new Font("Arial", 18));
-		grid.add(lblSubHeader, 0, 1, 3, 1);
+		cmbPromotionCategory = new ComboBox<String>();
+		cmbExampleModel = new ComboBox<String>();
 
-		// file path label stays blank (for now)
-		lblFilePath.setText("");
-		grid.add(lblFilePath, 0, 5, 3, 1);
+		butAdjustPromotionOptions = new Button("Adjust Promotion Options");
+		butOpenInputModel = new Button("Open Input Model");
+		butPerfomModelLifting = new Button("Perform Model Lifting");
 
-		// add combobox caseSelector
-		comboboxCaseSelector = new ComboBox<String>();
-		comboboxCaseSelector.setMaxWidth(Double.MAX_VALUE);
-		comboboxCaseSelector.getItems().addAll("Classification", "Generalization");
-		lblCaseSelector = new Label("Select Case");
-		grid.add(lblCaseSelector, 0, 2);
-		grid.add(comboboxCaseSelector, 1, 2, 2, 1);
+		// style adaptments
+		lblPromotionCategory.setMaxWidth(Double.MAX_VALUE);
+		lblChooseInputModel.setMaxWidth(Double.MAX_VALUE);
 
-		// add combobox comboboxTechnologySelector
-		comboboxTechnologySelector = new ComboBox<String>();
-		comboboxTechnologySelector.setMaxWidth(Double.MAX_VALUE);
-		comboboxTechnologySelector.getItems().addAll("Formal Concept Analysis", "Clustering");
-		lblTechnologySelector = new Label("Select Technology");
-		grid.add(lblTechnologySelector, 0, 3);
-		grid.add(comboboxTechnologySelector, 1, 3, 2, 1);
+		cmbPromotionCategory.setMaxWidth(Double.MAX_VALUE);
+		cmbExampleModel.setMaxWidth(Double.MAX_VALUE);
 
-		// add filechooser
-		buttonSelectModel = new Button("Select Model");
-		buttonSelectModel.setMaxWidth(Double.MAX_VALUE);
-		grid.add(buttonSelectModel, 0, 4);
-		buttonSelectModel.setOnAction(e -> {
-			buttonSelectFilePressed();
+		butAdjustPromotionOptions.setMaxWidth(Double.MAX_VALUE);
+		butOpenInputModel.setMaxWidth(Double.MAX_VALUE);
+		butPerfomModelLifting.setMaxWidth(Double.MAX_VALUE);
+
+		// grid placements
+		grid.add(lblPromotionCategory, 0, 1);
+		grid.add(cmbPromotionCategory, 1, 1, 2, 1);
+
+		grid.add(lblChooseInputModel, 0, 2);
+		grid.add(cmbExampleModel, 1, 2, 2, 1);
+
+		grid.add(butAdjustPromotionOptions, 0, 3);
+		grid.add(butOpenInputModel, 1, 3);
+		grid.add(butPerfomModelLifting, 2, 3);
+
+		fillComboBoxCategory();
+
+		// functions based on pressing or changing
+		cmbPromotionCategory.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+			fillComboBoxModel(newValue);
 		});
 
-		// add button execute
-		buttonExecute = new Button("Execute");
-		buttonExecute.setMaxWidth(Double.MAX_VALUE);
-		grid.add(buttonExecute, 1, 4);
-		buttonExecute.setOnAction(e -> {
-			buttonExecuteAndOpenPressed();
+		butAdjustPromotionOptions.setOnAction(e -> {
+			butAdjustPromotionOptionsPressed();
 		});
 
-		// use current model button
-		buttonUseCurrent = new Button("Use Current Model");
-		buttonUseCurrent.setMaxWidth(Double.MAX_VALUE);
-		grid.add(buttonUseCurrent, 2, 4);
-		buttonUseCurrent.setOnAction(e -> {
-			buttonUseCurrentPressed();
+		butOpenInputModel.setOnAction(e -> {
+			butOpenInputModelPressed();
 		});
 
-		// placeholder for filepath
-		grid.add(new Label(""), 0, 5, 3, 1);
+		butPerfomModelLifting.setOnAction(e -> {
+			butPerfomModelLiftingPressed();
+		});
 
 		return grid;
+	}
+
+	private boolean isInputValid(String category, String model) {
+		if (category == null || category == "") {
+
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("No category selected");
+			alert.setContentText("To open a model, a category must be selected!");
+			alert.showAndWait();
+			return false;
+		}
+
+		if (model == null || model == "") {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("No Input Model Selected");
+			alert.setContentText("To open a model, a model must be selected!");
+			alert.showAndWait();
+			return false;
+		}
+		
+		return true;
+	}
+
+	private String getPath(String category, String model) {
+		// get correct file path of the diagram to be promoted
+		File parentFile = new File("AutoMLM\\ExampleModels");
+
+		// filter in parent directory for the correct sub directory
+		String[] list = parentFile.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.contains(category);
+			}
+		});
+
+		// new path
+		String path = "AutoMLM\\ExampleModels\\" + list[0] + "\\" + model;
+		return path;
+	}
+
+	private void butPerfomModelLiftingPressed() {
+		String category = cmbPromotionCategory.getValue();
+		String model = cmbExampleModel.getValue();
+
+		if (!isInputValid(category, model)) return;
+
+		if (model == "Use Current Model") {
+			// TODO promotion process from current model
+			// has to be saved and then the path can be used
+			// path =
+			// PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
+			// sendToPython(path);
+			return;
+		}
+		
+		String path = getPath(category, model);
+		
+		String[] args = { category, path };
+		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROMOTE_DIAGRAM, args);
+		wrapper.execute();
+		String newPath = (String) wrapper.getResponse();
+
+		new StartupModelLoader().loadModelsFromPath(newPath);
+
+		String projectName = getProjectNameFromFile(newPath);
+		String diagramName = getDiagramNameFromFile(newPath);
+
+		// raise alert to ensure model is loaded
+		Alert alert = new Alert(AlertType.NONE);
+		alert.setTitle("Diagram Promotion complete");
+		alert.setContentText("The selected diagram can now be opened");
+		alert.getButtonTypes().add(ButtonType.OK);
+
+		// Display the alert
+		Optional<ButtonType> result = alert.showAndWait();
+		// wait for result of alert box; after that diagram can be opened
+		if (result.isPresent()) {
+			if (result.get().equals(ButtonType.OK)) {
+				diagram.getComm().openDiagram(projectName, diagramName);
+			}
+		}
+
+	}
+
+	private void butOpenInputModelPressed() {
+
+		String category = cmbPromotionCategory.getValue();
+		String model = cmbExampleModel.getValue();
+
+		if (!isInputValid(category, model)) return;
+
+		if (model == "Use Current Model") {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Diagram already open");
+			alert.setContentText("The current diaram is already open");
+			
+			// Display the alert
+			alert.showAndWait();
+		}
+
+		String path = getPath(category,model);
+
+		// load the model into the StartUpModelLoader
+		new StartupModelLoader().loadModelsFromPath(path);
+
+		// get the project and diagram name from python
+		String projectName = getProjectNameFromFile(path);
+		String diagramName = getDiagramNameFromFile(path);
+
+		// raise alert to ensure model is loaded
+		Alert alert = new Alert(AlertType.NONE);
+		alert.setTitle("Diagram can be opened");
+		alert.setContentText("The selected diagram can now be opened");
+		alert.getButtonTypes().add(ButtonType.OK);
+
+		// Display the alert
+		Optional<ButtonType> result = alert.showAndWait();
+		// wait for result of alert box; after that diagram can be opened
+		if (result.isPresent()) {
+			if (result.get().equals(ButtonType.OK)) {
+				diagram.getComm().openDiagram(projectName, diagramName);
+			}
+		}
+
+	}
+
+	private void butAdjustPromotionOptionsPressed() {
+		// TODO Extendend window to customize settings, or perform only single
+		// operations
+	}
+
+	private String getProjectNameFromFile(String path) {
+		String[] args = { path };
+
+		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.GETPROJECTNAME, args);
+		wrapper.execute();
+		String projectName = (String) wrapper.getResponse();
+
+		return projectName;
+	}
+
+	private String getDiagramNameFromFile(String path) {
+		String[] args = { path };
+
+		PythonRequestWrapper wrapper2 = new PythonRequestWrapper(PythonFunction.GETDIAGRAMNAME, args);
+		wrapper2.execute();
+		String diagramName = (String) wrapper2.getResponse();
+
+		return diagramName;
+
 	}
 
 	// basic grid pane settings
@@ -143,126 +268,45 @@ public class AutoMLMDialog extends Dialog {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(10, 10, 10, 10));
-		grid.setMinWidth(300);
-		grid.setMaxWidth(300);
+		grid.setMinWidth(600);
+		grid.setMaxWidth(600);
 
 	}
 
-	// func for button selectFile
-	private void buttonSelectFilePressed() {
-		Pane pane = new Pane();
-		Scene scene = new Scene(pane);
-		Stage stage = new Stage();
-		stage.setScene(scene);
+	private void fillComboBoxCategory() {
+		File file = new File("AutoMLM\\ExampleModels");
+		String[] directories = file.list();
 
-		stage.setTitle("Select file");
-		stage.setWidth(800);
-		stage.setHeight(400);
+		for (String directory : directories) {
 
-		fileChooser = new FileChooser();
-		fileChooser.setTitle("Select location of fxml");
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("XML File", "*.xml"));
-
-		File file = fileChooser.showOpenDialog(stage);
-				//fileChooser.showSaveDialog(stage);
-		if (file == null) {
-			path = "";
-		} else {
-			path = file.getPath();
+			String nameOfCategory = directory.substring(3);
+			cmbPromotionCategory.getItems().add(nameOfCategory);
 		}
 
-		// split path at every \
-		String[] pathParts = path.split("\\\\");
-		lblFilePath.setText("Selected file: " + pathParts[pathParts.length - 1]);
 	}
 
-	// func to open an xml file provided by python
-	private void buttonExecuteAndOpenPressed() {
-		String[] args = new String[0];
-		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.IMPORT_XML, args);
-		wrapper.execute();
-		String path = (String) wrapper.getResponse();
-		System.err.println(path);
+	private void fillComboBoxModel(String newValue) {
 
-		new StartupModelLoader().loadModelsFromPath(path);
+		// get parent file
+		File parentFile = new File("AutoMLM\\ExampleModels");
 
-		// alert to inform when transformation is complete
-		Alert alert = new Alert(AlertType.NONE);
-		alert.setTitle("Tranformation complete");
-		alert.setContentText("The transformation of the diagram is complete. Press OK to open the new diagram.");
-		alert.getButtonTypes().add(ButtonType.OK);
-
-		// Display the alert and wait for it
-		Optional<ButtonType> result = alert.showAndWait();
-		// wait for result of alert box
-		if (result.isPresent()) {
-			if (result.get().equals(ButtonType.OK)) {
-				// open the new diagram
-				// TBD do not hardcode the parameters, but instead get them from the xml file
-				diagram.getComm().openDiagram("gen", "gen");
-				return;
+		// filter in parent directory for the correct sub directory
+		String[] list = parentFile.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.contains(newValue);
 			}
-		}
-		
-		this.close();	}
+		});
 
-	// func for button execute
-	private void buttonExecutePressed() {
-		if (path == "")
-			return;
+		// new path
+		File file = new File("AutoMLM\\ExampleModels\\" + list[0]);
 
-		String selectedCase = comboboxCaseSelector.getValue();
-		String selectedTechnology = comboboxTechnologySelector.getValue();
-
-		if (selectedCase != null) {
-			if (selectedTechnology != null) {
-				// TBD only send here to python
-			} else {
-				// TBD that no technology has been selected
-			}
-		} else {
-			// TBD alert that no case has been selected
-		}
-
-		sendToPython(this.path);
+		// list all files in the directory
+		String[] files = file.list();
+		// add standard option
+		cmbExampleModel.getItems().setAll("Use Current Model");
+		// add demo files
+		cmbExampleModel.getItems().addAll(files);
 	}
 
-	// func for button use current file
-	private void buttonUseCurrentPressed() {
-		// save diagram
-		Alert alert = new Alert(AlertType.NONE);
-		alert.setTitle("Use Current Diagram");
-		alert.setContentText("Has the current diagram been saved and should be used for the transformation process?");
-		alert.getButtonTypes().add(ButtonType.YES);
-		alert.getButtonTypes().add(ButtonType.NO);
-
-		// Display the alert and wait for it
-		Optional<ButtonType> result = alert.showAndWait();
-		// wait for result of alert box
-		if (result.isPresent()) {
-			if (result.get().equals(ButtonType.YES)) {
-				// continue with last saved diagram
-				// get path of last saved model
-				path = PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
-				sendToPython(path);
-			} else {
-				// close dialog
-				return;
-			}
-		}
-	}
-
-	// sent to python for analysis and get return in string form
-	private void sendToPython(String path) {
-		String[] args = { path };
-		// it is possible that an empty or wrong path is transmitted, this has to be
-		// catched
-		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.CALL_EXECUTION, args);
-		try {
-			wrapper.execute();
-		} catch (Exception e) {
-			System.err.println("Error with path: " + path);
-			System.err.println(e.toString());
-		}
-	}
 }
