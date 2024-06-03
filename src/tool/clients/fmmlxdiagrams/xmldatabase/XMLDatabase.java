@@ -44,6 +44,7 @@ public class XMLDatabase {
 	private String document;
 	private FmmlxDiagram diagram;
 	private XMLCreator creator;
+	private XMLDatabaseQuerys querrys;
 	protected String hostname;
 	protected int port;
 	protected String user;
@@ -64,6 +65,7 @@ public class XMLDatabase {
 		this.diagram = diagram;
 		this.creator = new XMLCreator();
 		this.db_name = PropertyManager.getProperty("databaseName");
+		this.querrys = new XMLDatabaseQuerys();
 
 	}
 
@@ -94,7 +96,7 @@ public class XMLDatabase {
 
 				boolean mainDocumentExists = false;
 				try {
-					mainDocumentExists = session.query("db:exists('" + this.db_name + "', '" + mainDocumentName + "')")
+					mainDocumentExists = session.query(querrys.mainDocumentExistsQuery(this.db_name, mainDocumentName))
 							.execute().equals("true");
 				} catch (BaseXException e) {
 					// Das Dokument existiert nicht, mainDocumentExists bleibt false
@@ -110,9 +112,7 @@ public class XMLDatabase {
 					// Höchste Versionsnummer ermitteln
 					newVersionNumber = getHighestVersion(mainDocumentName, session) + 1;
 					// Neuen Verweis im Hauptdokument hinzufügen
-					String updateMainDocumentQuery = "let $doc := db:open('" + this.db_name + "','" + mainDocumentName
-							+ "')" + "return insert node <Version ref=\"" + diagramName + "_version_" + newVersionNumber
-							+ ".xml\"/> into $doc//VersionsContainer";
+					String updateMainDocumentQuery = querrys.updateMainDocumentQuery(this.db_name, mainDocumentName, diagramName, newVersionNumber);
 					session.query(updateMainDocumentQuery).execute();
 				}
 
@@ -216,9 +216,7 @@ public class XMLDatabase {
 	private int countProjects(Session session) {
 		try 
 		{
-			String countQuery = "xquery count(for $doc in db:list('" + this.db_name + "') "
-                    + "where ends-with($doc, '_versions.xml') "
-                    + "return $doc)";
+			String countQuery = querrys.countQuery(this.db_name);
 				return Integer.parseInt(session.execute(countQuery));
 		}
 		catch (Exception e) {
@@ -240,9 +238,7 @@ public class XMLDatabase {
 	    List<String> documentNames = new ArrayList<>();
 	    try {
 	        // Construct the XQuery that retrieves all document names ending with '_versions.xml'
-	        String query = "xquery for $doc in db:list('" + this.db_name + "') "
-	                     + "where ends-with($doc, '_versions.xml') "
-	                     + "return $doc";
+	        String query = querrys.getProjectDocumentNamesQuery(this.db_name);
 
 	        // Execute the query and process the results
 	        String result = session.execute(query);
@@ -271,8 +267,7 @@ public class XMLDatabase {
 	 *                     process.
 	 */
 	private void createNewMainDoc(Session session, String diagramName, String mainDocumentName) throws IOException {
-		String initialMainDocumentContent = "<VersionsContainer name=\"" + diagramName + "\">" + "<Version ref=\""
-				+ diagramName + "_version_0.xml\"/>" + "</VersionsContainer>";
+		String initialMainDocumentContent = querrys.initialMainDocumentContentQuery(diagramName);
 		session.add(mainDocumentName,
 				new ByteArrayInputStream(initialMainDocumentContent.getBytes(StandardCharsets.UTF_8)));
 	}
@@ -288,15 +283,7 @@ public class XMLDatabase {
 	 *                   of the query results.
 	 */
 	private int getHighestVersion(String mainDocumentName, Session session) throws Exception {
-		String highestVersionQuery = "let $doc := doc('" + this.db_name + "/" + mainDocumentName + "')" + // Öffnet das
-																											// spezifische
-																											// Hauptdokument
-				"let $versions := $doc//VersionsContainer/Version/@ref " + // Selektiert alle Version-Referenzen im
-																			// spezifischen Hauptdokument
-				"let $numbers := for $v in $versions "
-				+ "return xs:integer(substring-before(substring-after($v, 'version_'), '.xml')) " + // Extrahiert die
-																									// Versionsnummern
-				"return max($numbers)";
+		String highestVersionQuery = querrys.highestVersionQuery(this.db_name, mainDocumentName);
 		String highestVersionRef = session.query(highestVersionQuery).execute();
 		return Integer.parseInt(highestVersionRef);
 	}
@@ -333,8 +320,7 @@ public class XMLDatabase {
 			}
 
 			// Ermittle alle Hauptdokumente
-			String versionsQuery = "for $doc in db:open('" + this.db_name
-					+ "') where ends-with(base-uri($doc), '_versions.xml') return base-uri($doc)";
+			String versionsQuery = querrys.getVersionDocsQuery(this.db_name);
 			ClientQuery versionsResult = session.query(versionsQuery);
 
 			while (versionsResult.more()) {

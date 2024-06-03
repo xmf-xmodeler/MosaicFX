@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="lib"/>
 	<classpathentry exported="true" kind="src" path="/com.ceteva.xmf.machine"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
@@ -69,5 +70,6 @@
 	<classpathentry kind="lib" path="lib/log4j-core-2.20.0.jar"/>
 	<classpathentry kind="lib" path="lib/xalan-2.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/controlsfx-11.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/BaseX107.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
