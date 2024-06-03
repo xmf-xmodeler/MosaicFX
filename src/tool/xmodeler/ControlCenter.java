@@ -82,8 +82,10 @@ public class ControlCenter extends Stage {
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		
 		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"))-237;	//Adjustment for removed elements
+		}
 		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
 		Scene scene = new Scene(root, toolWidth, toolHeight);
 		setScene(scene);
@@ -237,12 +239,10 @@ public class ControlCenter extends Stage {
 		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		
-		Label modelLabel = new Label("Models");
-		grid.add(modelLabel, 3, 1);
+		Label modelLabel = new Label("Models");	//Button added later because of DidacticMode check
 		
-		Button newModel = new Button("Create Model");
+		Button newModel = new Button("Create Model"); //Button added later because of DidacticMode check
 		newModel.setDisable(true);
-		grid.add(newModel, 3, 1);
 		GridPane.setHalignment(newModel, HPos.RIGHT);
 		
 		Label diagramLabel = new Label("Diagrams");
@@ -263,7 +263,7 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-//		grid.add(newDiagram, 4, 1);			
+		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -274,8 +274,7 @@ public class ControlCenter extends Stage {
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 		
-		modelLV.setPrefSize(250, 150);
-		grid.add(modelLV, 3, 2);
+		modelLV.setPrefSize(250, 150);	//added Later because of DidacticMode check
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		
@@ -284,8 +283,19 @@ public class ControlCenter extends Stage {
 		grid.add(diagramLV, 4, 2);
 
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
-		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
+		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());
+		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
+
+		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
 		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(loadModelDir, 2, 4);
+		grid.add(modelLabel, 3, 1);
+		grid.add(modelLV, 3, 2);
+		grid.add(newModel, 3, 1);
+
+
+
+}
 		Button howToStart = new Button("How to...");
 		howToStart.setOnAction(e -> {
 			HowToDialog d = new HowToDialog();
@@ -294,8 +304,6 @@ public class ControlCenter extends Stage {
 		grid.add(howToStart, 4, 4);
 //		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
-		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
-		grid.add(loadModelDir, 2, 4);
 		
 		return grid;
 	}

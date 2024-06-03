@@ -9,7 +9,8 @@ public enum UserProperty {
 	MODELS_DIR("modelsDir"),
 	RECENTLY_LOADED_MODEL_DIR("recentlyLoadedModelDir"),
 	APPLICATION_CLOSING_WARNING("applicationClosingWarning"),
-	RECENTLY_SAVED_MODEL_DIR("recentlySavedModelDir");
+	RECENTLY_SAVED_MODEL_DIR("recentlySavedModelDir"),
+	DIDACTIC_MODE("didacticMode");
 	
 	private String saveName; 
 	
