@@ -302,9 +302,6 @@ public class AutoMLMDialog extends Dialog {
 			}
 		});
 
-		System.err.println(list.length);
-		System.err.println(newValue);
-
 		// new path
 		File file = new File("AutoMLM\\ExampleModels\\" + list[0]);
 
