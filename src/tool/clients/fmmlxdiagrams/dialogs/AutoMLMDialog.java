@@ -122,7 +122,7 @@ public class AutoMLMDialog extends Dialog {
 			alert.showAndWait();
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -134,11 +134,11 @@ public class AutoMLMDialog extends Dialog {
 		String[] list = parentFile.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.contains(category);
+				String[] parts = name.split("_");
+				return category.equals(parts[1]);
 			}
 		});
 
-		// new path
 		String path = "AutoMLM\\ExampleModels\\" + list[0] + "\\" + model;
 		return path;
 	}
@@ -147,7 +147,8 @@ public class AutoMLMDialog extends Dialog {
 		String category = cmbPromotionCategory.getValue();
 		String model = cmbExampleModel.getValue();
 
-		if (!isInputValid(category, model)) return;
+		if (!isInputValid(category, model))
+			return;
 
 		if (model == "Use Current Model") {
 			// TODO promotion process from current model
@@ -157,9 +158,9 @@ public class AutoMLMDialog extends Dialog {
 			// sendToPython(path);
 			return;
 		}
-		
+
 		String path = getPath(category, model);
-		
+
 		String[] args = { category, path };
 		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROMOTE_DIAGRAM, args);
 		wrapper.execute();
@@ -192,18 +193,19 @@ public class AutoMLMDialog extends Dialog {
 		String category = cmbPromotionCategory.getValue();
 		String model = cmbExampleModel.getValue();
 
-		if (!isInputValid(category, model)) return;
+		if (!isInputValid(category, model))
+			return;
 
 		if (model == "Use Current Model") {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Diagram already open");
 			alert.setContentText("The current diaram is already open");
-			
+
 			// Display the alert
 			alert.showAndWait();
 		}
 
-		String path = getPath(category,model);
+		String path = getPath(category, model);
 
 		// load the model into the StartUpModelLoader
 		new StartupModelLoader().loadModelsFromPath(path);
@@ -294,9 +296,14 @@ public class AutoMLMDialog extends Dialog {
 		String[] list = parentFile.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.contains(newValue);
+				String[] parts = name.split("_");
+				return newValue.equals(parts[1]);
+
 			}
 		});
+
+		System.err.println(list.length);
+		System.err.println(newValue);
 
 		// new path
 		File file = new File("AutoMLM\\ExampleModels\\" + list[0]);
