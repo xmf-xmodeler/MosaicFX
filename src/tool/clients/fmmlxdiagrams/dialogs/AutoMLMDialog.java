@@ -239,22 +239,34 @@ public class AutoMLMDialog extends Dialog {
 
 	private String getProjectNameFromFile(String path) {
 		String[] args = { path };
+		try {
+			PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.GETPROJECTNAME, args);
+			wrapper.execute();
+			String projectName = (String) wrapper.getResponse();
+			return projectName;
+		} catch (Exception e) {
+			System.err.println("Der Projektname des files konnte nicht erkannt werden");
+			return "";
+		}
+		
 
-		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.GETPROJECTNAME, args);
-		wrapper.execute();
-		String projectName = (String) wrapper.getResponse();
-
-		return projectName;
+		
 	}
 
 	private String getDiagramNameFromFile(String path) {
 		String[] args = { path };
+		try {
+			PythonRequestWrapper wrapper2 = new PythonRequestWrapper(PythonFunction.GETDIAGRAMNAME, args);
+			wrapper2.execute();
+			String diagramName = (String) wrapper2.getResponse();
+			return diagramName;
+		} catch (Exception e) {
+			System.err.println("Der Projektname des files konnte nicht erkannt werden");
+			return "";
+		}
+		
 
-		PythonRequestWrapper wrapper2 = new PythonRequestWrapper(PythonFunction.GETDIAGRAMNAME, args);
-		wrapper2.execute();
-		String diagramName = (String) wrapper2.getResponse();
-
-		return diagramName;
+		
 
 	}
 
