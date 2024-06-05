@@ -59,7 +59,7 @@ public class AutoMLMDialog extends Dialog {
 
 		butAdjustPromotionOptions = new Button("Adjust Promotion Options");
 		butOpenInputModel = new Button("Open Input Model");
-		butPerfomModelLifting = new Button("Perform Model Lifting");
+		butPerfomModelLifting = new Button("Perform Model Deepening");
 
 		// style adaptments
 		lblPromotionCategory.setMaxWidth(Double.MAX_VALUE);
@@ -199,10 +199,11 @@ public class AutoMLMDialog extends Dialog {
 		if (model == "Use Current Model") {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Diagram already open");
-			alert.setContentText("The current diaram is already open");
+			alert.setContentText("The current diagram is already open");
 
 			// Display the alert
 			alert.showAndWait();
+			return;
 		}
 
 		String path = getPath(category, model);
@@ -270,8 +271,8 @@ public class AutoMLMDialog extends Dialog {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(10, 10, 10, 10));
-		grid.setMinWidth(600);
-		grid.setMaxWidth(600);
+		grid.setMinWidth(550);
+		grid.setMaxWidth(550);
 
 	}
 
