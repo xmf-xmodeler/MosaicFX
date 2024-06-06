@@ -709,7 +709,7 @@ public class FmmlxDiagramCommunicator {
 						(String) edgeInfoAsList.get(0), // id
 						(String) edgeInfoAsList.get(1), // startId
 						(String) edgeInfoAsList.get(2), // endId
-						(Integer) edgeInfoAsList.get(3), // parentId
+						(String) edgeInfoAsList.get(3), // parentId
 						listOfPoints, // points
 						startRegion, endRegion,
 						(String) edgeInfoAsList.get(5), // name

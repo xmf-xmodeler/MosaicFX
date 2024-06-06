@@ -226,6 +226,16 @@ public class ControlCenter extends Stage {
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
+		
+		Button renameProject = new Button("Rename Project");
+		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+		grid.add(renameProject, 2, 5);
+		GridPane.setHalignment(renameProject, HPos.LEFT);
+		
+		Button removeProject = new Button("Delete Project");
+		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+		grid.add(removeProject, 2, 6);
+		GridPane.setHalignment(removeProject, HPos.LEFT);
 
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
