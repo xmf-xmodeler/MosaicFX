@@ -35,6 +35,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
@@ -70,6 +71,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
 	public static final Font FONT;
 	private DiagramDisplayModel diagramViewToolBarModel;
+	private Stage stage;
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -250,6 +252,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	}
 
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
+
 
 	/* Setters for MouseMode */
 
@@ -1429,5 +1432,13 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 	public DiagramViewPane getViewPane() {
 		return viewPane;
+	}
+
+	public void setStage(Stage stage) {
+		this.stage = stage;		
+	}
+	
+	public Stage getStage() {
+		return this.stage;
 	}
 }

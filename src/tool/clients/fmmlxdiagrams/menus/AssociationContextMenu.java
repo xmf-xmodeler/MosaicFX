@@ -5,6 +5,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.xmodeler.XModeler;
 
 public class AssociationContextMenu extends ContextMenu {
 
@@ -42,5 +43,17 @@ public class AssociationContextMenu extends ContextMenu {
 		getItems().addAll(editItem, removeItem,
 				new SeparatorMenuItem(),
 				genSource2TargetGetterItem, genTarget2SourceGetterItem);
+		
+		if(XModeler.isAlphaMode()) {
+			if(association.isDependent()) {
+				MenuItem removeDependencyItem = new MenuItem("Remove Dependency");
+				removeDependencyItem.setOnAction(e -> actions.removeAssociationDependency(association));
+				getItems().add(removeDependencyItem);
+			} else {
+				MenuItem addDependencyItem = new MenuItem("Add Dependency");
+				addDependencyItem.setOnAction(e -> actions.addAssociationDependency(association));
+				getItems().add(addDependencyItem);
+			}
+		}
 	}
 }

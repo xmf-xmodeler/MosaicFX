@@ -1,9 +1,12 @@
 package tool.xmodeler.tool_introduction;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -65,7 +68,8 @@ public enum DiagramViewState {
 	public String getTaskDescritpion() {
 		String taskDescriptionPath = buildTaskDescriptionPath();
 		StringBuilder contentBuilder = new StringBuilder();
-		try (BufferedReader br = new BufferedReader(new FileReader(taskDescriptionPath, StandardCharsets.UTF_8))) {
+		try (Reader reader = new InputStreamReader(new FileInputStream(taskDescriptionPath), StandardCharsets.UTF_8)) {
+			BufferedReader br = new BufferedReader(reader);
 			String line;
 			while ((line = br.readLine()) != null) {
 				contentBuilder.append(line);

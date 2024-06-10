@@ -46,13 +46,16 @@ public class LevelBox extends HBox {
 	}
 
 	private void showExtendedDialog() {
+		Alert alert = 
 		new Alert(AlertType.INFORMATION, 
 			"This dialog for configuring contingent level classes has not been implmented yet. \n"
 			+ "However until then, the level can be entered manually into the level box: \n"
 			+ "n for any fixed level class\n"
 			+ "n-m for a contingent level class on levels n to m\n"
 			+ "n-? for a contingent level class on levels n or above", 
-		ButtonType.OK).showAndWait();
+		ButtonType.OK);
+		alert.setResizable(true);
+		alert.showAndWait();
 	}
 	
 	public void setLevelListener(LevelChangedListener e){

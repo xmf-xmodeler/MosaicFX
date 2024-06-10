@@ -35,6 +35,7 @@ import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import tool.xmodeler.tool_introduction.DiagramViewState;
 import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -714,7 +715,7 @@ public class FmmlxDiagramCommunicator {
 						(String) edgeInfoAsList.get(0), // id
 						(String) edgeInfoAsList.get(1), // startId
 						(String) edgeInfoAsList.get(2), // endId
-						(Integer) edgeInfoAsList.get(3), // parentId
+						(String) edgeInfoAsList.get(3), // parentId
 						listOfPoints, // points
 						startRegion, endRegion,
 						(String) edgeInfoAsList.get(5), // name
@@ -1648,9 +1649,9 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.sourcePath), new Value(aType.targetPath),
                 new Value(aType.sourceLevel.getMinLevel()), 
                 new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.sourceMult), 
                 new Value(aType.targetLevel.getMinLevel()), 
                 new Value(aType.targetLevel.getMaxLevel()),
-                new Value(aType.sourceMult), 
                 new Value(aType.targetMult)
                 };
 //        sendMessage("addAssociationType", message);
@@ -2224,6 +2225,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
 		// The update can only be achieved in a parallel thread as the actual size of the stage is
@@ -2237,17 +2239,11 @@ public class FmmlxDiagramCommunicator {
 		if (diagram.getViewPane().isIntroductionMode()) {
 			//finds task description pane and shows warning dialog before close
 			stage.setOnCloseRequest((e) -> {
-				for (Window window : Window.getWindows()) {
-					if (window instanceof Stage) {
-						Stage taskDescription = (Stage) window;
-						if ("Task Description".equals(taskDescription.getTitle())) {
-							((TaskDescriptionViewer) taskDescription).showWarningDialog(new WindowEvent(null, null));
-							return;
-						}
-					}
+				if (ToolIntroductionManager.isInitialized()) {
+					ToolIntroductionManager.getInstance().getDescriptionViewer().showWarningDialog(new WindowEvent(null, null));
+				return;
 				}
 			});
-
 		} else {
 			stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
 		}
@@ -2739,7 +2735,7 @@ public class FmmlxDiagramCommunicator {
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
-				//TODOD TS add logging, maybe throw exception
+				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
 				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
 				return;
@@ -2803,5 +2799,20 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setImportedPackages", new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(createValueArray(imports))});
+	}
+	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
+		Value[] message = new Value[]{
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd())};
+		sendMessage("removeAssociationDependency", message);
+		
+	}
+	public void addAssociationDependency(int diagramID, FmmlxAssociation assoc, String dependsOnName) {
+		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd()),
+			new Value(dependsOnName)};
+		sendMessage("addAssociationDependency", message);
 	}
 }

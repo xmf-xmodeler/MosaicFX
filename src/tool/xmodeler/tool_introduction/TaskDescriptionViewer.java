@@ -78,14 +78,10 @@ public class TaskDescriptionViewer extends Stage {
 	 * closed.
 	 */
 	private void closeToolIntoDiagramStage() {
-		for (Window window : Window.getWindows()) {
-			if (window instanceof Stage) {
-				Stage stage = (Stage) window;
-				if ("ToolIntroductionABC::ToolIntroductionDiagramXYZ".equals(stage.getTitle())) {
-					stage.close();
-					return;
-				}
-			}
+		Stage stage = ToolIntroductionManager.getDiagram().getStage();
+		if ("ToolIntroductionABC::ToolIntroductionDiagramXYZ".equals(stage.getTitle())) {
+			stage.close();
+			return;
 		}
 	}
 

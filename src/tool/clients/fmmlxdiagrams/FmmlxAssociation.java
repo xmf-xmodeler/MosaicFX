@@ -21,7 +21,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	private String accessNameEndToStart;
 	private Integer levelStart;
 	private Integer levelEnd;
-	private final Integer parentAssociationId;
+	private final String parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
 	private boolean sourceFromTargetVisible;
@@ -39,7 +39,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 			String path,
 			String startPath,
 			String endPath,
-			Integer parentAssociationId,
+			String parentAssociationId,
 			Vector<Point2D> points,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			String name,
@@ -74,16 +74,19 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		this.transitive = transitive;
 	}
 
-	public Integer getParentAssociationId() {
+	public String getParentAssociationId() {
 		return parentAssociationId;
 	}
 
-	@Override
-	public void layoutLabels(FmmlxDiagram diagram) {
+	@Override public void layoutLabels(FmmlxDiagram diagram) {
+		String text = name;
+		if(parentAssociationId != null && !"".equals(parentAssociationId)) {
+			text += " depends on " + parentAssociationId;
+		}
 		if( sourceNode == targetNode) {
-			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+			createLabel(text, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {
-			createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+			createLabel(text, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
@@ -310,5 +313,10 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 			}
 		}
 		return null;
+	}
+
+	public boolean isDependent() {
+		// TODO Auto-generated method stub
+		return !(parentAssociationId == null || "".equals(parentAssociationId));
 	}
 }
