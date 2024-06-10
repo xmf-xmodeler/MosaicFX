@@ -152,7 +152,7 @@ public class ControlCenterClient {
 		}
 	}
 	
-	public void removeProject(String projectPath) {
+	public static void removeProject(String projectPath) {
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("removeProject",1);
 		message.args[0] = new Value(projectPath);
 		WorkbenchClient.theClient().getHandler().raiseEvent(message);

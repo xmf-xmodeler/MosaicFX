@@ -70,6 +70,7 @@ public class TaskDescriptionViewer extends Stage {
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			closeToolIntoDiagramStage();
 			this.close();
+			ToolIntroductionManager.getInstance().stop();
 		}
 	}
 

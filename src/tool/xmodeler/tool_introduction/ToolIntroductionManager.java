@@ -4,6 +4,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenter;
+import tool.xmodeler.ControlCenterClient;
 import xos.Message;
 import xos.Value;
 
@@ -75,6 +76,7 @@ public class ToolIntroductionManager {
 	}
 	
 	public void stop() {
+		ControlCenterClient.removeProject(projectName);
 		instance = null;
 	}
 
