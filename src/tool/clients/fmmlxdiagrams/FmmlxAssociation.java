@@ -80,7 +80,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	@Override protected void layoutLabels(FmmlxDiagram diagram) {
 		String text = name;
 		if(parentAssociationId != null && !"".equals(parentAssociationId)) {
-			text += " extends " + parentAssociationId;
+			text += " depends on " + parentAssociationId;
 		}
 		if( sourceNode == targetNode) {
 			createLabel(text, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
@@ -297,5 +297,10 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	@Override
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
+	}
+
+	public boolean isDependent() {
+		// TODO Auto-generated method stub
+		return !(parentAssociationId == null || "".equals(parentAssociationId));
 	}
 }

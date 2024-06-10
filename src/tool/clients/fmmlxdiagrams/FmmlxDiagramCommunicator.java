@@ -2718,7 +2718,7 @@ public class FmmlxDiagramCommunicator {
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
-				//TODOD TS add logging, maybe throw exception
+				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
 				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
 				return;
@@ -2782,5 +2782,20 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setImportedPackages", new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(createValueArray(imports))});
+	}
+	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
+		Value[] message = new Value[]{
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd())};
+		sendMessage("removeAssociationDependency", message);
+		
+	}
+	public void addAssociationDependency(int diagramID, FmmlxAssociation assoc, String dependsOnName) {
+		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd()),
+			new Value(dependsOnName)};
+		sendMessage("addAssociationDependency", message);
 	}
 }

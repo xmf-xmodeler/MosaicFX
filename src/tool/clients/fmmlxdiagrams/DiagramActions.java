@@ -1404,4 +1404,18 @@ public class DiagramActions {
 			note.unhide(diagram);
 		}
 	}
+
+	public void removeAssociationDependency(FmmlxAssociation association) {
+		diagram.getComm().removeAssociationDependency(diagram.getID(), association);
+	}
+
+	public void addAssociationDependency(FmmlxAssociation association) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle("Add Association Dependency");
+		dialog.setHeaderText("depends on association name:");
+		 
+		Optional<String> result = dialog.showAndWait();
+
+		result.ifPresent(s -> diagram.getComm().addAssociationDependency(diagram.getID(), association, s));
+	}
 }
