@@ -341,7 +341,7 @@ public class DiagramActions {
 	public void addAutoMLMDialog() {
 		Platform.runLater(() -> {
 			AutoMLMDialog dlg = new AutoMLMDialog(diagram);
-			dlg.setTitle("AutoMLM Case Navigator Tool");
+			dlg.setTitle("AutoMLM");
 			dlg.showAndWait();
 		});
 	}
