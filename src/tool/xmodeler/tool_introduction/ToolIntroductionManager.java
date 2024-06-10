@@ -68,7 +68,9 @@ public class ToolIntroductionManager {
 
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		descriptionViewer.loadHtmlContent(DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion()); //loads first task description
+		String description = DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion();
+		descriptionViewer.loadHtmlContent(description); //loads first task description
+		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();
 	}
 	
@@ -88,7 +90,10 @@ public class ToolIntroductionManager {
 		if (new SucessCondition(diagram).checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			descriptionViewer.loadHtmlContent(diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+			String nextDescription = (diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+			descriptionViewer.loadHtmlContent(nextDescription);
+			descriptionViewer.getDescriptionHistory().push(nextDescription);
+			descriptionViewer.updateGui();
 			if (diagram.getViewPane().getDiagramViewState().getPrecedence() == 10) {
 				//this time is needed to survive the user feedback
 				try {
@@ -96,7 +101,7 @@ public class ToolIntroductionManager {
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
-				descriptionViewer.exchangeCheckButton();
+				descriptionViewer.alterCheckButtonText();
 			}
 		} else {
 			descriptionViewer.giveUserFeedback(false);

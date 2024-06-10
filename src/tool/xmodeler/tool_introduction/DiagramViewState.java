@@ -6,8 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.management.RuntimeErrorException;
-
 /**
  * This enum is used in the DiagramViewIntroduction. There different states of
  * the diagramView are needed to help new users to deal with the XModeler. The

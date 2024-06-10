@@ -1,63 +1,53 @@
 package tool.xmodeler.tool_introduction;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import tool.xmodeler.XModeler;
 
 public class TaskDescriptionViewer extends Stage {
 
 	private final WebView webView = new WebView();
-	private Button checkButton;
-	private final BorderPane root;
+	private final TaskDescriptionHistory descriptionHistory = new TaskDescriptionHistory(this);
+	private Button checkButton = createButton("Check Condition", (a) -> ToolIntroductionManager.getInstance().checkSucessCondition());
+	private final Button backwardsButton = createButton("< Back", (a) -> descriptionHistory.navigateBack());
+	private final Button forwardsButton = createButton("Forward >", (a) -> descriptionHistory.navigateForward());
+	private final ToolBar buttonBar = new ToolBar();
 
 	public TaskDescriptionViewer() {
 
 		setOnCloseRequest(this::showWarningDialog);
-
-		checkButton = buildCheckButton();
-
-		root = new BorderPane();
-		root.setCenter(webView);
-		root.setBottom(checkButton);
-
-		Scene scene = new Scene(root, 800, 600);
-
 		setTitle("Task Description");
-		setScene(scene);
+
+		BorderPane root = new BorderPane();
 		webView.setContextMenuEnabled(false);
+		root.setCenter(webView);
+		root.setBottom(buttonBar);
+		buttonBar.getItems().add(checkButton);
+		Scene scene = new Scene(root, 800, 600);
+		setScene(scene);
+
 		setCustomCssStyleSheet();
 	}
 
 	private void setCustomCssStyleSheet() {
 		String customCssPath = "resources/css/taskDescription.css";
-	    File customCssFile = new File(customCssPath);    
-        webView.getEngine().setUserStyleSheetLocation("file:"+ customCssFile.getAbsolutePath());
-	}
-
-	private Button buildCheckButton() {
-		Button button = new Button("Check Condition");
-		button.setOnAction((a) -> {
-			ToolIntroductionManager.getInstance().checkSucessCondition();
-		});
-		return button;
-
+		File customCssFile = new File(customCssPath);
+		webView.getEngine().setUserStyleSheetLocation("file:" + customCssFile.getAbsolutePath());
 	}
 
 	/**
@@ -137,19 +127,20 @@ public class TaskDescriptionViewer extends Stage {
 				// Quick fix. After the coloring the button needs to be set back to default
 				// style. I did not find a good solution.
 				// setStyle(null) and setBackground(null) lead to bad results.
-				root.getChildren().remove(checkButton);
-				checkButton = buildCheckButton();
-				root.setBottom(checkButton);
+				buttonBar.getItems().remove(checkButton);
+				checkButton = createButton("Check Condition", (a) -> ToolIntroductionManager.getInstance().checkSucessCondition());
+				buttonBar.getItems().add(checkButton);
 			});
 		};
 		Thread thread = new Thread(task);
 		thread.start();
 	}
-	
+
 	/**
-	 * This function is used to change the check Button in the last stage to the finish button
+	 * This function is used to change the check Button in the last stage to the
+	 * finish button
 	 */
-	public void exchangeCheckButton() {
+	public void alterCheckButtonText() {
 		Platform.runLater(() -> {
 			checkButton.setText("Finish");
 			checkButton.setOnAction((a) -> {
@@ -157,6 +148,68 @@ public class TaskDescriptionViewer extends Stage {
 				this.close();
 				ToolIntroductionManager.getInstance().stop();
 			});
-		});		
+		});
+	}
+
+	/**
+	 * Matches GUI to the state of the message history. Depending on this state
+	 * buttons are shown or not. Some buttons change the label in dependence to this
+	 * state. Do not alter checking order because it will change the logic.
+	 */
+	public void updateGui() {
+		updateBackwardsButton();
+		exchangeCheckButton();
+	}
+
+	/** In case the user navigated back this function will exchange the checkButton with the forward button. 
+	 * 
+	 */
+	private void exchangeCheckButton() {
+		if (descriptionHistory.isForwardNavigable() && !isForwardsButtonContained()) {
+			buttonBar.getItems().remove(checkButton);
+			buttonBar.getItems().add(forwardsButton);
+			return;
+		}
+		if (!descriptionHistory.isForwardNavigable() && isForwardsButtonContained()) {
+			buttonBar.getItems().remove(forwardsButton);
+			buttonBar.getItems().add(checkButton);
+		}	
+	}
+
+	/**
+	 * Adds backwards button when there is a history. If you navigate back until there is no more element to recall the button is removed.
+	 */
+	private void updateBackwardsButton() {
+		if (descriptionHistory.size() == 1) {
+			buttonBar.getItems().remove(backwardsButton);
+			return;
+		}
+		if (descriptionHistory.isBackwardNavigable() && !isBackwardsButtonContained()) {
+			buttonBar.getItems().add(0, backwardsButton);
+		}
+	}
+
+	/**
+	 * @return true if backwards button is item of buttonBar
+	 */
+	private boolean isBackwardsButtonContained() {
+		return buttonBar.getItems().contains(backwardsButton);
+	}
+	
+	/**
+	 * @return true if forward button is item of buttonBar
+	 */
+	private boolean isForwardsButtonContained() {
+		return buttonBar.getItems().contains(forwardsButton);
+	}
+
+	private Button createButton(String text, EventHandler<ActionEvent> handler) {
+		Button button = new Button(text);
+		button.setOnAction(handler);
+		return button;
+	}
+
+	public TaskDescriptionHistory getDescriptionHistory() {
+		return descriptionHistory;
 	}
 }
