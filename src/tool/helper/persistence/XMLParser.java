@@ -30,8 +30,8 @@ import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
 /**
@@ -57,7 +57,9 @@ public class XMLParser {
 		if (PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString()) != null) {
 			String recentlyOpendDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString());
 			File recentlyOpendFile = new File(recentlyOpendDirPath);
-			chooser.setInitialDirectory(recentlyOpendFile.getParentFile());
+			if (recentlyOpendFile.exists()) {
+				chooser.setInitialDirectory(recentlyOpendFile.getParentFile());				
+			}
 		}
 		// choose
 		Optional<File> inputFile = Optional.of(chooser.showOpenDialog(new Stage()));
@@ -227,7 +229,11 @@ public class XMLParser {
 
 	private void buildDiagram(Element diagram) {
 		String diagramName = diagram.getAttribute(XMLAttributes.NAME.getName());
-		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, false, 
+		boolean umlMode = false;
+		if(!diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals(null) || !diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals("")) {	//making sure the attribute exists in the xml
+		umlMode = Boolean.parseBoolean(diagram.getAttribute(XMLAttributes.UML_Mode.getName()));
+		}
+		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, umlMode, 
 				newDiagramId -> sendDiagramDataToXMF(newDiagramId, diagram));
 	}
 	

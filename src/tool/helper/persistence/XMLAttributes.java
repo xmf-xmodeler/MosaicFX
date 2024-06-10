@@ -15,6 +15,7 @@ public enum XMLAttributes {
 	X_COORDINATE("xCoordinate"),
 	Y_COORDINATE("yCoordinate"),
 	NAME("name"),
+	UML_Mode("umlMode"),
 	LOCAL_ID("localID"),
 	OWNER_ID("ownerID"),
 	XX("xx"),

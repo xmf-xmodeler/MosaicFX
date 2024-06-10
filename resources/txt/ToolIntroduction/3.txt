@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieShowing Class</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content">
+        <h2>3. MovieShowing Class</h2>
+        <p>Movies are shown to users in a showing that happens on a particular date.</p>
+        <p>Add another class with the name "MovieShowing". This class should have an attribute "showDate" of the type Date.</p>
+    </div>
+</body>
+</html>

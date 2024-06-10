@@ -17,9 +17,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodePath extends NodeBaseElement{
@@ -116,7 +116,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagramView) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();

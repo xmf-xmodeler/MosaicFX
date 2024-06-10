@@ -20,13 +20,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramInfo;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.clients.fmmlxdiagrams.ModelActionsList;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.xmodeler.XModeler;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 
 /**
  * This class is used to create an XML representation of a package.
@@ -37,14 +39,31 @@ public class XMLCreator {
 	private Element root;
 	private static final int EXPORT_VERSION = 4;
 	private String packagePath;
+	private FmmlxDiagram currentDiagram;
+
 	
-	public void createAndSaveXMLRepresentation(String packagePath) {
+	public void createAndSaveXMLRepresentation(String packagePath, AbstractPackageViewer diagram) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
+		currentDiagram = (FmmlxDiagram) diagram;
 		// calls save operation after representation is build
 		getData(packagePath, onDocumentReturned -> {saveToFile(doc);});
 	}
 	
+	/**
+	 * Return an XML representation of an model. The representation can only be used inside the ReturnCall, that is defined in the signature
+	 * 
+	 * @param packagePath of the diagram that should be represented as XML
+	 * @param onDocumentCreated return call, that will give back the document. Any action can be performed on the doc
+	 * @param diagram used to check if a diagram is in umlMode
+	 */
+	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated, AbstractPackageViewer diagram) {
+		this.packagePath = packagePath;
+		Document doc = initXML();
+		// calls save operation after representation is build
+		getData(packagePath, onDocumentReturned -> {onDocumentCreated.run(doc);});
+	}
+
 	private void saveToFile(Document doc) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Choose save location");
@@ -342,6 +361,9 @@ public class XMLCreator {
 	private Element createDiagramElement(DiagramInfo diagramInfo, Element diagrams) {
 		Element diagram = XMLUtil.createChildElement(diagrams, XMLTags.DIAGRAM.getName());
 		diagram.setAttribute(XMLAttributes.NAME.getName(), diagramInfo.getDiagramName());
+		if(currentDiagram!=null) { 	//just here to preven crashes. Maybe not overloading the method but just changing the signature makes more sense.
+			diagram.setAttribute("umlMode", currentDiagram.isUMLMode()+"");	//should always be true but cleaner to do it this way.
+	}
 		XMLUtil.createChildElement(diagram, XMLTags.INSTANCES.getName());
 		return diagram;
 	}

@@ -14,8 +14,8 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup extends NodeElement {
@@ -66,7 +66,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagram) {
 		for(NodeElement n : new Vector<>(nodeElements)) {
 			if(n.isHit(mouseX, mouseY, diagram)) return true;
 		}
@@ -74,7 +74,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram) {
 		NodeElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
 			 hitLabel =  e.getHitElement(mouse, g, currentTransform, diagram);
@@ -84,7 +84,7 @@ public class NodeGroup extends NodeElement {
 	}
 	
 	@Override
-	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram) {
 		Action action = null;
 		for(NodeElement e : nodeElements) if(action == null) {
 			action =  e.getAction(mouse, g, currentTransform, diagram);

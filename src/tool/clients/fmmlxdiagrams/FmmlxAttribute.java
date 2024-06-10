@@ -64,8 +64,4 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		return name;
 		
 	}
-//
-//	public void setMultiplicity(Multiplicity multiplicity) {
-//		this.multiplicity = multiplicity;
-//	}
 }

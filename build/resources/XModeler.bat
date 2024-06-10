@@ -1,3 +1,4 @@
+set XMODELER_STAGE=dev
 SETLOCAL EnableDelayedExpansion
 for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do @set v=%%g
 @set version=!v:"=! 

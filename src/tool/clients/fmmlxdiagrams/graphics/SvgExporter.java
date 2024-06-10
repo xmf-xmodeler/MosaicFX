@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlCreator;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.helper.persistence.SerializerConstant;

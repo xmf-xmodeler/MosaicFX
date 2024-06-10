@@ -5,22 +5,19 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.xmodeler.XModeler;
 
 public class DefaultContextMenu extends ContextMenu {
 
-	public DefaultContextMenu(DiagramViewPane view) {
+	public DefaultContextMenu(DiagramCanvas view) {
 		FmmlxDiagram diagram = view.getDiagram();
 		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
 
-		Menu addMenu = new Menu("Add");
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
-		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
+		Menu addMenu = buildAddMenu(view, diagram, actions);
 
 		/*TS 2023-03-29: This code block is commented out because the assumption is, that the functionality is right now not used
 		 * 
@@ -49,10 +46,28 @@ public class DefaultContextMenu extends ContextMenu {
 
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
-		
-		getItems().addAll(addMenu, searchMenu, unhideItem, enumerationMenu, new SeparatorMenuItem());
-		if(XModeler.isAlphaMode()) {
-			getItems().add(addAssocType);
+			
+		addMenues(diagram, addMenu, searchMenu, unhideItem, enumerationMenu, addAssocType);
+	}
+
+	private Menu buildAddMenu(DiagramCanvas view, FmmlxDiagram diagram, DiagramActions actions) {
+		Menu addMenu = new Menu("Add");
+		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+		}
+		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
+		return addMenu;
+	}
+
+	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
+			Menu enumerationMenu, MenuItem addAssocType) {
+		getItems().addAll(addMenu, searchMenu, unhideItem);
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
+			getItems().addAll(enumerationMenu);			
+		}
+		if (XModeler.isAlphaMode()) {
+			getItems().addAll(new SeparatorMenuItem(), addAssocType);
 		}
 	}
 }

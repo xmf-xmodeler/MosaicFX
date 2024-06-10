@@ -8,6 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class DelegationEdge extends Edge<FmmlxObject> {
 
@@ -24,7 +25,7 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	public void layoutLabels(FmmlxDiagram diagram) {
 		createLabel(""+level, 2, Anchor.TARGET_LEVEL, showChangeLevelDialog, Color.WHITE, getPrimaryColor(), diagram);
 
 		layoutingFinishedSuccesfully = true;

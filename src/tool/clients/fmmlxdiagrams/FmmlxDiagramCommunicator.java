@@ -23,13 +23,19 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
+import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -1554,7 +1560,6 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassLevel", message);
     }
 
-
     public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -2108,7 +2113,7 @@ public class FmmlxDiagramCommunicator {
 
     @Deprecated // use async below
     @SuppressWarnings("unchecked")
-    public ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
+    private ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new ModelActionsList(responseContent);
@@ -2220,6 +2225,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
 		// The update can only be achieved in a parallel thread as the actual size of the stage is
@@ -2230,7 +2236,17 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
+		if (diagram.getViewPane().isIntroductionMode()) {
+			//finds task description pane and shows warning dialog before close
+			stage.setOnCloseRequest((e) -> {
+				if (ToolIntroductionManager.isInitialized()) {
+					ToolIntroductionManager.getInstance().getDescriptionViewer().showWarningDialog(new WindowEvent(null, null));
+				return;
+				}
+			});
+		} else {
+			stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
+		}
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
@@ -2258,8 +2274,9 @@ public class FmmlxDiagramCommunicator {
 	public static class DiagramInfo {
 		public final Integer id;
 		public final String diagramName;
+	//	public final boolean umlMode;
 
-		public DiagramInfo(Integer id, String diagramName) {
+		public DiagramInfo(Integer id, String diagramName /*, boolean umlMode*/) {
 			super();
 			this.id = id;
 			this.diagramName = diagramName;

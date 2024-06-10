@@ -10,6 +10,7 @@
 # user
 /user_properties.xml
 /user.properties
+user.properties
 /ini3.txt
 
 # /doc/old/RequirementsAndSpecifications/.gitignore
@@ -22,6 +23,8 @@
 
 # /build/.gitignore
 /build/output/
+/build/build.properties
+
 
 # Test
 /XModeler2.launch

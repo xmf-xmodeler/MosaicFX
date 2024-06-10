@@ -11,6 +11,8 @@ import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
+
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.GraphicalMappingInfo;
 import tool.clients.fmmlxdiagrams.graphics.View;
 
@@ -42,6 +44,10 @@ public abstract class AbstractPackageViewer {
 		this.packagePath=packagePath;
 		this.comm = comm;
 		actions = new DiagramActions(this);
+	}
+	
+	public boolean isUMLMode() {
+		return umlMode;
 	}
 
 	public FmmlxDiagramCommunicator getComm() {
@@ -133,7 +139,7 @@ public abstract class AbstractPackageViewer {
 		return fetchingData;
 	}
 
-	protected void fetchDiagramData( ReturnCall<Object> onDataFetched ) {
+	public void fetchDiagramData( ReturnCall<Object> onDataFetched ) {
 		final boolean TIMER = false;
 		final long START = System.currentTimeMillis();
 		
@@ -416,6 +422,10 @@ public abstract class AbstractPackageViewer {
 		return packagePath;
 	}
 	
+	public final String getProjectName() {
+		return getPackagePath().substring(6);
+	}
+	
 	public final Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge<?> e : edges)
@@ -580,5 +590,59 @@ public abstract class AbstractPackageViewer {
 		nodes.addAll(objects.values());
 		nodes.addAll(notes);
 		return nodes;
+	}
+	
+	/**
+	 * Searches in edges for edges of the type FmmlxAssociation
+	 * @return all FmmlxAssociations associates with this AbstractpackageViewer
+	 */
+	public Vector<FmmlxAssociation> getFmmlxAssociations() {
+		Vector<FmmlxAssociation> assocs = new Vector<>();
+		for (Edge<?> edge : edges) {
+			if (edge instanceof FmmlxAssociation) {
+				assocs.add((FmmlxAssociation) edge);
+			}
+		}
+		return assocs;
+	}
+	
+	public FmmlxObject getObjectByName(String name) {
+		String objPath = getPackagePath() + "::" + name;
+		try {
+			return getObjectByPath(objPath);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Vector<FmmlxLink> getFmmlxLinks() {
+		Vector<FmmlxLink> links = new Vector<>();
+		for (Edge<?> edge : edges) {
+			if (edge instanceof FmmlxLink) {
+				links.add((FmmlxLink) edge);
+			}
+		}
+		return links;
+	}
+	
+	public String getClassPath(String className) {
+		StringBuilder sb = new StringBuilder("Root::");
+		sb.append(getProjectName());
+		sb.append("::");
+		sb.append(className);
+		return sb.toString();
+	}
+	
+	public AssociationType getDefaultAssociation() {
+		for (AssociationType type : getAssociationTypes()) {
+			if (type.getDisplayName().equals("DefaultAssociation")) {
+				return type;
+			}
+		}
+		return null;
+	}
+	
+	public Vector<Issue> getIssues() {
+		return issues;		
 	}
 }

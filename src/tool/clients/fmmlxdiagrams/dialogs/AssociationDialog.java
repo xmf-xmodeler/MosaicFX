@@ -136,6 +136,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	}
 
 	private void layoutContent() {
+
 		if(editMode) {
 			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.editAssociation);
 		} else if (!editMode){
@@ -162,29 +163,11 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		targetGetterField = new OptionalTextField("", false);
 		targetSetterField = new OptionalTextField("", false);
 		
-		/*newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.source = newValue;
-				setLevelList(newInstLevelSource, source);
-				setIdentifier(newIdentifierSource, source.getName());
-			}
-		});
-		newTypeTarget.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.target = newValue;
-				setLevelList(newInstLevelTarget, target);
-				setIdentifier(newIdentifierTarget, newValue.getName());
-			}
-		});*/
 		newInstLevelSource = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelSource.setEditable(true);
-//		newInstLevelSource.getSelectionModel().select(0);
 		newInstLevelTarget = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelTarget.setEditable(true);
-//		newInstLevelTarget.getSelectionModel().select(0);
 		newDisplayName = new TextField();
-//		newDisplayNameTarget = new TextField();
-//		newDisplayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		newIdentifierSource = new TextField();
 		newIdentifierTarget = new TextField();
 		
@@ -211,9 +194,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.getSelectionModel().selectFirst();
-//		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//			if (newValue != null) {				
-//				selectedAssociation = newValue;
+
 		if(association!=null) {
 			FmmlxObject startNode = association.getSourceNode();
 			FmmlxObject targetNode = association.getTargetNode();
@@ -253,7 +234,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			});
 			
 			multTargetToSourceBox.setMultiplicity(new Multiplicity(0, -1, false, false, false));
-			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);
+			if(!diagram.isUMLMode()) {
+			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);}
+			else {
+			multSourceToTargetBox.setMultiplicity(new Multiplicity(0, -1, false, false, false));}
 		}
 		
 		Vector<AssociationType> assocTypeItems = new Vector<>();
@@ -264,8 +248,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
 
-
-		labels.add(new Label("Association Type"));
+		if(!diagram.isUMLMode()) {	//This creates a little redundancy but is overall still cleaner than having a dozen if statements. Putting it in a seperate function would also be messy because all the variable would have to be given as parameters
+		labels.add(new Label("Association Type"));		
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
 		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
@@ -279,7 +263,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		labels.add(new Label("Generate Getter"));
 		labels.add(new Label("Generate Setter"));
 		
-		sourceNodes.add(associationTypeBox);
+		sourceNodes.add(associationTypeBox);	
 		sourceNodes.add(newDisplayName);
 		sourceNodes.add(selectedObject);
 		sourceNodes.add(selectAssociationComboBox);
@@ -292,10 +276,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceNodes.add(sourceVisibleFromTargetBox);
 		sourceNodes.add(sourceGetterField);
 		sourceNodes.add(sourceSetterField);
-//		sourceNodes.add(symmetricBox);
-//		sourceNodes.add(transitiveBox);
 		
-		targetNodes.add(new Label(" "));
+		targetNodes.add(new Label(" "));	
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
@@ -308,17 +290,35 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		targetNodes.add(targetVisibleFromSourceBox);
 		targetNodes.add(targetGetterField);
 		targetNodes.add(targetSetterField);
+		}
+		else {
+				labels.add(new Label(LabelAndHeaderTitle.displayName));
+				labels.add(new Label(" "));
+				labels.add(new Label(" "));
+				labels.add(new Label(LabelAndHeaderTitle.type));
+				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+					
+				sourceNodes.add(newDisplayName);
+				sourceNodes.add(new Label(" "));
+				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
+				sourceNodes.add(newTypeSource);
+				sourceNodes.add(multTargetToSourceBox);
+//				sourceNodes.add(symmetricBox);
+//				sourceNodes.add(transitiveBox);
+					
+				targetNodes.add(new Label(" "));
+				targetNodes.add(new Label(" "));
+				targetNodes.add(new Label (LabelAndHeaderTitle.end));
+				targetNodes.add(newTypeTarget);
+				targetNodes.add(multSourceToTargetBox);
+		}
 
 		
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
-		
 	}
-	
-	
-
-	
+		
 
 	private boolean validateUserInput() {
 		 if (newTypeSource.getSelectionModel().getSelectedItem()==null) {
@@ -339,14 +339,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-			}  else if (!AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
+			}  else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel().getMinLevel()-1));
 			return false;
-			} else if (!AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
+			} else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel().getMinLevel()-1));
 			return false;
 			} 
-		}else {
+		}else if (!diagram.isUMLMode()) {		//modified to else if to include umlMode
 			  if (!AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
 					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel().getMinLevel()-1));
 					return false;
@@ -370,7 +370,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierTarget() {
 		String name = newIdentifierTarget.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
@@ -382,7 +382,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierSource() {
 		String name = newIdentifierSource.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {	//modified to check for umlMode
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
@@ -394,7 +394,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewDisplayName() {
 		String name = newDisplayName.getText();
 
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {
@@ -425,6 +425,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				if(!diagram.isUMLMode()) {
 				return new Result(association,
 						source,
 						target,
@@ -445,6 +446,29 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 						targetGetterField.getText().orElse(null),
 						targetSetterField.getText().orElse(null)
 				);
+				}
+				else {
+					return new Result(association,
+							source,
+							target,
+							0,
+							0,
+							newDisplayName.getText(),
+							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
+							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							source.getName().toLowerCase() + newDisplayName.getText(),
+							multTargetToSourceBox.getMultiplicity(),
+							multSourceToTargetBox.getMultiplicity(),
+							true,	
+							true,	//both visibilities true as is default in UML
+							false,
+							false,
+							sourceGetterField.getText().orElse(null),
+							sourceSetterField.getText().orElse(null),
+							targetGetterField.getText().orElse(null),
+							targetSetterField.getText().orElse(null)
+							);
+				}
 			}
 			return null;
 		});		

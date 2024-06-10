@@ -10,8 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public abstract class NodeBaseElement extends NodeElement {
 	
@@ -29,12 +29,12 @@ public abstract class NodeBaseElement extends NodeElement {
 		this.styleDeclaration = null;
 	}
 
-	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
 	
-	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this.action;
 		return null;

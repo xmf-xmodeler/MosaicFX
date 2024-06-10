@@ -70,9 +70,13 @@ public class Multiplicity {
 			new Value(ordered),
 			new Value(duplicates)};
 	}
-
-
-
-
+	
+	/**
+	 * Checks for given input if the multiplicity is equal to the values.
+	 * For unbounded max use 2147483647
+	 * @return true if the Multiplicity has the same boarders
+	 */
+	public boolean checkForEquality(int min, int max) {
+		return this.min == min && this.max == max;
+	}
 }
-
