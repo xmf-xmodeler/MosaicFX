@@ -24,6 +24,7 @@ import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
+import tool.xmodeler.XModeler;
 
 public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 
@@ -249,47 +250,53 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		targetNodes = new ArrayList<>();
 
 		if(!diagram.isUMLMode()) {	//This creates a little redundancy but is overall still cleaner than having a dozen if statements. Putting it in a seperate function would also be messy because all the variable would have to be given as parameters
-		labels.add(new Label("Association Type"));		
-		labels.add(new Label(LabelAndHeaderTitle.displayName));
-		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
-		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
-		labels.add(new Label(" "));
-		labels.add(new Label(" "));
-		labels.add(new Label(LabelAndHeaderTitle.type));
-		labels.add(new Label(LabelAndHeaderTitle.instLevel));
-		labels.add(new Label(LabelAndHeaderTitle.identifier));
-		labels.add(new Label(LabelAndHeaderTitle.multiplicity));
-		labels.add(new Label("Visibility"));
-		labels.add(new Label("Generate Getter"));
-		labels.add(new Label("Generate Setter"));
-		
-		sourceNodes.add(associationTypeBox);	
-		sourceNodes.add(newDisplayName);
-		sourceNodes.add(selectedObject);
-		sourceNodes.add(selectAssociationComboBox);
-		sourceNodes.add(new Label(" "));
-		sourceNodes.add(new Label(LabelAndHeaderTitle.start));
-		sourceNodes.add(newTypeSource);
-		sourceNodes.add(newInstLevelSource);
-		sourceNodes.add(newIdentifierSource);
-		sourceNodes.add(multTargetToSourceBox);
-		sourceNodes.add(sourceVisibleFromTargetBox);
-		sourceNodes.add(sourceGetterField);
-		sourceNodes.add(sourceSetterField);
-		
-		targetNodes.add(new Label(" "));	
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label (LabelAndHeaderTitle.end));
-		targetNodes.add(newTypeTarget);
-		targetNodes.add(newInstLevelTarget);
-		targetNodes.add(newIdentifierTarget);
-		targetNodes.add(multSourceToTargetBox);
-		targetNodes.add(targetVisibleFromSourceBox);
-		targetNodes.add(targetGetterField);
-		targetNodes.add(targetSetterField);
+			labels.add(new Label("Association Type"));		
+			labels.add(new Label(LabelAndHeaderTitle.displayName));
+			labels.add(new Label(LabelAndHeaderTitle.selectedObject));
+			labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
+			labels.add(new Label(" "));
+			labels.add(new Label(" "));
+			labels.add(new Label(LabelAndHeaderTitle.type));
+			labels.add(new Label(LabelAndHeaderTitle.instLevel));
+			labels.add(new Label(LabelAndHeaderTitle.identifier));
+			labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+			labels.add(new Label("Visibility"));
+			if(XModeler.isAlphaMode()) {
+				labels.add(new Label("Generate Getter"));
+				labels.add(new Label("Generate Setter"));
+			}
+			
+			sourceNodes.add(associationTypeBox);	
+			sourceNodes.add(newDisplayName);
+			sourceNodes.add(selectedObject);
+			sourceNodes.add(selectAssociationComboBox);
+			sourceNodes.add(new Label(" "));
+			sourceNodes.add(new Label(LabelAndHeaderTitle.start));
+			sourceNodes.add(newTypeSource);
+			sourceNodes.add(newInstLevelSource);
+			sourceNodes.add(newIdentifierSource);
+			sourceNodes.add(multTargetToSourceBox);
+			sourceNodes.add(sourceVisibleFromTargetBox);
+			if(XModeler.isAlphaMode()) {
+				sourceNodes.add(sourceGetterField);
+				sourceNodes.add(sourceSetterField);
+			}
+			
+			targetNodes.add(new Label(" "));	
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label (LabelAndHeaderTitle.end));
+			targetNodes.add(newTypeTarget);
+			targetNodes.add(newInstLevelTarget);
+			targetNodes.add(newIdentifierTarget);
+			targetNodes.add(multSourceToTargetBox);
+			targetNodes.add(targetVisibleFromSourceBox);
+			if(XModeler.isAlphaMode()) {
+				targetNodes.add(targetGetterField);
+				targetNodes.add(targetSetterField);
+			}
 		}
 		else {
 				labels.add(new Label(LabelAndHeaderTitle.displayName));
