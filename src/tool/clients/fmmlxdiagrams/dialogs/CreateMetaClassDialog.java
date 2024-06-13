@@ -76,17 +76,17 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		grid.add(nameLabel, 0, 0);
 		grid.add(nameTextField, 1, 0);
 
-		if(!diagram.isUMLMode()) {	//hidden for UMLMode
+		if (!diagram.isUMLMode()) { // hidden for UMLMode
 			grid.add(levelLabel, 0, 1);
 			grid.add(levelComboBox, 1, 1);
 		}
-		
+
 		grid.add(abstractLabel, 0, 2);
 		grid.add(abstractCheckbox, 1, 2);
 		
-		if(!diagram.isUMLMode()) {	//hidden for UMLMode
-		grid.add(singletonLabel, 0, 3);
-		grid.add(singletonCheckbox, 1, 3);
+		if (!diagram.isUMLMode()) { // hidden for UMLMode
+			grid.add(singletonLabel, 0, 3);
+			grid.add(singletonCheckbox, 1, 3);
 		}
 		
 		grid.add(parentLabel, 0, 4);
