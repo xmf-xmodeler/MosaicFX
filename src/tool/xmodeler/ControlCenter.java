@@ -23,6 +23,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -32,6 +33,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -234,15 +236,15 @@ public class ControlCenter extends Stage {
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
 		
-		Button renameProject = new Button("Rename Project");
-		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-		grid.add(renameProject, 2, 5);
-		GridPane.setHalignment(renameProject, HPos.LEFT);
-		
-		Button removeProject = new Button("Delete Project");
-		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-		grid.add(removeProject, 2, 6);
-		GridPane.setHalignment(removeProject, HPos.LEFT);
+//		Button renameProject = new Button("Rename Project");
+//		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(renameProject, 2, 5);
+//		GridPane.setHalignment(renameProject, HPos.LEFT);
+//		
+//		Button removeProject = new Button("Delete Project");
+//		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(removeProject, 2, 6);
+//		GridPane.setHalignment(removeProject, HPos.LEFT);
 
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
@@ -288,7 +290,7 @@ public class ControlCenter extends Stage {
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		
-		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
+		diagramLV.setOnMouseClicked(me -> handleClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 
@@ -301,19 +303,18 @@ public class ControlCenter extends Stage {
 		grid.add(loadModelDir, 2, 4);
 		grid.add(modelLabel, 3, 1);
 		grid.add(modelLV, 3, 2);
-		grid.add(newModel, 3, 1);
-
-
-
-}
-		Button howToStart = new Button("How to...");
-		howToStart.setOnAction(e -> {
-			HowToDialog d = new HowToDialog();
-			d.showAndWait();
-		});		
-		grid.add(howToStart, 4, 4);
-//		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(newModel, 3, 1);}
 		
+		Button howToStart = new Button("How to...");
+		if(XModeler.isAlphaMode()) {
+			howToStart.setOnAction(e -> {
+				HowToDialog d = new HowToDialog();
+				d.showAndWait();
+			});
+			grid.add(howToStart, 4, 4);
+		}		
+		
+//		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
 		return grid;
 	}
@@ -324,15 +325,15 @@ public class ControlCenter extends Stage {
 		return "diagram" + i;
 	}
 
-	private void handelClickOnDiagramListView(MouseEvent me) {
+	private void handleClickOnDiagramListView(MouseEvent me) {
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if(selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 				if(selectedModelString != null) {
 					FmmlxDiagramCommunicator.getCommunicator().openDiagram(selectedModelString, selectedDiagramString);
-		       }
-		   }
+		        }
+		    }
 		}
 	}
 
@@ -404,8 +405,8 @@ public class ControlCenter extends Stage {
 		}
 
 		@Override
-		public TreeCell<String> call(TreeView<String> p){
-			return new TreeCell<String>() {
+		public TreeCellWithMenu<String> call(TreeView<String> p){
+			return new TreeCellWithMenu<String>() {
 				@Override
 				public void updateItem(String item, boolean empty) {
 					super.updateItem(item, empty);
@@ -483,5 +484,43 @@ public class ControlCenter extends Stage {
 			diagramLV.getItems().clear();
 			diagramLV.getItems().addAll(vec);
 		});
+	}
+	
+	private class TreeCellWithMenu<Type> extends TextFieldTreeCell<Type> {
+
+	    ContextMenu menu;
+
+	    public TreeCellWithMenu() {
+	        //ContextMenu with one entry	    	
+	    	MenuItem renameProject = new MenuItem("Rename Project");
+			renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+			
+			MenuItem removeProject = new MenuItem("Delete Project");
+			removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+			
+	        menu = new ContextMenu(renameProject, removeProject);
+	    }
+
+	    @Override
+	    public void updateItem(Type t, boolean bln) {
+	        //Call the super class so everything works as before
+	        super.updateItem(t, bln);
+	        //Check to show the context menu for this TreeItem
+	        if (showMenu(t, bln)) {
+	            setContextMenu(menu);
+	        }else{
+	            //If no menu for this TreeItem is used, deactivate the menu
+	            setContextMenu(null);
+	        }
+	    }
+	    
+	    //Decide if a menu should be shown or not
+	    private boolean showMenu(Type t, boolean bln){
+	        if (t != null && !t.equals("Root")) {
+	            return true;
+	        }
+	        return false;
+	    }        
+
 	}
 }

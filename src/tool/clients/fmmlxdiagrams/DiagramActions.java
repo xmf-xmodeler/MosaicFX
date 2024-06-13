@@ -693,7 +693,7 @@ public class DiagramActions {
     public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type, Property selectedProperty, Vector<Property> availableProperties) {
 
 		Platform.runLater(() -> {
-			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty);
+			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty, diagram);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
@@ -1419,6 +1419,7 @@ public class DiagramActions {
 
 	public void removeAssociationDependency(FmmlxAssociation association) {
 		diagram.getComm().removeAssociationDependency(diagram.getID(), association);
+		diagram.updateDiagram();
 	}
 
 	public void addAssociationDependency(FmmlxAssociation association) {
@@ -1428,6 +1429,9 @@ public class DiagramActions {
 		 
 		Optional<String> result = dialog.showAndWait();
 
-		result.ifPresent(s -> diagram.getComm().addAssociationDependency(diagram.getID(), association, s));
+		result.ifPresent(s -> {
+			diagram.getComm().addAssociationDependency(diagram.getID(), association, s);
+			diagram.updateDiagram();
+		});
 	}
 }

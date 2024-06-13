@@ -2802,6 +2802,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
 		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
 			new Value(assoc.sourceNode.ownPath),
 			new Value(assoc.getAccessNameStartToEnd())};
 		sendMessage("removeAssociationDependency", message);
