@@ -168,17 +168,6 @@ public class ChangeTypeDialog<Property
 		}
 		errorLabel.setText("");
 		return true;
-
-//		if (selectPropertyComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectDifferentType);
-//			return false;
-//		} else if (typeComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
-//			return false;
-//		} else if (typeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
-//		}
-//		return true;
 	}
 
 	private void layoutContent(PropertyType type) {
