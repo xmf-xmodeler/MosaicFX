@@ -76,6 +76,8 @@ public class ControlCenter extends Stage {
 
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		setTitle("XModeler UML Control Center");}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
@@ -248,7 +250,6 @@ public class ControlCenter extends Stage {
 
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
-		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		
 		Label modelLabel = new Label("Models");	//Button added later because of DidacticMode check
@@ -266,7 +267,6 @@ public class ControlCenter extends Stage {
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
 		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
-		grid.add(newDiagram2, 4, 4);
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
@@ -297,22 +297,26 @@ public class ControlCenter extends Stage {
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
-
-		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-		grid.add(concreteSyntaxWizardStart, 3, 4);
-		grid.add(loadModelDir, 2, 4);
-		grid.add(modelLabel, 3, 1);
-		grid.add(modelLV, 3, 2);
-		grid.add(newModel, 3, 1);}
 		
 		Button howToStart = new Button("How to...");
-		if(XModeler.isAlphaMode()) {
 			howToStart.setOnAction(e -> {
 				HowToDialog d = new HowToDialog();
 				d.showAndWait();
 			});
-			grid.add(howToStart, 4, 4);
-		}		
+			
+		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		grid.add(refreshAll, 2, 1);
+		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(loadModelDir, 2, 4);
+		grid.add(modelLabel, 3, 1);
+		grid.add(modelLV, 3, 2);
+		grid.add(newModel, 3, 1);
+		grid.add(howToStart, 4, 4);
+		}
+		else {
+		grid.add(newDiagram2, 4, 4);
+		}
+		
 		
 //		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
@@ -456,7 +460,15 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
-		});
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			if(projectTree.getRoot().getChildren().get(0).getChildren().size()>1) {
+				projectTree.getRoot().getChildren().get(0).getChildren().remove(1);
+			}
+			else {
+				projectTree.getRoot().getChildren().get(0).getChildren().remove(0);
+			}
+		}
+});
 	}
 		
 	public void setProjectModels(Vector<String> vec) {
