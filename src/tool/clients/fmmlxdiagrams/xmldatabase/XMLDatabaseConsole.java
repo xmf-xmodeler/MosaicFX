@@ -9,10 +9,12 @@ import java.util.Map;
 
 import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
+import org.basex.api.client.Session;
 import org.basex.core.BaseXException;
 import org.basex.core.cmd.XQuery;
 import org.basex.core.cmd.Open;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -30,146 +32,77 @@ import javafx.stage.Stage;
  *
  */
 public class XMLDatabaseConsole extends XMLDatabase {
-	private List<CheckBox> checkBoxList;
-	  private Map<String, CheckBox> checkBoxMap;
+		private List<CheckBox> checkBoxList;
+		private Map<String, CheckBox> checkBoxMap;
+		
 
-//	   public void startConsole() {
-//	        Stage stage = new Stage();
-//	        VBox root = new VBox();
-//	        TextField inputField = new TextField();
-//	        TextArea outputArea = new TextArea();
-//	        outputArea.setWrapText(true);
-//	        Button executeButton = new Button("Execute");
-//
-//	        executeButton.setOnAction(e -> {
-//	            String query = inputField.getText();
-//	            try {
-//	                String result = executeQuery(query);
-//	                outputArea.setText(result);
-//	            } catch (BaseXException ex) {
-//	                outputArea.setText("BaseX Query Error: " + ex.getMessage());
-//	                showError("BaseX Query Error: Failed to execute the query. "
-//	                		+ "Please check your query syntax and database connection. Error details: " + ex.getMessage());
-//	                System.err.print(ex.getMessage());
-//	            } catch (IOException ex) {
-//	                outputArea.setText("IO Error: " + ex.getMessage());
-//	                showError("IO Error: An input/output error occurred while executing the query. "
-//	                		+ "Please check your network or file access permissions. Error details: " + ex.getMessage());
-//	            } catch (Exception ex) {
-//	                outputArea.setText("Error: " + ex.getMessage());
-//	                showError("General Error: An unexpected error occurred. "
-//	                		+ "Please contact support if the problem persists. Error details: " + ex.getMessage());
-//	            }
-//	        });
-//
-//	        root.getChildren().addAll(inputField, executeButton, outputArea);
-//	        Scene scene = new Scene(root, 600, 400);
-//	        stage.setScene(scene);
-//	        stage.setTitle("XML Database Console");
-//	        stage.show();
-//
-//	        // Test the connection when the console starts
-//	        try {
-//	            testConnection();
-//	            outputArea.setText("Connected to database successfully.");
-//	        } catch (Exception ex) {
-//	        	showError("Failed to connect to database: " + ex.getMessage());
-//	            outputArea.setText("Failed to connect to database: " + ex.getMessage());
-//	        }
-//	    }
 	
-	  public void start() {
-	        Stage stage = new Stage();
-	        VBox root = new VBox(10);
+		 public VBox createContent() {
+	            VBox root = new VBox(10);
+	            root.setPadding(new Insets(10, 10, 10, 10));
 
-	        // Search Term Input
-	        TextField searchTerms = new TextField();
-	        searchTerms.setPromptText("Enter search terms");
+	            // Search Term Input
+	            TextField searchTerms = new TextField();
+	            searchTerms.setPromptText("Enter search terms");
 
-	        // Initialize the map to store CheckBoxes
-	        checkBoxMap = new HashMap<>();
+	            // Initialize the map to store CheckBoxes
+	            checkBoxMap = new HashMap<>();
 
-	        VBox searchOptions = new VBox(5);
-	        List<String> checkBoxLabels = List.of(
-	            "Project name", "Diagram name", "Object name", 
-	            "Association name", "Operation signature", 
-	            "Constraint name", "Attribute name"
-	        );
+	            VBox searchOptions = new VBox(5);
 
-	        Map<String, String> elementMapping = new HashMap<>();
-	        elementMapping.put("Project name", "Project/@name");
-	        elementMapping.put("Diagram name", "Diagram/@label");
-	        elementMapping.put("Object name", "addMetaClass/@name");
-	        elementMapping.put("Association name", "Edge/@name");
-	        elementMapping.put("Operation signature", "Operation/@signature");
-	        elementMapping.put("Constraint name", "Constraint/@name");
-	        elementMapping.put("Attribute name", "Attribute/@name");
+	            List<String> checkBoxLabels = List.of(
+	                    "Project name", "Diagram name", "Object name",
+	                    "Association name", "Operation signature",
+	                    "Constraint name", "Attribute name"
+	            );
 
-	        checkBoxLabels.forEach(label -> {
-	            CheckBox checkBox = new CheckBox(label);
-	            checkBox.setSelected(true);
-	            addCheckBoxToMapAndVBox(checkBox, searchOptions);
-	        });
+	            checkBoxLabels.forEach(label -> {
+	                CheckBox checkBox = new CheckBox(label);
+	                checkBox.setSelected(true);
+	                addCheckBoxToMapAndVBox(checkBox, searchOptions);
+	            });
 
-	        // Filter Options
-	        VBox filterOptions = new VBox(5);
-	        Label filterLabel = new Label("Filter");
-	        ComboBox<String> filterLevel = new ComboBox<>();
-	        filterLevel.getItems().addAll("Specific Project");
-	        filterOptions.getChildren().addAll(filterLabel, filterLevel);
+	            // Filter Options
+	            VBox filterOptions = new VBox(5);
+	            Label filterLabel = new Label("Filter");
+	            ComboBox<String> filterDropDown = new ComboBox<>();
 
-	        // Level Input
-	        VBox levelOptions = new VBox(6);
-	        Label levelInputLabel = new Label("Level");
-	        TextField levelInput = new TextField();
-	        levelInput.setPromptText("Enter level (integer)");
-	        levelOptions.getChildren().addAll(levelInputLabel, levelInput);
-	        levelInput.textProperty().addListener((observable, oldValue, newValue) -> {
-	            if (!newValue.matches("\\d*")) {
-	                levelInput.setText(newValue.replaceAll("[^\\d]", ""));
-	            }
-	        });
-
-	        HBox searchAndFilter = new HBox(20, searchOptions, filterOptions, levelOptions);
-
-	        // Output Area
-	        TextArea outputArea = new TextArea();
-	        outputArea.setWrapText(true);
-	        outputArea.setPromptText("Hier erscheinen die Suchergebnisse");
-	        outputArea.setEditable(false);
-
-	        // Search Buttons
-	        Button searchButton = new Button("Weitere Ergebnisse anzeigen");
-	        Button startSearchButton = new Button("Suche starten");
-
-	        searchButton.setOnAction(e -> {
-	            String query = searchTerms.getText();
-	            String results = null;
-	            try {
-	                results = performSearch(query, filterLevel.getValue(), levelInput.getText(), elementMapping);
-	            } catch (IOException e1) {
+	            try (ClientSession session = new ClientSession(hostname, port, user, password)) {
+	                List<String> documentNames = new ArrayList<>();
+	                documentNames = getProjectDocumentNames(session);
+	                filterDropDown.getItems().addAll(documentNames);
+	            } catch (Exception e1) {
 	                e1.printStackTrace();
 	            }
-	            outputArea.setText(results);
-	        });
 
-	        startSearchButton.setOnAction(e -> {
-	            String query = searchTerms.getText();
-	            String results = null;
-	            try {
-	                results = performSearch(query, filterLevel.getValue(), levelInput.getText(), elementMapping);
-	            } catch (IOException e1) {
-	                e1.printStackTrace();
-	            }
-	            outputArea.setText(results);
-	        });
+	            filterOptions.getChildren().addAll(filterLabel, filterDropDown);
 
-	        root.getChildren().addAll(searchTerms, searchAndFilter, outputArea, searchButton, startSearchButton);
-	        Scene scene = new Scene(root, 600, 400);
-	        stage.setScene(scene);
-	        stage.setTitle("Search Console");
-	        stage.show();
-	    }
+	            HBox searchAndFilter = new HBox(20, searchOptions, filterOptions);
+
+	            // Output Area
+	            TextArea outputArea = new TextArea();
+	            outputArea.setWrapText(true);
+	            outputArea.setPromptText("The search results appear here");
+	            outputArea.setEditable(false);
+
+	            // Search Buttons
+	            Button searchButton = new Button("Show more results");
+	            Button startSearchButton = new Button("Start search");
+
+	            startSearchButton.setOnAction(e -> {
+	                String query = searchTerms.getText();
+	                List<String> results = null;
+	                try {
+	                    results = performSearch(query, searchOptions, filterDropDown.getValue());
+	                } catch (IOException e1) {
+	                    e1.printStackTrace();
+	                }
+	                outputArea.setText(String.join("\n", results));
+	            });
+
+	            root.getChildren().addAll(searchTerms, searchAndFilter, outputArea, searchButton, startSearchButton);
+	            return root;
+	        }
 
 	    /**
 	     * Adds a CheckBox to the specified VBox and stores it in the checkBoxMap.
@@ -183,28 +116,43 @@ public class XMLDatabaseConsole extends XMLDatabase {
 	    }
 
 	    /**
-	     * Performs a search based on the provided query, selected CheckBox options, filter, and level.
+	     * Performs a search based on the provided search term, selected CheckBox options in the VBox, and filter.
 	     *
-	     * @param searchTerm the search query entered by the user
-	     * @param filter     the filter level selected by the user
-	     * @param level      the level input provided by the user
-	     * @param elementMapping a map of CheckBox labels to corresponding XML element names
-	     * @return a String representing the search results
-	     * @throws IOException 
-	     * @throws BaseXException 
+	     * @param searchTerm The term to search for.
+	     * @param checkBoxVBox The VBox containing CheckBox options.
 	     */
-	    private String performSearch(String searchTerm, String filter, String level, Map<String, String> elementMapping) throws BaseXException, IOException {
-	        XMLDatabaseQuerys querys = new XMLDatabaseQuerys();
-	        String searchQuery = querys.searchDocumentsQuery(this.db_name, searchTerm, checkBoxMap, filter, elementMapping);
-	        String result = executeQuery(searchQuery);
-	        System.err.print("\n Ergebniss: " + result);
-	        StringBuilder searchInfo = new StringBuilder("Search results for: " + searchTerm + "\nFilter: " + filter + "\nLevel: " + level + "\nSearch Options:\n");
-	        for (String key : checkBoxMap.keySet()) {
-	            if (checkBoxMap.get(key).isSelected()) {
-	                searchInfo.append(key).append("\n");
+	    public List<String> performSearch(String searchTerm, VBox checkBoxVBox,String filter) throws BaseXException, IOException {
+	        List<String> results = new ArrayList<>();
+
+	        for (int i = 0; i < checkBoxVBox.getChildren().size(); i++) {
+	            CheckBox checkBox = (CheckBox) checkBoxVBox.getChildren().get(i);
+	            if (checkBox.isSelected()) {
+	                SearchOptions option = SearchOptions.values()[i];
+	                String xpath = option.getXpath();
+	                String query = constructQuery(db_name, searchTerm, xpath,filter);
+	                String result = executeQuery(query);
+//	                System.err.print(result);
+	                if (result != "")
+	                	results.add(option.name() + ": \n " + result);
 	            }
 	        }
-	        return searchInfo.toString();
+
+	        return results;
+	    }
+
+	    /**
+	     * Constructs an XQuery to search for documents based on the provided search term and options.
+	     *
+	     * @param db_name The name of the database.
+	     * @param searchTerm The term to search for.
+	     * @param xpath The XPath string corresponding to the search option.
+	     * @param filter The filter to apply (if any).
+	     * @return The XQuery string.
+	     */
+	    private String constructQuery(String db_name, String searchTerm, String xpath,String filter) {
+	    		
+	    	String query = XMLDatabaseQuerys.searchDocumentsQuery(db_name,xpath,searchTerm,filter);	
+	    	return query;
 	    }
 
 	    /**
@@ -215,14 +163,16 @@ public class XMLDatabaseConsole extends XMLDatabase {
 	     * @throws BaseXException
 	     * @throws IOException
 	     */
-	    private String executeQuery(String query) throws BaseXException, IOException {
+	    protected String executeQuery(String query) throws BaseXException, IOException {
 	        if (!isInternetAvailable()) {
-	            System.err.print("Keine Internet Verbindung");
+	            
 	            throw new IOException("Internet not available");
 	        }
 	        try (ClientSession session = new ClientSession(hostname, port, user, password)) {
 	            session.execute(new Open(this.db_name));
 	            ClientQuery clientQuery = session.query(query);
+
+	            
 
 	            StringBuilder resultBuilder = new StringBuilder();
 	            while (clientQuery.more()) {
@@ -232,14 +182,20 @@ public class XMLDatabaseConsole extends XMLDatabase {
 	            }
 
 	            clientQuery.close();
-	            System.err.print(hostname + "\n" + port + "\n" + user + "\n" + password + "\n");
-	            System.err.print(query);
+//	            System.err.print(hostname + "\n" + port + "\n" + user + "\n" + password + "\n");
+	            System.err.print(query + "\n");
+	            
 
 	            return resultBuilder.toString();
 	        }
+	        catch (Exception e) {
+				System.err.print("execute failed \n");// TODO: handle exception
+				e.printStackTrace();
+			}
+			return null;
 	    }
 
-	    private void testConnection() throws IOException, BaseXException {
+	    protected void testConnection() throws IOException, BaseXException {
 	        try (ClientSession session = new ClientSession(hostname, port, user, password)) {
 	            session.execute("LIST");
 	        }

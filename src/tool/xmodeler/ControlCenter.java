@@ -53,6 +53,7 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsoleTabs;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.ModelInputTransformer;
@@ -190,9 +191,10 @@ public class ControlCenter extends Stage {
 		private void dBConsole()
 		{
 			XMLDatabaseConsole console = new XMLDatabaseConsole();
+			XMLDatabaseConsoleTabs tabs = new XMLDatabaseConsoleTabs();
 			try
 			{
-				console.start();
+				tabs.start();
 			}
 			catch (Exception e) {
 				// TODO: handle exception

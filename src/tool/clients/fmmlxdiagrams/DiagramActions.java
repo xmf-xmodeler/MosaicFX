@@ -55,6 +55,7 @@ import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
@@ -66,6 +67,7 @@ import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
+import tool.clients.workbench.WorkbenchClient;
 import tool.helper.userProperties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -1083,14 +1085,24 @@ public class DiagramActions {
 	 */
 	public void exportToDB()
 	{
-		Platform.runLater(() -> {XMLDatabase db = 
-			new XMLDatabase();
+		Platform.runLater(() -> {
+			XMLDatabase db = new XMLDatabase();
 			try {
 				db.writeToDB((FmmlxDiagram)this.diagram);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		});
+	}
+	/**
+	 * @author Nicolas Engel
+	 */
+	public void renameProjekt()
+	{
+		Platform.runLater(()-> {
+			RenameProjektDialog rpd = new RenameProjektDialog();
+			rpd.start();
 		});
 	}
 

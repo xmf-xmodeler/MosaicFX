@@ -234,7 +234,7 @@ public class XMLDatabase {
 	 * @return A list of strings representing the names of the documents that match the criteria.
 	 * @throws Exception If there is an error during the execution of the query.
 	 */
-	private List<String> getProjectDocumentNames(Session session) throws Exception {
+	protected List<String> getProjectDocumentNames(Session session) throws Exception {
 	    List<String> documentNames = new ArrayList<>();
 	    try {
 	        // Construct the XQuery that retrieves all document names ending with '_versions.xml'
@@ -282,7 +282,7 @@ public class XMLDatabase {
 	 * @throws Exception If an error occurs during the database query or processing
 	 *                   of the query results.
 	 */
-	private int getHighestVersion(String mainDocumentName, Session session) throws Exception {
+	protected int getHighestVersion(String mainDocumentName, Session session) throws Exception {
 		String highestVersionQuery = querrys.highestVersionQuery(this.db_name, mainDocumentName);
 		String highestVersionRef = session.query(highestVersionQuery).execute();
 		return Integer.parseInt(highestVersionRef);
@@ -341,9 +341,9 @@ public class XMLDatabase {
 					files.add(file);
 				} catch (Exception e) {
 					// Handles cases where no versions are found or an error occurs
-					System.err.println("Fehler beim Ermitteln der neuesten Version für: " + mainDocumentName + " - "
+					System.err.println("Error when determining the latest version for: " + mainDocumentName + " - "
 							+ e.getMessage());
-					showError("Fehler beim Ermitteln der neuesten Version für: " + mainDocumentName + " - "
+					showError("Error determining the latest version for: " + mainDocumentName + " - "
 							+ e.getMessage());
 				}
 			}
@@ -396,7 +396,8 @@ public class XMLDatabase {
 		} catch (Exception e) {
 			e.printStackTrace();
 			showError(
-					"Failed to retrieve the specific document from the database. Please check the database connection settings and ensure the database is accessible. Error details: "
+					"Failed to retrieve the specific document from the database. \n"
+					+ "Please check the database connection settings and ensure the database is accessible. Error details: "
 							+ e.getMessage());
 		}
 		return file;

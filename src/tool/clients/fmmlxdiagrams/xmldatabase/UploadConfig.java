@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.xmldatabase;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
@@ -47,7 +48,7 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 		
 		layout();
 		
-		dialogPane.setContent(flow);
+		dialogPane.setContent(gridPane);
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 	}
@@ -60,7 +61,11 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	    Label[] labels = {hostname, databaseName, port, userLabel, passwordLabel};
 	    TextField[] textFields = {hostnameTextfield, databaseNameTextfield, portTextfield, userTextfield, passwordTextfield};
 	    String[] properties = {"hostname", "databaseName", "port", "user", ""}; // Empty string for the password field since it's not set from properties
-
+	    
+	    this.gridPane.setPadding(new Insets(10, 10, 10, 10));
+	    this.gridPane.setHgap(10); // Optional: Horizontal gap between columns
+	    this.gridPane.setVgap(10); // Optional: Vertical gap between rows
+	    
 	    for (int i = 0; i < labels.length; i++) {
 	        this.gridPane.add(labels[i], 0, i + 1);       // Add label to column 0
 	        this.gridPane.add(textFields[i], 1, i + 1);   // Add text field to column 1
