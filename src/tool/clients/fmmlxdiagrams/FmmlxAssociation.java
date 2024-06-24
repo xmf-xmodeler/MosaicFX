@@ -285,12 +285,19 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	};
 	
 	@Override
-	public HeadStyle getTargetDecoration() {
+	public HeadStyle getTargetDecoration() {if(diagram.umlMode) {
+		if(targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
+		}}
 		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
 	}
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
+		if(diagram.umlMode) {
+		if(targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
+		}}
 		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
 	}
 
