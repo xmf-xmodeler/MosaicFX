@@ -1,13 +1,11 @@
 package tool.clients.fmmlxdiagrams.xmldatabase;
 
 import java.io.ByteArrayInputStream;
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,23 +15,18 @@ import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
 import org.basex.api.client.Session;
 import org.basex.core.BaseXException;
-import org.basex.util.Prop;
 import org.w3c.dom.Document;
 
 import javafx.application.Platform;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import tool.clients.diagrams.DiagramClient;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLParser;
 import tool.helper.persistence.XMLUtil;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
-import xos.XmfIOException;
+import tool.helper.user_properties.PropertyManager;
 
 /**
  * 

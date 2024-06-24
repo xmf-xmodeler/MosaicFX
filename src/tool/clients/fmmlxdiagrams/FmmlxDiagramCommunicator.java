@@ -1,48 +1,36 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.Vector;
 
 import org.apache.logging.log4j.LogManager;
-import org.w3c.dom.Document;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogEvent;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
-import tool.clients.xmlManipulator.XmlCreator;
-import tool.helper.FileAuxilary;
-import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
-import tool.helper.persistence.XMLUtil;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
 import tool.xmodeler.tool_introduction.DiagramViewState;
@@ -2261,62 +2249,10 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
-	/**
-	 * @author Nicolas Engel
-	 * Attempt to close the scene, returns true if close can proceed, false otherwise.
-	 */
-	private boolean closeScene(Stage stage, Event event, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
-	    XMLCreator creator = new XMLCreator();
-	    ReturnCall<Document> onGetDocument = (doc) -> {
-	        XMLDatabase database = new XMLDatabase();
-	        String diagramName = diagram.getPackagePath().substring(6);
-	        String mainDocumentName = diagramName + "_versions.xml";
-	        
-	        File file1 = database.getSpecificDocument(mainDocumentName);
-	        File file2;
-	        try {
-	            file2 = File.createTempFile(mainDocumentName + "-", ".temp");
-	            XMLUtil xmlHelper = new XMLUtil();
-	            xmlHelper.saveDocumentToFile(doc, file2);
-	            
-	            FileAuxilary fileHelper = new FileAuxilary();
-	            if (!fileHelper.filesAreEqualIgnoringWhitespace(file1, file2)) {
-	                Platform.runLater(() -> showClosingWarning(diagram, event,stage));
-	            } else {
-	                close(diagram, true);
-	                Platform.runLater(() -> stage.close());
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    };
-	    
-	    creator.getXmlRepresentation(diagram.getPackagePath(), onGetDocument);
-	    return false; // Assume the close should not proceed until confirmed
+	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
+		close(diagram, true);
 	}
-	
-	/**
-	 * @author Nicolas Engel
-	 */
-	private void showClosingWarning(FmmlxDiagram diagram, Event event, Stage stage) {
-	    Alert alert = new Alert(Alert.AlertType.WARNING);
-	    alert.setTitle("Close Warning");
-	    alert.setHeaderText("Warning: You have unsaved changes that will be lost if you continue.");
-	    alert.setContentText("Proceed?");
-	    
-	    ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().add(buttonTypeCancel);
-	    
-	    Optional<ButtonType> result = alert.showAndWait();
-	    if (result.get() == ButtonType.OK) {
-	        // Save and then close
-	       close(diagram, true);
-	       Platform.runLater(() -> stage.close());
-	    } else {
-	        event.consume(); // This stops the closing process
-	    }
-	}
-	
+
 	private String copyFilePath(String packagePath) {
 		for (FmmlxDiagram diagram: diagrams){
 			if(diagram.getPackagePath().equals(packagePath)){

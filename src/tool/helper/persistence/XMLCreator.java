@@ -57,7 +57,7 @@ public class XMLCreator {
 	 * @param onDocumentCreated return call, that will give back the document. Any action can be performed on the doc
 	 * @param diagram used to check if a diagram is in umlMode
 	 */
-	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated, AbstractPackageViewer diagram) {
+	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
 		// calls save operation after representation is build

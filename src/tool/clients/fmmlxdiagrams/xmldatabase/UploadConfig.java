@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.helper.userProperties.PropertyManager;
+import tool.helper.user_properties.PropertyManager;
 
 /**
  * 

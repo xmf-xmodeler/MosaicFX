@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.fmmlxdiagram;
 
 import java.io.File;
 import java.util.Collections;
-
 import java.util.Vector;
 
 import org.w3c.dom.Element;
@@ -144,7 +143,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		nodeCreationType = null;
 		// if the palette is not updated no new actions could be performed
 		viewPane.getFmmlxPalette().update(viewPane);
-
 	}
 
 	public void setEdgeCreationType(String edgeCreationType) {
@@ -181,7 +179,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-
 
 // Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
@@ -249,6 +246,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		}
 //		System.err.println("done "+(System.currentTimeMillis()-start));
 	}
+
 	public Vector<CanvasElement> getSelectedObjects() {
 		return new Vector<>(selectedObjects);
 	}
@@ -661,6 +659,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 			this.name = name;
 			this.isZoomView = isZoomView;
+
 			canvas = new Canvas();
 			getChildren().add(canvas);
 			canvas.widthProperty().bind(this.widthProperty());
@@ -715,6 +714,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 				handleCenterPressed(e);
 			}
 		}
+
 		private void mouseDragged(MouseEvent e) {
 			if (mouseMode == MouseMode.MULTISELECT) {
 				storeCurrentPoint(e.getX(), e.getY());
@@ -861,7 +861,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			}
 			redraw();
 
-		
+		}
 
 		private void handleScroll(ScrollEvent e) {
 			double zoom = Math.pow(ZOOM_STEP, e.getDeltaY() > 0 ? 1 : -1);
@@ -968,7 +968,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			showContextMenu(e);
 		}
 
-
 		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 			Point2D p = new Point2D(e.getX(), e.getY());
 
@@ -1026,9 +1025,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 //						highlightElementAt(hitObject, p);
 					}
 				}
-
 				// Only implemented for FmmlxObject
-
 				handlePressedOnNodeElement(p, hitObject);
 
 				if (e.getClickCount() == 2) {
@@ -1134,8 +1131,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			}
 			hitObject.highlightElementAt(mouse, canvasTransform);
 		}
-	    
-
 
 		private void paintOn() {
 			final GraphicsContext g = canvas.getGraphicsContext2D();
@@ -1223,6 +1218,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 			for (CanvasElement o : objectsToBePainted) {
 				o.paintOn(g, canvasTransform, this);
+			}
 
 			g.setStroke(Color.BLACK);
 			g.setLineWidth(1);
@@ -1296,7 +1292,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 			canvasTransform = new Affine();
 			canvasTransform.appendScale(zoom, zoom);
-		
+		}
 
 		private CanvasElement getElementAt(double x, double y) {
 			Vector<CanvasElement> all = new Vector();
@@ -1446,23 +1442,3 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		return this.stage;
 	}
 }
-
-
-@Override
-public void handle(KeyEvent e) {
-	pressedKeys.add(e.getCode());
-	if (getPressedKeys().contains(KeyCode.CONTROL) &&
-		getPressedKeys().contains(KeyCode.A)) {
-		selectAll();
-	}
-	if (getPressedKeys().contains(KeyCode.CONTROL) &&  getPressedKeys().contains(KeyCode.ALT)&& getPressedKeys().contains(KeyCode.S)) {
-		new XMLCreator().createAndSaveXMLRepresentation(packagePath);
-		}
-	else if (getPressedKeys().contains(KeyCode.CONTROL)&& getPressedKeys().contains(KeyCode.S)){
-		Platform.runLater(()-> actions.exportToDB());
-		}
-	if (getPressedKeys().contains(KeyCode.F5)) {
-			getComm().triggerUpdate();
-		}
-}
-});
