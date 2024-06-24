@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram;
 
 import java.io.File;
 import java.util.Collections;
@@ -61,6 +61,14 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.util.Callback;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.CanvasElement;
+import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
+import tool.clients.fmmlxdiagrams.Edge;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.InheritanceEdge;
+import tool.clients.fmmlxdiagrams.Issue;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;

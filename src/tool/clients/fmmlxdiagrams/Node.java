@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;

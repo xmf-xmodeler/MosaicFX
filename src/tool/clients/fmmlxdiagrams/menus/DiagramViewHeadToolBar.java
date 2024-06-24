@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;

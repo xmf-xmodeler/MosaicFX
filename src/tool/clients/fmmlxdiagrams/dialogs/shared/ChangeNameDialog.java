@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 import java.util.Vector;
 

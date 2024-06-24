@@ -5,8 +5,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramViewPane;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 
 

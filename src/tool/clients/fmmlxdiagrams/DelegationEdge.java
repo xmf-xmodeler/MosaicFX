@@ -8,6 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class DelegationEdge extends Edge<FmmlxObject> {
 

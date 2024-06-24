@@ -8,8 +8,8 @@ import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeBox extends NodeGroup{

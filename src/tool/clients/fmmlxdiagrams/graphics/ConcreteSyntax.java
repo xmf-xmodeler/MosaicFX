@@ -17,8 +17,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class ConcreteSyntax extends ConcreteSyntaxPattern{
 	

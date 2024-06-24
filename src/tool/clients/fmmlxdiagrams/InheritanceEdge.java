@@ -5,6 +5,7 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.InheritanceEdgeContextMenu;
 
 public class InheritanceEdge extends Edge<FmmlxObject> {

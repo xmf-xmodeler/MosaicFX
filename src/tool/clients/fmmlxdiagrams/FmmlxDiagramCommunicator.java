@@ -33,6 +33,7 @@ import javafx.stage.WindowEvent;
 import tool.clients.diagrams.Diagram;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.workbench.WorkbenchClient;
 import tool.clients.xmlManipulator.XmlCreator;

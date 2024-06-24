@@ -1,5 +1,5 @@
 package tool.clients.fmmlxdiagrams.newpalette;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public abstract class PaletteTool {
 	

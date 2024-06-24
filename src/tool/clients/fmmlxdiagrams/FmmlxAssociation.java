@@ -6,6 +6,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Optional;

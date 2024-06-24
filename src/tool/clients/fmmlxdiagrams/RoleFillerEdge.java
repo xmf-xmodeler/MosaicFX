@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class RoleFillerEdge extends Edge<FmmlxObject> {
 
