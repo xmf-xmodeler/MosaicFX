@@ -38,7 +38,7 @@ public class NodeImage extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagram) {
 		return false;
 	}
 

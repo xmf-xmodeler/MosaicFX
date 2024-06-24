@@ -3,6 +3,7 @@ package tool.helper.persistence;
 import java.text.ParseException;
 
 import tool.helper.persistence.modelActionParser.AddAssociationParser;
+import tool.helper.persistence.modelActionParser.AddAssociationTypeParser;
 import tool.helper.persistence.modelActionParser.AddAttributeParser;
 import tool.helper.persistence.modelActionParser.AddConstraintParser;
 import tool.helper.persistence.modelActionParser.AddDelegationParser;
@@ -40,6 +41,8 @@ public class ModelActionParserFactory {
 			return new ChangeSlotValueParser(diagramId);
 		case "addAssociation":
 			return new AddAssociationParser(diagramId);
+		case "addAssociationType":
+			return new AddAssociationTypeParser(diagramId);
 		case "addLink":
 			return new AddLinkParser(diagramId);
 		case "addDelegation":

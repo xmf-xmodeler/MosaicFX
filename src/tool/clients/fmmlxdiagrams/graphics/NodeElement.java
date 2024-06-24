@@ -35,8 +35,8 @@ public abstract class NodeElement {
 		public void perform();
 	}
 	
-	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
-	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram);
+	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram);
 	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
 	public final void setSelected() { selected = true;}
 	public final void setDeselected() { selected = false;}
@@ -61,7 +61,7 @@ public abstract class NodeElement {
 	 * @param diagramView
 	 * @return whether it has been hit
 	 */
-	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);	
+	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagramView);	
     
 	/**
      * Returns the element's own transform, relative to its parent
@@ -234,5 +234,17 @@ public abstract class NodeElement {
 	public Transform getDragAffine() {
 		if(dragAffine == null) return new Affine(); // HACK
 		return dragAffine;
+	}
+  
+	protected void setActionObject(FmmlxProperty actionObject) {
+		this.actionObject = actionObject;
+  }
+	
+	public void setPosition(double x, double y) {
+		myTransform = new Affine(1,0,x,0,1,y);
+  }
+
+	protected void setAction(Action action) {
+		this.action = action;
 	}
 }

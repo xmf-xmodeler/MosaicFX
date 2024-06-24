@@ -51,11 +51,23 @@ public class XMLUtil {
 		}
 		return child;
 	}
+	
+	public static Element createChildElement(Element parentElement, String childName, String elementContent) {
+		Element child = null;
+		if (parentElement != null && (!"".equals(childName))) {
+			child = parentElement.getOwnerDocument().createElement(childName);
+			parentElement.appendChild(child);
+			child.setTextContent(elementContent);
+		}
+		return child;
+	}
 
 	public static Element getChildElement(Element element, String tagName) {
-
 		return getChildElement(element, tagName, true);
-
+	}
+	
+	public static Element getChildElement(Element element, XMLTags tag) {
+		return getChildElement(element, tag.getName(), true);
 	}
 
 	public static Element getChildElement(Element element, String tagName, boolean create) {

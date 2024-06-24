@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -29,12 +30,12 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import tool.clients.diagrams.Diagram;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.workbench.WorkbenchClient;
 import tool.clients.xmlManipulator.XmlCreator;
 import tool.helper.FileAuxilary;
@@ -44,6 +45,9 @@ import tool.helper.persistence.XMLParser;
 import tool.helper.persistence.XMLUtil;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
+import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -63,6 +67,9 @@ public class FmmlxDiagramCommunicator {
 	private static FmmlxDiagramCommunicator self;
 	private int handle; // this is set by xmf and serves as an identifier for the communication
 	
+	public int getHandle() {
+		return handle;
+	}
 	public static boolean isDebug() {
 		return DEBUG;
 	}
@@ -252,7 +259,7 @@ public class FmmlxDiagramCommunicator {
 	 *          Otherwise it is dropped, as no operation is waiting for a response.
 	 */
 	@SuppressWarnings("unchecked")
-	public void sendMessageToJava(Object msgAsObj) {
+	public synchronized void sendMessageToJava(Object msgAsObj) {
 		if (msgAsObj instanceof java.util.Vector) {
 			// First the message is unwrapped.
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
@@ -378,7 +385,7 @@ public class FmmlxDiagramCommunicator {
 		return functionReturnVector;
 	}
 	
-	private void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+	public void xmfRequestAsync(int targetHandle, int diagramID, String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
 		setNewRequestID();
 		Value[] args2 = new Value[args.length + 1];
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + currentRequestID + ") handle" + targetHandle);
@@ -461,6 +468,20 @@ public class FmmlxDiagramCommunicator {
 		};
 		xmfRequestAsync(handle, diagramId, "getImportedPackages", localReturn);
 	} 
+	
+	@SuppressWarnings("unchecked")
+	public void getAllPackages(Integer diagramId, boolean onlyFmmlx, 
+			ReturnCall<Vector<String>> availablePackagesReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<String> result = new Vector<>();
+			for (Object responseItem : responseContent) {
+				result.add((String)responseItem);
+			}
+			availablePackagesReturn.run(result);
+		};
+	xmfRequestAsync(handle, diagramId, "getAvailablePackages", localReturn, new Value(onlyFmmlx));
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void getAssociationTypes(AbstractPackageViewer diagram,
@@ -706,7 +727,7 @@ public class FmmlxDiagramCommunicator {
 						(String) edgeInfoAsList.get(0), // id
 						(String) edgeInfoAsList.get(1), // startId
 						(String) edgeInfoAsList.get(2), // endId
-						(Integer) edgeInfoAsList.get(3), // parentId
+						(String) edgeInfoAsList.get(3), // parentId
 						listOfPoints, // points
 						startRegion, endRegion,
 						(String) edgeInfoAsList.get(5), // name
@@ -766,17 +787,21 @@ public class FmmlxDiagramCommunicator {
 	
 				Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 				
-				FmmlxLink object = new FmmlxLink(
-						(String) edgeInfoAsList.get(0), // id
-						(String) edgeInfoAsList.get(1), // startId //TODO
-						(String) edgeInfoAsList.get(2), // endId //TODO
-						(String) edgeInfoAsList.get(3), // ofId	//TODO
-						listOfPoints, // points
-						startRegion, endRegion,
-						labelPositions,
-						diagram);
-	
-				result.add(object);
+				try{				
+					FmmlxLink object = new FmmlxLink(
+							(String) edgeInfoAsList.get(0), // id
+							(String) edgeInfoAsList.get(1), // startId //TODO
+							(String) edgeInfoAsList.get(2), // endId //TODO
+							(String) edgeInfoAsList.get(3), // ofId	//TODO
+							listOfPoints, // points
+							startRegion, endRegion,
+							labelPositions,
+							diagram);
+		
+					result.add(object);				
+				} catch (AbstractPackageViewer.PathNotFoundException e) {
+					System.err.println("Ignoring old link: " + edgeInfoAsList.get(0));
+				}
 			}
 			linksReceivedReturn.run(result);
 		};
@@ -871,7 +896,8 @@ public class FmmlxDiagramCommunicator {
 								(String) opInfo.get(7), // owner
 								null, // multiplicity
 								(Boolean) opInfo.get(9), // isMonitored
-								(Boolean) opInfo.get(10) // delToClass
+								(Boolean) opInfo.get(10), // delToClass
+								opInfo.size()>11?((Boolean) opInfo.get(11)):false // is getter or setter
 							);
 						result.add(op);
 						}
@@ -923,7 +949,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
     @SuppressWarnings("unchecked")
-    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
+    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, boolean extended, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
     	ReturnCall<Vector<Object>> returnCall = response -> {
     		Vector<Object> issueList = (Vector<Object>) (response.get(0));
 
@@ -943,7 +969,7 @@ public class FmmlxDiagramCommunicator {
 		    }
 		    issuesReceivedReturn.run(result);
     	};        
-        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall);
+        xmfRequestAsync(handle, abstractPackageViewer.getID(), "getAllIssues", returnCall, new Value(extended));
     }
 
     @SuppressWarnings("unchecked")
@@ -961,8 +987,14 @@ public class FmmlxDiagramCommunicator {
 	    xmfRequestAsync(handle, fmmlxDiagram.getID(), "getAllAuxTypes", returnCall);
     }
     
+    /**
+     * This function ask the backend for specific slots. All classes that defined in the map are requested.
+     * @param diagram the diagram for that the values will be requested
+     * @param slotNames A map that contains all class names of which slots should be requested
+     * @param slotsReceivedReturn Returncall, that defines what should be done after XMF has send result
+     */
     @SuppressWarnings("unchecked")
-    public void fetchAllSlots(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
+    public void fetchSpecificSlots(AbstractPackageViewer diagram, Map <FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
     	java.util.Set<FmmlxObject> objects = slotNames.keySet();
     	Value[] objectSlotList = new Value[slotNames.size()];
     	int count = 0;
@@ -994,6 +1026,41 @@ public class FmmlxDiagramCommunicator {
     		slotsReceivedReturn.run(null);
     	};
     	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", returnCall, new Value(objectSlotList));
+    }
+        
+    /**
+     * This function ask the backend for all slots.
+     * The list returned by the backend does not contain classes or instances, that do not have slots. 
+     * @param diagram the diagram for that the values will be requested
+     * @param onSlotsUpdated Returncall, that defines what should be done after the slots of the diagram are updated
+     */
+    public void fetchAllSlots(AbstractPackageViewer diagram, ReturnCall<?> onSlotsUpdated) {
+    	
+    	ReturnCall<Vector<Object>> onSlotsReturnedFromXMF = returnedSlotList -> {
+    		
+    		//The response is a vector, that contains for every object a Vector.
+    		Vector<Vector<Object>> response = (Vector<Vector<Object>>) (returnedSlotList.get(0));
+    		//The Vector of every objects contains the objectName and a slotList
+    		for(Vector<Object> objectVector : response) {
+    			    			
+    			String objectPath = (String) (objectVector.get(0));
+//    			String objectPath = diagram.getPackagePath() + "::" + objName;    			
+    			FmmlxObject correspondingDiagramObject = diagram.getObjectByPath(objectPath);
+    				
+    			Vector<Vector<Object>> slotList = (Vector<Vector<Object>>) (objectVector.get(1));
+    			Vector<FmmlxSlot> result = new Vector<>();
+	    		for (Vector<Object> slotO : slotList) {
+	    			String name = (String) (slotO.get(0));
+	    			String value = (String) (slotO.get(1));
+	    			result.add(new FmmlxSlot(name, value, correspondingDiagramObject));
+	    			Collections.sort(result);
+	    			correspondingDiagramObject.slots = result;
+    			}
+    		}
+    		onSlotsUpdated.run(null);
+    	};
+    	
+    	xmfRequestAsync(handle, diagram.getID(), "getAllSlots", onSlotsReturnedFromXMF);
     }
     
 
@@ -1374,7 +1441,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectName),
 				new Value(attName),
 				new Value(oldLevel.getMinLevel()),
-				new Value(newLevel.getMinLevel())};
+				new Value(oldLevel.getMaxLevel()),
+				new Value(newLevel.getMinLevel()),
+				new Value(newLevel.getMaxLevel())};
 		sendMessage("changeAttributeLevel", message);
 	}
 
@@ -1503,7 +1572,6 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeClassLevel", message);
     }
 
-
     public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -1591,8 +1659,12 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.dashArrayLink),
                 new Value(aType.startDecoLink), new Value(aType.endDecoLink),
                 new Value(aType.sourcePath), new Value(aType.targetPath),
-                new Value(aType.sourceLevel.getMinLevel()), new Value(aType.sourceLevel.getMaxLevel()),
-                new Value(aType.targetLevel.getMinLevel()), new Value(aType.targetLevel.getMaxLevel())
+                new Value(aType.sourceLevel.getMinLevel()), 
+                new Value(aType.sourceLevel.getMaxLevel()),
+                new Value(aType.sourceMult), 
+                new Value(aType.targetLevel.getMinLevel()), 
+                new Value(aType.targetLevel.getMaxLevel()),
+                new Value(aType.targetMult)
                 };
 //        sendMessage("addAssociationType", message);
         xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
@@ -2053,7 +2125,7 @@ public class FmmlxDiagramCommunicator {
 
     @Deprecated // use async below
     @SuppressWarnings("unchecked")
-    public ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
+    private ModelActionsList getDiagramData(Integer diagramID) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handle, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new ModelActionsList(responseContent);
@@ -2165,6 +2237,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
 		// The update can only be achieved in a parallel thread as the actual size of the stage is
@@ -2175,13 +2248,17 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		stage.setOnCloseRequest(e -> {
-		    if (!closeScene(stage, e, id, name, node, diagram)) {
-		        e.consume(); // Prevent the window from closing
-		    }
-		});
-		
-		
+		if (diagram.getViewPane().isIntroductionMode()) {
+			//finds task description pane and shows warning dialog before close
+			stage.setOnCloseRequest((e) -> {
+				if (ToolIntroductionManager.isInitialized()) {
+					ToolIntroductionManager.getInstance().getDescriptionViewer().showWarningDialog(new WindowEvent(null, null));
+				return;
+				}
+			});
+		} else {
+			stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
+		}
 	}
 
 	/**
@@ -2261,8 +2338,9 @@ public class FmmlxDiagramCommunicator {
 	public static class DiagramInfo {
 		public final Integer id;
 		public final String diagramName;
+	//	public final boolean umlMode;
 
-		public DiagramInfo(Integer id, String diagramName) {
+		public DiagramInfo(Integer id, String diagramName /*, boolean umlMode*/) {
 			super();
 			this.id = id;
 			this.diagramName = diagramName;
@@ -2721,7 +2799,7 @@ public class FmmlxDiagramCommunicator {
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
-				//TODOD TS add logging, maybe throw exception
+				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
 				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
 				return;
@@ -2770,7 +2848,6 @@ public class FmmlxDiagramCommunicator {
 			new Value(text)});
     }
       
-    
     /**
      * This function gets called from Menu-Item "Load Package" in ControlCenter.
      * This Menu-Item calls a function in XMF which is forwarded to this function.
@@ -2780,5 +2857,27 @@ public class FmmlxDiagramCommunicator {
     		XMLParser parser = new XMLParser();
     		parser.parseXMLDocument();   		
     	});
-    }  
+    }
+    
+	public void setImports(Integer diagramID, Vector<String> imports) {
+        sendMessage("setImportedPackages", new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(createValueArray(imports))});
+	}
+	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
+		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd())};
+		sendMessage("removeAssociationDependency", message);
+		
+	}
+	public void addAssociationDependency(int diagramID, FmmlxAssociation assoc, String dependsOnName) {
+		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(assoc.sourceNode.ownPath),
+			new Value(assoc.getAccessNameStartToEnd()),
+			new Value(dependsOnName)};
+		sendMessage("addAssociationDependency", message);
+	}
 }

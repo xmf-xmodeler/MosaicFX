@@ -23,6 +23,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -32,6 +33,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -54,13 +56,13 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsoleTabs;
+import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
-import tool.helper.persistence.ModelInputTransformer;
 import tool.helper.persistence.StartupModelLoader;
-import tool.helper.persistence.XMLParser;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
 	
@@ -86,8 +88,10 @@ public class ControlCenter extends Stage {
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		
 		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"))-237;	//Adjustment for removed elements
+		}
 		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
 		Scene scene = new Scene(root, toolWidth, toolHeight);
 		setScene(scene);
@@ -109,13 +113,17 @@ public class ControlCenter extends Stage {
 			public void handle(KeyEvent event) {	
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
-					System.err.println("Testing functinality");
+					testDiagramViewIntro();
 				}		
 			}
 		});
 				
 	}
 	
+	protected void testDiagramViewIntro() {
+		new ToolIntroductionManager(this).start();
+	}
+
 	private void showCloseWarningDialog(Event event) {
 		if (!Boolean.valueOf(PropertyManager.getProperty(UserProperty.APPLICATION_CLOSING_WARNING.toString()))){
 			return;
@@ -273,38 +281,47 @@ public class ControlCenter extends Stage {
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
+		
+//		Button renameProject = new Button("Rename Project");
+//		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(renameProject, 2, 5);
+//		GridPane.setHalignment(renameProject, HPos.LEFT);
+//		
+//		Button removeProject = new Button("Delete Project");
+//		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(removeProject, 2, 6);
+//		GridPane.setHalignment(removeProject, HPos.LEFT);
 
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
 		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		
-		Label modelLabel = new Label("Models");
-		grid.add(modelLabel, 3, 1);
+		Label modelLabel = new Label("Models");	//Button added later because of DidacticMode check
 		
-		Button newModel = new Button("Create Model");
+		Button newModel = new Button("Create Model"); //Button added later because of DidacticMode check
 		newModel.setDisable(true);
-		grid.add(newModel, 3, 1);
 		GridPane.setHalignment(newModel, HPos.RIGHT);
 		
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-		Button newDiagram2 = new Button("Create UML Diagram");
+		Button newDiagram2 = new Button("Create UML Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
 		newDiagram2.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram2.setOnAction(e -> callNewDiagramDialog(true)); 
-		
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
+		grid.add(newDiagram2, 4, 4);
+		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram.setOnAction(e -> callNewDiagramDialog(false)); 
+		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-		grid.add(newDiagram, 4, 1);
+		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -315,35 +332,54 @@ public class ControlCenter extends Stage {
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 		
-		modelLV.setPrefSize(250, 150);
-		grid.add(modelLV, 3, 2);
+		modelLV.setPrefSize(250, 150);	//added Later because of DidacticMode check
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		
-		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
+		diagramLV.setOnMouseClicked(me -> handleClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
-		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
-		grid.add(concreteSyntaxWizardStart, 3, 4);
-		grid.add(newDiagram2, 4, 4);
-		
+		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
+
+		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		grid.add(concreteSyntaxWizardStart, 3, 4);
 		grid.add(loadModelDir, 2, 4);
+		grid.add(modelLabel, 3, 1);
+		grid.add(modelLV, 3, 2);
+		grid.add(newModel, 3, 1);}
+		
+		Button howToStart = new Button("How to...");
+		if(XModeler.isAlphaMode()) {
+			howToStart.setOnAction(e -> {
+				HowToDialog d = new HowToDialog();
+				d.showAndWait();
+			});
+			grid.add(howToStart, 4, 4);
+		}		
+		
+//		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
 		return grid;
 	}
 
-	private void handelClickOnDiagramListView(MouseEvent me) {
+	private String getDiagramNameSuggestion() {
+		int i = 1;
+		while(diagramLV.getItems().contains("diagram" + i)) i++;
+		return "diagram" + i;
+	}
+
+	private void handleClickOnDiagramListView(MouseEvent me) {
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
 			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if(selectedDiagramString != null) {
 				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 				if(selectedModelString != null) {
 					FmmlxDiagramCommunicator.getCommunicator().openDiagram(selectedModelString, selectedDiagramString);
-		       }
-		   }
+		        }
+		    }
 		}
 	}
 
@@ -352,8 +388,8 @@ public class ControlCenter extends Stage {
 		wizard.start(new Stage());
 	}
 
-	private void callNewDiagramDialog(boolean umlMode) {
-		TextInputDialog dialog = new TextInputDialog();
+	private void callNewDiagramDialog(boolean umlMode, String defaultName) {
+		TextInputDialog dialog = new TextInputDialog(defaultName);
 		dialog.setTitle("Create new Diagram");
 		dialog.setContentText("New diagram name:");
 		Optional<String> result = dialog.showAndWait();
@@ -415,8 +451,8 @@ public class ControlCenter extends Stage {
 		}
 
 		@Override
-		public TreeCell<String> call(TreeView<String> p){
-			return new TreeCell<String>() {
+		public TreeCellWithMenu<String> call(TreeView<String> p){
+			return new TreeCellWithMenu<String>() {
 				@Override
 				public void updateItem(String item, boolean empty) {
 					super.updateItem(item, empty);
@@ -496,4 +532,41 @@ public class ControlCenter extends Stage {
 		});
 	}
 	
+	private class TreeCellWithMenu<Type> extends TextFieldTreeCell<Type> {
+
+	    ContextMenu menu;
+
+	    public TreeCellWithMenu() {
+	        //ContextMenu with one entry	    	
+	    	MenuItem renameProject = new MenuItem("Rename Project");
+			renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+			
+			MenuItem removeProject = new MenuItem("Delete Project");
+			removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+			
+	        menu = new ContextMenu(renameProject, removeProject);
+	    }
+
+	    @Override
+	    public void updateItem(Type t, boolean bln) {
+	        //Call the super class so everything works as before
+	        super.updateItem(t, bln);
+	        //Check to show the context menu for this TreeItem
+	        if (showMenu(t, bln)) {
+	            setContextMenu(menu);
+	        }else{
+	            //If no menu for this TreeItem is used, deactivate the menu
+	            setContextMenu(null);
+	        }
+	    }
+	    
+	    //Decide if a menu should be shown or not
+	    private boolean showMenu(Type t, boolean bln){
+	        if (t != null && !t.equals("Root")) {
+	            return true;
+	        }
+	        return false;
+	    }        
+
+	}
 }

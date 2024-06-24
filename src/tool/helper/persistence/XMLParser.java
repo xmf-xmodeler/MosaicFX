@@ -3,6 +3,7 @@ package tool.helper.persistence;
 import java.io.File;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -15,22 +16,31 @@ import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.DiagramType;
+import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
+/**
+ * This class is used to send data that is contained in a XML-represenation of an model to the backend. So later the model and its diagrams could be displayed in the java-frontend
+ */
 public class XMLParser {
 	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
 	private Element root;
+	private Document doc;
 	private String projectPath;
 	private static final boolean DEBUG = false;
 
@@ -47,7 +57,9 @@ public class XMLParser {
 		if (PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString()) != null) {
 			String recentlyOpendDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString());
 			File recentlyOpendFile = new File(recentlyOpendDirPath);
-			chooser.setInitialDirectory(recentlyOpendFile.getParentFile());
+			if (recentlyOpendFile.exists()) {
+				chooser.setInitialDirectory(recentlyOpendFile.getParentFile());				
+			}
 		}
 		// choose
 		Optional<File> inputFile = Optional.of(chooser.showOpenDialog(new Stage()));
@@ -67,24 +79,26 @@ public class XMLParser {
 			//overrride importFile with transformed Version
 			inputFile = new ModelInputTransformer().transform(inputFile, importVersion);
 		}
-		// [XModelerPackage: null]
-		root = initParser(inputFile);
-		System.err.println(root);
-    	ModelInputTransformer.deleteTempFiles();
-    	
+		root = getRoot(inputFile);
+		if (DEBUG == true) {
+			XMLUtil.saveDocumentToFile(doc, new File("testXMLTransformation.xml"));
+		}
+		//used to clean disc from temporary used files for transformation
+		ModelInputTransformer.deleteTempFiles();
+		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
 	private int getVersion(File inputFile) {
-		Element root = initParser(inputFile);
 		String importVersion = null;
+		Element rootTemp = getRoot(inputFile);		
 		try {
-			importVersion = root.getAttribute(XMLAttributes.VERSION.getName());	
+			importVersion = rootTemp.getAttribute(XMLAttributes.EXPORT_VERSION.getName());	
 			return Integer.valueOf(importVersion);
 		} catch (Exception e) {
 			// Version is not 4
 		}
 		try {
-			Element versionElement = XMLUtil.getChildElement(root,"Version");
+			Element versionElement = XMLUtil.getChildElement(rootTemp,"Version");
 			importVersion = versionElement.getTextContent();
 			return Integer.valueOf(importVersion);
 		} catch (Exception e) {
@@ -94,9 +108,8 @@ public class XMLParser {
 		throw new IllegalArgumentException("InputFile has wrong Version number");
 	}
 
-	private Element initParser(File inputFile) {
-		Document doc = XMLUtil.getDocumentFromFile(inputFile);
-
+	private Element getRoot(File inputFile) {
+		doc = XMLUtil.getDocumentFromFile(inputFile);
 		if (DEBUG == true) {
 			XMLUtil.saveDocumentToFile(doc, new File("testXMLImport.xml"));
 		}
@@ -104,8 +117,10 @@ public class XMLParser {
 	}
 
 	public void parseXMLDocument() {
-		createProject();
+		//2. run ReturnCall when there are no name conflicts
+		ReturnCall<Object> onConflicitingNamesChecked = noConflict -> {
 		
+		communicator.createProject(projectPath.split("::")[1], projectPath);		
 		//i am unsure where it needs to be, you can move it.
 		checkImports();
 		
@@ -115,12 +130,8 @@ public class XMLParser {
 				
 				Element diagrams = XMLUtil.getChildElement(root, XMLTags.DIAGRAMS.getName());
 				NodeList diagramList = diagrams.getChildNodes();
-				System.err.println(diagramList.getLength());
-				
-// hier lag der Fehler weil ein -1 vorhanden war !!!!!!!
-				
-				for (int i = 0; i < diagramList.getLength() ; i++) {
-					System.err.println("in for schleife ");
+
+				for (int i = 0; i < diagramList.getLength(); i++) {
 					Node node = diagramList.item(i);
 					System.err.println(node.getNodeName());
 					if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.DIAGRAM.getName()) ) {
@@ -129,9 +140,47 @@ public class XMLParser {
 				}
 				ControlCenterClient.getClient().getAllProjects();
 			});
-
+		};
+		//Check if XModeler already contains project with same name
+		checkForNameConflict(onConflicitingNamesChecked);
 	}
 	
+	/**
+	 * If the backend tries to create a project with the same name it crashes. This
+	 * function checks whether there is already a project whose name matches the
+	 * name of the import project. If so, an alert is presented and the import is aborted.
+	 */
+	private void checkForNameConflict(ReturnCall<Object> onNameChecked) {
+
+		ReturnCall<Vector<Object>> onProjectNamesReturned = projectNamesVec -> {
+
+			Vector<String> projectNames = (Vector) projectNamesVec.get(0);
+			for (String projectName : projectNames) {
+				if ((projectPath.split("::")[1]).equals(projectName)) {
+					showNameConflictAlert(projectPath.split("::")[1]);
+					return;
+				}
+			}
+			onNameChecked.run(null);
+		};
+		// please replace 0 with getHandle() and the second 0 with get DiagramId -> there was an update in another branch that contain these functions
+		communicator.xmfRequestAsync(0, 0, "getAllProjectNames", onProjectNamesReturned);
+	}
+
+	/**
+	 * In case of conflicting project names by import this function shows an alert.
+	 */
+	private void showNameConflictAlert(String conflictingProject) {
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Conflicting names");
+			alert.setHeaderText("The current session already contains a project with the name \"" + conflictingProject + "\"!");
+			alert.setContentText("Please change name of the project you would like to import or restart XModeler");
+			alert.getButtonTypes().setAll(ButtonType.OK);
+			alert.showAndWait();}
+		);
+	}
+
 	/**
 	 * This function proves if the referenced packages of the new imported package are already loaded.
 	 * Add Info about what happens when the package is not found.
@@ -140,10 +189,7 @@ public class XMLParser {
 		//Only imports version 4 or higher contains Imports. If Import-Tag is not found an empty element is returned (see getChildElement()) and because this has no children no action is performed.
 		Element importElement = XMLUtil.getChildElement(root, XMLTags.IMPORTS.getName());
 		NodeList importList  = importElement.getChildNodes();
-		
-//		-1 wurde entfernt
-		
-		for (int i = 0; i < importList.getLength() ; i++) {
+		for (int i = 0; i < importList.getLength(); i++) {
 			Node node = importList.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.PACKAGE_IMPORT.getName()) ) {
 				//add your needed action for an import here
@@ -152,26 +198,10 @@ public class XMLParser {
 		}
 	}
 
-	private void createProject() {
-		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
-        String projectName = projectPath.split("::")[1];
-		communicator.createProject(projectName, projectPath);
-	}
-
-//	private void buildModel() {
-//			//Creates dummy project that hold the model data.
-//			//Current assumption is, that there is only one model per project
-////			int localID = 	communicator.createDiagramAsync(projectPath, projectName, DiagramType.ModelBrowser);		
-////			sendModelDataToXMF(localID);
-//		}
-
 	private void sendModelDataToXMF(Integer diagramId) {
 		Element model = XMLUtil.getChildElement(root, XMLTags.MODEL.getName());
 		NodeList logList = model.getChildNodes();
-		
-//		-1 wurde entfernt
-		
-		for (int i = 0; i < logList.getLength() ; i++) {
+		for (int i = 0; i < logList.getLength(); i++) {
 			if (logList.item(i).getNodeType() == Node.ELEMENT_NODE) {
 				Element modelElement = (Element) logList.item(i);
 				// Every request is added to a sorted list on XMF side. Because the request are processed in a ordered way it is ensured, that the first operations are finished before the next one it started. So there should be no error because one Object is waiting for another to be created.
@@ -200,71 +230,91 @@ public class XMLParser {
 
 	private void buildDiagram(Element diagram) {
 		String diagramName = diagram.getAttribute(XMLAttributes.NAME.getName());
-		// TODO is the file used somewhere?
-//		int newDiagramId = communicator.createDiagramAsync(projectPath, diagramName, DiagramType.ClassDiagram );
-//		sendDiagramDataToXMF(newDiagramId, diagram);	
-		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, false, 
+		boolean umlMode = false;
+		if(!diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals(null) || !diagram.getAttribute(XMLAttributes.UML_Mode.getName()).equals("")) {	//making sure the attribute exists in the xml
+		umlMode = Boolean.parseBoolean(diagram.getAttribute(XMLAttributes.UML_Mode.getName()));
+		}
+		communicator.createDiagram(projectPath, diagramName, "", DiagramType.ClassDiagram, umlMode, 
 				newDiagramId -> sendDiagramDataToXMF(newDiagramId, diagram));
 	}
 	
-	private void sendDiagramDataToXMF(Integer diagramId, Element diagram) {
-		Element views = XMLUtil.getChildElement(diagram, XMLTags.VIEWS.getName());
+	private void sendDiagramDataToXMF(Integer diagramId, Element diagramElement) {
+		Element views = XMLUtil.getChildElement(diagramElement, XMLTags.VIEWS.getName());
 		sendDiagramViewStatus(diagramId, views);
-		Element diagramsDisplayProperty = XMLUtil.getChildElement(diagram, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
+		Element diagramsDisplayProperty = XMLUtil.getChildElement(diagramElement, XMLTags.DIAGRAM_DISPLAY_PROPERTIES.getName());
 		sendDiagramDisplayproperties(diagramId, diagramsDisplayProperty);
-		Element instances = XMLUtil.getChildElement(diagram, XMLTags.INSTANCES.getName());
+		Element instances = XMLUtil.getChildElement(diagramElement, XMLTags.INSTANCES.getName());
 		NodeList instancesList = instances.getChildNodes();
-		//TODO TS Why is this line important?
-//		System.err.println("xxxxxx   after wait " + 	communicator.getAllObjectPositions(diagramId));
 		for (int i = 0; i < instancesList.getLength(); i++) {
 			Node node = instancesList.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				sendObjectInformation(diagramId, (Element) node);
 			}
 		}
-		Element edges = XMLUtil.getChildElement(diagram, XMLTags.EDGES.getName());
+		sendNotesDataToXMF(diagramId, diagramElement);
+		Element edges = XMLUtil.getChildElement(diagramElement, XMLTags.EDGES.getName());
 		_ALIGN_EDGES(edges, diagramId);
 //		_ALIGN_LABELS(edges, diagramId);
 	}
-	/*
-    public void _ALIGN_LABELS(Element edgesNode, Integer diagramId) {
-    	FmmlxDiagram diagram = FmmlxDiagramCommunicator.getDiagram(diagramId);
-        Vector<DiagramEdgeLabel<?>>labels = diagram.getLabels();
-        for(DiagramEdgeLabel<?> label : labels){
-            Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
-            Point2D coordinate = getLabelCoordinate(edgesNode, label, initCoordinate);
-            if(validateLabelName(label.getText())){
 
-                label.setRelativePosition(coordinate.getX(), coordinate.getY());
-                label.getOwner().updatePosition(label);
-                fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
-            }
+	/**
+	 * Prepares loop. This loop will call for every Note-Element in the XML a function that sends note corresponding data to XMF
+	 * @param diagramId defines the diagram the note is added to
+	 * @param diagramElement XML-Element, that contains as children further XML-Elements with data
+	 */
+	private void sendNotesDataToXMF(Integer diagramId, Element diagramElement) {
+		Element notesElement = XMLUtil.getChildElement(diagramElement, XMLTags.NOTES.getName());
+		NodeList notesList = notesElement.getChildNodes();
+		//loop over every note-element
+		for (int i = 0; i < notesList.getLength(); i++) {
+			Node node = notesList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				sendNoteDataToXMF(diagramId, (Element) node);
+			}
+		}
+	}
+	
+	/**
+	 * For every note element containing data is send to XMF
+	 * @param diagramId defines the diagram the note is added to
+	 * @param noteElement contains the note data from the XML-representation
+	 */
+	private void sendNoteDataToXMF(Integer diagramId, Element noteElement) {
+        //Create note instance
+		Note note = new Note();
+        note.setId(Integer.parseInt(XMLUtil.getChildElement(noteElement, XMLTags.NOTEID.getName()).getTextContent()));
+        note.setNoteColor(Color.valueOf((XMLUtil.getChildElement(noteElement, XMLTags.NOTECOLOR.getName()).getTextContent())));
+        note.setContent((XMLUtil.getChildElement(noteElement, XMLTags.NOTECONTENT.getName()).getTextContent()));
+		double[] position = parseNotePosition(noteElement);
+		note.setPosition(position[0], position[1]);
+        
+		//send data to XMF
+		note.addNoteToDiagram(diagramId);
+        note.sendCurrentNoteMappingToXMF(diagramId, r -> {});
+	}
 
-            label.getOwner().updatePosition(label);
-            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
-        }
-        fmmlxDiagram.objectsMoved = true;
-    }
-    
-    private Point2D getLabelCoordinate(Element edgesNode, DiagramEdgeLabel<?> label, Point2D initCoordinate) {
-//        Element labelsElement = getLabelsElement(diagramElement);
-    	Vector<Element> label
-        NodeList labelList_XML = labelsElement.getChildNodes();
-
-        for (int i = 0 ; i < labelList_XML.getLength() ; i++){
-            if (labelList_XML.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element label_xml_element = (Element) labelList_XML.item(i);
-                if(label_xml_element.getAttribute("ownerID").equals(label.getOwner().path) &&
-                   label_xml_element.getAttribute("localID").equals(label.localID+"")) {
-                    double x = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
-                    return new Point2D(x, y);
-                }
-            }
-        }
-        return initCoordinate;
-    }*/
-    
+	/**
+	 * Parses x and y coordinate of note from XML
+	 * @param noteElement has child element, that contains data
+	 * @return double array. First position = x, second position = y
+	 */
+	private double[] parseNotePosition(Element noteElement) {
+		double[] positions = new double[2];
+		Element notePosition = XMLUtil.getChildElement(noteElement, XMLTags.NOTEPOSITION);
+		NodeList positionsList = notePosition.getChildNodes();
+		for (int i = 0; i < positionsList.getLength(); i++) {
+			Node node = positionsList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				if (Objects.equals(node.getNodeName(), XMLTags.XPOSITION.getName())) {
+					positions[0] = Double.parseDouble(node.getTextContent());
+				} else if (Objects.equals(node.getNodeName(), XMLTags.YPOSITION.getName())) {
+					positions[1] = Double.parseDouble(node.getTextContent());
+				}
+			}
+		}
+		return positions;
+	}
+  
     private void _ALIGN_EDGES(Element edgesNode, int diagramID) {
 
         NodeList edgeList = edgesNode.getChildNodes();

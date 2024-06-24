@@ -97,7 +97,8 @@ public class ModelActionsList implements Comparable<ModelActionsList>{
 		if("addOperation".equals(name))         return 0060;
 		if("addConstraint".equals(name))        return 0070;
 		if("changeSlotValue".equals(name))      return 0100;
-		if("addAssociation".equals(name))       return 0110;
+		if("addAssociationType".equals(name))   return 0110;
+		if("addAssociation".equals(name))       return 0111;
 		if("addLink".equals(name))              return 0120;
 		if("addDelegation".equals(name))        return 0130;
 		if("setRoleFiller".equals(name))        return 0140;

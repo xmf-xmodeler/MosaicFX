@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.helper.user_properties;
 
 import java.io.File;
 import java.util.Optional;
@@ -25,8 +25,6 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
 
 public class PropertyManagerStage extends Stage {
 

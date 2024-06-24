@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,11 +20,15 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
+	private TabPane tabPane = new TabPane();	//ToDo Parameters?
+	
 	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 
 	private TextField classTextField; 
+	private TextField umlFunctionSignature;	//only for umlMode
 	private ComboBox<Integer> levelComboBox;
+	private VBox mainBox;
 
 	ObservableList<String> classList;
 	private CodeBoxPair codeBoxPair;	
@@ -45,6 +51,10 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(oldOp);
 		setResizable(true);
+		
+		if(diagram.isUMLMode()) {	//Regular and Expert mode
+			
+		}
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -95,7 +105,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			levelComboBox.getSelectionModel().selectLast();
 			codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
 			defaultOperationButton.setOnAction(event -> {
-				AddOperationDialog.this.resetOperationBody("op0", false);});
+				AddOperationDialog.this.codeBoxPair.bodyCodeBox.setText(oldOpName);});
 		} else {
 			levelComboBox = new ComboBox<>(FXCollections.observableArrayList(oldOp.getLevel()));
 			levelComboBox.getSelectionModel().selectLast();
@@ -109,25 +119,108 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		defaultOperationButton.setPrefWidth(150);
 
 		GridPane theGrid = new GridPane();
+		if(!diagram.isUMLMode()) {
 		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
-		theGrid.add(new Label("Operation body"), 0, 2);
 		theGrid.add(classTextField, 1, 0);
 		theGrid.add(levelComboBox, 1, 1);
-		theGrid.add(defaultOperationButton, 1, 2);
+		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
+		}
 		theGrid.setHgap(5);
 		theGrid.setVgap(5);
+		theGrid.add(new Label("Operation body"), 0, 2);
+		//theGrid.add(defaultOperationButton, 1, 2);
 		
-		VBox mainBox = new VBox(5, 
-			theGrid, 
-			codeBoxPair.getBodyScrollPane(),
-			new Label("Parse result"),
-			codeBoxPair.getErrorTextArea(),
-			statusLabel
-			);
+
+		if(!diagram.isUMLMode()) {	//Implementation of gui is different enough that it makes sense to keep the different methods for the layout
+			layoutStandard(defaultOperationButton,theGrid);
+		}
+		else {
+			layoutUML(defaultOperationButton,theGrid);
+		}
+		
 		VBox.setVgrow(codeBoxPair.getBodyScrollPane(), Priority.ALWAYS);
+
+		dialogPane.setContent(mainBox);		//Code feld hinzugefuegt
+	}
+	
+	private void layoutStandard(Button defaultOperationButton, GridPane theGrid) {
+		mainBox = new VBox(5, 
+				theGrid, 
+				codeBoxPair.getBodyScrollPane(),
+				new Label("Parse result"),
+				codeBoxPair.getErrorTextArea(),
+				defaultOperationButton,
+				statusLabel
+				);
+	}
+	
+	private void layoutUML(Button defaultOperationButton, GridPane theGrid) {
+		umlFunctionSignature = new TextField();
+		umlFunctionSignature.setPrefWidth(200);
+		AddOperationDialog.this.codeBoxPair.setBodyText(
+				"@Operation " + "methodName[monitor=true,delToClassAllowed=false]():XCore::Element" + "\n" +
+				"null" + "\n" + "end");
+		umlFunctionSignature.setOnKeyTyped(event -> {
+			String[] codeBody;
+			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+			String finalCode = "";
+			String nextLine = "";
+			for(int i = 0; i < codeBody.length;i++){
+				if(i==0) {
+					nextLine = "@Operation " + umlFunctionSignature.getText() +"\n";
+				}
+				else if (!codeBody[i].equals("end")) {
+					nextLine = nextLine + codeBody[i] + "\n";
+				}
+				else {
+					nextLine = nextLine + codeBody[i];
+				}
+			}
+			finalCode = nextLine;
+			codeBoxPair.setBodyText(finalCode);
+		});
 		
-		dialogPane.setContent(mainBox);
+		codeBoxPair.getBodyScrollPane().setOnKeyTyped(e -> {
+			String[] codeBody;
+			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+			codeBody = codeBody[0].split(" ");
+			 String signature = "";
+			for(int i = 1;i<codeBody.length;i++) {
+				signature = signature + codeBody[i];
+			}
+		
+			umlFunctionSignature.setText(signature);
+		});
+		
+		if(oldOpName!=null) {
+		umlFunctionSignature.setText(oldOpName + "():Integer");
+		}
+		else {
+			umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");
+		}
+		GridPane theGrid2 = new GridPane();
+		theGrid2.add(umlFunctionSignature, 0, 0);
+		
+		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
+		
+		VBox expertBox = new VBox(5,  
+				codeBoxPair.getBodyScrollPane(),
+				new Label("Parse result"),
+				codeBoxPair.getErrorTextArea(),
+				defaultOperationButton
+				);
+		
+		Tab expertTab = new Tab("Expert Mode",expertBox);
+		
+		tabPane.getTabs().addAll(normalModeTab,expertTab);
+	mainBox = new VBox(5,  
+			theGrid,
+			tabPane,
+			statusLabel
+				);
+	tabPane.setMinHeight(500);
+	tabPane.setMinWidth(450);
+	VBox.setVgrow(tabPane, Priority.ALWAYS);
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {

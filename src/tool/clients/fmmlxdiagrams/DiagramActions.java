@@ -44,6 +44,8 @@ import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.AutoMLMDialog;
+import tool.clients.fmmlxdiagrams.dialogs.ChangeNoteDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -53,6 +55,7 @@ import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
@@ -63,13 +66,12 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
-import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
-import tool.clients.workbench.WorkbenchClient;
-import tool.helper.userProperties.PropertyManager;
+import tool.helper.user_properties.PropertyManager;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -90,6 +92,24 @@ public class DiagramActions {
 		} else {
 			Platform.runLater(() -> ClassBrowserClient.show(diagram));
 		}
+	}
+	
+
+
+	public void importModels() {
+		Platform.runLater(() -> {
+			tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog dlg = 
+					new tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog(diagram);
+			Optional<tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result> result = 
+					dlg.showAndWait();
+			
+			if (result.isPresent()) {
+				final tool.clients.fmmlxdiagrams.dialogs.ImportModelsDialog.Result imdResult = result.get();
+				
+				diagram.getComm().setImports(diagram.getID(), imdResult.imports);
+				diagram.updateDiagram();
+			}
+		});
 	}
 
 	public void addMetaClassDialog(final View view) {
@@ -168,10 +188,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addInstanceDialog(View view) {
-		addInstanceDialog(null, view);
-	}
-
 	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
@@ -242,6 +258,43 @@ public class DiagramActions {
 			}
 		});
 	}
+	
+	public void addNote(FmmlxDiagram fmmlxDiagram, Point2D canvasPosition) {
+		Platform.runLater(() -> {
+			NoteCreationDialog dialog = new NoteCreationDialog();
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				//1.Note with default id is created
+				Note note = new Note(canvasPosition, result.get());
+				ReturnCall<Integer> onNoteIdReturned = noteId -> {			
+					//3. Set note id to valid id
+					note.setId(noteId);
+					//4. Use the note-instance to send mappingInfos to XMF
+					note.sendCurrentNoteMappingToXMF(fmmlxDiagram.getID(), r -> {});
+					//5. After the update all note information on Java-side is deleted because an update will clear the notes array. Afterwards all notes data is reloaded from backend. 
+					fmmlxDiagram.updateDiagram();
+				};
+				//2. Note with default id is send to XMF. There a note-instance is created. 
+				// The valid id is returned from XMF
+				note.addNoteToDiagram(fmmlxDiagram, onNoteIdReturned);
+				
+			}
+		});
+	}
+
+	public void editNote(Note note) {
+		Platform.runLater(() -> {
+			ChangeNoteDialog dialog = new ChangeNoteDialog(note);
+			Optional<NoteCreationDialog.Result> result = dialog.showAndWait();
+			if (result.isPresent() && result.get().getButtonType() == ButtonType.CANCEL) {
+				return;
+			} else {
+				note.updateNoteData(diagram, result.get());
+			}
+		});
+	}
 
 	public void addAttributeDialog() {
 		addAttributeDialog(null);
@@ -283,6 +336,16 @@ public class DiagramActions {
 			diagram.updateDiagram();
 		});
 		
+	}
+	
+	// FH 23.02.2024
+	// opens the gui for the AutoMLM gui
+	public void addAutoMLMDialog() {
+		Platform.runLater(() -> {
+			AutoMLMDialog dlg = new AutoMLMDialog(diagram);
+			dlg.setTitle("AutoMLM");
+			dlg.showAndWait();
+		});
 	}
 	
 	public void editEnumerationDialog(String string, String enumName) {
@@ -632,7 +695,7 @@ public class DiagramActions {
     public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type, Property selectedProperty, Vector<Property> availableProperties) {
 
 		Platform.runLater(() -> {
-			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty);
+			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty, diagram);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
@@ -988,10 +1051,10 @@ public class DiagramActions {
 	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram.getID());diagram.updateDiagram();}
 	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram.getID());diagram.updateDiagram();}
 
-	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelRaiseRelated(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelLowerRelated(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelInsertBelow(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
+	public void levelRemoveThis(FmmlxObject o) {	new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();}
 
 	public void assignToGlobalVariable(FmmlxObject object) {
 		TextInputDialog dialog = new TextInputDialog("");
@@ -1135,7 +1198,7 @@ public class DiagramActions {
 	
 	public void exportPNG() {
 		
-		DiagramViewPane mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
+		DiagramCanvas mainViewPane = ((FmmlxDiagram) diagram).getActiveDiagramViewPane();
 		
 		mainViewPane.setMaxZoom();
 
@@ -1260,14 +1323,14 @@ public class DiagramActions {
 		new UnhideElementsDialog(diagram).showDialog();
 	}
 
-	public void openInstanceWizard(FmmlxObject theClass, DiagramViewPane view) {
+	public void openInstanceWizard(FmmlxObject theClass, DiagramCanvas view) {
 		InstanceWizard wizard = new InstanceWizard(diagram, theClass, theClass.getLevel().getMinLevel()-1);
 		System.err.println("showing Wizard...");
 		wizard.showAndWait();
 	}
 	
 	public void centerViewOnObject() {
-		DiagramViewPane viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
+		DiagramCanvas viewPane = ((FmmlxDiagram)diagram).getActiveDiagramViewPane();
 		
 		String dialogTitle = "Center view on specific Object";
 		Optional<FmmlxObject> result = showChooseFmmlxObjectsDialog(dialogTitle, true);
@@ -1303,8 +1366,16 @@ public class DiagramActions {
 		diagram.getComm().redo(diagram.diagramID);
 	}
 
-	public void generateGetter(FmmlxObject object, FmmlxAttribute attribute) {
+	public void generateGetter(final FmmlxObject object, final FmmlxAttribute attributeParam) {
 		Platform.runLater(() -> {
+			FmmlxAttribute attribute = attributeParam;
+			if(attribute == null) {
+				ChoiceDialog<FmmlxAttribute> cd = new ChoiceDialog<>(null, object.getAllAttributes());
+				Optional<FmmlxAttribute> a = cd.showAndWait();
+				if(!a.isPresent() || a.get() == null) return;
+				attribute = a.get();
+			}
+			
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
 			dlg.initAttributeSetter(attribute);
 			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
@@ -1318,7 +1389,7 @@ public class DiagramActions {
 	}	
 	
 	public void generateSetter(FmmlxObject object, FmmlxAttribute attribute) {
-		throw new RuntimeException("Not yet implemented!");
+		new Alert(AlertType.ERROR, "Not yet implemented!", ButtonType.OK).showAndWait();
 	}
 
 	public void generateAssocGetter(
@@ -1361,4 +1432,33 @@ public class DiagramActions {
 		});
 	}
 
+	public void hideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.hide(diagram);
+		}
+	}
+	
+	public void unhideAllNotes() {
+		for (Note note : diagram.getNotes()) {
+			note.unhide(diagram);
+		}
+	}
+
+	public void removeAssociationDependency(FmmlxAssociation association) {
+		diagram.getComm().removeAssociationDependency(diagram.getID(), association);
+		diagram.updateDiagram();
+	}
+
+	public void addAssociationDependency(FmmlxAssociation association) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle("Add Association Dependency");
+		dialog.setHeaderText("depends on association name:");
+		 
+		Optional<String> result = dialog.showAndWait();
+
+		result.ifPresent(s -> {
+			diagram.getComm().addAssociationDependency(diagram.getID(), association, s);
+			diagram.updateDiagram();
+		});
+	}
 }

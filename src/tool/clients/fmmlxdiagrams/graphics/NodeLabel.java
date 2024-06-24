@@ -24,7 +24,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeLabel extends NodeBaseElement {
 	
 	private Pos alignment;
-	private final FontWeight fontWeight;
+	private FontWeight fontWeight;
 	private final FontPosture fontPosture;
 	private final int fontSize = 14;
 	private final double fontScale;
@@ -40,6 +40,10 @@ public class NodeLabel extends NodeBaseElement {
 	
 	private boolean special = false;
 	private double availableWidth;
+	
+	public void setTextWidth(double textWidth) {
+		this.textWidth = textWidth;
+	}
 
 	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
 		this(alignment, a, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
@@ -79,6 +83,19 @@ public class NodeLabel extends NodeBaseElement {
 		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
 	}
 	
+	/**
+	 * Returns default NodeLabel. For default variable values see method body. The object then can be adjusted by the getter and setter of the class.
+	 */
+	public NodeLabel(String text) {
+		super();
+		this.fontWeight = FontWeight.NORMAL;
+		this.fontPosture = FontPosture.REGULAR;
+		this.fontScale = 1;
+		setBgColor(Color.TRANSPARENT);
+		setFgColor(Color.BLACK);
+		this.text = text;
+	}
+	
 	private Affine getBoxTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -90,7 +107,7 @@ public class NodeLabel extends NodeBaseElement {
 		return total;
 	}
 	
-	private Affine getTextTransform(Affine canvasTransform) {
+	protected Affine getTextTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -121,7 +138,7 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagramView) {
 		boolean hit = false;
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
@@ -276,5 +293,11 @@ public class NodeLabel extends NodeBaseElement {
 		this.bgColor = bgColor;
 	}
 
+	public void setFontWeight(FontWeight fontWeight) {
+		this.fontWeight = fontWeight;
+	}
 
+	public double getTextHeight() {
+		return textHeight;
+	}
 }

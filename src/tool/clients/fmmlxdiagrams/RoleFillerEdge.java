@@ -20,7 +20,7 @@ public class RoleFillerEdge extends Edge<FmmlxObject> {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	public void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 

@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 import javafx.application.Platform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.helper.userProperties.PropertyManager;
-import tool.helper.userProperties.UserProperty;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class StartupModelLoader {
 
@@ -35,6 +35,24 @@ public class StartupModelLoader {
 			});
 		};
 		FmmlxDiagramCommunicator.getCommunicatorWhenReady(onCommunicatorAvailable);
+	}
+	
+	// FH 04.03.2024
+	// loadModels to Control Center from a specific path
+	public void loadModelsFromPath(String path) {
+		ReturnCall<FmmlxDiagramCommunicator> onCommunicatorAvailable = communicator -> {
+			Platform.runLater(() -> {
+				if (path == null)
+					return;
+				Path dir = Paths.get(path);
+				Stream<Path> filesFromSavedModelsPath = getFilesFromSavedModelsPath(dir);
+				loadXmlFilesFromStream(filesFromSavedModelsPath, communicator);
+				Stream<Path> visibleSubfolder = loadListOfVisibleSubfolder(dir);
+				loadXmlFilesFromStream(visibleSubfolder, communicator);
+			});
+		};
+		FmmlxDiagramCommunicator.getCommunicatorWhenReady(onCommunicatorAvailable);
+
 	}
 
 	private void loadXmlFilesFromStream(Stream<Path> stream, FmmlxDiagramCommunicator communicator) {		

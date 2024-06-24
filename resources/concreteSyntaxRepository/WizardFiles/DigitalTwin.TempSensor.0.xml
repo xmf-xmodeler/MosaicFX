@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::DigitalTwin::TempSensor" level="0">
+  <SVG id="svg0" path="../DigitalTwins/temperature-svgrepo-com.svg" tx="0.0" ty="0.0" xx="0.096" xy="0.0" yx="0.0" yy="0.096"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x001a80ff" id="current" tx="51.0" ty="117.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Modification>
+    <Condition slotName="currentValue" type="ReadFromSlot"/>
+    <Affected id="current" localId="current"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

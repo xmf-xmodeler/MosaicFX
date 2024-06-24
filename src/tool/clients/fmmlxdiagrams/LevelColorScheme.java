@@ -57,21 +57,21 @@ public abstract class LevelColorScheme {
 //	}
 //	
 //	public static final class GrayLevelColorScheme extends LevelColorScheme {
-//		private final int min;
-//		private final int max;
+////		private final int min;
+////		private final int max;
 //		
-//		public GrayLevelColorScheme(Vector<FmmlxObject> objects) {
-//			int MIN = Integer.MAX_VALUE;
-//			int MAX = Integer.MIN_VALUE;
-//			for(FmmlxObject o : objects) {
-//				if(o.level < MIN) MIN = o.level;
-//				if(o.level > MAX) MAX = o.level;
-//			}
-//			if(MAX-MIN < 0) throw new IllegalArgumentException();
-//			if(MAX-MIN == 0) {MAX++; MIN--;}
-//			min = MIN;
-//			max = MAX;
-//		}
+////		public GrayLevelColorScheme(Vector<FmmlxObject> objects) {
+////			int MIN = Integer.MAX_VALUE;
+////			int MAX = Integer.MIN_VALUE;
+////			for(FmmlxObject o : objects) {
+////				if(o.level < MIN) MIN = o.level;
+////				if(o.level > MAX) MAX = o.level;
+////			}
+////			if(MAX-MIN < 0) throw new IllegalArgumentException();
+////			if(MAX-MIN == 0) {MAX++; MIN--;}
+////			min = MIN;
+////			max = MAX;
+////		}
 //
 //		@Override
 //		public Color getLevelFgColor(int level, double opacity) {
@@ -146,6 +146,53 @@ public abstract class LevelColorScheme {
 		}
 		
 	}
+	
+//	public static final class UMLGreyColorScheme extends LevelColorScheme {		//only for UML
+//
+//		private final Color A = Color.WHITESMOKE;
+//		private final Color B = Color.DARKGREY;
+//		private final Color Z = Color.RED;
+////		
+//		@Override
+//		public Color getLevelFgColor(int level, double opacity) {
+//			Color BG = getLevelBgColor(level);
+//			switch (level) {
+//				case 0: case 1: case 2: case LEVEL_AGNOSTIC_CLASS: return mix(Color.BLACK, BG, opacity);
+//				case 3: case 4: case 5: case 6: return mix(Color.WHITE, BG, opacity);
+////				case 7: return mix(B, BG, opacity);
+////				case 8: return mix(C, BG, opacity);
+////				case 9: return mix(D, BG, opacity);
+//				case OBJECT_HAS_ISSUES: return mix(Color.DARKRED, BG, opacity);
+//				case LEVEL_CONTINGENT_CLASS: return mix(Color.DARKRED, BG, opacity);
+//				case ENUM: return mix(Color.DARKGREEN, BG, opacity);
+//				default: return mix(B, BG, opacity);
+//			}
+//		}
+//		
+//		private Color mix(Color FG, Color BG, double opacity) {
+//			double r = FG.getRed()*opacity + BG.getRed()*(1-opacity);
+//			double g = FG.getGreen()*opacity + BG.getGreen()*(1-opacity);
+//			double b = FG.getBlue()*opacity + BG.getBlue()*(1-opacity);
+//			return  Color.color(r, g, b);
+//		}
+//
+//		@Override
+//		public Color getLevelBgColor(int level) {
+//			switch (level) {
+//				case 0: case LEVEL_AGNOSTIC_CLASS: return A;
+//				case 1: return B;
+////				case 2: return C;
+////				case 3: return D;
+////				case 4: return E;
+////				case 5: return F;
+//				case LEVEL_CONTINGENT_CLASS: return Color.LIGHTYELLOW;
+//				case ENUM: return Color.LIGHTGREEN.brighter().brighter();
+//				case OBJECT_HAS_ISSUES: return Z;
+//				default: return Color.BLACK;
+//			}
+//		}
+		
+//	}
 //	
 //	public static final class RedLevelColorScheme extends LevelColorScheme {
 //		private final int min;

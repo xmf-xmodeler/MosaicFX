@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeText extends NodeBaseElement{
@@ -83,7 +83,7 @@ public class NodeText extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, DiagramCanvas diagramView) {
 		// The text itself is never clickable
 		return false;
 	}

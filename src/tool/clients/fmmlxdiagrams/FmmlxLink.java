@@ -30,7 +30,8 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override
+	public void layoutLabels(FmmlxDiagram diagram) {
 		try{
 			createLabel(getAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;
@@ -143,4 +144,18 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		FmmlxAssociation assoc = getAssociation();
 		return assoc!=null?assoc.getSourceDecoration():tool.clients.fmmlxdiagrams.Edge.HeadStyle.NO_ARROW;
 	}
+	
+	public static FmmlxLink getFmmlxLink(FmmlxDiagram diagram, String source, String target, String name) {
+		String nameString = name + "#" + source + "#" + target;
+		Vector<FmmlxLink> associations = diagram.getFmmlxLinks();
+
+		for (FmmlxLink link : associations) {
+			if (link.sourceNode.name.equals(source)
+					&& (link.getTargetNode().name.equals(target)) &&
+					link.getName().equals(nameString)) {
+				return link;
+			}
+		}
+		return null;
+	}	
 }
