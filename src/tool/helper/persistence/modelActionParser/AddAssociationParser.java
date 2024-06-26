@@ -66,8 +66,6 @@ public class AddAssociationParser extends ModelActionParser {
 		String aType = null;
 		try{aType = modelElement.getAttribute("associationType");} catch(Exception e) {} 
 		if(aType == null || "".equals(aType)) aType = "Associations::DefaultAssociation";
-
-		System.err.println("aType: >" + aType + "<");
 		
 		communicator.addAssociation(diagramId, classSourceName, classpath2, accessSourceFromTargetName,
 				accessTargetFromSourceName, fwName, aType, multiplicityT2S, multiplicityS2T, instLevelSource, instLevelSource,
