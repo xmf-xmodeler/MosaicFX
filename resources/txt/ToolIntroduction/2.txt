@@ -10,7 +10,7 @@
     <div class="content">
         <h2>2. Attributes for Movie Class</h2>
 		<p>Remember that a class serves as an abstraction over a set of objects. In our small example, we assume that each particular movie object has a title and a duration. To enable this, we must add the respective attributes to our created class.</p>
-        <p>Next, we add the attribute “title”. A title can be any text, so we choose the data type String.</p>
+        <p>First, we add the attribute “title”. A title can be any text, so we choose the data type String.</p>
         <p>Also, we add an attribute “durationInMinutes”. It is good practice to add the measurement unit to the attribute name in cases where it might be ambiguous. If we call the attribute “duration” only, it might be unclear whether the value of duration serves to represent minutes or hours. It is sufficient if we only capture the duration in minutes through integers, so we select Integer as our data type.</p>
         <p>Now that you have added the “durationInMinutes” attribute, you may notice that it is put above our “title” attribute. In the XModelerML, the attributes are automatically ordered by their name from A to Z for improved legibility.</p>
     </div>
