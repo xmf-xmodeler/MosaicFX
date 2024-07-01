@@ -472,10 +472,6 @@ public class ControlCenter extends Stage {
 				projectTree.getRoot().getChildren().get(0).getChildren().remove(0);
 			}
 		}
-<<<<<<< Updated upstream
-});
-=======
->>>>>>> Stashed changes
 	}
 		
 	public void setProjectModels(Vector<String> vec) {
