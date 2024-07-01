@@ -460,6 +460,10 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
+		this.removeNoneProjectEntries();
+});	}
+	
+	private void removeNoneProjectEntries() {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
 			if(projectTree.getRoot().getChildren().get(0).getChildren().size()>1) {
 				projectTree.getRoot().getChildren().get(0).getChildren().remove(1);
@@ -468,7 +472,10 @@ public class ControlCenter extends Stage {
 				projectTree.getRoot().getChildren().get(0).getChildren().remove(0);
 			}
 		}
+<<<<<<< Updated upstream
 });
+=======
+>>>>>>> Stashed changes
 	}
 		
 	public void setProjectModels(Vector<String> vec) {

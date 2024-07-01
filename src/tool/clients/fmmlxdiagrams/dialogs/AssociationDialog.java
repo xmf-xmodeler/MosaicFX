@@ -470,7 +470,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
 							sourceVisibleFromTargetBox.isSelected(),
-							targetVisibleFromSourceBox.isSelected(),//both visibilities true as is default in UML
+							targetVisibleFromSourceBox.isSelected(),
 							false,
 							false,
 							sourceGetterField.getText().orElse(null),
