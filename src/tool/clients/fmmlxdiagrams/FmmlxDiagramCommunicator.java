@@ -33,9 +33,9 @@ import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.tool_introduction.DiagramViewState;
-import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.DiagramViewState;
+import tool.xmodeler.didactic_ml.TaskDescriptionViewer;
+import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {

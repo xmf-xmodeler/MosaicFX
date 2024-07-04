@@ -40,7 +40,7 @@ import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class DiagramViewHeadToolBar extends VBox {
 
