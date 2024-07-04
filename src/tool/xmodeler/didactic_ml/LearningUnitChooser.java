@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -45,6 +46,11 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 				+ "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;");
 	}
 
+	/**
+	 * Helper function. Needed to provide matching binding property
+	 * @param selectedItemProperty that needs to be checked 
+	 * @return the boolean if button should be enabled 
+	 */
 	private BooleanBinding createDisableBinding(ReadOnlyObjectProperty<LearningUnit> selectedItemProperty) {
 		return selectedItemProperty.isNull();
 	}
@@ -52,6 +58,7 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 	private TableView<LearningUnit> createTableView() {
 		TableView<LearningUnit> tView = new TableView<>();
 		tView.setItems(getItems());
+		setRowFactory(tView);
 
 		TableColumn<LearningUnit, Integer> idColumn = new TableColumn<>("ID");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -69,6 +76,30 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 		selectedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectedColumn));
 		tView.getColumns().addAll(idColumn, nameColumn, selectedColumn);
 		return tView;
+	}
+
+	/**
+	 * This function disables all not implemented learning units.
+	 * @param tView new table view object that is used to build the table view
+	 */
+	private void setRowFactory(TableView<LearningUnit> tView) {
+		tView.setRowFactory(tv -> new TableRow<LearningUnit>() {
+            @Override
+            protected void updateItem(LearningUnit unit, boolean empty) {
+                super.updateItem(unit, empty);
+                if (unit == null || empty) {
+                    setStyle("");
+                } else {
+                    if (!unit.isImplemented()) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: lightgray;"); 
+                    } else {
+                        setDisable(false);
+                        setStyle("");
+                    }
+                }
+            }
+        });
 	}
 
 	private ObservableList<LearningUnit> getItems() {
