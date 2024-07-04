@@ -77,7 +77,7 @@ public class ControlCenter extends Stage {
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-		setTitle("XModeler UML Control Center");}
+		setTitle("XModeler UML++ Control Center");}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
