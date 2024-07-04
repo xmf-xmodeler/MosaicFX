@@ -49,8 +49,9 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 
 	/**
 	 * Helper function. Needed to provide matching binding property
-	 * @param selectedItemProperty that needs to be checked 
-	 * @return the boolean if button should be enabled 
+	 * 
+	 * @param selectedItemProperty that needs to be checked
+	 * @return the boolean if button should be enabled
 	 */
 	private BooleanBinding createDisableBinding(ReadOnlyObjectProperty<LearningUnit> selectedItemProperty) {
 		return selectedItemProperty.isNull();
@@ -63,44 +64,61 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 
 		TableColumn<LearningUnit, Integer> idColumn = new TableColumn<>("ID");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-		idColumn.setSortable(false); 
+		idColumn.setSortable(false);
 
 		TableColumn<LearningUnit, String> nameColumn = new TableColumn<>("Learning Unit Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
-		nameColumn.setSortable(false); 
-		
+		nameColumn.setSortable(false);
+
 		TableColumn<LearningUnit, Boolean> selectedColumn = new TableColumn<>("Passed");
-		selectedColumn.setSortable(false); 
+		selectedColumn.setSortable(false);
 		selectedColumn.setCellValueFactory(cellData -> {
 			return new SimpleBooleanProperty(cellData.getValue().getId() == 0);
 		});
-		selectedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectedColumn));
+		hideCheckboxForUnimplementedLearningUnits(selectedColumn);
 		tView.getColumns().addAll(idColumn, nameColumn, selectedColumn);
 		return tView;
 	}
 
+	private void hideCheckboxForUnimplementedLearningUnits(TableColumn<LearningUnit, Boolean> selectedColumn) {
+		selectedColumn.setCellFactory(column -> new CheckBoxTableCell<LearningUnit, Boolean>() {
+			@Override
+			public void updateItem(Boolean item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty) {
+					LearningUnit unit = getTableView().getItems().get(getIndex());
+					if (unit != null && !unit.isImplemented()) {
+						setGraphic(null);
+						setText(null);
+					}
+				}
+			}
+		});
+	}
+
 	/**
 	 * This function disables all not implemented learning units.
+	 * 
 	 * @param tView new table view object that is used to build the table view
 	 */
 	private void setColorOfNotImplementedRowsToLightGrey(TableView<LearningUnit> tView) {
 		tView.setRowFactory(tv -> new TableRow<LearningUnit>() {
-            @Override
-            protected void updateItem(LearningUnit unit, boolean empty) {
-                super.updateItem(unit, empty);
-                if (unit == null || empty) {
-                    setStyle("");
-                } else {
-                    if (!unit.isImplemented()) {
-                    	getStyleClass().add("not-implemented");
-                    	setDisable(true);  
-                    } else {
-                        setDisable(false);
-                        setStyle("");
-                    }
-                }
-            }
-        });
+			@Override
+			protected void updateItem(LearningUnit unit, boolean empty) {
+				super.updateItem(unit, empty);
+				if (unit == null || empty) {
+					setStyle("");
+				} else {
+					if (!unit.isImplemented()) {
+						getStyleClass().add("not-implemented");
+						setDisable(true);
+					} else {
+						setDisable(false);
+						setStyle("");
+					}
+				}
+			}
+		});
 	}
 
 	private ObservableList<LearningUnit> getItems() {
