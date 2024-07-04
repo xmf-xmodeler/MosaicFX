@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConcreteSyntax classPath="Root::Figure7::Core" level="1">
+  <Group tx="65.0" ty="61.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0">
+    <SVG id="svg0" path="../ITML/ITML_Symbole_210910/Betriebssystem13.svg" tx="-66.14585511948098" ty="-60.47621039495402" xx="3.9999999999999996" xy="0.0" yx="0.0" yy="3.9999999999999996"/>
+    <SVG id="svg1" path="../ITML/SVG/ITML_Server_a.svg" tx="-66.14585511948098" ty="-60.47621039495402" xx="3.9999999999999996" xy="0.0" yx="0.0" yy="3.9999999999999996"/>
+    <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" default="label test" id="label6" tx="0.0" ty="-75.965302468745" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  </Group>
+  <Modification>
+    <Condition slotName="prettyName" type="ReadFromSlot"/>
+    <Affected id="label6" localId="label6"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>
