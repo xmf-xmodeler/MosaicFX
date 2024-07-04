@@ -310,6 +310,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 				sourceNodes.add(newTypeSource);
 				sourceNodes.add(multTargetToSourceBox);
+				sourceNodes.add(sourceVisibleFromTargetBox);
 //				sourceNodes.add(symmetricBox);
 //				sourceNodes.add(transitiveBox);
 					
@@ -318,6 +319,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				targetNodes.add(new Label (LabelAndHeaderTitle.end));
 				targetNodes.add(newTypeTarget);
 				targetNodes.add(multSourceToTargetBox);
+				targetNodes.add(targetVisibleFromSourceBox);
+
 		}
 
 		
@@ -466,8 +469,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							source.getName().toLowerCase() + newDisplayName.getText(),
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
-							true,	
-							true,	//both visibilities true as is default in UML
+							sourceVisibleFromTargetBox.isSelected(),
+							targetVisibleFromSourceBox.isSelected(),
 							false,
 							false,
 							sourceGetterField.getText().orElse(null),
