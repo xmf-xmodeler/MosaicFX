@@ -111,12 +111,16 @@ public class ConcreteSyntaxPattern extends NodeGroup {
 				System.err.println("Color not found: " + s);
 			}
 		}
+		String defaultString = "label test";
+		if(e.hasAttribute("default")) {
+			defaultString = e.getAttribute("default");
+		}
 		NodeLabel label = new NodeLabel(
 				alignment, 
 				transform, 
 				c, bgC,
 				null, null, 
-				"label test", 
+				defaultString, 
 				false, -1);
 		if(e.hasAttribute("id")) label.id = e.getAttribute("id");
 		return label;

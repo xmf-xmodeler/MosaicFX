@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConcreteSyntax classPath="Root::Figure7::ApplicationSoftware" level="1">
+  <SVG id="svg0" path="../ITML/SVG/Application_Software.svg" tx="-66.14585511948098" ty="-60.47621039495402" xx="3.9999999999999996" xy="0.0" yx="0.0" yy="3.9999999999999996"/>
+  <Label align="LEFT" default="licenses"  bgColor="0x00000000" color="0x000000ff" id="label0" tx="-70.0" ty="90.0" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  <Label align="LEFT" default="usedSince"  bgColor="0x00000000" color="0x000000ff" id="label1" tx="-70.0" ty="110.0" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  <Label align="LEFT" default="missionCritical"  bgColor="0x00000000" color="0x000000ff" id="label2" tx="-70.0" ty="130.0" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x000000ff" id="label3" tx="30.0" ty="90.0" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x000000ff" id="label4" tx="30.0" ty="110.0" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x000000ff" id="label5" tx="30.0" ty="130.0" xx="0.9999999999999998" xy="0.0" yx="0.0" yy="0.9999999999999998"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" id="label6" tx="-17.638894698528304" ty="-74.965302468745" xx="0.9999999999999999" xy="0.0" yx="0.0" yy="0.9999999999999999"/>
+</ConcreteSyntax>
