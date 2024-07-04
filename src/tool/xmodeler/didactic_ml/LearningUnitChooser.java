@@ -28,6 +28,7 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 		okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		adaptOkButton();
 		setResultConverter();
+		getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
 	}
 
 	private void setResultConverter() {
@@ -58,7 +59,7 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 	private TableView<LearningUnit> createTableView() {
 		TableView<LearningUnit> tView = new TableView<>();
 		tView.setItems(getItems());
-		setRowFactory(tView);
+		setColorOfNotImplementedRowsToLightGrey(tView);
 
 		TableColumn<LearningUnit, Integer> idColumn = new TableColumn<>("ID");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -82,7 +83,7 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 	 * This function disables all not implemented learning units.
 	 * @param tView new table view object that is used to build the table view
 	 */
-	private void setRowFactory(TableView<LearningUnit> tView) {
+	private void setColorOfNotImplementedRowsToLightGrey(TableView<LearningUnit> tView) {
 		tView.setRowFactory(tv -> new TableRow<LearningUnit>() {
             @Override
             protected void updateItem(LearningUnit unit, boolean empty) {
@@ -91,8 +92,8 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
                     setStyle("");
                 } else {
                     if (!unit.isImplemented()) {
-                        setDisable(true);
-                        setStyle("-fx-background-color: lightgray;"); 
+                    	getStyleClass().add("not-implemented");
+                    	setDisable(true);  
                     } else {
                         setDisable(false);
                         setStyle("");
