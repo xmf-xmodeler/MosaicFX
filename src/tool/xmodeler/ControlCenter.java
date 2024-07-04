@@ -261,7 +261,7 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-		Button newDiagram2 = new Button("Create UML Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
+		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
 		newDiagram2.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
@@ -275,7 +275,6 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -312,9 +311,11 @@ public class ControlCenter extends Stage {
 		grid.add(modelLV, 3, 2);
 		grid.add(newModel, 3, 1);
 		grid.add(howToStart, 4, 4);
+		grid.add(newDiagram, 4, 1);			
+
 		}
 		else {
-		grid.add(newDiagram2, 4, 4);
+		grid.add(newDiagram2, 4, 1);
 		}
 		
 		
