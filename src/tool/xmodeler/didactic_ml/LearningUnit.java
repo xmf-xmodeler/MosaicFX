@@ -12,7 +12,7 @@ public enum LearningUnit {
 	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation", 7),
 	CIRCLES("Model Circles", 8),
 	DERIVED_CONCEPTS("Derivable Attributes and Operations", 9),
-	CONSTRAINTS("Custom Constraints using an OCL-based Language", 10);
+	CONSTRAINTS("Custom Constraints using an XOCL-based Language", 10);
 	
 	private final String prettyName;
 	private final int id;

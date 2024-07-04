@@ -19,7 +19,7 @@ public class LearnUnitChooser extends Dialog<LearningUnit> {
 	private TableView<LearningUnit> tableView = createTableView();
 
 	public LearnUnitChooser() {
-		setTitle("Learn Unit Selection");
+		setTitle("Learning Unit Selection");
 		getDialogPane().setPrefWidth(535);
 		getDialogPane().setPrefHeight(355);
 		getDialogPane().setContent(tableView);
@@ -57,7 +57,7 @@ public class LearnUnitChooser extends Dialog<LearningUnit> {
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 		idColumn.setSortable(false); 
 
-		TableColumn<LearningUnit, String> nameColumn = new TableColumn<>("Learn Unit Name");
+		TableColumn<LearningUnit, String> nameColumn = new TableColumn<>("Learning Unit Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
 		nameColumn.setSortable(false); 
 		
