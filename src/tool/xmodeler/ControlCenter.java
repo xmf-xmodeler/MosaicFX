@@ -59,7 +59,7 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.didactic_ml.LearnUnitChooser;
+import tool.xmodeler.didactic_ml.LearningUnitChooser;
 import tool.xmodeler.didactic_ml.LearningUnit;
 import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
@@ -136,7 +136,7 @@ public class ControlCenter extends Stage {
 				+ "-fx-font-size: 16px; "
 				+ "-fx-font-weight: bold;");  
 		b.setPrefWidth(500);
-		b.setOnAction(a -> startLearningUnit(new LearnUnitChooser().showAndWait()));
+		b.setOnAction(a -> startLearningUnit(new LearningUnitChooser().showAndWait()));
 		return b;
 	}
 	

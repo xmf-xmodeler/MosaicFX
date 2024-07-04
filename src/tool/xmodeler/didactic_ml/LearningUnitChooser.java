@@ -13,12 +13,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class LearnUnitChooser extends Dialog<LearningUnit> {
+public class LearningUnitChooser extends Dialog<LearningUnit> {
 
 	private Button okButton;
 	private TableView<LearningUnit> tableView = createTableView();
 
-	public LearnUnitChooser() {
+	public LearningUnitChooser() {
 		setTitle("Learning Unit Selection");
 		getDialogPane().setPrefWidth(535);
 		getDialogPane().setPrefHeight(355);
