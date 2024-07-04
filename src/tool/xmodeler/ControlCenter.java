@@ -59,6 +59,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.didactic_ml.LearnUnitChooser;
+import tool.xmodeler.didactic_ml.LearningUnit;
 import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
@@ -134,10 +136,18 @@ public class ControlCenter extends Stage {
 				+ "-fx-font-size: 16px; "
 				+ "-fx-font-weight: bold;");  
 		b.setPrefWidth(500);
-		b.setOnAction((a) -> {System.err.println("LearningUnits");});
+		b.setOnAction(a -> startLearningUnit(new LearnUnitChooser().showAndWait()));
 		return b;
 	}
 	
+	private void startLearningUnit(Optional<LearningUnit> learningUnit) {
+		if (learningUnit.isPresent()) {
+			System.err.println(learningUnit.get().getPrettyName());
+		} else {
+			throw new NullPointerException("LearnUnitChooser has not returned a value"); 
+		}
+	}
+
 	private void adaptLayoutToDidacticMode(VBox root) {
 		toolWidth = toolWidth -237;	//Adjustment for removed elements
 		toolHeight = toolHeight +30; 
