@@ -83,7 +83,7 @@ public class ControlCenter extends Stage {
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-		setTitle("XModeler UML++ Control Center");}
+		setTitle("UML++ Control Center");}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
@@ -302,7 +302,6 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -339,9 +338,11 @@ public class ControlCenter extends Stage {
 		grid.add(modelLV, 3, 2);
 		grid.add(newModel, 3, 1);
 		grid.add(howToStart, 4, 4);
+		grid.add(newDiagram, 4, 1);			
+
 		}
 		else {
-		grid.add(newDiagram2, 4, 4);
+		grid.add(newDiagram2, 4, 1);
 		}
 		
 		return grid;
