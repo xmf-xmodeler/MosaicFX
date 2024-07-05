@@ -8,13 +8,13 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteItem;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteTool;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.ToolClass;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
-import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
-import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
-import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 import tool.clients.fmmlxdiagrams.uml.UmlObjectDisplay;
 
 import java.util.*;

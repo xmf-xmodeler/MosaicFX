@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.newpalette;
+package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette;
 
 import java.io.File;
 import java.util.ArrayList;
