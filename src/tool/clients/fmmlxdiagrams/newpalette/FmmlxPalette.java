@@ -28,7 +28,7 @@ import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
-import tool.xmodeler.tool_introduction.DiagramViewState;
+import tool.xmodeler.didactic_ml.DiagramViewState;
 
 public class FmmlxPalette {
 

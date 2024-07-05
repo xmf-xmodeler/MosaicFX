@@ -16,6 +16,7 @@ import javafx.beans.binding.Bindings;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -58,7 +59,9 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.LearningUnitChooser;
+import tool.xmodeler.didactic_ml.LearningUnit;
+import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
 	
@@ -69,6 +72,9 @@ public class ControlCenter extends Stage {
 	private final ListView<String> diagramLV = new ListView<String>();
 	private MenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
+	
+	private int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+	private int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -82,15 +88,16 @@ public class ControlCenter extends Stage {
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
 	
-		VBox root = new VBox();
+		VBox root = new VBox(5);
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
-		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-			toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"))-237;	//Adjustment for removed elements
+		root.setAlignment(Pos.CENTER);
+		
+		if(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString(), false)) {
+			adaptLayoutToDidacticMode(root);
 		}
-		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
+		
 		Scene scene = new Scene(root, toolWidth, toolHeight);
 		setScene(scene);
 				
@@ -118,6 +125,36 @@ public class ControlCenter extends Stage {
 				
 	}
 	
+	private Button buildLearningUnitsButton() {
+		Button b = new Button();
+		b.setText("Learning Units");
+		b.setStyle("-fx-background-color: #ffa500;"
+				+ "-fx-border-color: #000000;"
+				+ "-fx-border-width: 1px;"
+				+ "-fx-background-radius: 15px; "
+				+ "-fx-border-radius: 15px;"
+				+ "-fx-font-size: 16px; "
+				+ "-fx-font-weight: bold;");  
+		b.setPrefWidth(500);
+		b.setOnAction(a -> startLearningUnit(new LearningUnitChooser().showAndWait()));
+		return b;
+	}
+	
+	private void startLearningUnit(Optional<LearningUnit> learningUnit) {
+		if (learningUnit.isPresent()) {
+			System.err.println(learningUnit.get().getPrettyName());
+		} else {
+			throw new NullPointerException("LearnUnitChooser has not returned a value"); 
+		}
+	}
+
+	private void adaptLayoutToDidacticMode(VBox root) {
+		toolWidth = toolWidth -237;	//Adjustment for removed elements
+		toolHeight = toolHeight +30; 
+		Button learningUnitsButton = buildLearningUnitsButton();
+		root.getChildren().add(1, learningUnitsButton);
+	}
+
 	protected void testDiagramViewIntro() {
 		new ToolIntroductionManager(this).start();
 	}
@@ -238,16 +275,6 @@ public class ControlCenter extends Stage {
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
 		
-//		Button renameProject = new Button("Rename Project");
-//		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-//		grid.add(renameProject, 2, 5);
-//		GridPane.setHalignment(renameProject, HPos.LEFT);
-//		
-//		Button removeProject = new Button("Delete Project");
-//		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-//		grid.add(removeProject, 2, 6);
-//		GridPane.setHalignment(removeProject, HPos.LEFT);
-
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
@@ -317,9 +344,6 @@ public class ControlCenter extends Stage {
 		else {
 		grid.add(newDiagram2, 4, 1);
 		}
-		
-		
-//		grid.add(concreteSyntaxWizardStart, 3, 4);
 		
 		return grid;
 	}

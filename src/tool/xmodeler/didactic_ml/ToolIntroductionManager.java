@@ -1,4 +1,4 @@
-package tool.xmodeler.tool_introduction;
+package tool.xmodeler.didactic_ml;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
