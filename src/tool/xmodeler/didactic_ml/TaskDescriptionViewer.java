@@ -16,8 +16,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 
 public class TaskDescriptionViewer extends Stage {
 

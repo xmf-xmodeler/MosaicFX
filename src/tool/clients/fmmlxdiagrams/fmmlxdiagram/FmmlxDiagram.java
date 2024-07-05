@@ -44,7 +44,6 @@ import tool.clients.fmmlxdiagrams.Edge;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.InheritanceEdge;
@@ -60,8 +59,6 @@ import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.xmlManipulator.XmlHandler;
-import tool.xmodeler.didactic_ml.SucessCondition;
-import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
 

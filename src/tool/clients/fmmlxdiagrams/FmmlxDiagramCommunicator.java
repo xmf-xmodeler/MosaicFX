@@ -23,7 +23,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
@@ -33,9 +32,7 @@ import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.didactic_ml.DiagramViewState;
-import tool.xmodeler.didactic_ml.TaskDescriptionViewer;
-import tool.xmodeler.didactic_ml.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {

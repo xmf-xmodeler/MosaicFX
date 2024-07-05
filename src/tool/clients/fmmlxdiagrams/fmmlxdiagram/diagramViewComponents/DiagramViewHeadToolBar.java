@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.w3c.dom.Document;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,22 +24,18 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.communication.java_to_python.MissingPythonRespondException;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
-import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class DiagramViewHeadToolBar extends VBox {
 
