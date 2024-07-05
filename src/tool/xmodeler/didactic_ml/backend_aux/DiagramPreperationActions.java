@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml;
+package tool.xmodeler.didactic_ml.backend_aux;
 
 import java.util.Vector;
 

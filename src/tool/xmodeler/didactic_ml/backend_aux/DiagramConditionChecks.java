@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml;
+package tool.xmodeler.didactic_ml.backend_aux;
 
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxLink;

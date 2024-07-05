@@ -1,10 +1,10 @@
-package tool.xmodeler.didactic_ml.learning_unit_managers.sucess_conditions;
+package tool.xmodeler.didactic_ml.sucess_conditions;
 
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.xmodeler.didactic_ml.DiagramConditionChecks;
+import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
 
 public class ToolIntroductionConditions extends SucessCondition {
 		

@@ -41,8 +41,8 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.didactic_ml.DiagramPreperationActions;
 import tool.xmodeler.didactic_ml.DiagramViewState;
+import tool.xmodeler.didactic_ml.backend_aux.DiagramPreperationActions;
 import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 
 /**

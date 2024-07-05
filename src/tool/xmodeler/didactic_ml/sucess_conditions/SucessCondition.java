@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.learning_unit_managers.sucess_conditions;
+package tool.xmodeler.didactic_ml.sucess_conditions;
 
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
