@@ -149,8 +149,7 @@ public class ControlCenter extends Stage {
 	}
 
 	private void adaptLayoutToDidacticMode(VBox root) {
-		toolWidth = toolWidth -237;	//Adjustment for removed elements
-		toolHeight = toolHeight +30; 
+		toolWidth = toolWidth -237;	//Adjustment for removed elements 
 		Button learningUnitsButton = buildLearningUnitsButton();
 		root.getChildren().add(1, learningUnitsButton);
 	}
