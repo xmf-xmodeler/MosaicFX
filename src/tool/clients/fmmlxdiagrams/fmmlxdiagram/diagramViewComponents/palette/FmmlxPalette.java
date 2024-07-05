@@ -28,7 +28,7 @@ import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionSteps;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 public class FmmlxPalette {
 
@@ -47,7 +47,7 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(DiagramViewPane diagramRootPane, ToolIntroductionSteps diagramViewState) {
+	public FmmlxPalette(DiagramViewPane diagramRootPane, int diagramViewStatePrecedence) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
 		this.fmmlxDiagram = diagramRootPane.getDiagram();
@@ -108,7 +108,7 @@ public class FmmlxPalette {
 		
 		addNoteToMisc();
 		
-		if (diagramViewState.getPrecedence() > 3) {
+		if (diagramViewStatePrecedence > 3) {
 			root.getChildren().add(relationships);			
 		}
 		root.getChildren().add(miscs);
@@ -195,7 +195,7 @@ public class FmmlxPalette {
 			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
 
 			relationships.getChildren().add(association);			
-		if (viewPane.getDiagramViewState().getPrecedence() > 4) {
+		if (ToolIntroductionTasks.getPrecedence(viewPane.getDiagramViewState()) > 4) {
 			relationships.getChildren().add(link);			
 		}
 		if (!viewPane.getDiagram().isUMLMode()) {

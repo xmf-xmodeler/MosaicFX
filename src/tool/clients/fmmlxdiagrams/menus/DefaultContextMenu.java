@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.xmodeler.XModeler;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 public class DefaultContextMenu extends ContextMenu {
 
@@ -53,7 +54,7 @@ public class DefaultContextMenu extends ContextMenu {
 	private Menu buildAddMenu(DiagramCanvas view, FmmlxDiagram diagram, DiagramActions actions) {
 		Menu addMenu = new Menu("Add");
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
-		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 3) {
 			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
 		}
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
@@ -63,7 +64,7 @@ public class DefaultContextMenu extends ContextMenu {
 	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
 			Menu enumerationMenu, MenuItem addAssocType) {
 		getItems().addAll(addMenu, searchMenu, unhideItem);
-		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 6) {
 			getItems().addAll(enumerationMenu);			
 		}
 		if (XModeler.isAlphaMode()) {

@@ -14,6 +14,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -146,7 +147,7 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
 			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem, MenuItem removeItem, MenuItem changeNameItem) {
-		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {		
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 4) {		
 			if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 		}
 		getItems().add(changeNameItem);
@@ -154,18 +155,18 @@ public class ObjectContextMenu extends ContextMenu {
 		getItems().add(new SeparatorMenuItem());
 		// add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
-			if (diagram.getViewPane().getDiagramViewState().getPrecedence() >= 100) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) >= 100) {
 				getItems().addAll(changeParentItem, browseInstanceItem, constraintMenu, operationMenu);
 			}
-			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 1) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 1) {
 				getItems().add(attributeMenu);
 			}
-			if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 3) {
 				getItems().add(associationMenu);
 			}	
 		}
 		//add all items, that are used for all Objects		
-		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 4) {
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 4) {
 			getItems().addAll(slotMenu, associationInstanceMenu);		
 		}	
 		addRunMenu();

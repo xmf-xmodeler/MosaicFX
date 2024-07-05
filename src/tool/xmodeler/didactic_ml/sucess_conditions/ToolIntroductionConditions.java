@@ -5,6 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 public class ToolIntroductionConditions extends SucessCondition {
 		
@@ -20,7 +21,7 @@ public class ToolIntroductionConditions extends SucessCondition {
 	 */
 	@Override
 	public boolean checkSucessCondition() {
-		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
+		switch (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState())) {
 		case 1:
 			return isClassMovieCreated();
 		case 2:

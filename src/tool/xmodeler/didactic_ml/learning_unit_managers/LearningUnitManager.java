@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionSteps;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
 import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
@@ -94,11 +94,12 @@ public abstract class LearningUnitManager {
 		if (new ToolIntroductionConditions(diagram).checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			String nextDescription = (diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
+			String nextDescription = (ToolIntroductionTasks.getTaskDescritpion(diagram.getViewPane().getDiagramViewState()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
-			if (diagram.getViewPane().getDiagramViewState().getPrecedence() == 10) {
+			//TODO make abstract
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) == 10) {
 				//this time is needed to survive the user feedback
 				try {
 					Thread.sleep(1500);
@@ -115,7 +116,7 @@ public abstract class LearningUnitManager {
 	//TODO make abstract
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		String description = ToolIntroductionSteps.CREATE_CLASS_MOVIE.getTaskDescritpion();
+		String description = ToolIntroductionTasks.getFirstTaskDescription();
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();

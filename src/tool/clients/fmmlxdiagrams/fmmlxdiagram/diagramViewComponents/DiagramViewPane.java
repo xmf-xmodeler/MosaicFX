@@ -43,7 +43,7 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramPreperationActions;
 import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionSteps;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 /**
  * SplitPane instance that serves as full gui for the diagram view. All diagram
@@ -62,7 +62,8 @@ public class DiagramViewPane extends SplitPane {
 	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
-	private ToolIntroductionSteps diagramViewState = null;
+	//TODO check architecture and make documentation this in only neede for tool intro, kann man es besser machen? ++ rename
+	private String diagramViewState = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -75,15 +76,15 @@ public class DiagramViewPane extends SplitPane {
 		diagram = fmmlxDiagram;
 
 		initDiagramViewState();
-		buildViewComponents(diagramViewState);
+		buildViewComponents(ToolIntroductionTasks.getPrecedence(diagramViewState));
 	}
 
 	private void initDiagramViewState() {
 		if (isIntroductionMode()) {
-			diagramViewState = ToolIntroductionSteps.CREATE_CLASS_MOVIE;
+			diagramViewState = "CREATE_CLASS_MOVIE";
 			ToolIntroductionManager.getInstance().setDiagram(diagram);
 		} else {
-			diagramViewState = ToolIntroductionSteps.FULL_GUI;
+			diagramViewState = "FULL_GUI";
 		}
 	}
 
@@ -92,12 +93,12 @@ public class DiagramViewPane extends SplitPane {
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
 
-	private void buildViewComponents(ToolIntroductionSteps state) {
+	private void buildViewComponents(int statePrecedence) {
 		configPane();
 		palettSideBar = buildPalettSideBar();
 		DiagramCanvas zoomView = buildZoomView();
 
-		fmmlxPalette = new FmmlxPalette(this, state);
+		fmmlxPalette = new FmmlxPalette(this, statePrecedence);
 
 		palettSideBar.getItems().clear();
 		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
@@ -424,8 +425,10 @@ public class DiagramViewPane extends SplitPane {
 
 	public void loadNextStage() {
 		DiagramPreperationActions.prepair(diagram);
-		buildViewComponents(diagramViewState.getNextState());
-		diagramViewState = diagramViewState.getNextState();
+		//TODO do not miss to rename
+		int nextDiagramViewStatePrecedence = ToolIntroductionTasks.getNextPrecedence(diagramViewState); 
+		buildViewComponents(nextDiagramViewStatePrecedence);
+		diagramViewState = ToolIntroductionTasks.getTaskName(nextDiagramViewStatePrecedence);
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
@@ -456,11 +459,11 @@ public class DiagramViewPane extends SplitPane {
 		this.issueTable = issueTable;
 	}
 
-	public void setDiagramViewState(ToolIntroductionSteps diagramViewState) {
+	public void setDiagramViewState(String diagramViewState) {
 		this.diagramViewState = diagramViewState;
 	}
 
-	public ToolIntroductionSteps getDiagramViewState() {
+	public String getDiagramViewState() {
 		return diagramViewState;
 	}
 }

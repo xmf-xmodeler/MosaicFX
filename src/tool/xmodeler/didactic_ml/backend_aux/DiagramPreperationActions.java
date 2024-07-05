@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Level.UnparseableException;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 /**
  * If in any stage of the tool introduction automatically added elements are
@@ -21,7 +22,7 @@ public class DiagramPreperationActions {
 	 * @param diagram
 	 */
 	public static void prepair(FmmlxDiagram diagram) {
-		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
+		switch (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState())) {
 		case 5:
 			addCustomerAndTicket(diagram);
 			return;
