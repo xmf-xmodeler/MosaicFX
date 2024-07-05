@@ -28,7 +28,7 @@ import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
-import tool.xmodeler.didactic_ml.DiagramViewState;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionSteps;
 
 public class FmmlxPalette {
 
@@ -47,7 +47,7 @@ public class FmmlxPalette {
 		return node;
 	}
 
-	public FmmlxPalette(DiagramViewPane diagramRootPane, DiagramViewState diagramViewState) {
+	public FmmlxPalette(DiagramViewPane diagramRootPane, ToolIntroductionSteps diagramViewState) {
 		this.node = new VBox();
 		this.treeView = new TreeView<>();
 		this.fmmlxDiagram = diagramRootPane.getDiagram();

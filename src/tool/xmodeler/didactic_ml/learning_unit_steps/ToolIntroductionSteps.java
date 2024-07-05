@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml;
+package tool.xmodeler.didactic_ml.learning_unit_steps;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
  * state defines what the user can see. It is passed through the different
  * frontend parts of the diagramView to create a matching frontend.
  */
-public enum DiagramViewState {
+public enum ToolIntroductionSteps {
 
 	CREATE_CLASS_MOVIE(1),
 	ADD_ATTRIBUTES_TO_MOVIE(2),
@@ -39,7 +39,7 @@ public enum DiagramViewState {
 	 */
 	private int precedence;
 
-	private DiagramViewState(int precedence) {
+	private ToolIntroductionSteps(int precedence) {
 		this.precedence = precedence;
 	}
 
@@ -47,13 +47,13 @@ public enum DiagramViewState {
 		return precedence;
 	}
 
-	public DiagramViewState getNextState() {
+	public ToolIntroductionSteps getNextState() {
 		int nextPrecedence = getPrecedence() + 1;
 		return getViewStatusFromPrecedence(nextPrecedence);
 	}
 
-	DiagramViewState getViewStatusFromPrecedence(int precedence) {
-		for (DiagramViewState state : values()) {
+	ToolIntroductionSteps getViewStatusFromPrecedence(int precedence) {
+		for (ToolIntroductionSteps state : values()) {
 			if (state.getPrecedence() == precedence) {
 				return state;
 			}

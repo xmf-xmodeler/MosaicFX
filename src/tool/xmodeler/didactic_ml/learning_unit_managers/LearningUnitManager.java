@@ -4,8 +4,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
-import tool.xmodeler.didactic_ml.DiagramViewState;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
+import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionSteps;
 import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
 import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
@@ -115,7 +115,7 @@ public abstract class LearningUnitManager {
 	//TODO make abstract
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		String description = DiagramViewState.CREATE_CLASS_MOVIE.getTaskDescritpion();
+		String description = ToolIntroductionSteps.CREATE_CLASS_MOVIE.getTaskDescritpion();
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();
