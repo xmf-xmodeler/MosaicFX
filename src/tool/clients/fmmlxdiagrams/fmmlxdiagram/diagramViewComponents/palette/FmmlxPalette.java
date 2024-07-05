@@ -198,7 +198,7 @@ public class FmmlxPalette {
 		if (viewPane.getDiagramViewState().getPrecedence() > 4) {
 			relationships.getChildren().add(link);			
 		}
-		if (viewPane.getDiagramViewState().getPrecedence() >= 100) {
+		if (!viewPane.getDiagram().isUMLMode()) {
 			relationships.getChildren().addAll(delegation);			
 		}
 	}
