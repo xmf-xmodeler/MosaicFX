@@ -90,9 +90,9 @@ public class ToolIntroductionTasks {
 	 */
 	private static String buildTaskDescriptionPath(String taskName) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("resources/txt/ToolIntroduction/"); // basic path
+		stringBuilder.append("resources/html/ToolIntroduction/"); // basic path
 		stringBuilder.append(getPrecedence(taskName)); // append number of current state
-		stringBuilder.append(".txt");
+		stringBuilder.append(".html");
 		return stringBuilder.toString();
 	}
 	
