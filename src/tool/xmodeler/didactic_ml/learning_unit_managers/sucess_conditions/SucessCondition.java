@@ -10,9 +10,11 @@ public abstract class SucessCondition {
 
 	protected FmmlxDiagram diagram;
 	
-	public SucessCondition(FmmlxDiagram diagram) {
+	protected SucessCondition(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 	}
+	
+	public abstract boolean checkSucessCondition();
 
 
 }

@@ -7,8 +7,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.DiagramConditionChecks;
 
 public class ToolIntroductionConditions extends SucessCondition {
-	
-	
+		
 	private static final String MOVIE_CLASS_NAME = "Movie";
 
 	public ToolIntroductionConditions(FmmlxDiagram diagram) {
@@ -19,6 +18,7 @@ public class ToolIntroductionConditions extends SucessCondition {
 	 * function that defines which condition should be check for the current ViewState
 	 * @return the result of the specific checked condition
 	 */
+	@Override
 	public boolean checkSucessCondition() {
 		switch (diagram.getViewPane().getDiagramViewState().getPrecedence()) {
 		case 1:
