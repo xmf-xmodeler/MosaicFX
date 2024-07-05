@@ -1,22 +1,18 @@
-package tool.xmodeler.didactic_ml;
+package tool.xmodeler.didactic_ml.learning_unit_managers.sucess_conditions;
 
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.xmodeler.didactic_ml.DiagramConditionChecks;
 
-/**
- * Class is used in the context of the ToolIntroduction.
- * Every time the user clicks on check-condition button this class is used to check the successCondition for the current state.
- */
-public class SucessCondition {
-
-	private FmmlxDiagram diagram;
+public class ToolIntroductionConditions extends SucessCondition {
+	
+	
 	private static final String MOVIE_CLASS_NAME = "Movie";
 
-	public SucessCondition(FmmlxDiagram diagram) {
-		super();
-		this.diagram = diagram;
+	public ToolIntroductionConditions(FmmlxDiagram diagram) {
+		super(diagram);
 	}
 
 	/**
@@ -133,4 +129,5 @@ public class SucessCondition {
 	private boolean isClassMovieCreated() {
 		return DiagramConditionChecks.containsClass(diagram, MOVIE_CLASS_NAME);
 	}
+
 }

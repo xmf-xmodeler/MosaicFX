@@ -5,8 +5,9 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.DiagramViewState;
-import tool.xmodeler.didactic_ml.SucessCondition;
 import tool.xmodeler.didactic_ml.TaskDescriptionViewer;
+import tool.xmodeler.didactic_ml.learning_unit_managers.sucess_conditions.SucessCondition;
+import tool.xmodeler.didactic_ml.learning_unit_managers.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
 import xos.Value;
 
@@ -90,7 +91,7 @@ public abstract class LearningUnitManager {
 			throw new RuntimeException();
 		}
 
-		if (new SucessCondition(diagram).checkSucessCondition()) {
+		if (new ToolIntroductionConditions(diagram).checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
 			String nextDescription = (diagram.getViewPane().getDiagramViewState().getTaskDescritpion());
