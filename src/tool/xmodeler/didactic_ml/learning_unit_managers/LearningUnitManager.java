@@ -5,9 +5,9 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.DiagramViewState;
+import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
 import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
-import tool.xmodeler.didactic_ml.task_description_viewer.TaskDescriptionViewer;
 import xos.Message;
 import xos.Value;
 

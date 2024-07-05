@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.task_description_viewer;
+package tool.xmodeler.didactic_ml.frontend.task_description_viewer;
 
 import java.util.Stack;
 

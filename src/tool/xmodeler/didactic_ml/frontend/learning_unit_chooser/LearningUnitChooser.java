@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml;
+package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
