@@ -60,8 +60,8 @@ import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.xmlManipulator.XmlHandler;
-import tool.xmodeler.tool_introduction.SucessCondition;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.SucessCondition;
+import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
 

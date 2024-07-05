@@ -41,9 +41,9 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.tool_introduction.DiagramPreperationActions;
-import tool.xmodeler.tool_introduction.DiagramViewState;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.DiagramPreperationActions;
+import tool.xmodeler.didactic_ml.DiagramViewState;
+import tool.xmodeler.didactic_ml.ToolIntroductionManager;
 
 /**
  * SplitPane instance that serves as full gui for the diagram view. All diagram
