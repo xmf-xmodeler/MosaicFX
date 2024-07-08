@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.backend_aux;
+package tool.xmodeler.didactic_ml.diagram_preperation_actions;
 
 import java.util.Vector;
 
@@ -8,21 +8,23 @@ import tool.clients.fmmlxdiagrams.Level;
 import tool.clients.fmmlxdiagrams.Level.UnparseableException;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 
 /**
  * If in any stage of the tool introduction automatically added elements are
  * needed the functions that perform these actions are defined in this class
  */
-public class DiagramPreperationActions {
+public class ToolIntroductionPreperation extends DiagramPreperationActions {
 
+	//TODO make abstract
+	
 	/**
 	 * Prepairs the diagram for the next task. The case must be the precedence before the task description.
 	 * If in task 6 things should be there, the case must be 5.
 	 * @param diagram
 	 */
 	public static void prepair(FmmlxDiagram diagram) {
-		switch (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState())) {
+		switch (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 5:
 			addCustomerAndTicket(diagram);
 			return;
