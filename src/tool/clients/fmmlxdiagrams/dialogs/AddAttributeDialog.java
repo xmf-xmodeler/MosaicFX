@@ -216,7 +216,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
-		showNonPrimitive = new CheckBox("Show non primitive data types");
+		showNonPrimitive = new CheckBox("Show all data types");
 		isIntrinsicLabel = new Label("intrinsic");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");

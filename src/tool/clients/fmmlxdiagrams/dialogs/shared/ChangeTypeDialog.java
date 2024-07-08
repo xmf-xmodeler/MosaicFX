@@ -176,7 +176,7 @@ public class ChangeTypeDialog<Property
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 
-		showNonPrimitive = new CheckBox("Show non primitive data types");
+		showNonPrimitive = new CheckBox("Show all data types");
 
 		selectPropertyLabel = new Label("Select " + type.name());
 		selectPropertyComboBox = new ComboBox<Property>();
