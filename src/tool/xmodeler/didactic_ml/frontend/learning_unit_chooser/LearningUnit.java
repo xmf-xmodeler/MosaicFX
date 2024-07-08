@@ -3,7 +3,7 @@ package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 public enum LearningUnit {
 	
 	TOOL_INTRO("Tool Introduction", 0, true),
-	CLASSIFICATION_INSTANTIATION("Classification and instantiation", 1, false),
+	CLASSIFICATION_INSTANTIATION("Classification and instantiation", 1, true),
 	OBJECT_REFERENCES("References between objects: associations and links", 2, false),
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of attributes", 3, false),
 	DEFICIENT_CLASSES("Deficient Classes", 4, false),

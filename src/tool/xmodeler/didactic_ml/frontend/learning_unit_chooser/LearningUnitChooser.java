@@ -75,7 +75,9 @@ public class LearningUnitChooser extends Dialog<LearningUnitManager> {
 		TableColumn<LearningUnit, Boolean> selectedColumn = new TableColumn<>("Passed");
 		selectedColumn.setSortable(false);
 		selectedColumn.setCellValueFactory(cellData -> {
-			return new SimpleBooleanProperty(cellData.getValue().getId() == 0);
+			//TODO implement finish logic
+			//return new SimpleBooleanProperty(cellData.getValue().getId() == 0);
+			return new SimpleBooleanProperty(false);
 		});
 		hideCheckboxForUnimplementedLearningUnits(selectedColumn);
 		tView.getColumns().addAll(idColumn, nameColumn, selectedColumn);
