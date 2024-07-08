@@ -41,9 +41,7 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.didactic_ml.diagram_preperation_actions.ToolIntroductionPreperation;
 import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 
@@ -434,14 +432,17 @@ public class DiagramViewPane extends SplitPane {
 	}
 
 	/**
-	 * This function gets called by a learning unit manager. The function is used to prepare the gui and the model for the next task.
+	 * This function gets called by a learning unit manager. The function is used to
+	 * prepare the gui and the model for the next task.
 	 */
 	public void loadNextStage() {
-		ToolIntroductionPreperation.prepair(diagram);
-		int nextTaskPrecedencePrecedence = LearningUnitTasks.getNextPrecedence(taksName); 
-		//only in tool intro the gui is adapted
+		if (LearningUnitManager.getInstance().needsPreparationActions()) {
+			LearningUnitManager.getInstance().getPreperationActions().prepair(diagram);
+		}
+		int nextTaskPrecedencePrecedence = LearningUnitTasks.getNextPrecedence(taksName);
+		// only in tool intro the gui is adapted
 		if (isInToolIntroductionMode()) {
-			buildViewComponents(nextTaskPrecedencePrecedence);			
+			buildViewComponents(nextTaskPrecedencePrecedence);
 		} else {
 			buildViewComponents(100);
 		}

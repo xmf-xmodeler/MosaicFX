@@ -4,10 +4,10 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationActions;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SuccessCondition;
 import xos.Message;
 import xos.Value;
@@ -34,6 +34,11 @@ public abstract class LearningUnitManager implements Startable {
 	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
 	protected static LearningUnit learningUnit;
 	protected static SuccessCondition sucessCondition;
+	/**
+	 * If preparation actions are needed this var should be set in the constructor of the subtype.
+	 * It is possible that this variable is null while the hole execution of one learning unit. 
+	 */
+	protected static DiagramPreparationActions preperationActions;
 	
 	protected LearningUnitManager() {
 		if (instance != null) {
@@ -162,6 +167,7 @@ public abstract class LearningUnitManager implements Startable {
 		instance = null;
 		learningUnit = null;
 		sucessCondition = null;
+		preperationActions = null;
 	}
 	
 	public void setDiagram(FmmlxDiagram diagram) {
@@ -175,5 +181,13 @@ public abstract class LearningUnitManager implements Startable {
 
 	public TaskDescriptionViewer getDescriptionViewer() {
 		return descriptionViewer;
+	}
+	
+	public boolean needsPreparationActions() {
+		return !(preperationActions == null);
+	}
+
+	public static DiagramPreparationActions getPreperationActions() {
+		return preperationActions;
 	}
 }
