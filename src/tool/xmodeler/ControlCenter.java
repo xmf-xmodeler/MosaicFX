@@ -58,10 +58,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
 import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
 	
@@ -118,7 +116,7 @@ public class ControlCenter extends Stage {
 			public void handle(KeyEvent event) {	
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
-					testDiagramViewIntro();
+					System.err.println("Use to test functions");
 				}		
 			}
 		});
@@ -152,10 +150,6 @@ public class ControlCenter extends Stage {
 		toolWidth = toolWidth -237;	//Adjustment for removed elements 
 		Button learningUnitsButton = buildLearningUnitsButton();
 		root.getChildren().add(1, learningUnitsButton);
-	}
-
-	protected void testDiagramViewIntro() {
-		new ToolIntroductionManager().start();
 	}
 
 	private void showCloseWarningDialog(Event event) {
