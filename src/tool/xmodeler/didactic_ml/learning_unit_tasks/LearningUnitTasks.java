@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.learning_unit_steps;
+package tool.xmodeler.didactic_ml.learning_unit_tasks;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

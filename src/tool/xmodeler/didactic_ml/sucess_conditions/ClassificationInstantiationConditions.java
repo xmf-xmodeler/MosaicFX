@@ -5,8 +5,8 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
-import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
+import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 
 public class ClassificationInstantiationConditions extends SuccessCondition {
 		

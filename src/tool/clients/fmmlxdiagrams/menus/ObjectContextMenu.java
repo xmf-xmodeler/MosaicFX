@@ -14,7 +14,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 
 import java.util.Optional;
 import java.util.Vector;
