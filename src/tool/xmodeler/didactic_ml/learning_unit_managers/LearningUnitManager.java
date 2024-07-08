@@ -4,13 +4,20 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
+import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
 import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
 import xos.Value;
 
+/**
+ * Class used for manage learning units.
+ * This class is used to build up needed models and contains the logic how conditions are checked 
+ * and will update the diagram view if needed.
+ */
 public abstract class LearningUnitManager implements Startable {
 
 	
@@ -22,16 +29,20 @@ public abstract class LearningUnitManager implements Startable {
 	private static boolean TESTMODUS = true;
 
 	private static LearningUnitManager instance;
-	private static FmmlxDiagram diagram;
-	protected static String projectName = "LearningUnitXYZ";
-	protected static String diagramName = "LearningUnitDiagramXYZ";
+	protected static FmmlxDiagram diagram;
+	protected static String projectName;
+	protected static String diagramName;
 	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
-
+	protected static LearningUnit learningUnit;
+	protected static SucessCondition sucessCondition;
+	
 	protected LearningUnitManager() {
 		instance = this;	
 		createLearningUnitDiagram();
 	}
 	
+	
+	//TODO define contract.. every subclass should have own names. this makes it more flexible to define actions only dependent on one lu type
 	/**
 	 * Used to differentiate ToolIntro.. needed because of frontend adaption
 	 * @param projectName
@@ -81,6 +92,31 @@ public abstract class LearningUnitManager implements Startable {
 		return clazz.cast(instance);
 	}
 	
+	public static synchronized <Manager extends LearningUnitManager> Manager getInstance() {
+		if (instance == null) {
+			if (TESTMODUS) {
+				instance = new ToolIntroductionManager();
+				instance.getDescriptionViewer().show();
+			}
+		} else {
+			switch (learningUnit) {
+			case TOOL_INTRO:
+				return (Manager) ToolIntroductionManager.class.cast(instance);
+
+			case CLASSIFICATION_INSTANTIATION:
+				return (Manager) ClassificationInstantiationManager.class.cast(instance);
+
+			default:
+				break;
+			}
+
+			throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");
+		}
+		return null;
+	}
+	
+	
+	
 	//TODO make abstract
 	public void checkSucessCondition() {
 		// is needed because otherwise the changes of the update are not reflected in
@@ -91,7 +127,7 @@ public abstract class LearningUnitManager implements Startable {
 			throw new RuntimeException();
 		}
 
-		if (new ToolIntroductionConditions(diagram).checkSucessCondition()) {
+		if (sucessCondition.checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
 			String nextDescription = (ToolIntroductionTasks.getTaskDescritpion(diagram.getViewPane().getDiagramViewState()));
@@ -116,8 +152,7 @@ public abstract class LearningUnitManager implements Startable {
 	//TODO make abstract
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		new ToolIntroductionTasks();
-		String description = ToolIntroductionTasks.getFirstTaskDescription();
+		String description = LearningUnitTasks.getFirstTaskDescription();
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();
@@ -127,13 +162,18 @@ public abstract class LearningUnitManager implements Startable {
 		return (instance != null);
 	}
 	
+	//TODO mark lu as passed
 	public void stop() {
 		ControlCenterClient.removeProject(projectName);
+		LearningUnitTasks.tearDown() ;
 		instance = null;
+		learningUnit = null;
+		sucessCondition = null;
 	}
 	
 	public void setDiagram(FmmlxDiagram diagram) {
 		LearningUnitManager.diagram = diagram;
+		sucessCondition.setDiagram(diagram);
 	}
 
 	public static FmmlxDiagram getDiagram() {
