@@ -13,8 +13,9 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
 
-public class LearningUnitChooser extends Dialog<LearningUnit> {
+public class LearningUnitChooser extends Dialog<LearningUnitManager> {
 
 	private Button okButton;
 	private TableView<LearningUnit> tableView = createTableView();
@@ -34,7 +35,8 @@ public class LearningUnitChooser extends Dialog<LearningUnit> {
 	private void setResultConverter() {
 		setResultConverter(buttonType -> {
 			if (buttonType == ButtonType.OK) {
-				return tableView.getSelectionModel().getSelectedItem();
+				LearningUnit lu = tableView.getSelectionModel().getSelectedItem();
+				return LearningUnitManagerFactory.createLearningUnitManager(lu);
 			}
 			return null;
 		});

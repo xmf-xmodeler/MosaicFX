@@ -60,6 +60,7 @@ import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
+import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
 import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 
 public class ControlCenter extends Stage {
@@ -139,9 +140,9 @@ public class ControlCenter extends Stage {
 		return b;
 	}
 	
-	private void startLearningUnit(Optional<LearningUnit> learningUnit) {
-		if (learningUnit.isPresent()) {
-			System.err.println(learningUnit.get().getPrettyName());
+	private void startLearningUnit(Optional<LearningUnitManager> manager) {
+		if (manager.isPresent()) {
+			manager.get().start();
 		} else {
 			throw new NullPointerException("LearnUnitChooser has not returned a value"); 
 		}

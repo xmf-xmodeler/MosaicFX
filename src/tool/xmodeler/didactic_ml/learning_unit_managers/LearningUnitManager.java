@@ -11,7 +11,7 @@ import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
 import xos.Value;
 
-public abstract class LearningUnitManager {
+public abstract class LearningUnitManager implements Startable {
 
 	
 	// define assumtion, that at one time only on learning unit can be running + say if user uses same name then clash
