@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * This is a helper class to retrieve the data of the task that are contained in a learning unit. A Learning unit task is described by a name.
+ * Learning unit task are strictly ordered. To maintain this order every task has a precedence expressed by an integer. The task are stored in a map. Depending on the learning unit you need to instantiate a subclass of this abstract class.
+ * Do not forget to call the constructor before you use this class because in the constructor the static fields are set. You can only use one subclass-instance at a time otherwise you will override the static values.
+ */
 public abstract class LearningUnitTasks {
 
-	//TODO: Assumption there can be only one description at a time. Otherwise the static fields will override each other.
-	
-	
 	/**
 	 * The task map represents all tasks in a learning unit. The map stores the name
 	 * of the task (used as keys) and an integer value. This value will be called
@@ -23,20 +25,23 @@ public abstract class LearningUnitTasks {
 	 * order of the tasks.
 	 */
 	protected static Map<String, Integer> tasks = new HashMap<String, Integer>();
+	/**
+	 * Defines the learning unit that is associated
+	 */
 	protected static String learningUnitName;
 	
 	
 	//TODO doku, map starts with 1 -> contract of constructor 
 	/**
-	 * Contract subclasses must call this with matching name
-	 * @param taskName
+	 * The subclass must override this constructor with matching learning unit name. Please mind, that this name must also be used in the filesystem
+	 * to store associated task description. Furthermore you need to specify the tasks. Please override the tasks field in the constructor of the subclass. Please not that the first precedence is 1.
+	 * 
+	 * @param taskName represents associated learning unit and must match file system folder 
 	 */
 	public LearningUnitTasks(String learningUnitName) {
 		LearningUnitTasks.learningUnitName = learningUnitName;
 	}
 	
-	
-
 	/**
 	 * Filters map for task name and returns the precedence of this task.
 	 * 
