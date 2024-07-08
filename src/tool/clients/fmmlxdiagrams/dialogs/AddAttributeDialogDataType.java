@@ -21,7 +21,14 @@ public class AddAttributeDialogDataType {
 	
 	public AddAttributeDialogDataType(String name, AddAttributeDialogMetaDataType displayName) {
 		this.name = name;
-		this.displayName = this.name + " [" + displayName.toString() + "]";
+		
+		if (displayName == AddAttributeDialogMetaDataType.Primitive || displayName == AddAttributeDialogMetaDataType.NonPrimitive) {
+			this.displayName = name;
+		}else {
+			this.displayName = this.name + " [" + displayName.toString() + "]";
+		}
+		
+		
 	}
 	public enum AddAttributeDialogMetaDataType {
 		Domainspecific, Primitive, Enum, NonPrimitive
