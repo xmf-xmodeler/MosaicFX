@@ -42,7 +42,9 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramPreperationActions;
+import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
 import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
 /**
@@ -63,7 +65,10 @@ public class DiagramViewPane extends SplitPane {
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
 	//TODO check architecture and make documentation this in only neede for tool intro, kann man es besser machen? ++ rename
-	private String diagramViewState = null;
+	/**
+	 * This string represents the current task the user have to success. The value is only use if LearningUnitManager.isInitialized()  
+	 */
+	private String taksName = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -76,19 +81,24 @@ public class DiagramViewPane extends SplitPane {
 		diagram = fmmlxDiagram;
 
 		initDiagramViewState();
-		buildViewComponents(ToolIntroductionTasks.getPrecedence(diagramViewState));
-	}
-
-	private void initDiagramViewState() {
-		if (isIntroductionMode()) {
-			diagramViewState = "CREATE_CLASS_MOVIE";
-			ToolIntroductionManager.getInstance().setDiagram(diagram);
-		} else {
-			diagramViewState = "FULL_GUI";
+		//if the tool is in instruction mode the task precedence decides which gui elements are shown
+		if (isInToolIntroductionMode()) {
+			buildViewComponents(ToolIntroductionTasks.getPrecedence(taksName));			
+		}else {
+			//the number 100 represents a full gui
+			buildViewComponents(100);
+		}
+		if (LearningUnitManager.isInitialized()) {
+			LearningUnitManager.getInstance().setDiagram(diagram);
 		}
 	}
 
-	public  boolean isIntroductionMode() {
+	private void initDiagramViewState() {
+		if (LearningUnitManager.isInitialized()) {
+			taksName = LearningUnitTasks.getTaskName(1);}
+	}
+
+	public  boolean isInToolIntroductionMode() {
 		return diagram.getProjectName().equals("ToolIntroductionABC")
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
@@ -423,12 +433,19 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 
+	/**
+	 * This function gets called by a learning unit manager. The function is used to prepare the gui and the model for the next task.
+	 */
 	public void loadNextStage() {
 		DiagramPreperationActions.prepair(diagram);
-		//TODO do not miss to rename
-		int nextDiagramViewStatePrecedence = ToolIntroductionTasks.getNextPrecedence(diagramViewState); 
-		buildViewComponents(nextDiagramViewStatePrecedence);
-		diagramViewState = ToolIntroductionTasks.getTaskName(nextDiagramViewStatePrecedence);
+		int nextTaskPrecedencePrecedence = LearningUnitTasks.getNextPrecedence(taksName); 
+		//only in tool intro the gui is adapted
+		if (isInToolIntroductionMode()) {
+			buildViewComponents(nextTaskPrecedencePrecedence);			
+		} else {
+			buildViewComponents(100);
+		}
+		taksName = LearningUnitTasks.getTaskName(nextTaskPrecedencePrecedence);
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
@@ -459,11 +476,7 @@ public class DiagramViewPane extends SplitPane {
 		this.issueTable = issueTable;
 	}
 
-	public void setDiagramViewState(String diagramViewState) {
-		this.diagramViewState = diagramViewState;
-	}
-
-	public String getDiagramViewState() {
-		return diagramViewState;
+	public String getCurrentTaskName() {
+		return taksName;
 	}
 }

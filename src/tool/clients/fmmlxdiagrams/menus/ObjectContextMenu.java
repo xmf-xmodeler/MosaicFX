@@ -147,7 +147,7 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
 			Menu attributeMenu, Menu associationMenu, Menu operationMenu, Menu constraintMenu, Menu delegationMenu, MenuItem slotMenu, Menu associationInstanceMenu, MenuItem addInstanceItem, MenuItem removeItem, MenuItem changeNameItem) {
-		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 4) {		
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 4) {		
 			if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 		}
 		getItems().add(changeNameItem);
@@ -155,18 +155,18 @@ public class ObjectContextMenu extends ContextMenu {
 		getItems().add(new SeparatorMenuItem());
 		// add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
-			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) >= 100) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) >= 100) {
 				getItems().addAll(changeParentItem, browseInstanceItem, constraintMenu, operationMenu);
 			}
-			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 1) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 1) {
 				getItems().add(attributeMenu);
 			}
-			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 3) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
 				getItems().add(associationMenu);
 			}	
 		}
 		//add all items, that are used for all Objects		
-		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) > 4) {
+		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 4) {
 			getItems().addAll(slotMenu, associationInstanceMenu);		
 		}	
 		addRunMenu();

@@ -194,12 +194,17 @@ public class FmmlxPalette {
 	private void addChildrenToRelationship(TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
 			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
 
-			relationships.getChildren().add(association);			
-		if (ToolIntroductionTasks.getPrecedence(viewPane.getDiagramViewState()) > 4) {
-			relationships.getChildren().add(link);			
+		relationships.getChildren().add(association);
+		//only if the tool is in instruction mode the task precedence is used to define the elements that are shown in the palette
+		if (viewPane.isInToolIntroductionMode()) {
+			if (ToolIntroductionTasks.getPrecedence(viewPane.getCurrentTaskName()) > 4) {
+				relationships.getChildren().add(link);
+			}
+		} else {
+			relationships.getChildren().add(link);
 		}
 		if (!viewPane.getDiagram().isUMLMode()) {
-			relationships.getChildren().addAll(delegation);			
+			relationships.getChildren().addAll(delegation);
 		}
 	}
 

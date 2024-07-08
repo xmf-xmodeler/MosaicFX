@@ -2233,7 +2233,7 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		if (diagram.getViewPane().isIntroductionMode()) {
+		if (diagram.getViewPane().isInToolIntroductionMode()) {
 			//finds task description pane and shows warning dialog before close
 			stage.setOnCloseRequest((e) -> {
 				if (ToolIntroductionManager.isInitialized()) {
