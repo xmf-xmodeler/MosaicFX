@@ -5,6 +5,10 @@ import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
 import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
 
 public class LearningUnitManagerFactory {
+	
+	  private LearningUnitManagerFactory() {
+		    throw new IllegalStateException("Use onyl as static class");
+		  }
 
 	public static LearningUnitManager createLearningUnitManager(LearningUnit learningUnit) {
 		switch (learningUnit) {
