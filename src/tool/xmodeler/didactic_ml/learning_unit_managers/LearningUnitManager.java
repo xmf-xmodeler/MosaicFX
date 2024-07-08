@@ -125,11 +125,11 @@ public abstract class LearningUnitManager implements Startable {
 		if (sucessCondition.checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			String nextDescription = (LearningUnitTasks.getTaskDescritpion(diagram.getViewPane().getDiagramViewState()));
+			String nextDescription = (LearningUnitTasks.getTaskDescritpion(diagram.getViewPane().getCurrentTaskName()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
-			if (LearningUnitTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) == LearningUnitTasks.getHighestPrecedence()) {
+			if (LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) == LearningUnitTasks.getHighestPrecedence()) {
 				//this time is needed to survive the user feedback
 				try {
 					Thread.sleep(1500);
