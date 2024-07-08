@@ -24,21 +24,24 @@ public abstract class LearningUnitTasks {
 	 * precedence. Because all tasks are consecutive the precedence describes the
 	 * order of the tasks.
 	 */
-	protected static Map<String, Integer> tasks = new HashMap<String, Integer>();
+	protected static Map<String, Integer> tasks = new HashMap<>();
 	/**
-	 * Defines the learning unit that is associated
+	 * Defines the learning unit that is associated. This name needs to match the folder name of the file system where the tasksDescriptions are stored.
 	 */
 	protected static String learningUnitName;
 	
-	
-	//TODO doku, map starts with 1 -> contract of constructor 
+	public static String getLearningUnitName() {
+		return learningUnitName;
+	}
+
 	/**
 	 * The subclass must override this constructor with matching learning unit name. Please mind, that this name must also be used in the filesystem
-	 * to store associated task description. Furthermore you need to specify the tasks. Please override the tasks field in the constructor of the subclass. Please not that the first precedence is 1.
+	 * to store associated task description. Please override the tasks field in the constructor of the subclass. Please not that the first precedence is 1.
+	 * For example see ToolIntroductionTask.
 	 * 
 	 * @param taskName represents associated learning unit and must match file system folder 
 	 */
-	public LearningUnitTasks(String learningUnitName) {
+	protected LearningUnitTasks(String learningUnitName) {
 		LearningUnitTasks.learningUnitName = learningUnitName;
 	}
 	
@@ -126,5 +129,32 @@ public abstract class LearningUnitTasks {
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
 		}
+	}
+	
+	/**
+	 * This function needs to be called before the task is first use. Please override the task var with matching values.
+	 */
+	public abstract void init();
+
+	/**
+	 * This method clears class informations. It is technically not needed but should avoid potential errors.
+	 */
+	public static void tearDown() {
+		LearningUnitTasks.learningUnitName = null;
+		LearningUnitTasks.tasks = null;
+	}
+	
+	/**
+	 * Check the tasks for the highest precedence and return it. This values marks when the user has succeed the unit. 
+	 * @return highest precedence of tasks
+	 */
+	public static int getHighestPrecedence() {
+		int highestValue = Integer.MIN_VALUE;
+        for (Map.Entry<String, Integer> entry : tasks.entrySet()) {
+            if (entry.getValue() > highestValue) {
+                highestValue = entry.getValue();
+            }
+        }
+        return highestValue;
 	}
 }
