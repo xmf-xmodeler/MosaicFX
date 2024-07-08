@@ -116,6 +116,7 @@ public abstract class LearningUnitManager {
 	//TODO make abstract
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
+		new ToolIntroductionTasks();
 		String description = ToolIntroductionTasks.getFirstTaskDescription();
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
