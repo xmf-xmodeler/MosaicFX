@@ -5,23 +5,16 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
+import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 
-public class ToolIntroductionConditions extends SucessCondition {
+public class ToolIntroductionConditions extends SuccessCondition {
 		
 	private static final String MOVIE_CLASS_NAME = "Movie";
 
-	public ToolIntroductionConditions(FmmlxDiagram diagram) {
-		super(diagram);
-	}
-
-	/**
-	 * function that defines which condition should be check for the current ViewState
-	 * @return the result of the specific checked condition
-	 */
 	@Override
-	public boolean checkSucessCondition() {
-		switch (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState())) {
+	public boolean checkSuccessCondition() {
+		switch (LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 1:
 			return isClassMovieCreated();
 		case 2:
@@ -43,7 +36,7 @@ public class ToolIntroductionConditions extends SucessCondition {
 			return true;
 
 		default:
-			return false;
+			throw new IllegalArgumentException("No condition for the precedence defined: " + LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) + "in " + LearningUnitTasks.getLearningUnitName());
 		}
 	}
 

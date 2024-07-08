@@ -8,7 +8,7 @@ import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
-import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
+import tool.xmodeler.didactic_ml.sucess_conditions.SuccessCondition;
 import xos.Message;
 import xos.Value;
 
@@ -33,7 +33,7 @@ public abstract class LearningUnitManager implements Startable {
 	protected static String diagramName;
 	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
 	protected static LearningUnit learningUnit;
-	protected static SucessCondition sucessCondition;
+	protected static SuccessCondition sucessCondition;
 	
 	protected LearningUnitManager() {
 		if (instance != null) {
@@ -122,7 +122,7 @@ public abstract class LearningUnitManager implements Startable {
 			throw new RuntimeException();
 		}
 
-		if (sucessCondition.checkSucessCondition()) {
+		if (sucessCondition.checkSuccessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
 			String nextDescription = (LearningUnitTasks.getTaskDescritpion(diagram.getViewPane().getCurrentTaskName()));
