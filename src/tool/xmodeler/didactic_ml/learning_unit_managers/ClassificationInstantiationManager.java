@@ -11,9 +11,5 @@ public class ClassificationInstantiationManager extends LearningUnitManager {
 		new ClassificationInstantiationTasks().init();
 		learningUnit = LearningUnit.CLASSIFICATION_INSTANTIATION;
 		sucessCondition = new ClassificationInstantiationConditions();
-	}
-
-//	public static ClassificationInstantiationManager getInstance() {
-//		return LearningUnitManager.getInstance(ClassificationInstantiationManager.class);
-//	}	
+	}	
 }

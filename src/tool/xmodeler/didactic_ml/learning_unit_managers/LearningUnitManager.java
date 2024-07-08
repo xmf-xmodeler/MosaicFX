@@ -9,23 +9,22 @@ import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptio
 import tool.xmodeler.didactic_ml.learning_unit_steps.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.learning_unit_steps.ToolIntroductionTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SucessCondition;
-import tool.xmodeler.didactic_ml.sucess_conditions.ToolIntroductionConditions;
 import xos.Message;
 import xos.Value;
 
 /**
  * Class used for manage learning units.
  * This class is used to build up needed models and contains the logic how conditions are checked 
- * and will update the diagram view if needed.
+ * and will update the diagram view if needed. At one time there should only be one manager. Manager are defined by a set of project name and diagram name. 
+ * Please note that there is a small risk, that a user could create a diagram with the same parameter. This would lead to bugs.
  */
 public abstract class LearningUnitManager implements Startable {
-
 	
-	// define assumtion, that at one time only on learning unit can be running + say if user uses same name then clash
-	
-	
-	// use this if you want to load models that already fulfill some success
+	// 
 	// conditions
+	/**
+	 * use this if you want to load models that already fulfill some success conditions. It will raise backend exceptions but it still works. 
+	 */
 	private static boolean TESTMODUS = true;
 
 	private static LearningUnitManager instance;
@@ -37,29 +36,31 @@ public abstract class LearningUnitManager implements Startable {
 	protected static SucessCondition sucessCondition;
 	
 	protected LearningUnitManager() {
+		if (instance != null) {
+			throw new RuntimeException("There should only be one type of Manager at once. When a manager is not used anymore the stop function should be called."
+					+ "After this you could instantiate a new instance.");
+		}
 		instance = this;	
 		createLearningUnitDiagram();
 	}
 	
-	
-	//TODO define contract.. every subclass should have own names. this makes it more flexible to define actions only dependent on one lu type
 	/**
-	 * Used to differentiate ToolIntro.. needed because of frontend adaption
-	 * @param projectName
-	 * @param diagramName
+	 * Every subclass needs to call this constructor. Please use unique project and diagram names.
+	 * This allows more flexibility to distinguish the models and react to them in the code. After you have called them make sure to define the needed components for a manager.
+	 * See ToolInstroductionManager as example. 
+	 * 
+	 * @param projectName defines the project, that is created and used in the learningUnit
+	 * @param diagramName defines the diagram, that is created and used in the learningUnit
 	 */
 	protected LearningUnitManager(String projectName, String diagramName) {
-		this.projectName = projectName;
-		this.diagramName = diagramName;
-		instance = this;	
+		LearningUnitManager.projectName = projectName;
+		LearningUnitManager.diagramName = diagramName;
+		LearningUnitManager.instance = this;	
 		createLearningUnitDiagram();
 	}
 
-
-
 	/**
-	 * uses backend function to set up a diagram that is used for the presentation
-	 * of the tool demo.
+	 * uses backend function to set up a diagram that is used for the presentation of the learning unit.
 	 */
 	protected void createLearningUnitDiagram() {
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject", 1);
@@ -80,22 +81,16 @@ public abstract class LearningUnitManager implements Startable {
 		}
 	}
 
-	protected static synchronized <Manager extends LearningUnitManager> Manager getInstance(Class<Manager> clazz) {
-		if (instance == null) {
-			if (TESTMODUS) {
-				instance = new ToolIntroductionManager();
-				instance.getDescriptionViewer().show();
-			} else {
-				throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");				
-			}	
-		}
-		return clazz.cast(instance);
-	}
-	
+	/**
+	 * Returns singelton of this class. Depending on which constructor was called this function returns another subtype.
+	 * Be aware that you need to extend this function if you want to add new subclass of {@link LearningUnit}.
+	 * 
+	 * @return dynamic subtyped instance of LearningUnitManager
+	 */
 	public static synchronized <Manager extends LearningUnitManager> Manager getInstance() {
 		if (instance == null) {
 			if (TESTMODUS) {
-				instance = new ToolIntroductionManager();
+				instance = new ToolIntroductionManager(); //change type to the LearningUnit you want to test
 				instance.getDescriptionViewer().show();
 			}
 		} else {
@@ -107,17 +102,17 @@ public abstract class LearningUnitManager implements Startable {
 				return (Manager) ClassificationInstantiationManager.class.cast(instance);
 
 			default:
-				break;
+				throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");
 			}
-
-			throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");
 		}
 		return null;
 	}
 	
 	
-	
-	//TODO make abstract
+	/**
+	 * This function is called to check if the user matches the condition of the current task.
+	 * The conditions are defined in the sucessCondition reference of this class.
+	 */
 	public void checkSucessCondition() {
 		// is needed because otherwise the changes of the update are not reflected in
 		// the check...just for security if the user clicks fast
@@ -130,12 +125,11 @@ public abstract class LearningUnitManager implements Startable {
 		if (sucessCondition.checkSucessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			String nextDescription = (ToolIntroductionTasks.getTaskDescritpion(diagram.getViewPane().getDiagramViewState()));
+			String nextDescription = (LearningUnitTasks.getTaskDescritpion(diagram.getViewPane().getDiagramViewState()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
-			//TODO make abstract
-			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) == 10) {
+			if (LearningUnitTasks.getPrecedence(diagram.getViewPane().getDiagramViewState()) == LearningUnitTasks.getHighestPrecedence()) {
 				//this time is needed to survive the user feedback
 				try {
 					Thread.sleep(1500);
@@ -149,7 +143,6 @@ public abstract class LearningUnitManager implements Startable {
 		}
 	}
 	
-	//TODO make abstract
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
 		String description = LearningUnitTasks.getFirstTaskDescription();

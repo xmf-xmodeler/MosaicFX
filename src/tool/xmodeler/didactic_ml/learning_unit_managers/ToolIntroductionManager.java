@@ -12,8 +12,4 @@ public class ToolIntroductionManager extends LearningUnitManager {
 		learningUnit = LearningUnit.TOOL_INTRO;
 		sucessCondition = new ToolIntroductionConditions();
 	}
-
-//	public static ToolIntroductionManager getInstance() {
-//		return LearningUnitManager.getInstance(ToolIntroductionManager.class);
-//	}	
 }
