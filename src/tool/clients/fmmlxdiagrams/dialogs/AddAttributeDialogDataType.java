@@ -21,11 +21,16 @@ public class AddAttributeDialogDataType {
 	
 	public AddAttributeDialogDataType(String name, AddAttributeDialogMetaDataType displayName) {
 		this.name = name;
-		
-		if (displayName == AddAttributeDialogMetaDataType.Primitive || displayName == AddAttributeDialogMetaDataType.NonPrimitive) {
+
+		if (displayName == AddAttributeDialogMetaDataType.Primitive
+				|| displayName == AddAttributeDialogMetaDataType.NonPrimitive) {
 			this.displayName = name;
-		}else {
-			this.displayName = this.name + " [" + displayName.toString() + "]";
+		} else {
+			if (displayName == AddAttributeDialogMetaDataType.Domainspecific) {
+				this.displayName = this.name + " [Domain-Specific]";
+			} else {
+				this.displayName = this.name + " [" + displayName.toString() + "]";
+			}
 		}
 		
 		

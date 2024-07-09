@@ -90,7 +90,7 @@ public class ChangeTypeDialog<Property
 
 		}
 
-		types.add(new AddAttributeDialogDataType("Domainspecific", AddAttributeDialogMetaDataType.Domainspecific));
+		types.add(new AddAttributeDialogDataType("Domain-Specific", AddAttributeDialogMetaDataType.Domainspecific));
 		diagramObjects = diagram.getObjectsReadOnly();
 
 		dialogPane = getDialogPane();
@@ -202,11 +202,11 @@ public class ChangeTypeDialog<Property
 			if (newValue == null)
 				return;
 
-			if (newValue.getName().toString().equals("Domainspecific")) {
+			if (newValue.getName().toString().equals("Domain-Specific")) {
 
 				Platform.runLater(() -> {
 					DomainspecificDatatypesDialog dlg = new DomainspecificDatatypesDialog(diagram);
-					dlg.setTitle("Select domainspecific datatype");
+					dlg.setTitle("Select Domain-Specific datatype");
 					Optional<String> opt = dlg.showAndWait();
 
 					if (opt.isPresent()) {
