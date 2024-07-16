@@ -51,10 +51,6 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(oldOp);
 		setResizable(true);
-		
-		if(diagram.isUMLMode()) {	//Regular and Expert mode
-			
-		}
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -135,7 +131,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			layoutStandard(defaultOperationButton,theGrid);
 		}
 		else {
-			layoutUML(defaultOperationButton,theGrid);
+			layoutUML(defaultOperationButton,theGrid,oldOp);
 		}
 		
 		VBox.setVgrow(codeBoxPair.getBodyScrollPane(), Priority.ALWAYS);
@@ -154,13 +150,39 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				);
 	}
 	
-	private void layoutUML(Button defaultOperationButton, GridPane theGrid) {
+	private void layoutUML(Button defaultOperationButton, GridPane theGrid, FmmlxOperation oldOp) {
 		umlFunctionSignature = new TextField();
 		umlFunctionSignature.setPrefWidth(200);
 		AddOperationDialog.this.codeBoxPair.setBodyText(
 				"@Operation " + "methodName[monitor=true,delToClassAllowed=false]():XCore::Element" + "\n" +
 				"null" + "\n" + "end");
-		umlFunctionSignature.setOnKeyTyped(event -> {
+		
+		GridPane theGrid2 = new GridPane();
+		theGrid2.add(umlFunctionSignature, 0, 0);
+		
+		VBox expertBox = new VBox(5,  
+				codeBoxPair.getBodyScrollPane(),
+				new Label("Parse result"),
+				codeBoxPair.getErrorTextArea(),
+				defaultOperationButton
+				);
+		
+		Tab expertTab = new Tab("Expert Mode",expertBox);
+		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
+		
+		codeBoxPair.getBodyScrollPane().setOnKeyTyped(e -> {
+			String[] codeBody;
+			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+			codeBody = codeBody[0].split(" ");
+			 String signature = "";
+			for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
+				signature = signature + codeBody[i];
+			}
+		
+			umlFunctionSignature.setText(signature);
+		});
+		
+		umlFunctionSignature.setOnKeyTyped(event -> {		//synchronise expert mode code with function signature
 			String[] codeBody;
 			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
 			String finalCode = "";
@@ -180,37 +202,22 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			codeBoxPair.setBodyText(finalCode);
 		});
 		
-		codeBoxPair.getBodyScrollPane().setOnKeyTyped(e -> {
-			String[] codeBody;
+
+		if(oldOp!=null) {							//editing an existing operation
+			AddOperationDialog.this.codeBoxPair.setBodyText(oldOp.getBody());
+			String[] codeBody=oldOp.getBody().split("/n");
 			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
 			codeBody = codeBody[0].split(" ");
 			 String signature = "";
-			for(int i = 1;i<codeBody.length;i++) {
+			for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
 				signature = signature + codeBody[i];
 			}
-		
-			umlFunctionSignature.setText(signature);
-		});
-		
-		if(oldOpName!=null) {
-		umlFunctionSignature.setText(oldOpName + "():Integer");
+			umlFunctionSignature.setText(signature);	//cannot just use old name because rest of signature would be missing then
 		}
 		else {
-			umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");
+			umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");		//default values for creating a new operation
 		}
-		GridPane theGrid2 = new GridPane();
-		theGrid2.add(umlFunctionSignature, 0, 0);
 		
-		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
-		
-		VBox expertBox = new VBox(5,  
-				codeBoxPair.getBodyScrollPane(),
-				new Label("Parse result"),
-				codeBoxPair.getErrorTextArea(),
-				defaultOperationButton
-				);
-		
-		Tab expertTab = new Tab("Expert Mode",expertBox);
 		
 		tabPane.getTabs().addAll(normalModeTab,expertTab);
 	mainBox = new VBox(5,  
