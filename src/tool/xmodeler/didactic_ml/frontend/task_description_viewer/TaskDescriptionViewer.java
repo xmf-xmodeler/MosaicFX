@@ -80,11 +80,7 @@ public class TaskDescriptionViewer extends Stage {
 	 * closed.
 	 */
 	private void closeToolIntoDiagramStage() {
-		Stage stage = ToolIntroductionManager.getDiagram().getStage();
-		if ("ToolIntroductionABC::ToolIntroductionDiagramXYZ".equals(stage.getTitle())) {
-			stage.close();
-			return;
-		}
+		LearningUnitManager.getDiagram().getStage().close();
 	}
 
 	public void loadHtmlContent(String content) {
