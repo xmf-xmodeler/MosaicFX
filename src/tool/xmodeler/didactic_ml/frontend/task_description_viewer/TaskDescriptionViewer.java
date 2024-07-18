@@ -33,7 +33,9 @@ public class TaskDescriptionViewer extends Stage {
 
 		setOnCloseRequest(this::showWarningDialog);
 		setTitle("Task Description");
-
+		//Used to identify stage to open it on shortcut
+		getProperties().put("stageID", "TaskViewerStage");
+		
 		BorderPane root = new BorderPane();
 		webView.setContextMenuEnabled(false);
 		root.setCenter(webView);

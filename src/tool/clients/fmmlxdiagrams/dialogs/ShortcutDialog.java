@@ -6,6 +6,7 @@ public class ShortcutDialog extends Alert {
 
 	public ShortcutDialog() {
 		super(AlertType.INFORMATION);
+		setTitle("Shortcuts");
 		setHeaderText("List of Shortcuts");
 		String content = buildContent();
 		setContentText(content);
@@ -17,7 +18,9 @@ public class ShortcutDialog extends Alert {
 				"Strg + A: Select all Elements\n" + 
 				"Strg + F: Find Objects\n" + 
 				"Strg + Z: Undo\n" + 
-				"Strg + Y: Redo\n" + 
+				"Strg + Y: Redo\n" +
+				"\n" +
+				"Strg + T: Bring Task Description upfront (Only usable in a Learning Unit)\n" +
 				"\n" + 
 				"Mouse ombinations:\n" + 
 				"Mouse + Space or Alt: Move Canvas";

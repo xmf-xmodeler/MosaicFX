@@ -2,6 +2,8 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
 
@@ -40,11 +42,39 @@ public class FmmlxDiagramControlKeyHandler {
 		case S:
 			handleS();
 			break;
-
+			
+		case T:
+			bringTaskViewerUpfront();
+			break;
+			
 		default:
 			break;
 		}
 	}
+
+	private void bringTaskViewerUpfront() {
+		if (!diagram.isInLearningUnitMode()) {
+			return;
+		}
+		try {
+			findTaskDescriptionStage().toFront();			
+		} catch (NullPointerException e) {
+			 System.err.println("Cant find TaskViewStage: " + e.getMessage());
+		}
+	}
+	
+	private Stage findTaskDescriptionStage() {
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Stage) {
+                Stage stage = (Stage) window;
+                Object stageID = stage.getProperties().get("stageID");
+                if ("TaskViewerStage".equals(stageID)) {
+                    return stage;
+                }
+            }
+        }
+        return null;
+    }
 
 	private void handleS() {
 		new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(),diagram);

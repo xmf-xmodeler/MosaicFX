@@ -93,6 +93,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 
 	public Vector<DiagramCanvas> views = new Vector<>();
+	private boolean isInLearningUnitMode = false;
 
 	static {
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
@@ -1437,5 +1438,13 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	
 	public Stage getStage() {
 		return this.stage;
+	}
+	
+	public boolean isInLearningUnitMode() {
+		return isInLearningUnitMode;
+	}
+
+	public void setInLearningUnitMode(boolean isInLearningUnitMode) {
+		this.isInLearningUnitMode = isInLearningUnitMode;
 	}
 }

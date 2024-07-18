@@ -173,6 +173,7 @@ public abstract class LearningUnitManager implements Startable {
 	public void setDiagram(FmmlxDiagram diagram) {
 		LearningUnitManager.diagram = diagram;
 		sucessCondition.setDiagram(diagram);
+		diagram.setInLearningUnitMode(true);
 	}
 
 	public static FmmlxDiagram getDiagram() {
