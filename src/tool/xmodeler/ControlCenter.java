@@ -90,7 +90,7 @@ public class ControlCenter extends Stage {
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		root.setAlignment(Pos.CENTER);
+		root.setAlignment(Pos.TOP_CENTER);
 		
 		if(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString(), false)) {
 			adaptLayoutToDidacticMode(root);
@@ -131,9 +131,9 @@ public class ControlCenter extends Stage {
 				+ "-fx-border-width: 1px;"
 				+ "-fx-background-radius: 15px; "
 				+ "-fx-border-radius: 15px;"
-				+ "-fx-font-size: 16px; "
+				+ "-fx-font-size: 14px; "
 				+ "-fx-font-weight: bold;");  
-		b.setPrefWidth(500);
+		b.setPrefWidth(125);
 		b.setOnAction(a -> startLearningUnit(new LearningUnitChooser().showAndWait()));
 		return b;
 	}
@@ -149,7 +149,7 @@ public class ControlCenter extends Stage {
 	private void adaptLayoutToDidacticMode(VBox root) {
 		toolWidth = toolWidth -237;	//Adjustment for removed elements 
 		Button learningUnitsButton = buildLearningUnitsButton();
-		root.getChildren().add(1, learningUnitsButton);
+		root.getChildren().add(2, learningUnitsButton);
 	}
 
 	private void showCloseWarningDialog(Event event) {
