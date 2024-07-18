@@ -216,7 +216,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
-		showNonPrimitive = new CheckBox("Show non primitive data types");
+		showNonPrimitive = new CheckBox("Show all data types");
 		isIntrinsicLabel = new Label("intrinsic");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");
@@ -312,6 +312,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		isIncompleteBox = new CheckBox();
 		isOptionalBox = new CheckBox();
 
+		grid.add(nameTextField, 1, 0);
 		grid.add(nameLabel, 0, 0);
 		grid.add(classLabel, 0, 1);
 		if (!diagram.isUMLMode()) {
@@ -321,6 +322,9 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			grid.add(isIncompleteLabel, 0, 8);
 			grid.add(isOptionalLabel, 0, 9);
 			grid.add(levelComboBox, 1, 3);
+		}
+			grid.add(typeComboBox, 1, 4);
+			if (!diagram.isUMLMode()) {
 			grid.add(isIntrinsicBox, 1, 7);
 			grid.add(isIncompleteBox, 1, 8);
 			grid.add(isOptionalBox, 1, 9);
@@ -329,10 +333,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		}
 		grid.add(typeLabel, 0, 4);
 
-		grid.add(nameTextField, 1, 0);
 		grid.add(classTextField, 1, 1);
 		grid.add(showNonPrimitive, 1, 2);
-		grid.add(typeComboBox, 1, 4);
 
 		// Define an event handler for changes in the state of the checkbox
 		// showNonPrimitives

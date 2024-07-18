@@ -324,7 +324,6 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	}
 
 	public boolean isDependent() {
-		// TODO Auto-generated method stub
 		return !(parentAssociationId == null || "".equals(parentAssociationId));
 	}
 }

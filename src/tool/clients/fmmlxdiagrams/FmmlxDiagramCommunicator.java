@@ -2805,12 +2805,24 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociationDependency", message);
 		
 	}
+	
+	@Deprecated
 	public void addAssociationDependency(int diagramID, FmmlxAssociation assoc, String dependsOnName) {
 		Value[] message = new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(assoc.sourceNode.ownPath),
 			new Value(assoc.getAccessNameStartToEnd()),
 			new Value(dependsOnName)};
+		sendMessage("addAssociationDependency3", message);
+	}
+	public void addAssociationDependency(int diagramID, String classPath0, String idAssoc0, String classPath1,
+			String idAssoc1) {
+	Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(classPath0),
+			new Value(idAssoc0),
+			new Value(classPath1),
+			new Value(idAssoc1)};
 		sendMessage("addAssociationDependency", message);
 	}
 }

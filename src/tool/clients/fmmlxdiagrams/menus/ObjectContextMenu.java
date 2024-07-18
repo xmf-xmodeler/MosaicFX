@@ -33,10 +33,6 @@ public class ObjectContextMenu extends ContextMenu {
 		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
-		constructor(object,view,mouse);
-	}
-	
-	private void constructor(FmmlxObject object, FmmlxDiagram.DiagramCanvas view, Point2D mouse){
 
 		// LM, 07.04.2023, Add new menu item for executing customer user interfaces
 		MenuItem execUI = new MenuItem("Execute UI");
@@ -47,7 +43,11 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
-		
+
+		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
+		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
+		if(!diagram.isUMLMode()) if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
+
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
@@ -55,7 +55,6 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
-		getItems().add(new SeparatorMenuItem());
 				
 		if(diagram.getSelectedObjects().size() > 1) {
 			boolean classifyPossible = true;
@@ -75,11 +74,6 @@ public class ObjectContextMenu extends ContextMenu {
 			}
 		}
 					
-		if(!diagram.isUMLMode()) {
-		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
-		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
-		if((object.isClass()) && !object.isAbstract()) getItems().add(instanceWizardItem);
-			
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
@@ -87,16 +81,13 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
-		getItems().add(changeLevelItem);
+		// Todo: later ... ->  getItems().add(changeLevelItem);
 		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
-		if(object.getLevel().isClass()) getItems().add(abstractClassItem);
 		
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
 		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
-		if(object.getLevel().isClass()) getItems().add(singletonClassItem);
-		}
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
@@ -104,7 +95,8 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
 		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
 		
-	
+//		getItems().add();
+		
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
 		Menu operationMenu = createOperationSubMenu();
@@ -134,15 +126,38 @@ public class ObjectContextMenu extends ContextMenu {
 		});
 		
 		//add all items, that are used for all Objects
-		//Removed uml if statement since the new implementation seems to not add global var anymore
-		addMenus(object, changeParentItem, browseInstanceItem, attributeMenu, associationMenu, operationMenu,
-				constraintMenu, delegationMenu,slotMenu, associationInstanceMenu, addInstanceItem, removeItem, changeNameItem);
+		getItems().addAll();			
+		//add items, that are used only for Objects that are not on level 0
+		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
+			getItems().addAll(
+					changeParentItem, 
+					abstractClassItem,
+					singletonClassItem,
+					browseInstanceItem, 
+					attributeMenu, 
+					associationMenu, 
+					operationMenu, 
+					constraintMenu,
+					slotMenu, 
+					associationInstanceMenu, 
+					editConcreteSyntaxItem); }
+		else {
+			getItems().addAll(
+					slotMenu, 
+					associationInstanceMenu);		
+		}
+		getItems().addAll(delegationMenu);
+		addRunMenu();
 		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<>();
 			v.add(object); 
 			actions.hide(v, true);
 		}, ALWAYS);
+		
+		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Variable");
+		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
+		getItems().add(assignToGlobalVariable);
 	}
 	
 	private void addMenus(FmmlxObject object, MenuItem changeParentItem, MenuItem browseInstanceItem,
