@@ -154,6 +154,7 @@ public abstract class LearningUnitManager implements Startable {
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();
+		ControlCenterClient.getClient().getControlCenter().close();
 	}
 	
 	public static boolean isInitialized() {
@@ -168,6 +169,7 @@ public abstract class LearningUnitManager implements Startable {
 		learningUnit = null;
 		sucessCondition = null;
 		preperationActions = null;
+		ControlCenterClient.getClient().getControlCenter().show();
 	}
 	
 	public void setDiagram(FmmlxDiagram diagram) {

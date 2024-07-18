@@ -2214,6 +2214,7 @@ public class FmmlxDiagramCommunicator {
 	// ########################## Tab ### Stage #######################
 		
 	private void createStage(javafx.scene.Node node, String name, String packagePath, int id, final FmmlxDiagram diagram) {
+		//TODO add mosaic icon to stage
 		Stage stage = new Stage();
 		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
