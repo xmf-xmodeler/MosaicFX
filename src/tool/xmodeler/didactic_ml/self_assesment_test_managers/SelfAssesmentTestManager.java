@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.learning_unit_managers;
+package tool.xmodeler.didactic_ml.self_assesment_test_managers;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
@@ -18,7 +18,7 @@ import xos.Value;
  * and will update the diagram view if needed. At one time there should only be one manager. Manager are defined by a set of project name and diagram name. 
  * Please note that there is a small risk, that a user could create a diagram with the same parameter. This would lead to bugs.
  */
-public abstract class LearningUnitManager implements Startable {
+public abstract class SelfAssesmentTestManager implements Startable {
 	
 	// 
 	// conditions
@@ -27,7 +27,7 @@ public abstract class LearningUnitManager implements Startable {
 	 */
 	private static boolean TESTMODUS = true;
 
-	private static LearningUnitManager instance;
+	private static SelfAssesmentTestManager instance;
 	protected static FmmlxDiagram diagram;
 	protected static String projectName;
 	protected static String diagramName;
@@ -40,7 +40,7 @@ public abstract class LearningUnitManager implements Startable {
 	 */
 	protected static DiagramPreparationActions preperationActions;
 	
-	protected LearningUnitManager() {
+	protected SelfAssesmentTestManager() {
 		if (instance != null) {
 			throw new RuntimeException("There should only be one type of Manager at once. When a manager is not used anymore the stop function should be called."
 					+ "After this you could instantiate a new instance.");
@@ -57,10 +57,10 @@ public abstract class LearningUnitManager implements Startable {
 	 * @param projectName defines the project, that is created and used in the learningUnit
 	 * @param diagramName defines the diagram, that is created and used in the learningUnit
 	 */
-	protected LearningUnitManager(String projectName, String diagramName) {
-		LearningUnitManager.projectName = projectName;
-		LearningUnitManager.diagramName = diagramName;
-		LearningUnitManager.instance = this;	
+	protected SelfAssesmentTestManager(String projectName, String diagramName) {
+		SelfAssesmentTestManager.projectName = projectName;
+		SelfAssesmentTestManager.diagramName = diagramName;
+		SelfAssesmentTestManager.instance = this;	
 		createLearningUnitDiagram();
 	}
 
@@ -91,14 +91,14 @@ public abstract class LearningUnitManager implements Startable {
 	 * 
 	 * @return dynamic subtyped instance of LearningUnitManager
 	 */
-	public static synchronized <Manager extends LearningUnitManager> Manager getInstance() {
+	public static synchronized <Manager extends SelfAssesmentTestManager> Manager getInstance() {
 		if (instance == null) {
 			if (TESTMODUS) {
 				instance = new ToolIntroductionManager(); //change type to the LearningUnit you want to test
 				instance.getDescriptionViewer().show();
 			}
 		} else {
-			return new LearningUnitManagerFaktory(instance).getInstance(); 
+			return new SelfAssesmentTestManagerFaktory(instance).getInstance(); 
 		}
 		return null;
 	}
@@ -162,7 +162,7 @@ public abstract class LearningUnitManager implements Startable {
 	}
 	
 	public void setDiagram(FmmlxDiagram diagram) {
-		LearningUnitManager.diagram = diagram;
+		SelfAssesmentTestManager.diagram = diagram;
 		sucessCondition.setDiagram(diagram);
 		diagram.setInLearningUnitMode(true);
 	}

@@ -13,9 +13,9 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 
-public class LearningUnitChooser extends Dialog<LearningUnitManager> {
+public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
 
 	private Button okButton;
 	private TableView<LearningUnit> tableView = createTableView();

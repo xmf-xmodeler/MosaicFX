@@ -59,7 +59,7 @@ import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
-import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 
 public class ControlCenter extends Stage {
 	
@@ -138,7 +138,7 @@ public class ControlCenter extends Stage {
 		return b;
 	}
 	
-	private void startLearningUnit(Optional<LearningUnitManager> manager) {
+	private void startLearningUnit(Optional<SelfAssesmentTestManager> manager) {
 		if (manager.isPresent()) {
 			manager.get().start();
 		} else {

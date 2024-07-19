@@ -17,14 +17,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.ToolIntroductionManager;
 
 public class TaskDescriptionViewer extends Stage {
 
 	private final WebView webView = new WebView();
 	private final TaskDescriptionHistory descriptionHistory = new TaskDescriptionHistory(this);
-	private Button checkButton = createButton("Check Condition", (a) -> LearningUnitManager.getInstance().checkSucessCondition());
+	private Button checkButton = createButton("Check Condition", (a) -> SelfAssesmentTestManager.getInstance().checkSucessCondition());
 	private final Button backwardsButton = createButton("< Back", (a) -> descriptionHistory.navigateBack());
 	private final Button forwardsButton = createButton("Forward >", (a) -> descriptionHistory.navigateForward());
 	private final ToolBar buttonBar = new ToolBar();
@@ -82,7 +82,7 @@ public class TaskDescriptionViewer extends Stage {
 	 * closed.
 	 */
 	private void closeToolIntoDiagramStage() {
-		LearningUnitManager.getDiagram().getStage().close();
+		SelfAssesmentTestManager.getDiagram().getStage().close();
 	}
 
 	public void loadHtmlContent(String content) {

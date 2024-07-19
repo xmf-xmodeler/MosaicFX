@@ -1,12 +1,12 @@
-package tool.xmodeler.didactic_ml.learning_unit_managers;
+package tool.xmodeler.didactic_ml.self_assesment_test_managers;
 
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 
-public class LearningUnitManagerFaktory {
-	public static LearningUnitManager instance;
+public class SelfAssesmentTestManagerFaktory {
+	public static SelfAssesmentTestManager instance;
 
-	public LearningUnitManagerFaktory(LearningUnitManager instance) {
-		LearningUnitManagerFaktory.instance = instance;
+	public SelfAssesmentTestManagerFaktory(SelfAssesmentTestManager instance) {
+		SelfAssesmentTestManagerFaktory.instance = instance;
 	}
 
 	/**
@@ -16,8 +16,8 @@ public class LearningUnitManagerFaktory {
 	 * 
 	 * @return dynamic subtyped instance of LearningUnitManager
 	 */
-	public synchronized <Manager extends LearningUnitManager> Manager getInstance() {
-		switch (LearningUnitManager.learningUnit) {
+	public synchronized <Manager extends SelfAssesmentTestManager> Manager getInstance() {
+		switch (SelfAssesmentTestManager.learningUnit) {
 			case TOOL_INTRO:
 				return (Manager) ToolIntroductionManager.class.cast(instance);
 	

@@ -1,8 +1,8 @@
 package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
-import tool.xmodeler.didactic_ml.learning_unit_managers.ClassificationInstantiationManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.LearningUnitManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.ClassificationInstantiationManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.ToolIntroductionManager;
 
 public class LearningUnitManagerFactory {
 	
@@ -10,7 +10,7 @@ public class LearningUnitManagerFactory {
 		    throw new IllegalStateException("Use onyl as static class");
 		  }
 
-	public static LearningUnitManager createLearningUnitManager(LearningUnit learningUnit) {
+	public static SelfAssesmentTestManager createLearningUnitManager(LearningUnit learningUnit) {
 		switch (learningUnit) {
 			case TOOL_INTRO:
 				return new ToolIntroductionManager();

@@ -32,7 +32,7 @@ import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.didactic_ml.learning_unit_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
