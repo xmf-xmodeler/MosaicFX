@@ -10,9 +10,26 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-h1 {
+h1, h3 {
     color: #333;
 }
 p {
     color: #555;
+}
+
+.execution {
+	border-radius: 8px;
+	background-color: #dfe4f2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 1px 20px;
+	margin: 10px 0;
+}
+
+.execution h3 {
+	font-style: italic;
+	font-size: 18px;
+}
+
+.execution p {
+	font-size: 12px;
 }

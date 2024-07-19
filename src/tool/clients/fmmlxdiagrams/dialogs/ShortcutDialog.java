@@ -22,7 +22,7 @@ public class ShortcutDialog extends Alert {
 				"\n" +
 				"Strg + T: Bring Task Description upfront (Only usable in a Learning Unit)\n" +
 				"\n" + 
-				"Mouse ombinations:\n" + 
+				"Mouse Combinations:\n" + 
 				"Mouse + Space or Alt: Move Canvas";
 	}
 }

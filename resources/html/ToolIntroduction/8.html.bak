@@ -14,15 +14,14 @@
 	<br>
 	<div class="execution">
 		<h3>3. Step: Select Enumeration As The Data Type</h3>
-		<p>If an attribute with a defined data type already exists, as in our case,
-		right-click on the class with the respective attribute, select <strong>'Attribute'</strong> and then <strong>'Change type'</strong>. 
-		In the window that will open, select the attribute from the <strong>'Select Attribute'</strong> drop-down menu and 
-		enter the name of your enumeration as the new data type.
-		<u>Hint</u>: Close the window by clicking on "<i>OK</i>". In this case, <i>Enter</i> will not work.</p>
-	<p> If the attribute does not yet exist, 
-		first add an attribute (as explained earlier) and enter the name of your enumeration as the data type. 
+		<p> If there is no attribute that the enumeration should use as a data type, 
+		first add the attribute (as explained earlier) and enter the name of your enumeration as the data type. 
 		<u>Hint</u>: You can also select your enumeration from the drop-down menu under <strong>'Type'</strong>. 
-		To display it, you need to first check the box next to <strong>'Show all data types'</strong>.</p>
-		</div>
+		To display it, you need to first check the box next to <strong>'Show non primitive data types'</strong>.</p>
+		<p>If an attribute with a defined data type already exists, as in our case,
+		right-click on the appropriate class and select <strong>'Attribute'</strong> and then <strong>'Change type'</strong>. 
+		In the window that will open, select the attribute from the <strong>'Select Attribute'</strong> drop-down menu and enter the name of your enumeration as the new data type.
+		<u>Hint</u>: Close the window by clicking on "<i>OK</i>". In this case, <i>Enter</i> will not work.</p>
+	</div>
 </body>
 </html>

@@ -9,6 +9,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Level;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Result> {
 
@@ -27,6 +29,10 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText("New MetaClass");
+		
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			dialog.setHeaderText("New Class");
+		}
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

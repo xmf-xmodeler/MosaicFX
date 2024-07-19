@@ -9,45 +9,43 @@
 <body>
     <div class="content">
         <h2>5. Exemplary Objects Creation</h2>
-        <p>Let us create exemplary objects now. First, we add the movie “Joker” which has a duration of <b>122 minutes</b>. 
-		Note that the name of a software object should not be confused with the name of the domain object it represents. 
+        <p>Let us create exemplary objects now. First we add the movie “Joker” which has a duration of <b>122 minutes</b>. 
+		Note that the name of a software object should never be confused with the name of the domain object it represents. 
 		Object names are unique and essential for the communication between software objects. 
 		Domain names for objects may not be unique; there may be multiple movies that share the same title. 
 		We leave the object name as it is (<b>"movie1"</b>) and enter <b>“Joker”</b> as the respective title of the object.</p>
-        <p>Let’s say Joker is part of a showing on <b>7 Nov 2024</b>. We first instantiate a <b>MovieShowing object</b> 
-		(again: we do not change the object name) and change the date value.</p>
+        <p>Let’s say Joker is part of a showing on <b>7 Nov 2024</b>. We first instantiate a <b>MovieShowing object</b> (please do not change the name) and change the date value.</p>
         <p>Now we create a link between the object for the movie Joker and object for the movie showing of Joker.</p>
     </div>
 	<br>
 	<div class="execution">
-		<h3>How To Create Objects</h3>
-		<p>An object must always be an instance of a class. 
-		To instantiate an class, you can either right-click on a class in the canvas and select <strong>'Add instance'</strong>  
-		or click on class in the palette first and then anywhere on the canvas. 
-		In both cases, a window will open where you can specify your object. 
+		<h3>How To Instantiate Objects</h3>
+		<p>To instantiate an object, you can either right-click on the appropriate class in the canvas and select <strong>'Add instance'</strong>  
+		or click on the appropriate class in the left pane and then on the canvas. 
+		In both cases, a window will open where you can define your object. 
 		<u>Note</u>: This window does not allow individual slots to be defined.</p>
-		
+		<p>In the first case, after closing the window, you need to click on the canvas again.</p>
 	</div>
 	<br>
 	<div class="execution">
-		<h3>How To Enter A Slot Value</h3>
+		<h4>How To Enter A Value</h4>
 		<p>To enter a value for an object attribute, reffered to as a <i>slot value</i>, 
 		you can either double-click on the green-highlighted area of the slot value 
-		or right-click on the object and select <strong>'Change Slot Value'</strong>. 
+		or right-click on this area and select <strong>'Change Slot Value'</strong>. 
 		In both cases, a window will open where you can input the value.</p>
+		<p><u>Hint</u>: In the second case, you need to first select the appropriate slot from the drop-down menu under <b>'Name'</b>.</p>
 	</div>
 	<br>
 	<div class="execution">
-		<h3>How To Create Links</h3>
+		<h3>How To Instantiate Links</h3>
 		<p>To add a link, there are two ways:</p>
 		<p style="padding-left: 20px;">
-		1. You can right-click on one an object and select <strong>'Link'</strong> and then <strong>'Add link'</strong>. 
-		A line will appear which you can drag to the other appropriate object and click.</p>
+		1. You can right-click on one of the appropriate objects and select <strong>'Link'</strong> and then <strong>'Add link'</strong>. 
+		An arrow will appear which you can drag to the other appropriate object and click.</p>
 		<p style="padding-left: 20px;">
 		2. Alternatively, you can click on <strong>'Link'</strong> in the left pane and then click one of the appropriate objects. 
 		Again, drag the arrow to the other object and click.</p>
 		<p>In both cases, the link becomes immediately visible.</p>
-		<p><u>Note:</u> The creation of a link will fail if no corresponding association between classes has been specified</p>
 	</div>
 </body>
 </html>

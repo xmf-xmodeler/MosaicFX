@@ -24,8 +24,8 @@
     </div>
 	<div class="execution">
 		<h3>How To Add An Attribute</h3>
-		<p>	To add an attribute, right-click on a class, select <strong>'Attribute'</strong> and then <strong>'Add'</strong>. 
-		A window will open where you can specify your attribute.</p>
+		<p>	To add an attribute, right-click on the appropriate class and select <strong>'Attribute'</strong> and then <strong>'Add'</strong>. 
+		A window will open where you can define your attribute.</p>
 	 </div>
 </body>
 </html>

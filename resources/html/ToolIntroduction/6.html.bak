@@ -11,23 +11,23 @@
         <h2>6. Adding Customers and Tickets</h2>
         <p>Great! Now our local cinema has entered one movie and one movie showing. 
 		At last, we want to add customers and tickets. To make things a little easier, we have already done this for you. 
-		Because we do not know where you placed your elements, your diagram could look a little chaotic now. 
+		Because we do not know where you placed your elements this could look ugly. 
 		Just move the elements by drag and drop so you have everything in place.</p>
         <p>The cinema wants to allow one customer to buy multiple tickets. 
-		This allows a customer object to be linked to multiple ticket objects. 
-		Change the multiplicity of the “buys” association from 0..1 to <b>0..*</b>.</p>
+		Then, one customer object might be linked to multiple ticket objects. 
+		Change the cardinality of the “buys” association from 0..1 to <b>0..*</b>.</p>
 		<p>Show your skills by associating Josie Dough with another movie of your choice. 
 		Create all needed elements and links. Do not change the identifier of the objects and set all slot values. 
 		The ticket price should be different to 10.60.</p>
     </div>
 	<br>
 	<div class="execution">
-		<h3>How To Change the Multiplicity of an Association</h3>
-		<p>The simplest way to change the multiplicity of an association is by double-clicking on the respective multiplicity.</p>
-		<p>Alternatively, you can either double-click on the line of an association
-		or right-click on it and select <strong>'Edit'</strong>.
-		In either case, a window will open where you can adjust the multiplicity.</p>
-		<p><u>Hint</u>: In the first way, you can only change the specific multiplicity that was clicked on, 
+		<h4>How To Change A Cardinality</h4>
+		<p>The simplest way to change a cardinality is by double-clicking on the appropriate cardinality.</p>
+		<p>Alternatively, you can either double-click on the arrow of the appropriate association
+		or right-click on the arrow and then select <strong>'Edit'</strong>.
+		In either case, a window will open where you can adjust the cardinality.</p>
+		<p><u>Hint</u>: In the first way, you can only change the specific cardinality that was clicked on, 
 		whereas in the other two ways, you can adjust all cardinalities.</p>
 	</div>
 </body>

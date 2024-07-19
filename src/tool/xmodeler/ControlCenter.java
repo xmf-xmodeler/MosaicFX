@@ -81,7 +81,8 @@ public class ControlCenter extends Stage {
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-		setTitle("UML++ Control Center");}
+			setTitle("UML++ Control Center");
+		}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
@@ -125,16 +126,22 @@ public class ControlCenter extends Stage {
 	
 	private Button buildLearningUnitsButton() {
 		Button b = new Button();
-		b.setText("Learning Units");
-		b.setStyle("-fx-background-color: #ffa500;"
-				+ "-fx-border-color: #000000;"
-				+ "-fx-border-width: 1px;"
-				+ "-fx-background-radius: 15px; "
-				+ "-fx-border-radius: 15px;"
-				+ "-fx-font-size: 14px; "
-				+ "-fx-font-weight: bold;");  
-		b.setPrefWidth(125);
+		b.setText("Open UML++ Learning Units");
+		b.setStyle("");
+		b.setStyle( "-fx-background-color: #203864;"//dfe4f2;"
+				//+ "-fx-border-color: #dfe4f2;"
+				//+ "-fx-border-width: 0px;"
+				+ "-fx-background-radius: 5px; "
+				+ "-fx-border-radius: 5px;"
+				+ "-fx-font-size: 12px; "
+				+ "-fx-font-weight: bold;"
+				+ "-fx-text-fill: rgb(240,240,240)");
+		//b.setPrefWidth(140);
 		b.setOnAction(a -> startLearningUnit(new LearningUnitChooser().showAndWait()));
+		b.setOnMouseClicked(event -> {
+            if (event.isPrimaryButtonDown()) {
+                System.out.println("HHDNJD");
+            }});
 		return b;
 	}
 	
@@ -147,9 +154,10 @@ public class ControlCenter extends Stage {
 	}
 
 	private void adaptLayoutToDidacticMode(VBox root) {
-		toolWidth = toolWidth -237;	//Adjustment for removed elements 
-		Button learningUnitsButton = buildLearningUnitsButton();
-		root.getChildren().add(2, learningUnitsButton);
+		toolWidth = toolWidth - 237;	//Adjustment for removed elements 
+		//Button learningUnitsButton = buildLearningUnitsButton();
+		//root.getChildren().add(2, learningUnitsButton);
+		//toolHeight = toolHeight - 30;
 	}
 
 	private void showCloseWarningDialog(Event event) {
@@ -284,9 +292,10 @@ public class ControlCenter extends Stage {
 		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
 		newDiagram2.disableProperty().bind(
-				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
-		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty()));
+		
+		newDiagram2.setOnAction(e -> 
+		callNewDiagramDialog(true, "UMLDiagram")); 
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
@@ -336,6 +345,18 @@ public class ControlCenter extends Stage {
 		}
 		else {
 		grid.add(newDiagram2, 4, 1);
+		Button learningUnits = this.buildLearningUnitsButton();
+		/* learningUnits.setStyle("-fx-background-color: #203864;"
+				+ "-fx-border-color: #dfe4f2;"
+				+ "-fx-border-width: 0px;"
+				+ "-fx-background-radius: 5px; "
+				+ "-fx-border-radius: 5px;"
+				+ "-fx-font-size: 10px; "
+				+ "-fx-font-weight: bold;"
+				+ "-fx-text-fill: #ffffff");  */
+		grid.add(learningUnits, 2, 4);
+		//projectLabel.setText("Models");
+		//newProject.setText("Create New Model");
 		}
 		
 		return grid;

@@ -10,26 +10,26 @@
     <div class="content">
         <h2>4. Association between Movie and MovieShowing</h2>
         <p>We must now add an association between the class "Movie" and the class "MovieShowing" so that instantiated objects can be linked to one another. 
-		We name the association <strong>“shown_in”</strong>. 
+		We can name the association <strong>“shown_in”</strong>. 
 		<u>Hint</u>: the black arrow next to the association name indicates the intended reading direction. 
 		In this example, we want to express that a particular movie is shown in a particular movie showing.</p>
-        <p>We must still add the multiplicities on each end of the association. One movie (object) can be shown in multiple movie showings. 
-		It might also appear in none. We therefore enter a multiplicity of <strong>0…*</strong>. One movie showing, on the other hand, must always show exactly one movie. 
-		We therefore enter a multiplicity of <strong>1..1</strong>.</p>
+        <p>We must still add the cardinality on each end of the association. One movie (object) can be shown in multiple movie showings. 
+		It might also appear in none. We therefore enter a cardinality of <strong>0…*</strong>. One movie showing, on the other hand, must always show exactly one movie. 
+		We therefore enter a cardinality of <strong>1..1</strong>.</p>
 		<br>
     </div>
 	<div class="execution">
 		<h3>How To Add An Association</h3>
 		<p>To add an association, there are two ways:</p>
 		<p style="padding-left: 20px;">
-		1. You can right-click on one a class and select <strong>'Association'</strong> and then <strong>'Add'</strong>. 
-		A line will appear which you can drag to the class you want to connect your association to. 
-		You confirm your selection by clicking on the class.</p>
+		1. You can right-click on one of the appropriate classes and select <strong>'Association'</strong> and then <strong>'Add'</strong>. 
+		An arrow will appaer which you can drag to the other appropriate class and click.</p>
 		<p style="padding-left: 20px;">
-		2. Alternatively, you can click on <strong>'Association'</strong> in the palette and then click one a class. 
+		2. Alternatively, you can click on <strong>'Association'</strong> in the left pane and then click one of the appropriate classes. 
 		Again, drag the arrow to the other class and click.</p>
 		<p>In both cases, a window will open where you can define your association.
-		<u>Note</u>: It is also possible to associate a class with itself.</p>
+		<u>Note</u>: In this course, we specify cardinalities in a specific manner.
+		Therefore, ensure to correctly place the cardinalities in the appropriate positions of each class.</p>
 	</div>
 </body>
 </html>
