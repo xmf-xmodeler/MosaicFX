@@ -28,6 +28,7 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.IconGenerator;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
@@ -2214,7 +2215,6 @@ public class FmmlxDiagramCommunicator {
 	// ########################## Tab ### Stage #######################
 		
 	private void createStage(javafx.scene.Node node, String name, String packagePath, int id, final FmmlxDiagram diagram) {
-		//TODO add mosaic icon to stage
 		Stage stage = new Stage();
 		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
@@ -2223,6 +2223,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
