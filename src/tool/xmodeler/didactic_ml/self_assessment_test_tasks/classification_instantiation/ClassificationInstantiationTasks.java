@@ -2,12 +2,13 @@ package tool.xmodeler.didactic_ml.self_assessment_test_tasks.classification_inst
 
 import java.util.Map;
 
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 public class ClassificationInstantiationTasks extends SelfAssessmentTestTasks {
 
 	public ClassificationInstantiationTasks() {
-		super("ClassificationInstantiation");
+		super(SelfAssessmentTest.CLASSIFICATION_INSTANTIATION);
 	}
 
 	@Override

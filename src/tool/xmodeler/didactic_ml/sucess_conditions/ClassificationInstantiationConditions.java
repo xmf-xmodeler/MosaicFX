@@ -20,7 +20,7 @@ public class ClassificationInstantiationConditions extends SuccessCondition {
 		case 3:
 			return true;
 		default:
-			throw new IllegalArgumentException("No condition for the precedence defined: " + SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) + "in " + SelfAssessmentTestTasks.getLearningUnitName());
+			throw new IllegalArgumentException("No condition for the precedence defined: " + SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) + "in " + SelfAssessmentTestTasks.getSelfAssessmentTest());
 		}
 	}
 }

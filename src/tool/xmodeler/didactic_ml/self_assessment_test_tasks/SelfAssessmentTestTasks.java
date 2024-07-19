@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
+
 /**
  * This is a helper class to retrieve the data of the task that are contained in a learning unit. A Learning unit task is described by a name.
  * Learning unit task are strictly ordered. To maintain this order every task has a precedence expressed by an integer. The task are stored in a map. Depending on the learning unit you need to instantiate a subclass of this abstract class.
@@ -28,10 +30,10 @@ public abstract class SelfAssessmentTestTasks {
 	/**
 	 * Defines the learning unit that is associated. This name needs to match the folder name of the file system where the tasksDescriptions are stored.
 	 */
-	protected static String learningUnitName;
+	protected static SelfAssessmentTest selfAssessmentTest;
 	
-	public static String getLearningUnitName() {
-		return learningUnitName;
+	public static SelfAssessmentTest getSelfAssessmentTest() {
+		return selfAssessmentTest;
 	}
 
 	/**
@@ -41,8 +43,8 @@ public abstract class SelfAssessmentTestTasks {
 	 * 
 	 * @param taskName represents associated learning unit and must match file system folder 
 	 */
-	protected SelfAssessmentTestTasks(String learningUnitName) {
-		SelfAssessmentTestTasks.learningUnitName = learningUnitName;
+	protected SelfAssessmentTestTasks(SelfAssessmentTest selfAssessmentTest) {
+		SelfAssessmentTestTasks.selfAssessmentTest = selfAssessmentTest;
 	}
 	
 	/**
@@ -100,13 +102,14 @@ public abstract class SelfAssessmentTestTasks {
 	private static String buildTaskDescriptionPath(String taskName) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("resources/html/"); // basic path
-		stringBuilder.append(learningUnitName); // append learningUnitName
+		stringBuilder.append(selfAssessmentTest.getLearningUnit().getPathName()); // append learningUnitName
 		stringBuilder.append("/");
 		stringBuilder.append(getPrecedence(taskName)); // append number of current state
 		stringBuilder.append(".html");
 		return stringBuilder.toString();
 	}
 	
+	//TODO refactor encapsulate this function with all other needed resources in an own class
 	/**
 	 * Every LearningUnitTask is described by a task description. These tasks are stored on the file system as html documents.
 	 * This function returns the content of the file as string.
@@ -125,7 +128,7 @@ public abstract class SelfAssessmentTestTasks {
 			}
 			return contentBuilder.toString();
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException("Can not find file for task description " + getPrecedence(taskName) + " from the learning unit " + learningUnitName);
+			throw new RuntimeException("Can not find file for task description " + getPrecedence(taskName) + " from the learning unit " + selfAssessmentTest.getLearningUnit().getPrettyName() + ". the files were expected under the path: " + taskDescriptionPath);
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -140,7 +143,7 @@ public abstract class SelfAssessmentTestTasks {
 	 * This method clears class informations. It is technically not needed but should avoid potential errors.
 	 */
 	public static void tearDown() {
-		SelfAssessmentTestTasks.learningUnitName = null;
+		SelfAssessmentTestTasks.selfAssessmentTest = null;
 		SelfAssessmentTestTasks.tasks = null;
 	}
 	

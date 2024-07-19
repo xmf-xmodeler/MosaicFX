@@ -2,6 +2,7 @@ package tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro;
 
 import java.util.Map;
 
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 /**
@@ -15,7 +16,7 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
 public class ToolIntroductionTasks extends SelfAssessmentTestTasks {
 	
 	public ToolIntroductionTasks() {
-		super("ToolIntroduction");
+		super(SelfAssessmentTest.TOOL_INTRO);
 	}
 
 	@Override

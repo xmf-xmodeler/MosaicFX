@@ -33,4 +33,8 @@ public enum SelfAssessmentTest {
 	public int getOrderNumber() {
 		return orderNumber;
 	}
+
+	public LearningUnit getLearningUnit() {
+		return learningUnit;
+	}
 }
