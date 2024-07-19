@@ -8,6 +8,7 @@ import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationA
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 import tool.xmodeler.didactic_ml.sucess_conditions.SuccessCondition;
 import xos.Message;
 import xos.Value;

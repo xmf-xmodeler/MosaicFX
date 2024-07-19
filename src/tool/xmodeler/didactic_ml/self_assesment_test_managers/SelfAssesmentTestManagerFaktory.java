@@ -1,6 +1,8 @@
 package tool.xmodeler.didactic_ml.self_assesment_test_managers;
 
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.classification_instantioation.ClassificationInstantiationManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
 public class SelfAssesmentTestManagerFaktory {
 	public static SelfAssesmentTestManager instance;

@@ -1,8 +1,8 @@
 package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
-import tool.xmodeler.didactic_ml.self_assesment_test_managers.ClassificationInstantiationManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
-import tool.xmodeler.didactic_ml.self_assesment_test_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.classification_instantioation.ClassificationInstantiationManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
 public class LearningUnitManagerFactory {
 	

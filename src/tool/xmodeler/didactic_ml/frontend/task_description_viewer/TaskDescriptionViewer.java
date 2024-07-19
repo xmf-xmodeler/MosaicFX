@@ -18,7 +18,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
-import tool.xmodeler.didactic_ml.self_assesment_test_managers.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
 public class TaskDescriptionViewer extends Stage {
 
