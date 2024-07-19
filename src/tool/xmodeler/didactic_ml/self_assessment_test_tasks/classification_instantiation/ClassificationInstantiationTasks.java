@@ -1,6 +1,8 @@
-package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
+package tool.xmodeler.didactic_ml.self_assessment_test_tasks.classification_instantiation;
 
 import java.util.Map;
+
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 public class ClassificationInstantiationTasks extends SelfAssessmentTestTasks {
 

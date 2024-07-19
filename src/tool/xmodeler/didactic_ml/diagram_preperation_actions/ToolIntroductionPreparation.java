@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
-import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
 public class ToolIntroductionPreparation extends DiagramPreparationActions {
 

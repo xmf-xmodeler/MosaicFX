@@ -1,6 +1,8 @@
-package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
+package tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro;
 
 import java.util.Map;
+
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 /**
  * This subclass differs in that, that for the tool intro different frontend

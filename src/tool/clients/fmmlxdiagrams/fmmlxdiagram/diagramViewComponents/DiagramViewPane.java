@@ -43,7 +43,7 @@ import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
-import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
 /**
  * SplitPane instance that serves as full gui for the diagram view. All diagram
