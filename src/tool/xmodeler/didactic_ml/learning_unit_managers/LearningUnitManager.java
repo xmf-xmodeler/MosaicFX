@@ -87,8 +87,7 @@ public abstract class LearningUnitManager implements Startable {
 	}
 
 	/**
-	 * Returns singelton of this class. Depending on which constructor was called this function returns another subtype.
-	 * Be aware that you need to extend this function if you want to add new subclass of {@link LearningUnit}.
+	 * Returns casted subtype of instance variable
 	 * 
 	 * @return dynamic subtyped instance of LearningUnitManager
 	 */
@@ -99,20 +98,10 @@ public abstract class LearningUnitManager implements Startable {
 				instance.getDescriptionViewer().show();
 			}
 		} else {
-			switch (learningUnit) {
-			case TOOL_INTRO:
-				return (Manager) ToolIntroductionManager.class.cast(instance);
-
-			case CLASSIFICATION_INSTANTIATION:
-				return (Manager) ClassificationInstantiationManager.class.cast(instance);
-
-			default:
-				throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");
-			}
+			return new LearningUnitManagerFaktory(instance).getInstance(); 
 		}
 		return null;
 	}
-	
 	
 	/**
 	 * This function is called to check if the user matches the condition of the current task.
