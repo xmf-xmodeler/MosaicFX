@@ -9,7 +9,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.xmodeler.XModeler;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
 
 public class DefaultContextMenu extends ContextMenu {
 

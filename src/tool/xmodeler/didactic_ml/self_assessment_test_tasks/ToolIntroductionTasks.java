@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.learning_unit_tasks;
+package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  * the gui before. This is used for not replicate code. The full gui is defined
  * for the value 100.
  */
-public class ToolIntroductionTasks extends LearningUnitTasks {
+public class ToolIntroductionTasks extends SelfAssessmentTestTasks {
 	
 	public ToolIntroductionTasks() {
 		super("ToolIntroduction");

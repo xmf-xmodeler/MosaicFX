@@ -1,8 +1,8 @@
-package tool.xmodeler.didactic_ml.learning_unit_tasks;
+package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
 
 import java.util.Map;
 
-public class ClassificationInstantiationTasks extends LearningUnitTasks {
+public class ClassificationInstantiationTasks extends SelfAssessmentTestTasks {
 
 	public ClassificationInstantiationTasks() {
 		super("ClassificationInstantiation");

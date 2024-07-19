@@ -7,8 +7,8 @@ import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationActions;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SuccessCondition;
 import xos.Message;
 import xos.Value;
@@ -120,11 +120,11 @@ public abstract class SelfAssesmentTestManager implements Startable {
 		if (sucessCondition.checkSuccessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			String nextDescription = (LearningUnitTasks.getTaskDescritpion(diagram.getViewPane().getCurrentTaskName()));
+			String nextDescription = (SelfAssessmentTestTasks.getTaskDescritpion(diagram.getViewPane().getCurrentTaskName()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
-			if (LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) == LearningUnitTasks.getHighestPrecedence()) {
+			if (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) == SelfAssessmentTestTasks.getHighestPrecedence()) {
 				//this time is needed to survive the user feedback
 				try {
 					Thread.sleep(1500);
@@ -140,7 +140,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	
 	public void start() {
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(projectName, diagramName);
-		String description = LearningUnitTasks.getFirstTaskDescription();
+		String description = SelfAssessmentTestTasks.getFirstTaskDescription();
 		descriptionViewer.loadHtmlContent(description); //loads first task description
 		descriptionViewer.getDescriptionHistory().push(description);
 		descriptionViewer.show();
@@ -154,7 +154,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	//TODO mark lu as passed
 	public void stop() {
 		ControlCenterClient.removeProject(projectName);
-		LearningUnitTasks.tearDown() ;
+		SelfAssessmentTestTasks.tearDown() ;
 		instance = null;
 		selfAssessmentTest = null;
 		sucessCondition = null;

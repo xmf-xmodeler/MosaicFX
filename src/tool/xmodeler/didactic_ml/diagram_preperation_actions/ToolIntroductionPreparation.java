@@ -5,13 +5,13 @@ import java.util.Vector;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
 
 public class ToolIntroductionPreparation extends DiagramPreparationActions {
 
 	public void prepair(FmmlxDiagram diagram) {
-		switch (LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
+		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 5:
 			addCustomerAndTicket(diagram);
 			return;

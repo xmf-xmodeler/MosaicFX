@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.learning_unit_tasks;
+package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ import java.util.Map.Entry;
  * Learning unit task are strictly ordered. To maintain this order every task has a precedence expressed by an integer. The task are stored in a map. Depending on the learning unit you need to instantiate a subclass of this abstract class.
  * Do not forget to call the constructor before you use this class because in the constructor the static fields are set. You can only use one subclass-instance at a time otherwise you will override the static values.
  */
-public abstract class LearningUnitTasks {
+public abstract class SelfAssessmentTestTasks {
 
 	/**
 	 * The task map represents all tasks in a learning unit. The map stores the name
@@ -41,8 +41,8 @@ public abstract class LearningUnitTasks {
 	 * 
 	 * @param taskName represents associated learning unit and must match file system folder 
 	 */
-	protected LearningUnitTasks(String learningUnitName) {
-		LearningUnitTasks.learningUnitName = learningUnitName;
+	protected SelfAssessmentTestTasks(String learningUnitName) {
+		SelfAssessmentTestTasks.learningUnitName = learningUnitName;
 	}
 	
 	/**
@@ -140,8 +140,8 @@ public abstract class LearningUnitTasks {
 	 * This method clears class informations. It is technically not needed but should avoid potential errors.
 	 */
 	public static void tearDown() {
-		LearningUnitTasks.learningUnitName = null;
-		LearningUnitTasks.tasks = null;
+		SelfAssessmentTestTasks.learningUnitName = null;
+		SelfAssessmentTestTasks.tasks = null;
 	}
 	
 	/**

@@ -41,9 +41,9 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
 
 /**
  * SplitPane instance that serves as full gui for the diagram view. All diagram
@@ -93,7 +93,7 @@ public class DiagramViewPane extends SplitPane {
 
 	private void initDiagramViewState() {
 		if (SelfAssesmentTestManager.isInitialized()) {
-			taksName = LearningUnitTasks.getTaskName(1);}
+			taksName = SelfAssessmentTestTasks.getTaskName(1);}
 	}
 
 	public  boolean isInToolIntroductionMode() {
@@ -439,14 +439,14 @@ public class DiagramViewPane extends SplitPane {
 		if (SelfAssesmentTestManager.getInstance().needsPreparationActions()) {
 			SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
 		}
-		int nextTaskPrecedencePrecedence = LearningUnitTasks.getNextPrecedence(taksName);
+		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taksName);
 		// only in tool intro the gui is adapted
 		if (isInToolIntroductionMode()) {
 			buildViewComponents(nextTaskPrecedencePrecedence);
 		} else {
 			buildViewComponents(100);
 		}
-		taksName = LearningUnitTasks.getTaskName(nextTaskPrecedencePrecedence);
+		taksName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {

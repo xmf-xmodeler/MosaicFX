@@ -5,14 +5,14 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.LearningUnitTasks;
-import tool.xmodeler.didactic_ml.learning_unit_tasks.ToolIntroductionTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.ToolIntroductionTasks;
 
 public class ClassificationInstantiationConditions extends SuccessCondition {
 		
 	@Override
 	public boolean checkSuccessCondition() {
-		switch (LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
+		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 1:
 			return true;
 		case 2:
@@ -20,7 +20,7 @@ public class ClassificationInstantiationConditions extends SuccessCondition {
 		case 3:
 			return true;
 		default:
-			throw new IllegalArgumentException("No condition for the precedence defined: " + LearningUnitTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) + "in " + LearningUnitTasks.getLearningUnitName());
+			throw new IllegalArgumentException("No condition for the precedence defined: " + SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) + "in " + SelfAssessmentTestTasks.getLearningUnitName());
 		}
 	}
 }
