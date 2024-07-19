@@ -19,7 +19,7 @@ public class SelfAssesmentTestManagerFaktory {
 	 * @return dynamic subtyped instance of LearningUnitManager
 	 */
 	public synchronized <Manager extends SelfAssesmentTestManager> Manager getInstance() {
-		switch (SelfAssesmentTestManager.learningUnit) {
+		switch (SelfAssesmentTestManager.selfAssessmentTest) {
 			case TOOL_INTRO:
 				return (Manager) ToolIntroductionManager.class.cast(instance);
 	

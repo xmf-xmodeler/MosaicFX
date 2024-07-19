@@ -8,7 +8,8 @@ import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
  */
 public enum SelfAssessmentTest {
 	
-	TOOL_INTRODUCTION("Tool Introduction", LearningUnit.TOOL_INTRO, 1);
+	TOOL_INTRO("Tool Introduction", LearningUnit.TOOL_INTRO, 1),
+	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", LearningUnit.CLASSIFICATION_INSTANTIATION, 1);
 
 	
 	private final String prettyName;

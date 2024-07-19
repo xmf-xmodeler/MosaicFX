@@ -33,7 +33,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	protected static String projectName;
 	protected static String diagramName;
 	private final TaskDescriptionViewer descriptionViewer = new TaskDescriptionViewer();
-	protected static LearningUnit learningUnit;
+	protected static SelfAssessmentTest selfAssessmentTest;
 	protected static SuccessCondition sucessCondition;
 	/**
 	 * If preparation actions are needed this var should be set in the constructor of the subtype.
@@ -156,7 +156,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 		ControlCenterClient.removeProject(projectName);
 		LearningUnitTasks.tearDown() ;
 		instance = null;
-		learningUnit = null;
+		selfAssessmentTest = null;
 		sucessCondition = null;
 		preperationActions = null;
 		ControlCenterClient.getClient().getControlCenter().show();
