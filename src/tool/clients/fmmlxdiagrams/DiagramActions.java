@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -77,7 +79,8 @@ import tool.xmodeler.XModeler;
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
-
+	private XMLDatabase db = new XMLDatabase();
+	
 	public AbstractPackageViewer getDiagram() {
 		return diagram;
 	}
@@ -1150,10 +1153,31 @@ public class DiagramActions {
 	public void exportToDB()
 	{
 		Platform.runLater(() -> {
-			XMLDatabase db = new XMLDatabase();
 			try {
-				db.writeToDB((FmmlxDiagram)this.diagram);
+				List<String> documentNames = new ArrayList<>();
+				documentNames = db.getProjectDocumentNames();
+				String diagramName = diagram.getPackagePath().substring(6) + "_versions.xml";
+				diagramName.trim();
+				
+				if (db.firstTime)
+				{
+					RenameProjektDialog rpd = new RenameProjektDialog();
+					Platform.runLater(() -> {
+					rpd.start(diagram,db);
+					});
+					
+					db.firstTime = false;
+					
+				}
+				else 
+				{
+					db.writeToDB((FmmlxDiagram)this.diagram);
+				}
+				
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1162,13 +1186,13 @@ public class DiagramActions {
 	/**
 	 * @author Nicolas Engel
 	 */
-	public void renameProjekt()
-	{
-		Platform.runLater(()-> {
-			RenameProjektDialog rpd = new RenameProjektDialog();
-			rpd.start();
-		});
-	}
+//	public void renameProjekt()
+//	{
+//		Platform.runLater(()-> {
+//			RenameProjektDialog rpd = new RenameProjektDialog();
+//			rpd.start(diagram);
+//		});
+//	}
 
 	public void exportSvg() {
 		Platform.runLater(() ->{

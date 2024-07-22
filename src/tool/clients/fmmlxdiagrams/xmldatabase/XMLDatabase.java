@@ -22,6 +22,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLParser;
@@ -43,6 +44,7 @@ public class XMLDatabase {
 	protected String user;
 	protected String password;
 	protected String db_name;
+	public boolean firstTime = true;
 
 	/**
 	 * Uses the ReturnCall to get an XML representation of the model. The XML
@@ -89,6 +91,7 @@ public class XMLDatabase {
 
 				boolean mainDocumentExists = false;
 				try {
+					
 					mainDocumentExists = session.query(querrys.mainDocumentExistsQuery(this.db_name, mainDocumentName))
 							.execute().equals("true");
 				} catch (BaseXException e) {
@@ -102,6 +105,8 @@ public class XMLDatabase {
 					newVersionNumber = 0;
 					createNewMainDoc(session, diagramName, mainDocumentName);
 				} else {
+					
+					
 					// Höchste Versionsnummer ermitteln
 					newVersionNumber = getHighestVersion(mainDocumentName, session) + 1;
 					// Neuen Verweis im Hauptdokument hinzufügen
@@ -227,9 +232,9 @@ public class XMLDatabase {
 	 * @return A list of strings representing the names of the documents that match the criteria.
 	 * @throws Exception If there is an error during the execution of the query.
 	 */
-	protected List<String> getProjectDocumentNames(Session session) throws Exception {
+	public List<String> getProjectDocumentNames() throws Exception {
 	    List<String> documentNames = new ArrayList<>();
-	    try {
+	    try (ClientSession session = new ClientSession(hostname, port, user, password)) {
 	        // Construct the XQuery that retrieves all document names ending with '_versions.xml'
 	        String query = querrys.getProjectDocumentNamesQuery(this.db_name);
 
@@ -301,7 +306,7 @@ public class XMLDatabase {
 		List<File> files = new ArrayList<>();
 		try (ClientSession session = new ClientSession(this.hostname, this.port, this.user, this.password)) {
 			
-			List<String> a = getProjectDocumentNames(session);
+			List<String> a = getProjectDocumentNames();
 			for (String s : a) {
 				System.err.print(s);
 			}

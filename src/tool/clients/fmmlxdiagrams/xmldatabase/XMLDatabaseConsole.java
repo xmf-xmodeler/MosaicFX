@@ -69,7 +69,7 @@ public class XMLDatabaseConsole extends XMLDatabase {
 
 	            try (ClientSession session = new ClientSession(hostname, port, user, password)) {
 	                List<String> documentNames = new ArrayList<>();
-	                documentNames = getProjectDocumentNames(session);
+	                documentNames = getProjectDocumentNames();
 	                filterDropDown.getItems().addAll(documentNames);
 	            } catch (Exception e1) {
 	                e1.printStackTrace();

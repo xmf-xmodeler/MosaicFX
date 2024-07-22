@@ -88,6 +88,8 @@ public class XMLParser {
 		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
+	
+	
 	private int getVersion(File inputFile) {
 		String importVersion = null;
 		Element rootTemp = getRoot(inputFile);		

@@ -375,7 +375,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		 * @author Nicolas Engel
 		 */
 		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save to Database", e -> diagramActions.exportToDB());
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Rename Project", e -> diagramActions.renameProjekt());
+//		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Rename Project", e -> diagramActions.renameProjekt());
 
 		modelMenu.getItems().add(new SeparatorMenuItem());
 
