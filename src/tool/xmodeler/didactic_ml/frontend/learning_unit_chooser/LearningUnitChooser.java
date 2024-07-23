@@ -8,28 +8,46 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import tool.xmodeler.didactic_ml.backend_aux.learning_unit_tabs.CustomTabPane;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 
 public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
 
 	private Button okButton;
+	private CustomTabPane customTabPane = new CustomTabPane();
 	private TableView<LearningUnit> tableView = createTableView();
+	
 
 	public LearningUnitChooser() {
-		setTitle("Learning Unit Selection");
-		getDialogPane().setPrefWidth(535);
-		getDialogPane().setPrefHeight(355);
-		getDialogPane().setContent(tableView);
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		adaptOkButton();
-		setResultConverter();
-		getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
+        setTitle("Learning Unit Selection");
+        getDialogPane().setPrefWidth(1300);
+        getDialogPane().setPrefHeight(600);
+        
+        Separator separator = new Separator();
+        separator.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        HBox hbox = new HBox(tableView, separator, customTabPane);
+        HBox.setHgrow(customTabPane, Priority.ALWAYS);
+        HBox.setHgrow(tableView, Priority.ALWAYS);
+        
+        
+        VBox root = new VBox(hbox);
+        VBox.setVgrow(hbox, Priority.ALWAYS);
+        getDialogPane().setContent(root);
+
+        getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+        adaptOkButton();
+        setResultConverter();
+        getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
 	}
 
 	private void setResultConverter() {
