@@ -170,7 +170,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		Tab expertTab = new Tab("Expert Mode",expertBox);
 		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
 		
-		codeBoxPair.getBodyScrollPane().setOnKeyTyped(e -> {
+		codeBoxPair.getBodyScrollPane().setOnKeyReleased(e -> {
 			String[] codeBody;
 			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
 			codeBody = codeBody[0].split(" ");
