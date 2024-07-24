@@ -34,10 +34,10 @@ public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
         
         Separator separator = new Separator();
         separator.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        
         HBox hbox = new HBox(tableView, separator, customTabPane);
         HBox.setHgrow(customTabPane, Priority.ALWAYS);
         HBox.setHgrow(tableView, Priority.ALWAYS);
-        
         
         VBox root = new VBox(hbox);
         VBox.setVgrow(hbox, Priority.ALWAYS);
@@ -48,6 +48,7 @@ public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
         adaptOkButton();
         setResultConverter();
         getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
+        customTabPane.disableProperty().bind(createDisableBinding(tableView.getSelectionModel().selectedItemProperty()));
 	}
 
 	private void setResultConverter() {
