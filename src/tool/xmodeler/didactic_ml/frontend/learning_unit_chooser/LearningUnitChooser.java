@@ -46,7 +46,13 @@ public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
         adaptOkButton();
-        setResultConverter();
+        setResultConverter(buttonType -> {
+            if (buttonType == ButtonType.OK) {
+                LearningUnit lu = tableView.getSelectionModel().getSelectedItem();
+                return LearningUnitManagerFactory.createLearningUnitManager(lu);
+            }
+            return null;
+        });
         getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
         customTabPane.disableProperty().bind(createDisableBinding(tableView.getSelectionModel().selectedItemProperty()));
 	}
