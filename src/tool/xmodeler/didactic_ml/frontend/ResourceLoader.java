@@ -112,4 +112,21 @@ public class ResourceLoader {
 		sB.append("learningGoals.html");
 		return sB.toString();
 	}
+
+	public static String getTheoreticalBackground(LearningUnit lu) {
+		String path = getTheoreticalBackgroundPath(lu);
+		try {
+			return readFromFile(path);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Cant find theoreticalBackground.html for " + lu.getPrettyName());
+		}
+	}
+
+	private static String getTheoreticalBackgroundPath(LearningUnit lu) {
+		StringBuilder sB = new StringBuilder(folderPath);
+		sB.append(lu.getPathName());
+		sB.append("/");
+		sB.append("theoreticalBackground.html");
+		return sB.toString();
+	}
 }
