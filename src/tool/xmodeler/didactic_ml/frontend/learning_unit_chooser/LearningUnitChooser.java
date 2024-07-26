@@ -36,7 +36,7 @@ public class LearningUnitChooser extends Dialog<Void> {
 
 		HBox hbox = new HBox(learningUnitTable, separator, learningUnitTabPane);
 		getDialogPane().setContent(hbox);
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
 		getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
 	}
 
