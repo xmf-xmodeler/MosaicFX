@@ -74,7 +74,7 @@ public class ResourceLoader {
 	 * @return absolute path of css that should be used for all didactic related content.
 	 */
 	public static String getDidacticCssPath() {
-		String customCssPath = "resources/css/taskDescription.css";
+		String customCssPath = "resources/didacticMlm/didactic.css";
 		File customCssFile = new File(customCssPath);
 		return customCssFile.getAbsolutePath();
 	}
