@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
+import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
@@ -16,6 +17,11 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
  * Helper class used to load contents from file system.
  */
 public class ResourceLoader {
+	
+	/**
+	 * Defines path for all didactic resources
+	 */
+	private static final String folderPath = "resources/didacticMlm/";
 
 	public ResourceLoader() {
 		throw new IllegalStateException("Utility class");
@@ -31,24 +37,31 @@ public class ResourceLoader {
 	 */
 	public static String getTaskDescritpion(SelfAssessmentTest test, String taskName) {
 		String taskDescriptionPath = buildTaskDescriptionPath(test, taskName);
+		try {
+			return readFromFile(taskDescriptionPath);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(
+					"Can not find file for task description " + SelfAssessmentTestTasks.getPrecedence(taskName)
+							+ " from the learning unit " + test.getLearningUnit().getPrettyName()
+							+ ". the files were expected under the path: " + taskDescriptionPath);
+		}
+	}
+	
+	private static String readFromFile(String path) throws FileNotFoundException {
 		StringBuilder contentBuilder = new StringBuilder();
-		try (Reader reader = new InputStreamReader(new FileInputStream(taskDescriptionPath), StandardCharsets.UTF_8)) {
+		try (Reader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
 			BufferedReader br = new BufferedReader(reader);
 			String line;
 			while ((line = br.readLine()) != null) {
 				contentBuilder.append(line);
 			}
 			return contentBuilder.toString();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(
-					"Can not find file for task description " + SelfAssessmentTestTasks.getPrecedence(taskName)
-							+ " from the learning unit " + test.getLearningUnit().getPrettyName()
-							+ ". the files were expected under the path: " + taskDescriptionPath);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
-
+	
 	/**
 	 * Helper function that returns the path of a file where the description is
 	 * stored. If you add new descriptions, please maintain the file structure to
@@ -61,8 +74,7 @@ public class ResourceLoader {
 	 * @return filepath of task description
 	 */
 	private static String buildTaskDescriptionPath(SelfAssessmentTest test, String taskName) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("resources/didacticMlm/"); // basic path
+		StringBuilder stringBuilder = new StringBuilder(folderPath); 
 		stringBuilder.append(test.getLearningUnit().getPathName()); // append learningUnitName
 		stringBuilder.append("/");
 		stringBuilder.append(SelfAssessmentTestTasks.getPrecedence(taskName)); // append number of current state
@@ -79,4 +91,25 @@ public class ResourceLoader {
 		return customCssFile.getAbsolutePath();
 	}
 
+	/**
+	 * Build path for html that represents learningGoals
+	 * @param LearningUnit that defines which file should be loaded
+	 * @return relative path of learningGoals-html
+	 */
+	public static String getLearningGoals(LearningUnit lu) {
+		String path = getLearningUnitGoalsPath(lu);
+		try {
+			return readFromFile(path);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Cant find learningGoals.html for " + lu.getPrettyName());
+		}
+	}
+	
+	private static String getLearningUnitGoalsPath(LearningUnit lu) {
+		StringBuilder sB = new StringBuilder(folderPath);
+		sB.append(lu.getPathName());
+		sB.append("/");
+		sB.append("learningGoals.html");
+		return sB.toString();
+	}
 }

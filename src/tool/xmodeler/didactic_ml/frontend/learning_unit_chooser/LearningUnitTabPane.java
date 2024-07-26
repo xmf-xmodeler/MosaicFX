@@ -13,97 +13,105 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
 public class LearningUnitTabPane extends TabPane {
 
-    private WebView illustrationWebView;
-    private Button okButton;
-    private Button cancelButton;
+	private final LearningUnitChooser learningUnitChooser;
+	WebView learningGoalView = createStadardWebView();
 
-    public LearningUnitTabPane() {
-        
-        // Tabs erstellen und hinzufügen
-        Tab learningGoalsTab = new Tab("Learning Goals", createLearningGoalsContent());
-        Tab theoreticalBackgroundTab = new Tab("Theoretical Background", createTheoreticalBackgroundContent());
-        Tab illustrationTab = new Tab("Illustration", createIllustrationContent());
-        Tab assessmentTab = new Tab("Assessment", createAssessmentContent());
+	private WebView illustrationWebView;
+	private Button okButton;
 
-        getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, illustrationTab, assessmentTab);
-    }
-      
+	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
+		this.learningUnitChooser = learningUnitChooser;
+		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
+		Tab theoreticalBackgroundTab = new Tab("Theoretical Background", createTheoreticalBackgroundContent());
+		Tab illustrationTab = new Tab("Examplary Illustration", createIllustrationContent());
+		Tab assessmentTab = new Tab("Self-Assessment Tests", createAssessmentContent());
+		getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, illustrationTab, assessmentTab);
+	}
 
-    private VBox createLearningGoalsContent() {
-        VBox vbox = new VBox();
-        WebView webView = new WebView();
-        webView.getEngine().loadContent("<h1>Learning Goals Content</h1>");
-        vbox.getChildren().add(webView);
-        VBox.setVgrow(vbox, Priority.ALWAYS);
-        return vbox;
-    }
+	private VBox createTheoreticalBackgroundContent() {
+		VBox vbox = new VBox();
+		WebView webView = new WebView();
+		webView.getEngine().loadContent(
+				"<h1>Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>");
+		vbox.getChildren().add(webView);
+		VBox.setVgrow(webView, Priority.ALWAYS);
+		return vbox;
+	}
 
-    private VBox createTheoreticalBackgroundContent() {
-        VBox vbox = new VBox();
-        WebView webView = new WebView();
-        webView.getEngine().loadContent("<h1>Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>");
-        vbox.getChildren().add(webView);
-        VBox.setVgrow(webView, Priority.ALWAYS);
-        return vbox;
-    }
+	private VBox createIllustrationContent() {
+		VBox vbox = new VBox();
 
-    private VBox createIllustrationContent() {
-        VBox vbox = new VBox();
+		// Obere HBox für die Illustration und den Button
+		HBox illustrationBox = new HBox();
+		illustrationWebView = new WebView();
+		illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1>");
+		Button startIllustrationButton = new Button("Start Illustration");
 
-        // Obere HBox für die Illustration und den Button
-        HBox illustrationBox = new HBox();
-        illustrationWebView = new WebView();
-        illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1>");
-        Button startIllustrationButton = new Button("Start Illustration");
+		startIllustrationButton.setOnAction(event -> {
+			System.out.println("Start Illustration");
+			illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1><p>Illustration started...</p>");
+		});
 
-        startIllustrationButton.setOnAction(event -> {
-            System.out.println("Start Illustration");
-            illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1><p>Illustration started...</p>");
-        });
+		illustrationBox.getChildren().addAll(illustrationWebView, startIllustrationButton);
+		HBox.setHgrow(illustrationWebView, Priority.ALWAYS);
 
-        illustrationBox.getChildren().addAll(illustrationWebView, startIllustrationButton);
-        HBox.setHgrow(illustrationWebView, Priority.ALWAYS);
+		// Untere HBox für die Self-Assessment-Tests
+		HBox assessmentBox = new HBox();
+		TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
+		assessmentBox.getChildren().add(assessmentTableView);
+		HBox.setHgrow(assessmentTableView, Priority.ALWAYS);
 
-        // Untere HBox für die Self-Assessment-Tests
-        HBox assessmentBox = new HBox();
-        TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
-        assessmentBox.getChildren().add(assessmentTableView);
-        HBox.setHgrow(assessmentTableView, Priority.ALWAYS);
+		// Füge die beiden Boxen zum VBox hinzu
+		vbox.getChildren().addAll(illustrationBox, new Separator(), assessmentBox);
+		VBox.setVgrow(illustrationBox, Priority.ALWAYS);
+		VBox.setVgrow(assessmentBox, Priority.ALWAYS);
+		return vbox;
+	}
 
-        // Füge die beiden Boxen zum VBox hinzu
-        vbox.getChildren().addAll(illustrationBox, new Separator(), assessmentBox);
-        VBox.setVgrow(illustrationBox, Priority.ALWAYS);
-        VBox.setVgrow(assessmentBox, Priority.ALWAYS);
-        return vbox;
-    }
+	private VBox createAssessmentContent() {
+		VBox vbox = new VBox();
+		WebView webView = new WebView();
+		webView.getEngine().loadContent("<h1>Assessment Content</h1>");
+		vbox.getChildren().add(webView);
+		VBox.setVgrow(vbox, Priority.ALWAYS);
+		return vbox;
+	}
 
-    private VBox createAssessmentContent() {
-        VBox vbox = new VBox();
-        WebView webView = new WebView();
-        webView.getEngine().loadContent("<h1>Assessment Content</h1>");
-        vbox.getChildren().add(webView);
-        VBox.setVgrow(vbox, Priority.ALWAYS);
-        return vbox;
-    }
+	private TableView<SelfAssessmentTest> createAssessmentTableView() {
+		TableView<SelfAssessmentTest> tableView = new TableView<>();
 
-    private TableView<SelfAssessmentTest> createAssessmentTableView() {
-        TableView<SelfAssessmentTest> tableView = new TableView<>();
+		TableColumn<SelfAssessmentTest, String> testNameColumn = new TableColumn<>("Test Name");
+		testNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<SelfAssessmentTest, String> testNameColumn = new TableColumn<>("Test Name");
-        testNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+		TableColumn<SelfAssessmentTest, Boolean> passedColumn = new TableColumn<>("Passed");
+		passedColumn.setCellValueFactory(new PropertyValueFactory<>("passed"));
 
-        TableColumn<SelfAssessmentTest, Boolean> passedColumn = new TableColumn<>("Passed");
-        passedColumn.setCellValueFactory(new PropertyValueFactory<>("passed"));
+		tableView.getColumns().addAll(testNameColumn, passedColumn);
+		return tableView;
+	}
 
-        tableView.getColumns().addAll(testNameColumn, passedColumn);
-        return tableView;
-    }
+	public void disableOkButton(BooleanBinding disableBinding) {
+		okButton.disableProperty().bind(disableBinding);
+	}
 
-    public void disableOkButton(BooleanBinding disableBinding) {
-        okButton.disableProperty().bind(disableBinding);
-    }
+	private WebView createStadardWebView() {
+		WebView webView = new WebView();
+		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getDidacticCssPath());
+		return webView;
+	}
+
+	public void updateView() {
+		setLearningGoals();
+	}
+
+	private void setLearningGoals() {
+		LearningUnit lu = learningUnitChooser.getSelectedLearningUnit();
+		String content = ResourceLoader.getLearningGoals(lu);
+		learningGoalView.getEngine().loadContent(content);
+	}
 }
