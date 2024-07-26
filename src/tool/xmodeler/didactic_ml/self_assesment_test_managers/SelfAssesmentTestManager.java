@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationActions;
-import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
@@ -120,7 +120,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 		if (sucessCondition.checkSuccessCondition()) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
-			String nextDescription = (SelfAssessmentTestTasks.getTaskDescritpion(diagram.getViewPane().getCurrentTaskName()));
+			String nextDescription = (ResourceLoader.getTaskDescritpion(selfAssessmentTest, diagram.getViewPane().getCurrentTaskName()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
