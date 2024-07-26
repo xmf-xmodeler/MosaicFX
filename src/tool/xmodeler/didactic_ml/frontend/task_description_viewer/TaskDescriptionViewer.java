@@ -1,6 +1,5 @@
 package tool.xmodeler.didactic_ml.frontend.task_description_viewer;
 
-import java.io.File;
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -18,6 +17,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.helper.IconGenerator;
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
@@ -45,14 +45,7 @@ public class TaskDescriptionViewer extends Stage {
 		buttonBar.getItems().add(checkButton);
 		Scene scene = new Scene(root, 800, 600);
 		setScene(scene);
-
-		setCustomCssStyleSheet();
-	}
-
-	private void setCustomCssStyleSheet() {
-		String customCssPath = "resources/css/taskDescription.css";
-		File customCssFile = new File(customCssPath);
-		webView.getEngine().setUserStyleSheetLocation("file:" + customCssFile.getAbsolutePath());
+		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getDidacticCssPath());
 	}
 
 	/**
