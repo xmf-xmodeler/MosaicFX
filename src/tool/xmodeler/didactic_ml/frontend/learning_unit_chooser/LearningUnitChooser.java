@@ -17,13 +17,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import tool.xmodeler.didactic_ml.backend_aux.learning_unit_tabs.CustomTabPane;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 
 public class LearningUnitChooser extends Dialog<SelfAssesmentTestManager> {
 
 	private Button okButton;
-	private CustomTabPane customTabPane = new CustomTabPane();
+	private LearningUnitTabPane customTabPane = new LearningUnitTabPane();
 	private TableView<LearningUnit> tableView = createTableView();
 	
 

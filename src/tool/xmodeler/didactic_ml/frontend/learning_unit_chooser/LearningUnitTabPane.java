@@ -1,4 +1,4 @@
-package tool.xmodeler.didactic_ml.backend_aux.learning_unit_tabs;
+package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.scene.control.TabPane;
@@ -15,13 +15,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
-public class CustomTabPane extends TabPane {
+public class LearningUnitTabPane extends TabPane {
 
     private WebView illustrationWebView;
     private Button okButton;
     private Button cancelButton;
 
-    public CustomTabPane() {
+    public LearningUnitTabPane() {
         
         // Tabs erstellen und hinzufügen
         Tab learningGoalsTab = new Tab("Learning Goals", createLearningGoalsContent());
