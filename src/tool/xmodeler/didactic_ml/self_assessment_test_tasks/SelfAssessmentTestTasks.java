@@ -1,16 +1,10 @@
 package tool.xmodeler.didactic_ml.self_assessment_test_tasks;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
 /**
@@ -88,52 +82,9 @@ public abstract class SelfAssessmentTestTasks {
 	 */
 	public static String getFirstTaskDescription() {
 		String firstTask = getTaskName(1);
-		return getTaskDescritpion(firstTask);
+		return ResourceLoader.getTaskDescritpion(selfAssessmentTest, firstTask);
 	}
 
-	/**
-	 * Helper function that returns the path of a file where the description is
-	 * stored. If you add new descriptions, please maintain the file structure to not break the code.
-	 * 
-	 * @param learningUnitName used to navigate to the right folder
-	 * @param taskName used to identify the right file name
-	 * @return filepath of task description
-	 */
-	private static String buildTaskDescriptionPath(String taskName) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("resources/html/"); // basic path
-		stringBuilder.append(selfAssessmentTest.getLearningUnit().getPathName()); // append learningUnitName
-		stringBuilder.append("/");
-		stringBuilder.append(getPrecedence(taskName)); // append number of current state
-		stringBuilder.append(".html");
-		return stringBuilder.toString();
-	}
-	
-	//TODO refactor encapsulate this function with all other needed resources in an own class
-	/**
-	 * Every LearningUnitTask is described by a task description. These tasks are stored on the file system as html documents.
-	 * This function returns the content of the file as string.
-	 * 
-	 * @param taskName identifies which file will be retrieved from the file system
-	 * @return description of this task as string
-	 */
-	public static String getTaskDescritpion(String taskName) {
-		String taskDescriptionPath = buildTaskDescriptionPath(taskName);
-		StringBuilder contentBuilder = new StringBuilder();
-		try (Reader reader = new InputStreamReader(new FileInputStream(taskDescriptionPath), StandardCharsets.UTF_8)) {
-			BufferedReader br = new BufferedReader(reader);
-			String line;
-			while ((line = br.readLine()) != null) {
-				contentBuilder.append(line);
-			}
-			return contentBuilder.toString();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("Can not find file for task description " + getPrecedence(taskName) + " from the learning unit " + selfAssessmentTest.getLearningUnit().getPrettyName() + ". the files were expected under the path: " + taskDescriptionPath);
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
-	
 	/**
 	 * This function needs to be called before the task is first use. Please override the task var with matching values.
 	 */

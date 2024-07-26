@@ -134,16 +134,8 @@ public class ControlCenter extends Stage {
 				+ "-fx-font-size: 14px; "
 				+ "-fx-font-weight: bold;");  
 		b.setPrefWidth(125);
-		b.setOnAction(a -> startLearningUnit(new LearningUnitChooser().showAndWait()));
+		b.setOnAction(a -> new LearningUnitChooser().show());
 		return b;
-	}
-	
-	private void startLearningUnit(Optional<SelfAssesmentTestManager> manager) {
-		if (manager.isPresent()) {
-			manager.get().start();
-		} else {
-			throw new NullPointerException("LearnUnitChooser has not returned a value"); 
-		}
 	}
 
 	private void adaptLayoutToDidacticMode(VBox root) {

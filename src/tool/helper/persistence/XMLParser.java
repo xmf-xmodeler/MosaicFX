@@ -73,7 +73,7 @@ public class XMLParser {
 		return inputFile.get();
 	}
 
-	XMLParser(File inputFile) {
+	public XMLParser(File inputFile) {
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
 			//overrride importFile with transformed Version
