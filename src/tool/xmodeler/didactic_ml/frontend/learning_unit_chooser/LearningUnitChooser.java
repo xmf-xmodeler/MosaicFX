@@ -13,13 +13,18 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import tool.helper.IconGenerator;
 
 public class LearningUnitChooser extends Dialog<Void> {
 
 	private TableView<LearningUnit> learningUnitTable = createTableView();
 
 	public LearningUnitChooser() {
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		setTitle("Learning Unit Selection");
 		getDialogPane().setPrefWidth(1200);
 		getDialogPane().setPrefHeight(600);
