@@ -129,4 +129,17 @@ public class ResourceLoader {
 		sB.append("theoreticalBackground.html");
 		return sB.toString();
 	}
+
+	public static File getExampleDiagramFile(LearningUnit lu) {
+		String path = getExampleDiagramPath(lu);
+		return new File(path);
+	}
+
+	private static String getExampleDiagramPath(LearningUnit lu) {
+		StringBuilder sB = new StringBuilder(folderPath);
+		sB.append(lu.getPathName());
+		sB.append("/");
+		sB.append("ExampleDiagram.xml");
+		return sB.toString();
+	}
 }

@@ -1,10 +1,13 @@
 package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
+import java.io.File;
+
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
@@ -12,8 +15,11 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.helper.persistence.XMLParser;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
@@ -24,8 +30,6 @@ public class LearningUnitTabPane extends TabPane {
 	private WebView theoreticalBackgroundView = createStadardWebView();
 	private TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
 	
-	private Button okButton;
-
 	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
 		this.learningUnitChooser = learningUnitChooser;
 		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
@@ -34,47 +38,53 @@ public class LearningUnitTabPane extends TabPane {
 		getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, assessmentTab);
 	}
 
-//	private VBox createIllustrationContent() {
-//		VBox vbox = new VBox();
-//
-//		// Obere HBox für die Illustration und den Button
-//		HBox illustrationBox = new HBox();
-//		illustrationWebView = new WebView();
-//		illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1>");
-//		Button startIllustrationButton = new Button("Start Illustration");
-//
-//		startIllustrationButton.setOnAction(event -> {
-//			System.out.println("Start Illustration");
-//			illustrationWebView.getEngine().loadContent("<h1>Illustration Content</h1><p>Illustration started...</p>");
-//		});
-//
-//		illustrationBox.getChildren().addAll(illustrationWebView, startIllustrationButton);
-//		HBox.setHgrow(illustrationWebView, Priority.ALWAYS);
-//
-//		// Untere HBox für die Self-Assessment-Tests
-//		HBox assessmentBox = new HBox();
-//		TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
-//		assessmentBox.getChildren().add(assessmentTableView);
-//		HBox.setHgrow(assessmentTableView, Priority.ALWAYS);
-//
-//		// Füge die beiden Boxen zum VBox hinzu
-//		vbox.getChildren().addAll(illustrationBox, new Separator(), assessmentBox);
-//		VBox.setVgrow(illustrationBox, Priority.ALWAYS);
-//		VBox.setVgrow(assessmentBox, Priority.ALWAYS);
-//		return vbox;
-//	}
-
 	private VBox createAssessmentContent() {
+		String cssValue = "-fx-background-color: #ffa500;" + "-fx-border-color: #000000;" + "-fx-border-width: 0.75px;" + "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;";
+		
 		VBox vbox = new VBox();
+		BorderPane borderPane = new BorderPane();
 		Button startExampleButton = new Button();
+		startExampleButton.setOnAction(this::openExampleDiagram);
 		startExampleButton.setText("Show examplary Diagram");
-		startExampleButton.setStyle("-fx-background-color: #ffa500;" + "-fx-border-color: #000000;"
-				+ "-fx-border-width: 0.75px;" + "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;");
-		vbox.setAlignment(Pos.CENTER);
-		vbox.getChildren().addAll(startExampleButton, new Separator(), assessmentTableView);
+		startExampleButton.setStyle(cssValue);
+		borderPane.setCenter(startExampleButton);
+		borderPane.setPrefHeight(150);
+		
+		BorderPane borderPane2 = new BorderPane();
+		Button startSelfAssessmentButton = new Button();
+		startSelfAssessmentButton.setText("Start Self-Assessment Test");
+		startSelfAssessmentButton.disableProperty().bind(createDisableBinding(assessmentTableView.getSelectionModel().selectedItemProperty()));
+		startSelfAssessmentButton.setStyle(cssValue);
+		startSelfAssessmentButton.setOnAction(this::startAssessment);
+		borderPane2.setCenter(startSelfAssessmentButton);
+		borderPane2.setMinHeight(50);
+		
+		vbox.getChildren().addAll(borderPane, new Separator(), assessmentTableView, borderPane2);
 		return vbox;
 	}
+	
+	/**
+	 * Helper function. Needed to provide matching binding property
+	 * 
+	 * @param selectedItemProperty that needs to be checked
+	 * @return the boolean if button should be enabled
+	 */
+	private BooleanBinding createDisableBinding(ReadOnlyObjectProperty<SelfAssessmentTest> selectedItemProperty) {
+		return selectedItemProperty.isNull();
+	}
+	
+	private void startAssessment(ActionEvent event) {
+		SelfAssessmentTest test = assessmentTableView.getSelectionModel().getSelectedItem();
+		LearningUnitManagerFactory.createLearningUnitManager(test).start();
+	}
 
+	private void openExampleDiagram(ActionEvent event) {
+		File inputFile = ResourceLoader.getExampleDiagramFile(learningUnitChooser.getSelectedLearningUnit());
+		XMLParser parser = new XMLParser(inputFile);
+    	parser.parseXMLDocument();
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram("ExampleDiagram", "example");
+	}
+	
 	private TableView<SelfAssessmentTest> createAssessmentTableView() {
 		TableView<SelfAssessmentTest> tableView = new TableView<>();
 		
@@ -104,10 +114,6 @@ public class LearningUnitTabPane extends TabPane {
 		ObservableList<SelfAssessmentTest> items = FXCollections.observableArrayList();
 		items.addAll(SelfAssessmentTest.getTestsForLearningUnit(lu));
 		return items;
-	}
-
-	public void disableOkButton(BooleanBinding disableBinding) {
-		okButton.disableProperty().bind(disableBinding);
 	}
 
 	private WebView createStadardWebView() {

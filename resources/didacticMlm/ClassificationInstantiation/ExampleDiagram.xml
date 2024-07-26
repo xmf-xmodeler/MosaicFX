@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="ProfFrank">
+    <Imports/>
+    <Model name="Root::ExampleDiagram">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="OneClass" package="Root::ExampleDiagram" singleton="false"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="example" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleDiagram::OneClass" xCoordinate="377" yCoordinate="146"/>
+            </Instances>
+            <Edges/>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>
