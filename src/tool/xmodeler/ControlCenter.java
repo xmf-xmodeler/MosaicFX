@@ -327,6 +327,7 @@ public class ControlCenter extends Stage {
 
 		}
 		else {
+		projectLabel.setText("Models");
 		grid.add(newDiagram2, 4, 1);
 		}
 		
@@ -435,7 +436,15 @@ public class ControlCenter extends Stage {
 							setGraphic(null);
 						}
 					}
-				}
+					if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()))) && item!=null) {	//Changes name of projects to models for didactit mode
+						if(item.equals("Projects")) {
+							setText("Models");
+						}
+						if(item.equals("MyProjects")) {
+							setText("MyModels");
+						}
+						}
+					}
 			};
 		}
 	}

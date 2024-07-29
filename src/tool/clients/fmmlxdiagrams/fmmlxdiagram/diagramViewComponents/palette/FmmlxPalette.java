@@ -164,6 +164,7 @@ public class FmmlxPalette {
 			HashMap<Integer, TreeItem<AbstractTreeType>> levels = new HashMap<>();
 			for (int i : levelList) {
 				if(i!=0) {
+					if(!fmmlxDiagram.isUMLMode() || i!=-1) {
 					TreeItem<AbstractTreeType> levelGroup;
 					if(!fmmlxDiagram.isUMLMode()) {
 					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
@@ -174,6 +175,7 @@ public class FmmlxPalette {
 					levels.put(i, levelGroup);
 					levelGroup.setExpanded(true);
 					elements.getChildren().add(levelGroup);
+					}
 				}
 			}
 			Collections.sort(objects);
