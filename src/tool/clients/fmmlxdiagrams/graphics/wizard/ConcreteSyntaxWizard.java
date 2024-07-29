@@ -542,6 +542,7 @@ public class ConcreteSyntaxWizard extends Application {
 							SVGGroup svgGroup = SVGReader.readSVG(file, new Affine());
 							svgs.add(svgGroup);
 						} catch (Exception e) {
+							System.err.println("Problem with SVG File: " + file.getAbsolutePath());
 							e.printStackTrace();
 						}
 					}

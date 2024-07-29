@@ -33,7 +33,7 @@ import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
+//import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
@@ -84,13 +84,13 @@ public class DiagramActions {
 		this.diagram = diagram;
 	}
 	
-	public void openClassBrowserStage(boolean xmf) {
-		if(xmf)  {
-			diagram.getComm().openPackageBrowser();
-		} else {
-			Platform.runLater(() -> ClassBrowserClient.show(diagram));
-		}
-	}
+//	public void openClassBrowserStage(boolean xmf) {
+//		if(xmf)  {
+//			diagram.getComm().openPackageBrowser();
+//		} else {
+//			Platform.runLater(() -> ClassBrowserClient.show(diagram));
+//		}
+//	}
 	
 
 
