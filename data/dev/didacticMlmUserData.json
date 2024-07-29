@@ -1,0 +1,17 @@
+{
+  "learningUnits": [
+    {
+      "learningUnitName": "Classification and instantiation",
+      "finishedSelfAssessmentTests": [
+        "Classification and Instantiation 2",
+        "Classification and Instantiation 1"
+      ]
+    },
+    {
+      "learningUnitName": "Tool Introduction",
+      "finishedSelfAssessmentTests": [
+        "Tool Introduction"
+      ]
+    }
+  ]
+}

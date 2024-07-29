@@ -58,7 +58,9 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
 public class ControlCenter extends Stage {
 	
@@ -116,6 +118,8 @@ public class ControlCenter extends Stage {
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
 					System.err.println("Use to test functions");
+					UserDataProcessor.appendSelfAssessmentTest(SelfAssessmentTest.TOOL_INTRO);
+					System.err.println(UserDataProcessor.readUserData());
 				}		
 			}
 		});
