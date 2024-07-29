@@ -119,7 +119,6 @@ public class ControlCenter extends Stage {
 				if (keyCombinationShiftC.match(event)) {
 					System.err.println("Use to test functions");
 					UserDataProcessor.appendSelfAssessmentTest(SelfAssessmentTest.TOOL_INTRO);
-					System.err.println(UserDataProcessor.readUserData());
 				}		
 			}
 		});

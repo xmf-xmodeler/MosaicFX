@@ -95,7 +95,7 @@ public class UserDataProcessor {
 		return Optional.empty();
 	}
 
-	public static JsonObject getUserData() {
+	private static JsonObject getUserData() {
 		return JsonParser.parseString(readUserData()).getAsJsonObject();
 	}
 	
@@ -109,7 +109,7 @@ public class UserDataProcessor {
 		}
 	}
 
-	public static String readUserData() {
+	private static String readUserData() {
 		StringBuilder contentBuilder = new StringBuilder();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(USER_DATA_FILE_PATH))) {
@@ -121,5 +121,16 @@ public class UserDataProcessor {
 			throw new RuntimeException(e.toString());
 		}
 		return contentBuilder.toString();
+	}
+	
+	/**
+	 * This will set the learning unit array to null. In the frontend then all self assessments test will be presented as not finished.
+	 */
+	public static void resetTestStatistics() {
+		JsonObject doc = getUserData();
+		doc.entrySet().clear();
+	    JsonArray emptyArray = new JsonArray();
+		doc.add(LEARNING_UNITS, emptyArray);
+		printData(doc);
 	}
 }
