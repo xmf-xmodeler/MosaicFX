@@ -225,7 +225,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			tabPane,
 			statusLabel
 				);
-	tabPane.setMinHeight(500);
+	tabPane.setMinHeight(400);
 	tabPane.setMinWidth(450);
 	VBox.setVgrow(tabPane, Priority.ALWAYS);
 	}
