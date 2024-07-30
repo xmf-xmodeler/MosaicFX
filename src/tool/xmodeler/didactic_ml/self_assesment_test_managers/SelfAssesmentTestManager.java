@@ -131,7 +131,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
-				descriptionViewer.alterCheckButtonText();
+				descriptionViewer.insertFinishButton();
 			}
 		} else {
 			descriptionViewer.giveUserFeedback(false);
@@ -182,5 +182,9 @@ public abstract class SelfAssesmentTestManager implements Startable {
 
 	public static DiagramPreparationActions getPreperationActions() {
 		return preperationActions;
+	}
+
+	public static SelfAssessmentTest getSelfAssessmentTest() {
+		return selfAssessmentTest;
 	}
 }

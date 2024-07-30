@@ -17,6 +17,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.helper.IconGenerator;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
@@ -131,13 +132,14 @@ public class TaskDescriptionViewer extends Stage {
 	 * This function is used to change the check Button in the last stage to the
 	 * finish button
 	 */
-	public void alterCheckButtonText() {
+	public void insertFinishButton() {
 		Platform.runLater(() -> {
 			checkButton.setText("Finish");
 			checkButton.setOnAction((a) -> {
 				closeToolIntoDiagramStage();
 				this.close();
-				ToolIntroductionManager.getInstance().stop();
+				UserDataProcessor.appendSelfAssessmentTest(SelfAssesmentTestManager.getSelfAssessmentTest());
+				SelfAssesmentTestManager.getInstance().stop();
 			});
 		});
 	}
