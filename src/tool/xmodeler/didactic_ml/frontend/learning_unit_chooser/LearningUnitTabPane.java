@@ -14,12 +14,14 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.helper.persistence.XMLParser;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
@@ -29,7 +31,7 @@ public class LearningUnitTabPane extends TabPane {
 	private WebView learningGoalView = createStadardWebView();
 	private WebView theoreticalBackgroundView = createStadardWebView();
 	private TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
-	
+
 	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
 		this.learningUnitChooser = learningUnitChooser;
 		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
@@ -39,8 +41,9 @@ public class LearningUnitTabPane extends TabPane {
 	}
 
 	private VBox createAssessmentContent() {
-		String cssValue = "-fx-background-color: #ffa500;" + "-fx-border-color: #000000;" + "-fx-border-width: 0.75px;" + "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;";
-		
+		String cssValue = "-fx-background-color: #ffa500;" + "-fx-border-color: #000000;" + "-fx-border-width: 0.75px;"
+				+ "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;";
+
 		VBox vbox = new VBox();
 		BorderPane borderPane = new BorderPane();
 		Button startExampleButton = new Button();
@@ -49,20 +52,21 @@ public class LearningUnitTabPane extends TabPane {
 		startExampleButton.setStyle(cssValue);
 		borderPane.setCenter(startExampleButton);
 		borderPane.setPrefHeight(150);
-		
+
 		BorderPane borderPane2 = new BorderPane();
 		Button startSelfAssessmentButton = new Button();
 		startSelfAssessmentButton.setText("Start Self-Assessment Test");
-		startSelfAssessmentButton.disableProperty().bind(createDisableBinding(assessmentTableView.getSelectionModel().selectedItemProperty()));
+		startSelfAssessmentButton.disableProperty()
+				.bind(createDisableBinding(assessmentTableView.getSelectionModel().selectedItemProperty()));
 		startSelfAssessmentButton.setStyle(cssValue);
 		startSelfAssessmentButton.setOnAction(this::startAssessment);
 		borderPane2.setCenter(startSelfAssessmentButton);
 		borderPane2.setMinHeight(50);
-		
+
 		vbox.getChildren().addAll(borderPane, new Separator(), assessmentTableView, borderPane2);
 		return vbox;
 	}
-	
+
 	/**
 	 * Helper function. Needed to provide matching binding property
 	 * 
@@ -72,7 +76,7 @@ public class LearningUnitTabPane extends TabPane {
 	private BooleanBinding createDisableBinding(ReadOnlyObjectProperty<SelfAssessmentTest> selectedItemProperty) {
 		return selectedItemProperty.isNull();
 	}
-	
+
 	private void startAssessment(ActionEvent event) {
 		SelfAssessmentTest test = assessmentTableView.getSelectionModel().getSelectedItem();
 		LearningUnitManagerFactory.createLearningUnitManager(test).start();
@@ -81,31 +85,32 @@ public class LearningUnitTabPane extends TabPane {
 	private void openExampleDiagram(ActionEvent event) {
 		File inputFile = ResourceLoader.getExampleDiagramFile(learningUnitChooser.getSelectedLearningUnit());
 		XMLParser parser = new XMLParser(inputFile);
-    	parser.parseXMLDocument();
+		parser.parseXMLDocument();
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram("ExampleDiagram", "example");
 	}
-	
+
 	private TableView<SelfAssessmentTest> createAssessmentTableView() {
 		TableView<SelfAssessmentTest> tableView = new TableView<>();
-		
+
 		TableColumn<SelfAssessmentTest, String> idColumn = new TableColumn<>("Id");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
 		idColumn.setPrefWidth(20);
 		idColumn.setSortable(false);
-		
+
 		TableColumn<SelfAssessmentTest, String> testNameColumn = new TableColumn<>("Test Name");
 		testNameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
 		testNameColumn.setPrefWidth(400);
 		testNameColumn.setSortable(false);
-		
+
 		TableColumn<SelfAssessmentTest, Boolean> passedColumn = new TableColumn<>("Passed");
-		passedColumn.setCellValueFactory(cellData -> {
-			// TODO implement finish logic
-			// return new SimpleBooleanProperty(cellData.getValue().getId() == 0);
-			return new SimpleBooleanProperty(false);
-		});
-		passedColumn.setPrefWidth(50);
+		 passedColumn.setCellValueFactory(cellData -> {
+	            SelfAssessmentTest test = cellData.getValue();
+	            boolean finished = UserDataProcessor.userHasFinishedTest(test);
+	            return new SimpleBooleanProperty(finished);
+	        });
+		passedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(passedColumn));
 		passedColumn.setSortable(false);
+		passedColumn.setPrefWidth(50);
 		tableView.getColumns().addAll(idColumn, testNameColumn, passedColumn);
 		return tableView;
 	}
