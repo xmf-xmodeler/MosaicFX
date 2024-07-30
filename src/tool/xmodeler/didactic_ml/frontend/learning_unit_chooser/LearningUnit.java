@@ -1,5 +1,10 @@
 package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 
+import java.util.List;
+
+import tool.xmodeler.didactic_ml.UserDataProcessor;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
+
 public enum LearningUnit {
 	
 	TOOL_INTRO("Tool Introduction", "ToolIntro", 0, true),
@@ -47,5 +52,19 @@ public enum LearningUnit {
 
 	public boolean isImplemented() {
 		return implemented;
+	}
+
+	/**
+	 * Check in the user data if all related SelfAssessmentTests are finished
+	 * @return true if all related tests are finished by the user
+	 */
+	boolean isFinished() {
+		List<SelfAssessmentTest> relatedTests = SelfAssessmentTest.getRelatedTests(this);
+		for (SelfAssessmentTest selfAssessmentTest : relatedTests) {
+			if (!UserDataProcessor.userHasFinishedTest(selfAssessmentTest)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

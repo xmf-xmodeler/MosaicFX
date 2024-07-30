@@ -58,4 +58,19 @@ public enum SelfAssessmentTest {
 		testList.sort(Comparator.comparing(SelfAssessmentTest::getOrderNumber));
 		return testList;
 	}
+	
+	/**
+	 * Returns a list of all SelfAssessmentTest related to one LearningUnit
+	 * @param unit that you want to have related tests of
+	 * @return list of all related tests
+	 */
+	public static List<SelfAssessmentTest> getRelatedTests(LearningUnit unit) {
+		ArrayList<SelfAssessmentTest> tests = new ArrayList<SelfAssessmentTest>();
+	    for (SelfAssessmentTest test : SelfAssessmentTest.values()) {
+            if (test.getLearningUnit().equals(unit)) {
+				tests.add(test);
+			}
+        }
+		return tests;
+	}
 }

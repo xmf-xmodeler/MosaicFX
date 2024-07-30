@@ -75,16 +75,15 @@ public class LearningUnitChooser extends Dialog<Void> {
 		TableColumn<LearningUnit, Boolean> selectedColumn = new TableColumn<>("Passed");
 		selectedColumn.setSortable(false);
 		selectedColumn.setCellValueFactory(cellData -> {
-			// TODO implement finish logic
-			// return new SimpleBooleanProperty(cellData.getValue().getId() == 0);
-			return new SimpleBooleanProperty(false);
+			LearningUnit unit = cellData.getValue();
+			return new SimpleBooleanProperty(unit.isFinished());
 		});
-		hideCheckboxForUnimplementedLearningUnits(selectedColumn);
+		setCellFactory(selectedColumn);
 		tView.getColumns().addAll(idColumn, nameColumn, selectedColumn);
 		return tView;
 	}
 
-	private void hideCheckboxForUnimplementedLearningUnits(TableColumn<LearningUnit, Boolean> selectedColumn) {
+	private void setCellFactory(TableColumn<LearningUnit, Boolean> selectedColumn) {
 		selectedColumn.setCellFactory(column -> new CheckBoxTableCell<LearningUnit, Boolean>() {
 			@Override
 			public void updateItem(Boolean item, boolean empty) {
