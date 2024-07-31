@@ -4,16 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adding Rating Attribute and Enumeration</title>
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="content">
         <h2>7. Adding Rating Attribute and Enumeration</h2>
-        <p>The customer Josie Dough has bought a ticket for the showing of Joker on 7 Nov 2024. Movies have a rating dependent on the age. Joker is rated R and may not be watched from anyone under the age of 17. To automatically verify a customer is old enough to watch a particular movie, we must capture a customer’s age and the movie’s rating. Josie’s age is calculated automatically based on her dateOfBirth. This is done using a method. Later we will get more in details about functions.</p>
-        <p>We must still capture the rating of movie objects, though. First, we add an attribute rating: String to our class movie.</p>
-        <p>Note, however, that now any string is valid for this attribute. A rating system is restricted to a particular set of values, though. To restrict our attribute to this set of values, we add an enumeration.</p>
-        <p>Create an enumeration with the name “RatingEnum”. It is good practice to end the name of each enumeration with Enum, so it will not be confused with other data types.</p>
-        <p>We add three values to our RatingEnum: “G” for general audiences, “PG_13” for parents strongly cautioned, and “R” for restricted.</p>
+        <p>The customer Josie Dough has bought a ticket for the showing of Joker on 7 Nov 2024. 
+		But Joker is rated R and may not be watched from anyone under the age of 17. 
+		To automatically verify a customer is old enough to watch a particular movie, 
+		we must capture a customer’s age and the movie’s rating. 
+		Josie’s age is calculated automatically based on her "dateOfBirth".</p>
+        <p>We must still capture the rating of movie objects, though. 
+		First, we add an attribute <b>rating: String</b> to our class movie.</p>
+        <p>Note, however, that now any string is valid for this attribute. 
+		A rating system is restricted to a particular set of values, though. 
+		To restrict our attribute to this set of values, we add an enumeration.</p>
+        <p>Create an enumeration with the name <b>“RatingEnum”</b>. 
+		It is good practice to end the name of each enumeration with Enum, so it will not be confused with other data types.</p>
+        <p>We add three values to our RatingEnum: <b>“G”</b> for general audiences, <b>“PG_13”</b> for parental guidance, 
+		and <b>“R”</b> for restricted.</p>
     </div>
+	<br>
+	<div class="execution">
+		<h3>How To Add An Enumeration</h3>
+		<p>To add an enumeration, follow three three steps:</p>
+		<p style="padding-left: 20px;">
+		1. Step: Create An Enumeration</p>
+			<p style="padding-left: 20px;">
+		2. Step: Add Values</p>
+			<p style="padding-left: 20px;">
+		3. Step: Select Enumeration As The Data Type</p>
+	</div>
+	<br>
+	<div class="execution">
+		<h3>1. Step: Create An Enumeration</h3>
+		<p>Click on <strong>'Model'</strong> in the top menu, select <strong>'Enumeration'</strong> and then <strong>'Create'</strong>. 
+		A window will open where you can enter the name of your enumeration (e.g., "RatingEnum").</p>
+		<p><u>Note</u>: In this step, you are not yet adding values to your enumeration.</p>
+	</div>
+	<br>
+	<div class="execution">
+		<h3>2. Step: Add Values</h3>
+		<p>Click on <strong>'Model'</strong> in the top menu again, select <strong>'Enumeration'</strong> and then <strong>'Edit'</strong>. 
+		Select an enumeration from the <strong>'Choose Enumeration'</strong> drop-down menu. 
+		Then, click on <strong>'Add Element'</strong> at the bottom of the window, enter the value (e.g. "G") in the new window and 
+		close the window.</p>
+		<p> Repeat this process for all other values and close the window when finished.</p>
+		<p><strong>Note:</strong> The third step will be explained in the next task, as it is not yet necessary for this subtask.</p>
+	</div>
+	<br>
 </body>
 </html>

@@ -205,9 +205,7 @@ public class FmmlxPalette {
 		} else {
 			relationships.getChildren().add(link);
 		}
-		if (!viewPane.getDiagram().isUMLMode()) {
-			relationships.getChildren().addAll(delegation);
-		}
+		relationships.getChildren().addAll(delegation);
 	}
 
 	public TreeView getToolBar() {
