@@ -34,6 +34,7 @@ public class LearningUnitTabPane extends TabPane {
 
 	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
 		this.learningUnitChooser = learningUnitChooser;
+		getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
 		Tab theoreticalBackgroundTab = new Tab("Theoretical Background", theoreticalBackgroundView);
 		Tab assessmentTab = new Tab("Self-Assessment", createAssessmentContent());
@@ -41,15 +42,12 @@ public class LearningUnitTabPane extends TabPane {
 	}
 
 	private VBox createAssessmentContent() {
-		String cssValue = "-fx-background-color: #ffa500;" + "-fx-border-color: #000000;" + "-fx-border-width: 0.75px;"
-				+ "-fx-background-radius: 15px; " + "-fx-border-radius: 15px;";
-
 		VBox vbox = new VBox();
 		BorderPane borderPane = new BorderPane();
 		Button startExampleButton = new Button();
 		startExampleButton.setOnAction(this::openExampleDiagram);
 		startExampleButton.setText("Show examplary Diagram");
-		startExampleButton.setStyle(cssValue);
+		startExampleButton.getStyleClass().add("didactic-button");
 		borderPane.setCenter(startExampleButton);
 		borderPane.setPrefHeight(150);
 
@@ -58,7 +56,7 @@ public class LearningUnitTabPane extends TabPane {
 		startSelfAssessmentButton.setText("Start Self-Assessment Test");
 		startSelfAssessmentButton.disableProperty()
 				.bind(createDisableBinding(assessmentTableView.getSelectionModel().selectedItemProperty()));
-		startSelfAssessmentButton.setStyle(cssValue);
+		startSelfAssessmentButton.getStyleClass().add("didactic-button");
 		startSelfAssessmentButton.setOnAction(this::startAssessment);
 		borderPane2.setCenter(startSelfAssessmentButton);
 		borderPane2.setMinHeight(50);

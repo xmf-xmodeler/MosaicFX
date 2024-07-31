@@ -62,3 +62,65 @@ p {
     -fx-text-fill: rgb(220,220,220);
     -fx-effect: dropshadow(gaussian, #000000, 4, 0.2, 0, 1);
 }
+
+.tab-pane {
+    -fx-background-color: #f9f9f9;
+}
+
+.tab {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding: 4px 8px;
+    -fx-min-width: 80px;
+    -fx-min-height: 30px;
+    -fx-transition: background-color 0.2s ease, -fx-text-fill 0.2s ease;
+}
+
+/* Hover-Effekt */
+.tab:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+/* Selected-Effekt */
+.tab:selected {
+    -fx-background-color: #203864;
+    -fx-text-base-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+/* Alle Standard-Tabs */
+.tab-pane .tab-header-area .tab .tab-close-button {
+    -fx-opacity: 0; /* Setzt die Sichtbarkeit auf 0, um das Schließen-Symbol auszublenden */
+    -fx-background-color: transparent; /* Entfernt den Hintergrund des Schließen-Symbols */
+    -fx-border-color: transparent; /* Entfernt den Rand des Schließen-Symbols */
+    -fx-padding: 0; /* Entfernt jegliches Padding des Schließen-Symbols */
+}
+
+/* Weitere mögliche Anpassungen zur Sicherstellung des Ausblendens */
+.tab-pane .tab-header-area .tab .tab-close-button:visible {
+    -fx-opacity: 0; /* Falls sichtbar, setzt die Opazität auf 0 */
+}
+
+.tab:focused {
+    -fx-focus-color: transparent;
+    -fx-focus-width: 0px;
+}
+
+.tab:selected .tab-label {
+    -fx-focus-color: transparent;
+    -fx-focus-width: 0px;
+    -fx-border-color: transparent; /* Entfernt den Rahmen um den Text */
+    -fx-border-width: 0px;
+    -fx-background-color: transparent; /* Hintergrundfarbe auf transparent setzen */
+    -fx-padding: 0; /* Entfernt jegliches Padding um den Text */
+    -fx-text-fill: #ffffff; /* Sicherstellen, dass die Textfarbe korrekt ist */
+}
