@@ -4,32 +4,61 @@ body {
     margin: 20px;
     background-color: #f9f9f9;
 }
+
 .content {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 h1, h3 {
-    color: #333;
+    text-fill: #333;
 }
+
 p {
-    color: #555;
+    text-fill: #555;
 }
 
 .execution {
-	border-radius: 8px;
-	background-color: #dfe4f2;
+    border-radius: 8px;
+    background-color: #dfe4f2;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 1px 20px;
-	margin: 10px 0;
+    margin: 10px 0;
 }
 
 .execution h3 {
-	font-style: italic;
-	font-size: 18px;
+    font-style: italic;
+    font-size: 18px;
 }
 
 .execution p {
-	font-size: 12px;
+    font-size: 12px;
+}
+
+.didactic-button {
+    -fx-background-color: #203864;
+    -fx-border-color: #dfe4f2;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 4px 8px;
+    -fx-min-width: 80px;
+    -fx-min-height: 30px;
+    -fx-transition: background-color 0.2s ease, -fx-text-fill 0.2s ease;
+}
+
+.didactic-button:hover {
+    -fx-background-color: #2a4d77;
+    -fx-border-color: #dfe4f2;
+}
+
+.didactic-button:pressed {
+    -fx-background-color: #1a3a5e;
+    -fx-text-fill: rgb(220,220,220);
+    -fx-effect: dropshadow(gaussian, #000000, 4, 0.2, 0, 1);
 }

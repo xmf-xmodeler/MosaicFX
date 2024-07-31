@@ -58,9 +58,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.didactic_ml.UserDataProcessor;
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
-import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
 public class ControlCenter extends Stage {
 	
@@ -94,13 +93,9 @@ public class ControlCenter extends Stage {
 		root.getChildren().addAll(menuBar, grid);
 		root.setAlignment(Pos.TOP_CENTER);
 		
-		if(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString(), false)) {
-			adaptLayoutToDidacticMode(root);
-		}
-		
 		Scene scene = new Scene(root, toolWidth, toolHeight);
+		scene.getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		setScene(scene);
-				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 				
@@ -128,29 +123,9 @@ public class ControlCenter extends Stage {
 	private Button buildLearningUnitsButton() {
 		Button b = new Button();
 		b.setText("Open UML++ Learning Units");
-		b.setStyle("");
-		b.setStyle( "-fx-background-color: #203864;"//dfe4f2;"
-				//+ "-fx-border-color: #dfe4f2;"
-				//+ "-fx-border-width: 0px;"
-				+ "-fx-background-radius: 5px; "
-				+ "-fx-border-radius: 5px;"
-				+ "-fx-font-size: 12px; "
-				+ "-fx-font-weight: bold;"
-				+ "-fx-text-fill: rgb(240,240,240)");
-		//b.setPrefWidth(140);
+		b.getStyleClass().add("didactic-button"); 
 		b.setOnAction(a -> new LearningUnitChooser().show());
-		b.setOnMouseClicked(event -> {
-            if (event.isPrimaryButtonDown()) {
-                System.out.println("HHDNJD");
-            }});
 		return b;
-	}
-
-	private void adaptLayoutToDidacticMode(VBox root) {
-		toolWidth = toolWidth - 237;	//Adjustment for removed elements 
-		//Button learningUnitsButton = buildLearningUnitsButton();
-		//root.getChildren().add(2, learningUnitsButton);
-		//toolHeight = toolHeight - 30;
 	}
 
 	private void showCloseWarningDialog(Event event) {
@@ -338,18 +313,9 @@ public class ControlCenter extends Stage {
 		else {
 		projectLabel.setText("Models");
 		grid.add(newDiagram2, 4, 1);
+		toolWidth = toolWidth - 237;
 		Button learningUnits = this.buildLearningUnitsButton();
-		/* learningUnits.setStyle("-fx-background-color: #203864;"
-				+ "-fx-border-color: #dfe4f2;"
-				+ "-fx-border-width: 0px;"
-				+ "-fx-background-radius: 5px; "
-				+ "-fx-border-radius: 5px;"
-				+ "-fx-font-size: 10px; "
-				+ "-fx-font-weight: bold;"
-				+ "-fx-text-fill: #ffffff");  */
 		grid.add(learningUnits, 2, 4);
-		//projectLabel.setText("Models");
-		//newProject.setText("Create New Model");
 		}
 		
 		return grid;
