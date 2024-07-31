@@ -2,6 +2,7 @@ package tool.helper.user_properties;
 
 import java.io.File;
 import java.util.Optional;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -23,6 +25,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
 
@@ -43,13 +46,32 @@ public class PropertyManagerStage extends Stage {
 		root.getChildren().add(tabPane);
 		Tab directoriesTab = new Tab("Directories");
 		Tab userInterfaceTab = new Tab("UserInterface");
-		// debugTab not running currently
-		// Tab debugTab = new Tab("Debugging");
-		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab /* ,debugTab */);
+		Tab didacticMLTab = createDidacticMlTab();
+		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
 		buildDirectoriesTab(directoriesTab);
 		buildUserInterfaceTab(userInterfaceTab);
-		// buildDebugGrid(debugTab);
 	}
+
+	private Tab createDidacticMlTab() {
+		Tab tab = new Tab();
+		tab.setText("DidacticMl");
+		Button button = new Button("Reset user statistics");
+		button.setOnAction(this::showDeleteStatsDialog);
+		tab.setContent(button);
+		return tab;
+	}
+	
+	 private void showDeleteStatsDialog(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle("Delete statistics");
+	        alert.setHeaderText(null);
+	        alert.setContentText("If you confirm the deletion all information about finished Learning Units will be deleted.");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	UserDataProcessor.resetTestStatistics();
+	        }	        
+	    }
 
 	private void buildDirectoriesTab(Tab directoriesTab) {
 		String savedModlesPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
@@ -174,38 +196,4 @@ public class PropertyManagerStage extends Stage {
 		grid.setVgap(5);
 		grid.setHgap(5);
 	}
-	/*
-	 * debugTab not running currently
-	 * 
-	 * private void buildDebugGrid(Tab debugTab) { Button btnCancelDebug = new
-	 * Button("Cancel"); btnCancelDebug.setOnAction(this::onCancelButtonClicked);
-	 * 
-	 * GridPane debugGrid = new GridPane(); debugGrid.setPadding(new
-	 * Insets(5,5,5,5)); debugGrid.setVgap(5); debugGrid.setHgap(5); Label debugInfo
-	 * = new Label("Degugging Options");
-	 * debugInfo.setStyle("-fx-font-weight: bold"); CheckBox
-	 * monitorClientCommunication = new CheckBox("MONITOR_CLIENT_COMMUNICATION");
-	 * monitorClientCommunication.setSelected(false); CheckBox monitorDaemonFiring =
-	 * new CheckBox("MONITOR_DAEMON_FIRING");
-	 * monitorDaemonFiring.setSelected(false); CheckBox monitorIgnoreSaveImage = new
-	 * CheckBox("IGNORE_SAVE_IMAGE"); monitorIgnoreSaveImage.setSelected(false);
-	 * CheckBox LogXmfOutput = new CheckBox("LOG_XMF_OUTPUT");
-	 * LogXmfOutput.setSelected(false); Label monitorCalls = new
-	 * Label("Monitor calls"); Button btnMonitorCalls = new Button("Open");
-	 * btnMonitorCalls.setOnAction(actionEvent->MenuClient.openCallMonitor()); Label
-	 * perfomanceMonitor = new Label("Performance monitor"); Button
-	 * btnPerfomanceMonitor = new Button("Open");
-	 * btnPerfomanceMonitor.setOnAction(actionEvent->MenuClient.
-	 * openPerformanceMonitor());
-	 * 
-	 * debugGrid.add(debugInfo, 0,0); debugGrid.add(monitorClientCommunication,0,
-	 * 1); debugGrid.add(monitorDaemonFiring, 0,2);
-	 * debugGrid.add(monitorIgnoreSaveImage, 0,3); debugGrid.add(LogXmfOutput, 0,4);
-	 * debugGrid.add(monitorCalls, 0,5); debugGrid.add(btnMonitorCalls, 1,5);
-	 * debugGrid.add(perfomanceMonitor, 0,6); debugGrid.add(btnPerfomanceMonitor,
-	 * 1,6); debugGrid.add(btnCancelDebug, 1, 7);
-	 * GridPane.setHalignment(btnCancelDebug, HPos.LEFT);
-	 * 
-	 * debugTab.setContent(debugGrid); debugTab.setDisable(true); }
-	 */
 }

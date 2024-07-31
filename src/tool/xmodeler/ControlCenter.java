@@ -58,8 +58,9 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
-import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 
 public class ControlCenter extends Stage {
 	
