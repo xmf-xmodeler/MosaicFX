@@ -123,7 +123,7 @@ public class LearningUnitTabPane extends TabPane {
 
 	private WebView createStadardWebView() {
 		WebView webView = new WebView();
-		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getDidacticCssPath());
+		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getAbsolutDidacticCssPath());
 		webView.setContextMenuEnabled(false);
 		return webView;
 	}

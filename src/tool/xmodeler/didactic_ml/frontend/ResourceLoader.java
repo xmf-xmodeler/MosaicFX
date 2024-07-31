@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
@@ -85,10 +87,24 @@ public class ResourceLoader {
 	/**
 	 * @return absolute path of css that should be used for all didactic related content.
 	 */
-	public static String getDidacticCssPath() {
+	public static String getAbsolutDidacticCssPath() {
 		String customCssPath = "resources/didacticMlm/didactic.css";
 		File customCssFile = new File(customCssPath);
 		return customCssFile.getAbsolutePath();
+	}
+
+	/**
+	 * @return ulr of css that should be used for all didactic related content.
+	 */
+	public static URL getDidacticCssUrl() {
+		File customCssFile = new File(getAbsolutDidacticCssPath());
+		URL fileUrl = null;
+		try {
+			fileUrl = customCssFile.toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		return fileUrl;
 	}
 
 	/**

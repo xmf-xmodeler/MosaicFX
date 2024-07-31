@@ -46,7 +46,7 @@ public class TaskDescriptionViewer extends Stage {
 		buttonBar.getItems().add(checkButton);
 		Scene scene = new Scene(root, 800, 600);
 		setScene(scene);
-		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getDidacticCssPath());
+		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getAbsolutDidacticCssPath());
 	}
 
 	/**
