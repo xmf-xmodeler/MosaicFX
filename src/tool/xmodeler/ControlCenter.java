@@ -118,7 +118,6 @@ public class ControlCenter extends Stage {
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
 					System.err.println("Use to test functions");
-					UserDataProcessor.appendSelfAssessmentTest(SelfAssessmentTest.TOOL_INTRO);
 				}		
 			}
 		});
