@@ -54,7 +54,11 @@ public class DefaultContextMenu extends ContextMenu {
 	private Menu buildAddMenu(DiagramCanvas view, FmmlxDiagram diagram, DiagramActions actions) {
 		Menu addMenu = new Menu("Add");
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
-		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
+		if (diagram.getRootPane().isInToolIntroductionMode()) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
+				JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+			}			
+		} else {
 			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
 		}
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
@@ -64,8 +68,12 @@ public class DefaultContextMenu extends ContextMenu {
 	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
 			Menu enumerationMenu, MenuItem addAssocType) {
 		getItems().addAll(addMenu, searchMenu, unhideItem);
-		if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
-			getItems().addAll(enumerationMenu);			
+		if (diagram.getRootPane().isInToolIntroductionMode()) {
+			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
+				getItems().addAll(enumerationMenu);			
+			}			
+		} else {
+			getItems().addAll(enumerationMenu);
 		}
 		if (XModeler.isAlphaMode()) {
 			getItems().addAll(new SeparatorMenuItem(), addAssocType);
