@@ -98,8 +98,26 @@ public class TaskDescriptionViewer extends Stage {
 		if (checkValid) {
 			setButtonColor("green");
 		} else {
+			unhideSuccessConditionText();
 			setButtonColor("red");
 		}
+	}
+
+	/**
+	 * On the first call this function will search the html for elements that have the class .successCondition.
+	 * For these elements then the display attribute is set to block instead of none. This makes them visible. If you call this function more then one time 
+	 * it has no influence on the text
+	 */
+	private void unhideSuccessConditionText() {
+		webView.getEngine().executeScript(""
+				+ "var elements = document.getElementsByClassName('successCondition');"
+		        + "for (var i = 0; i < elements.length; i++) {"
+		        + "    var element = elements[i];"
+		        + "    var computedStyle = window.getComputedStyle(element);"
+		        + "    if (computedStyle.display === 'none') {"
+		        + "        element.style.display = 'block';"
+		        + "    }"
+		        + "}" );
 	}
 
 	private void setButtonColor(String buttonColor) {

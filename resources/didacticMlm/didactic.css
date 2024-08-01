@@ -37,6 +37,12 @@ p {
     font-size: 12px;
 }
 
+.successCondition {
+	font-size: 12px;
+	background-color: #dfe4f2;
+    display: none;
+}
+
 .didactic-button {
     -fx-background-color: #203864;
     -fx-border-color: #dfe4f2;
