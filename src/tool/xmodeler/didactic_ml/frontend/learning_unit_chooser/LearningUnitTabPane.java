@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
@@ -36,13 +37,14 @@ public class LearningUnitTabPane extends TabPane {
 		this.learningUnitChooser = learningUnitChooser;
 		getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
-		Tab theoreticalBackgroundTab = new Tab("Theoretical Background", theoreticalBackgroundView);
+		Tab theoreticalBackgroundTab = new Tab("Theoretical Background", createTheoreticalBackgroundPane());
 		Tab assessmentTab = new Tab("Self-Assessment", createAssessmentContent());
 		getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, assessmentTab);
 	}
 
-	private VBox createAssessmentContent() {
-		VBox vbox = new VBox();
+	private Node createTheoreticalBackgroundPane() {
+		VBox box = new VBox();
+		
 		BorderPane borderPane = new BorderPane();
 		Button startExampleButton = new Button();
 		startExampleButton.setOnAction(this::openExampleDiagram);
@@ -50,18 +52,25 @@ public class LearningUnitTabPane extends TabPane {
 		startExampleButton.getStyleClass().add("didactic-button");
 		borderPane.setCenter(startExampleButton);
 		borderPane.setPrefHeight(150);
+		
+		box.getChildren().addAll(theoreticalBackgroundView, new Separator(), borderPane); 
+		return box;
+	}
 
-		BorderPane borderPane2 = new BorderPane();
+	private VBox createAssessmentContent() {
+		VBox vbox = new VBox();
+		BorderPane buttonPane = new BorderPane();
 		Button startSelfAssessmentButton = new Button();
 		startSelfAssessmentButton.setText("Start Self-Assessment Test");
 		startSelfAssessmentButton.disableProperty()
 				.bind(createDisableBinding(assessmentTableView.getSelectionModel().selectedItemProperty()));
 		startSelfAssessmentButton.getStyleClass().add("didactic-button");
 		startSelfAssessmentButton.setOnAction(this::startAssessment);
-		borderPane2.setCenter(startSelfAssessmentButton);
-		borderPane2.setMinHeight(50);
+		buttonPane.setCenter(startSelfAssessmentButton);
+		buttonPane.setMinHeight(50);
 
-		vbox.getChildren().addAll(borderPane, new Separator(), assessmentTableView, borderPane2);
+		assessmentTableView.setMaxHeight(200);
+		vbox.getChildren().addAll(assessmentTableView, buttonPane);
 		return vbox;
 	}
 
