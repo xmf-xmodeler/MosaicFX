@@ -102,6 +102,7 @@ public class LearningUnitTabPane extends TabPane {
 		setOnCloseOfExampleDiagram(diagramDef);
 	}
 
+	//TODO: does only work once due to backend problems. Deleted diagram is referenced so the listener is attached to the wrong FmmlxDiagramInstance.
 	private void setOnCloseOfExampleDiagram(String[] diagramDef) {
 		Runnable myRunnable = new Runnable() { // needs to be runable becasue if it runs in the same thread it will not find the opened diagram
 			@Override

@@ -2,7 +2,7 @@
 <XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="ProfFrank">
     <Imports/>
     <Model name="Root::ExampleDiagram">
-        <addMetaClass abstract="false" level="1" maxLevel="1" name="OneClass" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="TwoClass" package="Root::ExampleDiagram" singleton="false"/>
     </Model>
     <Diagrams>
         <Diagram name="example" umlMode="true">
