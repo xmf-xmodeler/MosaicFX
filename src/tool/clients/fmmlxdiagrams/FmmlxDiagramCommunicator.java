@@ -2827,4 +2827,54 @@ public class FmmlxDiagramCommunicator {
 			new Value(idAssoc1)};
 		sendMessage("addAssociationDependency", message);
 	}
+	
+	/**
+	 * Exception used in searchDiagrams. If no diagram can be found for a search string this exception shows used values.
+	 */
+	public class NoDiagramFound extends Exception {
+	    public NoDiagramFound(String projectName, String diagramName, int maxIteration) {
+	        super(String.format("Attempt to find model failed. The top %d models have been checked. The search value was \"%s::%s\".", maxIteration, projectName, diagramName));
+	    }
+
+	    public NoDiagramFound(String message) {
+	        super(message);
+	    }
+	}
+	
+	/**
+	 * Returns diagram for specific name. !! Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id use 0 for first call. param necessary for recursion
+	 * @return FmmlxDiagram for projectName and DiagramName combination
+	 * @throws NoDiagramFound after maxNumber of iterations and no found diagram this exception is thrown
+	 */
+	public FmmlxDiagram searchDiagram(String projectName, String diagramName, int id) throws NoDiagramFound {
+		int maxIterations = 25;
+		FmmlxDiagram diagram = getMatchingFmmlxDiagram(projectName, diagramName, id);
+		if (diagram != null) {
+			return diagram;
+		}
+		id ++;
+		if (id <= maxIterations) {
+			return searchDiagram(projectName, diagramName, id);
+		}
+		throw new NoDiagramFound(projectName, diagramName, maxIterations);
+	}
+	
+	
+	/**
+	 * Searches backend for a diagram for a specific diagram id. Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id
+	 * @return null if diagram not matches specification and diagram if its matches
+	 */
+	public FmmlxDiagram getMatchingFmmlxDiagram(String projectName, String diagramName, int id) {
+		FmmlxDiagram diagram = getDiagram(id);
+		if (diagram != null && projectName.equals(diagram.getProjectName()) && diagramName.equals(diagram.getDiagramName())) {
+			return diagram;
+		}
+		return null;
+	}
 }
