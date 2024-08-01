@@ -20,8 +20,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator.NoDiagramFound;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLParser;
+import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
@@ -32,12 +36,12 @@ public class LearningUnitTabPane extends TabPane {
 	private WebView learningGoalView = createStadardWebView();
 	private WebView theoreticalBackgroundView = createStadardWebView();
 	private TableView<SelfAssessmentTest> assessmentTableView = createAssessmentTableView();
+	private Tab theoreticalBackgroundTab = new Tab("Theoretical Background", createTheoreticalBackgroundPane());
 
 	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
 		this.learningUnitChooser = learningUnitChooser;
 		getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
-		Tab theoreticalBackgroundTab = new Tab("Theoretical Background", createTheoreticalBackgroundPane());
 		Tab assessmentTab = new Tab("Self-Assessment", createAssessmentContent());
 		getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, assessmentTab);
 	}
@@ -90,10 +94,55 @@ public class LearningUnitTabPane extends TabPane {
 	}
 
 	private void openExampleDiagram(ActionEvent event) {
+		loadModel();
+		String[] diagramDef = { "ExampleDiagram", "example" }; //make sure that the exported diagrams have this naming convention
+		FmmlxDiagramCommunicator.getCommunicator().openDiagram(diagramDef[0], diagramDef[1]);
+		learningUnitChooser.close();
+		ControlCenterClient.getClient().getControlCenter().close();
+		setOnCloseOfExampleDiagram(diagramDef);
+	}
+
+	private void setOnCloseOfExampleDiagram(String[] diagramDef) {
+		Runnable myRunnable = new Runnable() { // needs to be runable becasue if it runs in the same thread it will not find the opened diagram
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000); // wait to avoid to get a null response to the search function because diagram is not opened already
+				} catch (InterruptedException e) {
+					throw new RuntimeException();
+				}
+				FmmlxDiagram diagram = null;
+				try {
+					diagram = FmmlxDiagramCommunicator.getCommunicator().searchDiagram(diagramDef[0], diagramDef[1], 0);
+					Stage s = diagram.getStage();
+					s.setOnCloseRequest((e) -> {
+						LearningUnitChooser luChooser = new LearningUnitChooser();
+						luChooser.getLearningUnitTable().getSelectionModel().select(learningUnitChooser.getLearningUnitTable().getSelectionModel().getSelectedItem());
+						luChooser.getLearningUnitTabPane().setTheoreticalTabFocused();
+						luChooser.show();
+						ControlCenterClient.getClient().removeProject(diagramDef[0]);
+					});
+				} catch (NoDiagramFound e) {
+					System.err.println("Caught NoDiagramFound: " + e.getMessage());
+				}
+			}
+		};
+		Thread thread = new Thread(myRunnable);
+		thread.start();
+	}
+
+	/**
+	 * loads example diagram to backend
+	 */
+	private void loadModel() {
 		File inputFile = ResourceLoader.getExampleDiagramFile(learningUnitChooser.getSelectedLearningUnit());
 		XMLParser parser = new XMLParser(inputFile);
 		parser.parseXMLDocument();
-		FmmlxDiagramCommunicator.getCommunicator().openDiagram("ExampleDiagram", "example");
+		try {
+			Thread.sleep(1000); //wait to avoid to open the diagram before it is loaded to the backend
+		} catch (InterruptedException e) {
+			throw new RuntimeException();
+		}
 	}
 
 	private TableView<SelfAssessmentTest> createAssessmentTableView() {
@@ -154,5 +203,9 @@ public class LearningUnitTabPane extends TabPane {
 	private void setLearningGoals(LearningUnit lu) {
 		String content = ResourceLoader.getLearningGoals(lu);
 		learningGoalView.getEngine().loadContent(content);
+	}
+	
+	private void setTheoreticalTabFocused() {
+		getSelectionModel().select(theoreticalBackgroundTab);	
 	}
 }
