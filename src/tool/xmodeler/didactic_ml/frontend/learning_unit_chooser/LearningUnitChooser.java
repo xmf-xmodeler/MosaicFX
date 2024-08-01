@@ -13,24 +13,26 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
+import tool.xmodeler.ControlCenterClient;
 
 public class LearningUnitChooser extends Dialog<Void> {
 
 	private TableView<LearningUnit> learningUnitTable = createTableView();
+	private LearningUnitTabPane learningUnitTabPane = new LearningUnitTabPane(this);
 
 	public LearningUnitChooser() {
+		ControlCenterClient.getClient().getControlCenter().close();
 		Stage stage = (Stage) getDialogPane().getScene().getWindow();
 		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
+		stage.setOnCloseRequest((e) -> ControlCenterClient.getClient().getControlCenter().show());
 		setTitle("Learning Unit Selection");
 		getDialogPane().setPrefWidth(1200);
 		getDialogPane().setPrefHeight(600);
 
 		learningUnitTable.setMinWidth(518);
-		LearningUnitTabPane learningUnitTabPane = new LearningUnitTabPane(this);
 		learningUnitTabPane.disableProperty().bind(createDisableBinding(learningUnitTable.getSelectionModel().selectedItemProperty()));
 		learningUnitTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			learningUnitTabPane.updateView();
@@ -43,6 +45,13 @@ public class LearningUnitChooser extends Dialog<Void> {
 		getDialogPane().setContent(hbox);
 		getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
 		getDialogPane().getStylesheets().add(getClass().getResource("learnUnitChooser.css").toExternalForm());
+		
+		 setResultConverter(dialogButton -> {
+	            if (dialogButton == ButtonType.CANCEL) {
+	            	ControlCenterClient.getClient().getControlCenter().show();
+	            }
+	            return null;
+	        });
 	}
 
 	public LearningUnit getSelectedLearningUnit() {
@@ -130,5 +139,13 @@ public class LearningUnitChooser extends Dialog<Void> {
 			items.add(unit);
 		}
 		return items;
+	}
+
+	public TableView<LearningUnit> getLearningUnitTable() {
+		return learningUnitTable;
+	}
+
+	public LearningUnitTabPane getLearningUnitTabPane() {
+		return learningUnitTabPane;
 	}
 }
