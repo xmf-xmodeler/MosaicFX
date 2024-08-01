@@ -39,12 +39,14 @@ public class TaskDescriptionViewer extends Stage {
 		getProperties().put("stageID", "TaskViewerStage");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		
+		
 		BorderPane root = new BorderPane();
 		webView.setContextMenuEnabled(false);
 		root.setCenter(webView);
 		root.setBottom(buttonBar);
 		buttonBar.getItems().add(checkButton);
 		Scene scene = new Scene(root, 800, 600);
+		scene.getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		setScene(scene);
 		webView.getEngine().setUserStyleSheetLocation("file:" + ResourceLoader.getAbsolutDidacticCssPath());
 	}
@@ -135,6 +137,7 @@ public class TaskDescriptionViewer extends Stage {
 	public void insertFinishButton() {
 		Platform.runLater(() -> {
 			checkButton.setText("Finish");
+			checkButton.getStyleClass().add("didactic-button");
 			checkButton.setOnAction((a) -> {
 				closeToolIntoDiagramStage();
 				this.close();
