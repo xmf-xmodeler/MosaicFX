@@ -72,7 +72,11 @@ public class DiagramViewHeadToolBar extends VBox {
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);
 		// buildRefactorMenu(refactorMenu);
-		buildAutoMlmMenu(autoMlmMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			buildAutoMlmMenu(autoMlmMenu);
+
+		}
 		buildHelpMenu(helpMenu);
 
 		toolBar = buildToolBar();

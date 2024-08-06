@@ -376,7 +376,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}
 		else 
 		{
-			operationMenu.getItems().addAll(addItem, removeItem, changeOwnerItem,
+			operationMenu.getItems().addAll(addItem, removeItem,
 					changeBodyItem);
 		}
 
