@@ -25,6 +25,7 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.dialogs.EditorElements;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
@@ -400,11 +401,16 @@ public class DiagramViewHeadToolBar extends VBox {
 
 	private void buildHelpMenu(Menu helpMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcutlist", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Exemplary Illustration", e -> showImageDialog());
+		
 	}
 
 	private void showShortcutDialog() {
 		new ShortcutDialog().show();
 	}
+	private void showImageDialog() {
+        new EditorElements().show();
+    }
 
 	public FmmlxDiagram getFmmlxDiagram() {
 		return fmmlxDiagram;
