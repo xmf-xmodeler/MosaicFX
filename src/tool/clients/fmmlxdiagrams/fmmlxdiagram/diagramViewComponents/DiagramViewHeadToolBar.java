@@ -66,7 +66,16 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu refactorMenu = new Menu("Refactor");
 		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+
+		}
+		else
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
+
+		}
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
 
 		buildModelMenu(modelMenu);
@@ -258,11 +267,24 @@ public class DiagramViewHeadToolBar extends VBox {
 		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS),
 				itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));
 
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			
+		
 		viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
 				itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
 				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu,
 				itemMap.get(DiagramDisplayProperty.METACLASSNAME), itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
 				itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+		}
+		else {
+			viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
+					itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
+					itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu, 
+					itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
+					itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+			
+		}
 
 		viewMenu.getItems().add(new SeparatorMenuItem());
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", e -> {
@@ -404,7 +426,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildHelpMenu(Menu helpMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcutlist", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Exemplary Illustration", e -> showImageDialog());
 		
 	}

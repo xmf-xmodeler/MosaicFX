@@ -21,7 +21,7 @@ public class EditorElements {
 
     public EditorElements() {
         stage = new Stage();
-        stage.setTitle("Exemplary Illustration");
+        stage.setTitle("Editor elements");
 
         ImageView imageView = buildContent();
         StackPane root = new StackPane(imageView);
