@@ -58,7 +58,7 @@ public abstract class DiagramPreparationActions {
 	static void addAssociationOnLevelNull(FmmlxDiagram diagram, String sourceName, String targetName, String assocName, Multiplicity targetToSourceMult, Multiplicity sourceToTargetMult) {
 		diagram.getComm().addAssociation(diagram.getID(), sourceName, targetName,
 				sourceName.toLowerCase(), targetName.toLowerCase(), assocName,
-				diagram.getDefaultAssociation().path, targetToSourceMult, sourceToTargetMult, 0, 0, 0, 0, false, true,
+				diagram.getDefaultAssociation().path, targetToSourceMult, sourceToTargetMult, 0, 0, 0, 0, true, true,
 				false, false, null, null, null, null);
 	}
 	

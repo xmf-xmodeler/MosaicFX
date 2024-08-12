@@ -33,13 +33,13 @@ public class ToolIntroductionPreparation extends DiagramPreparationActions {
 				"Root::ToolIntroductionABC::Ticket",
 				"mayWatchMovie",
 				0,
-				"self.price <> 10.6",
+				"self.customer.getAge() >= self.movieshowing.movieshown_in.requiredAgeToWatch()",
 				"\"Customer not allowed to watch the movie.\"");
 		
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {
-		String funBody = "@Operation requiredAgeToWatch1	[monitor=true,delToClassAllowed=false]():XCore::Integer\r\n"
+		String funBody = "@Operation requiredAgeToWatch	[monitor=true,delToClassAllowed=false]():XCore::Integer\r\n"
 				+ "  if rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"PG_13\")\r\n"
 				+ "  then 13\r\n"
 				+ "  elseif rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(\"R\")\r\n"
@@ -120,8 +120,8 @@ public class ToolIntroductionPreparation extends DiagramPreparationActions {
 	}
 
 	private static void associateMovieShowingAndTicket(FmmlxDiagram diagram, String ticketClassName) {
-			Multiplicity targetToSourceMult = new Multiplicity(1, 1, true, false, false);
-			Multiplicity sourceToTargetMult = new Multiplicity(0, 0, false, false, false);
+			Multiplicity targetToSourceMult = new Multiplicity(0, 0, false, false, false);
+			Multiplicity sourceToTargetMult = new Multiplicity(1, 1, true, false, false);
 			addAssociationOnLevelNull(diagram, ticketClassName, "MovieShowing", "valid_for", targetToSourceMult, sourceToTargetMult); 
 	}
 
