@@ -427,7 +427,7 @@ public class DiagramViewHeadToolBar extends VBox {
 
 	private void buildHelpMenu(Menu helpMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
-		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elments", e -> showImageDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elements", e -> showImageDialog());
 		
 	}
 
