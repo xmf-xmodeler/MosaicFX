@@ -9,7 +9,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 /**
  * 
  * @author Nicolas Engel
@@ -39,20 +44,14 @@ public class EditorElements {
     }
 
     private ImageView buildContent() {
-        String imagePath = "/png/Editor Elements.png";
-        InputStream imageStream = getClass().getResourceAsStream(imagePath);
-
-        if (imageStream == null) {
-            throw new IllegalArgumentException("Image resource not found: " + imagePath);
-        }
-
-        Image image = new Image(imageStream);
-
-        if (image.isError()) {
-            throw new IllegalArgumentException("Image could not be loaded: " + imagePath);
-        }
-
+        String imagePath = "resources/png/Editor Elements.png";
+        File imageFile = new File(imagePath);
+        
+        Image image = new Image(imageFile.toURI().toString());
+        
         ImageView imageView = new ImageView(image);
+        
+        
 
         // Get the screen bounds
         Screen screen = Screen.getPrimary();

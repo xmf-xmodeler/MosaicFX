@@ -364,7 +364,7 @@ public class ObjectContextMenu extends ContextMenu {
 			showBodyItem.setDisable(true);
 		}*/
 		
-		MenuItem changeBodyItem = new MenuItem("edit Operation");
+		MenuItem changeBodyItem = new MenuItem("Edit Operation");
 		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object, activeOperation));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
@@ -421,11 +421,7 @@ public class ObjectContextMenu extends ContextMenu {
 			addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
 			addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		}
-		if (!diagram.isUMLMode())
-		{
-			addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
-
-		}
+		addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
 //		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;
 	}
