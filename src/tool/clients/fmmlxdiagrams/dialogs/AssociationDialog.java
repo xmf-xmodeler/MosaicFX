@@ -185,6 +185,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceSetterField.setEditable(false);
 		targetVisibleFromSourceBox.setSelected(true);
 		targetVisibleFromSourceBox.setDisable(true);
+		sourceVisibleFromTargetBox.setSelected(true);
 		sourceVisibleFromTargetBox.selectedProperty().addListener((x0, x1, sourceVisible) -> {
 			sourceGetterField.setEditable(sourceVisible);
 			sourceSetterField.setEditable(sourceVisible);
