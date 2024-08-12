@@ -25,6 +25,7 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.dialogs.EditorElements;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
@@ -65,13 +66,26 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu refactorMenu = new Menu("Refactor");
 		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+
+		}
+		else
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
+
+		}
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
 
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);
 		// buildRefactorMenu(refactorMenu);
-		buildAutoMlmMenu(autoMlmMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			buildAutoMlmMenu(autoMlmMenu);
+
+		}
 		buildHelpMenu(helpMenu);
 
 		toolBar = buildToolBar();
@@ -253,11 +267,24 @@ public class DiagramViewHeadToolBar extends VBox {
 		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS),
 				itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));
 
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			
+		
 		viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
 				itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
 				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu,
 				itemMap.get(DiagramDisplayProperty.METACLASSNAME), itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
 				itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+		}
+		else {
+			viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
+					itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
+					itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu, 
+					itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
+					itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+			
+		}
 
 		viewMenu.getItems().add(new SeparatorMenuItem());
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", e -> {
@@ -399,12 +426,17 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildHelpMenu(Menu helpMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcutlist", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elements", e -> showImageDialog());
+		
 	}
 
 	private void showShortcutDialog() {
 		new ShortcutDialog().show();
 	}
+	private void showImageDialog() {
+        new EditorElements().show();
+    }
 
 	public FmmlxDiagram getFmmlxDiagram() {
 		return fmmlxDiagram;

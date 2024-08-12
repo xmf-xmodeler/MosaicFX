@@ -14,6 +14,8 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
 import java.util.Optional;
@@ -73,11 +75,14 @@ public class ObjectContextMenu extends ContextMenu {
 				classify.setOnAction(e -> actions.classify(objs));
 			}
 		}
-					
-		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
-		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
-		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-		getItems().add(changeOfItem);
+		if (!diagram.isUMLMode())
+		{
+			MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
+			changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
+			changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+			getItems().add(changeOfItem);
+		}
+		
 		
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
@@ -103,6 +108,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu constraintMenu = createConstraintSubMenu();
 		MenuItem slotMenu = new MenuItem("Change Slot Value");
 		slotMenu.setOnAction(e -> diagram.getActions().changeSlotValue(object, null));
+		
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu delegationMenu = createDelegationSubMenu();
 		
@@ -137,14 +143,17 @@ public class ObjectContextMenu extends ContextMenu {
 					attributeMenu, 
 					associationMenu, 
 					operationMenu, 
-					constraintMenu,
-					slotMenu, 
-					associationInstanceMenu, 
+					constraintMenu, 
+					 
 					editConcreteSyntaxItem); }
 		else {
 			getItems().addAll(
-					slotMenu, 
-					associationInstanceMenu);		
+					slotMenu);		
+		}
+		if (!diagram.isUMLMode())
+		{
+			getItems().addAll(associationInstanceMenu,
+								slotMenu);
 		}
 		getItems().addAll(delegationMenu);
 		addRunMenu();
@@ -213,6 +222,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, null, object.getOwnAttributes()));
 		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -232,7 +242,7 @@ public class ObjectContextMenu extends ContextMenu {
 				new SeparatorMenuItem(),
 				genGetterItem, genSetterItem);}
 		else {
-			attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
+			attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeTypeItem,
 					new SeparatorMenuItem(),
 					genGetterItem, genSetterItem);
 		}
@@ -291,23 +301,22 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setDisable(true);
 		//changeNameItem.setOnAction();
-		constraintMenu.getItems().add(changeNameItem);
+		
 		
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setDisable(true);
-		constraintMenu.getItems().add(changeLevelItem);
+		
+		
 		
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setDisable(true);
-		constraintMenu.getItems().add(changeBodyItem);
+		
 		
 		MenuItem changeReasonItem = new MenuItem("Change reason");
 		changeReasonItem.setDisable(true);
-		constraintMenu.getItems().add(changeReasonItem);
 		
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setDisable(true);
-		constraintMenu.getItems().add(changeOwnerItem);
 		
 		constraintMenu.getItems().add(new SeparatorMenuItem());
 		
@@ -315,7 +324,15 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Constraint));
 		constraintMenu.getItems().add(removeItem);
 		
-		
+		if (!diagram.isUMLMode())
+		{
+			constraintMenu.getItems().add(changeNameItem);
+			constraintMenu.getItems().add(changeLevelItem);
+			constraintMenu.getItems().add(changeBodyItem);
+			constraintMenu.getItems().add(changeReasonItem);
+			constraintMenu.getItems().add(changeOwnerItem);
+
+		}
 		
 		return constraintMenu;
 	}
@@ -347,13 +364,21 @@ public class ObjectContextMenu extends ContextMenu {
 			showBodyItem.setDisable(true);
 		}*/
 		
-		MenuItem changeBodyItem = new MenuItem("Change body");
+		MenuItem changeBodyItem = new MenuItem("Edit Operation");
 		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object, activeOperation));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 
-		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeBodyItem, changeLevelItem);
+		if (!diagram.isUMLMode())
+		{
+			operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
+					changeBodyItem, changeLevelItem);
+		}
+		else 
+		{
+			operationMenu.getItems().addAll(addItem, removeItem,
+					changeBodyItem);
+		}
 
 		return operationMenu;
 	}
