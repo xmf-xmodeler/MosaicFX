@@ -28,10 +28,10 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		this.diagram = diagram;
 
 		DialogPane dialog = getDialogPane();
-		dialog.setHeaderText("New MetaClass");
-		
-		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		if(diagram.isUMLMode()) {
 			dialog.setHeaderText("New Class");
+		} else {
+		dialog.setHeaderText("New MetaClass");
 		}
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

@@ -26,7 +26,7 @@ public class EditorElements {
 
     public EditorElements() {
         stage = new Stage();
-        stage.setTitle("Editor elements");
+        stage.setTitle("Overview of Modeling Editor Elements");
 
         ImageView imageView = buildContent();
         StackPane root = new StackPane(imageView);
@@ -37,14 +37,14 @@ public class EditorElements {
         // Set the size of the dialog to fit within the screen bounds
         Screen screen = Screen.getPrimary();
         Rectangle2D screenBounds = screen.getVisualBounds();
-        stage.setWidth(screenBounds.getWidth());
-        stage.setHeight(screenBounds.getHeight());
+        stage.setWidth(screenBounds.getWidth()*0.8);
+        stage.setHeight(screenBounds.getHeight()*0.8);
         stage.setX(screenBounds.getMinX());
         stage.setY(screenBounds.getMinY());
     }
 
     private ImageView buildContent() {
-        String imagePath = "resources/png/Editor Elements.png";
+        String imagePath = "resources/png/editor_overview_pm.png";
         File imageFile = new File(imagePath);
         
         Image image = new Image(imageFile.toURI().toString());
@@ -59,8 +59,8 @@ public class EditorElements {
 
         // Configure the ImageView to fit within the screen bounds while preserving the aspect ratio
         imageView.setPreserveRatio(true);
-        imageView.setFitWidth(screenBounds.getWidth());
-        imageView.setFitHeight(screenBounds.getHeight());
+        //imageView.setFitWidth(screenBounds.getWidth());
+        imageView.setFitHeight(screenBounds.getHeight()*0.6);
 
         return imageView;
     }

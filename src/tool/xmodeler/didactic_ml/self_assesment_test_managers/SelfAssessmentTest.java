@@ -12,7 +12,7 @@ import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
  */
 public enum SelfAssessmentTest {
 	
-	TOOL_INTRO("Tool Introduction", LearningUnit.TOOL_INTRO, 1),
+	TOOL_INTRO("UML++ Introduction", LearningUnit.TOOL_INTRO, 1),
 	CLASSIFICATION_INSTANTIATION("Classification and Instantiation 1", LearningUnit.CLASSIFICATION_INSTANTIATION, 1),
 	CLASSIFICATION_INSTANTIATION1("Classification and Instantiation 2", LearningUnit.CLASSIFICATION_INSTANTIATION, 2),
 	CLASSIFICATION_INSTANTIATION2("Classification and Instantiation 3", LearningUnit.CLASSIFICATION_INSTANTIATION, 3);

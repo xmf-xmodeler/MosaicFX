@@ -7,17 +7,17 @@ import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest
 
 public enum LearningUnit {
 	
-	TOOL_INTRO("Tool introduction", "ToolIntro", 0, true),
-	CLASSIFICATION_INSTANTIATION("Classification and instantiation", "ClassificationInstantiation", 1, true),
-	OBJECT_REFERENCES("References between objects: associations and links", "", 2, false),
-	ATTRIBUTE_MULTIPLICITY("Multiplicity of attributes","", 3, false),
-	DEFICIENT_CLASSES("Deficient classes","", 4, false),
-	ATTRIBUTE_TYPES("Types for attributes: primitive types, domain-specific types, and enumerations","", 5, false),
-	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and abstract classes","", 6, false),
-	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of specialization and delegation","", 7, false),
-	CIRCLES("Model circles","", 8, false),
-	DERIVED_CONCEPTS("Derivable attributes and operations","", 9, false),
-	CONSTRAINTS("Custom constraints using an OCL-based language","", 10, false);
+	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true),
+	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "ClassificationInstantiation", 1, true),
+	OBJECT_REFERENCES("References between Objects: Associations and Links", "", 2, false),
+	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","", 3, false),
+	DEFICIENT_CLASSES("Deficient Classes","", 4, false),
+	ATTRIBUTE_TYPES("Types for Attributes: Default types, Domain-specific types, and Enumerations","", 5, false),
+	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and Abstract Classes","", 6, false),
+	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation","", 7, false),
+	CIRCLES("Model Circles","", 8, false),
+	DERIVED_CONCEPTS("Derivable Attributes and Operations","", 9, false),
+	CONSTRAINTS("Custom Constraints using an OCL-based Language","", 10, false);
 	
 	private final String prettyName;
 	private final int id;

@@ -52,21 +52,18 @@ public class ToolIntroductionConditions extends SuccessCondition {
 		boolean assocCardinalitRight = assoc.getMultiplicityStartToEnd().checkForEquality(0, 2147483647);
 	
 		String objectName = "ticket2";
-		FmmlxObject obj = diagram.getObjectByName(objectName);
 		boolean priceNotNull = !DiagramConditionChecks.hasMatchingSlotValue(diagram, objectName, "price", "0.0");
-		boolean priceNotTenSixty = !DiagramConditionChecks.hasMatchingSlotValue(diagram, objectName, "price", "10.60");
 		
 		return 
 				assocCardinalitRight && 
 					priceNotNull &&
-							priceNotTenSixty &&
 								DiagramConditionChecks.containsLink(diagram, "customer1", "ticket2", "buys");
 	}
 
 	private boolean isRatingEnumAdded() {
 		//precond attribute is added
 		FmmlxObject obj = diagram.getObjectByName(MOVIE_CLASS_NAME);
-		boolean ratingAddedToMovie = DiagramConditionChecks.hasAttributeOfType(obj, "title", "String");
+		boolean ratingAddedToMovie = DiagramConditionChecks.hasAttributeOfType(obj, "rating", "String");
 		
 		FmmlxEnum enumInst = diagram.getEnum("RatingEnum");
 		if (enumInst == null) {

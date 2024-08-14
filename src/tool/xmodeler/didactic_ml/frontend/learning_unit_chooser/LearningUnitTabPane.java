@@ -41,7 +41,7 @@ public class LearningUnitTabPane extends TabPane {
 	public LearningUnitTabPane(LearningUnitChooser learningUnitChooser) {
 		this.learningUnitChooser = learningUnitChooser;
 		getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
-		Tab learningGoalsTab = new Tab("Learning Goals", learningGoalView);
+		Tab learningGoalsTab = new Tab("Learning Objectives", learningGoalView);
 		Tab assessmentTab = new Tab("Self-Assessment", createAssessmentContent());
 		getTabs().addAll(learningGoalsTab, theoreticalBackgroundTab, assessmentTab);
 	}
@@ -52,7 +52,7 @@ public class LearningUnitTabPane extends TabPane {
 		BorderPane borderPane = new BorderPane();
 		Button startExampleButton = new Button();
 		startExampleButton.setOnAction(this::openExampleDiagram);
-		startExampleButton.setText("Show examplary Diagram");
+		startExampleButton.setText("Open Example Model");
 		startExampleButton.getStyleClass().add("didactic-button");
 		borderPane.setCenter(startExampleButton);
 		borderPane.setPrefHeight(150);
@@ -153,11 +153,16 @@ public class LearningUnitTabPane extends TabPane {
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("orderNumber"));
 		idColumn.setPrefWidth(20);
 		idColumn.setSortable(false);
+		idColumn.setResizable(false);
+		idColumn.setReorderable(false);
 
 		TableColumn<SelfAssessmentTest, String> testNameColumn = new TableColumn<>("Test Name");
 		testNameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
-		testNameColumn.setPrefWidth(400);
+		testNameColumn.setPrefWidth(500);
+		testNameColumn.setMinWidth(300);
 		testNameColumn.setSortable(false);
+		testNameColumn.setResizable(true);
+		testNameColumn.setReorderable(false);
 
 		TableColumn<SelfAssessmentTest, Boolean> passedColumn = new TableColumn<>("Passed");
 		 passedColumn.setCellValueFactory(cellData -> {
@@ -168,6 +173,10 @@ public class LearningUnitTabPane extends TabPane {
 		passedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(passedColumn));
 		passedColumn.setSortable(false);
 		passedColumn.setPrefWidth(50);
+		passedColumn.setResizable(false);
+		passedColumn.setReorderable(false);
+		
+		
 		tableView.getColumns().addAll(idColumn, testNameColumn, passedColumn);
 		return tableView;
 	}

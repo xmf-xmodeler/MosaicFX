@@ -80,8 +80,10 @@ public class ControlCenter extends Stage {
 
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
+		setResizable(false);
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-			setTitle("UML++ Control Center");
+			setTitle("UML-MX" + Character.toString(169) + " Control Center");
+			//169 is the unicode number of the copyright symbol
 		}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
@@ -135,7 +137,7 @@ public class ControlCenter extends Stage {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setTitle("Close Warning");
 		alert.setHeaderText("Application is closing!");
-		alert.setContentText("Proceed?");
+		alert.setContentText("All unsaved changes will be lost. Do you want to proceed?");
 		
 		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().add(buttonTypeCancel);
@@ -157,8 +159,11 @@ public class ControlCenter extends Stage {
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
-			MenuItem getProjectInformationItem = new MenuItem("Get Project Information");
-			getProjectInformationItem.setOnAction(e->openWebpage("https://le4mm.org/"));
+			MenuItem getProjectInformationItem = new MenuItem("Get Information on XModelerML");
+			getProjectInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/"));
+			
+			MenuItem getUMLInformationItem = new MenuItem("Get Information on UML-MX");
+			getUMLInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
 			
 			MenuItem getSourceCodeItem = new MenuItem("Get Source Code");
 			getSourceCodeItem.setOnAction(e->openWebpage("https://github.com/xmf-xmodeler"));
@@ -169,7 +174,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
+			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void openWebpage(String url) {

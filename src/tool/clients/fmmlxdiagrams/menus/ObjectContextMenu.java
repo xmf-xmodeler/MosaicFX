@@ -42,7 +42,7 @@ public class ObjectContextMenu extends ContextMenu {
 		if( object.getMetaClassName().equals("UserInterface")) getItems().add(execUI);
 		// End custom UI
 				
-		MenuItem addInstanceItem = new MenuItem("Add instance");
+		MenuItem addInstanceItem = new MenuItem("Add Instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.isClass()) && !object.isAbstract()) getItems().add(addInstanceItem);
 
@@ -54,7 +54,7 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		getItems().add(removeItem);
 		
-		MenuItem changeNameItem = new MenuItem("Change name");
+		MenuItem changeNameItem = new MenuItem("Change Name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
 				
@@ -88,13 +88,13 @@ public class ObjectContextMenu extends ContextMenu {
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 		// Todo: later ... ->  getItems().add(changeLevelItem);
 		
-		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
+		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make Concrete":"Make Abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
 		
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
 		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
 		
-		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
+		MenuItem changeParentItem = new MenuItem("Change Parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		
 		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
@@ -138,7 +138,6 @@ public class ObjectContextMenu extends ContextMenu {
 			getItems().addAll(
 					changeParentItem, 
 					abstractClassItem,
-					singletonClassItem,
 					browseInstanceItem, 
 					attributeMenu, 
 					associationMenu, 
@@ -152,7 +151,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}
 		if (!diagram.isUMLMode())
 		{
-			getItems().addAll(associationInstanceMenu,
+			getItems().addAll(associationInstanceMenu,singletonClassItem,
 								slotMenu);
 		}
 		getItems().addAll(delegationMenu);
@@ -164,7 +163,7 @@ public class ObjectContextMenu extends ContextMenu {
 			actions.hide(v, true);
 		}, ALWAYS);
 		
-		MenuItem assignToGlobalVariable = new MenuItem("Assign to global Variable");
+		MenuItem assignToGlobalVariable = new MenuItem("Assign to Global Variable");
 		assignToGlobalVariable.setOnAction(e -> actions.assignToGlobalVariable(object));
 		getItems().add(assignToGlobalVariable);
 	}
@@ -217,8 +216,8 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Attribute));
 		MenuItem changeNameItem = new MenuItem("Change name");
-
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Attribute));
+		
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
@@ -290,13 +289,9 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addConstraintDialog(object));
-		constraintMenu.getItems().add(addItem);
-		
-		constraintMenu.getItems().add(new SeparatorMenuItem());
 		
 		MenuItem editConstraint = new MenuItem("Edit Constraint");
 		editConstraint.setOnAction(e -> actions.editConstraint(object,activeConstraint));
-		constraintMenu.getItems().add(editConstraint);
 		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setDisable(true);
@@ -318,21 +313,27 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setDisable(true);
 		
-		constraintMenu.getItems().add(new SeparatorMenuItem());
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Constraint));
-		constraintMenu.getItems().add(removeItem);
 		
 		if (!diagram.isUMLMode())
 		{
+			constraintMenu.getItems().add(addItem);
+			constraintMenu.getItems().add(editConstraint);
+			constraintMenu.getItems().add(new SeparatorMenuItem());
+			constraintMenu.getItems().add(removeItem);
 			constraintMenu.getItems().add(changeNameItem);
 			constraintMenu.getItems().add(changeLevelItem);
 			constraintMenu.getItems().add(changeBodyItem);
 			constraintMenu.getItems().add(changeReasonItem);
 			constraintMenu.getItems().add(changeOwnerItem);
-
+		} else {
+			constraintMenu.getItems().add(addItem);
+			constraintMenu.getItems().add(removeItem);
+			constraintMenu.getItems().add(editConstraint);
 		}
+			
 		
 		return constraintMenu;
 	}
@@ -419,9 +420,15 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu delegationMenu = new Menu("Delegate");
 		if(object.isClass()) {
 			addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
-			addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+//			addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		}
-		addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
+		if(diagram.isUMLMode()) {
+			if(!object.isClass()) {
+				addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
+			}
+		} else {
+			addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
+		}
 //		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;
 	}

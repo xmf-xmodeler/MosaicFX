@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
+import java.awt.Desktop;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +75,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		}
 		else
 		{
-			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, helpMenu);
+			menuBar.getMenus().addAll(modelMenu, viewMenu, helpMenu);
 
 		}
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
@@ -397,7 +399,7 @@ public class DiagramViewHeadToolBar extends VBox {
 
 		addEnumMenue(modelMenu);
 
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variabel",
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variable",
 				e -> diagramActions.assignGlobalVariable());
 		modelMenu.getItems().add(new SeparatorMenuItem());
 
@@ -428,7 +430,18 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildHelpMenu(Menu helpMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elements", e -> showImageDialog());
-		
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Open Online Tutorials", e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
+	}
+	
+	private void openWebpage(String url) {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.browse(new URL(url).toURI());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
 	}
 
 	private void showShortcutDialog() {
