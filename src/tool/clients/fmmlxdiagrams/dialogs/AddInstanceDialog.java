@@ -57,7 +57,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		
 		singletonCheckBox = new CheckBox();
 		if (selectedClass != null && selectedClass.getLevel().getMaxLevel() == 1) {
-		singletonCheckBox.setDisable(true);	
+			abstractCheckBox.setDisable(true);
+			singletonCheckBox.setDisable(true);	
 		}
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
@@ -110,11 +111,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		grid.add(levelBox, 1, 2);
 		grid.add(new Label("Singleton"), 0, 4);
 		grid.add(singletonCheckBox, 1, 4);
-		}
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 5);
 		grid.add(parentListView, 1, 5);
+		}
 	}
 
 	private void setInstanceName(FmmlxObject c) {

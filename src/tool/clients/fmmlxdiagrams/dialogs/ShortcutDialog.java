@@ -37,12 +37,12 @@ public class ShortcutDialog extends Alert {
 				"Strg + S: Save Diagram\n" + 
 				"Strg + A: Select all Elements\n" + 
 				"Strg + F: Find Objects\n" + 
-				"Strg + Z: Undo\n" + 
-				"Strg + Y: Redo\n" +
+				"Strg + Z: Undo (not yet implemented)\n" + 
+				"Strg + Y: Redo (not yet implemented)\n" +
 				"\n" +
-				"Strg + T: Bring Task Description upfront (Only usable in a Learning Unit)\n" +
+				"Strg + T: Bring Task Description upfront (only works in guided-modeling mode)\n" +
 				"\n" + 
-				"Mouse Combinations:\n" + 
-				"Mouse + Space or Alt: Move Canvas";
+				"Mouse Combinations:\n" +  
+				"Left-click + Space or Left-click + Alt: Move Canvas";
 	}
 }

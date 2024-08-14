@@ -67,13 +67,16 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
-		primitiveTypes.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.Primitive));
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
-
+		
+		types.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+
+		if(!diagram.isUMLMode()) {
+			types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
+			types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+		}
 
 		// add enums to type list
 		diagramEnums = diagram.getEnums();

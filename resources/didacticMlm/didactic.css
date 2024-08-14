@@ -37,10 +37,27 @@ p {
     font-size: 12px;
 }
 
+.successCondition::before{
+	content: "SUCCESS CONDITION NOT MET! ";
+	font-weight: bold;
+	color: rgb(255,0,0);
+}
+
 .successCondition {
+    border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	padding: 5px 20px;
+	margin-top: 10px;
+	background-color: rgb(232, 221, 226);
+	white-space: pre-line;
+	font-size: 14px;
+	display: none;
+}
+
+.successCondition::after {
+	content: "\A Press 'Check Condition' again after reparing your model.";
 	font-size: 12px;
-	background-color: #dfe4f2;
-    display: none;
+	font-style: italic;
 }
 
 .didactic-button {

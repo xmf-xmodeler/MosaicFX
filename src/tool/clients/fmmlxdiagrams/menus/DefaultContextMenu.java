@@ -47,7 +47,6 @@ public class DefaultContextMenu extends ContextMenu {
 
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
-			
 		addMenues(diagram, addMenu, searchMenu, unhideItem, enumerationMenu, addAssocType);
 	}
 
@@ -67,7 +66,12 @@ public class DefaultContextMenu extends ContextMenu {
 
 	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
 			Menu enumerationMenu, MenuItem addAssocType) {
-		getItems().addAll(addMenu, searchMenu, unhideItem);
+		if(diagram.isUMLMode()) {
+			getItems().addAll(addMenu, unhideItem);
+		} else {
+			getItems().addAll(addMenu, searchMenu, unhideItem);
+		}
+		
 		if (diagram.getRootPane().isInToolIntroductionMode()) {
 			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
 				getItems().addAll(enumerationMenu);			
