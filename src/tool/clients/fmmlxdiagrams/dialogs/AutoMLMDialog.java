@@ -361,7 +361,7 @@ public class AutoMLMDialog extends Dialog {
 		private Button butApplyChanges;
 
 		public ExtendedAutoMLMdialog() {
-			this.setTitle("AutoMLM - Extended Options");
+			this.setTitle("AutoMLM - Advanced Promotion Options");
 			this.grid = new GridPane();
 			
 			// text for extended options field
