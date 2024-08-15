@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -12,6 +13,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
@@ -36,9 +38,20 @@ public class AutoMLMDialog extends Dialog {
 	private Button butOpenInputModel;
 	private Button butPerfomModelLifting;
 
+	private int maximumWordSenses;
+	private int minimumDepthOfTopLevelHypernym;
+	private float acceptingSimiliarityValue;
+	private float rejectingSimiliarityValue;
+
 	public AutoMLMDialog(AbstractPackageViewer diagram) {
 		this.diagram = diagram;
 		this.setTitle("AutoMLM");
+
+		// standard values for extended options
+		this.maximumWordSenses = 3;
+		this.minimumDepthOfTopLevelHypernym = 2;
+		this.acceptingSimiliarityValue = (float) 0.5;
+		this.rejectingSimiliarityValue = (float) -0.5;
 
 		this.grid = new GridPane();
 
@@ -159,9 +172,16 @@ public class AutoMLMDialog extends Dialog {
 			return;
 		}
 
+		// get extendedOptions
+		String strMaxWordSenses = String.valueOf(maximumWordSenses);
+		String strDepthTopLevel = String.valueOf(minimumDepthOfTopLevelHypernym);
+		String strAcceptingValueSim = String.valueOf(acceptingSimiliarityValue);
+		String strRejectingValueSim = String.valueOf(rejectingSimiliarityValue);
+
 		String path = getPath(category, model);
 
-		String[] args = { category, path };
+		String[] args = { category, path, strMaxWordSenses, strDepthTopLevel, strAcceptingValueSim,
+				strRejectingValueSim };
 		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROMOTE_DIAGRAM, args);
 		wrapper.execute();
 		String newPath = (String) wrapper.getResponse();
@@ -233,8 +253,11 @@ public class AutoMLMDialog extends Dialog {
 	}
 
 	private void butAdjustPromotionOptionsPressed() {
-		// TODO Extendend window to customize settings, or perform only single
-		// operations
+
+		Platform.runLater(() -> {
+			ExtendedAutoMLMdialog dlg = new ExtendedAutoMLMdialog();
+			dlg.showAndWait();
+		});
 	}
 
 	private String getProjectNameFromFile(String path) {
@@ -248,9 +271,7 @@ public class AutoMLMDialog extends Dialog {
 			System.err.println("Der Projektname des files konnte nicht erkannt werden");
 			return "";
 		}
-		
 
-		
 	}
 
 	private String getDiagramNameFromFile(String path) {
@@ -264,9 +285,6 @@ public class AutoMLMDialog extends Dialog {
 			System.err.println("Der Projektname des files konnte nicht erkannt werden");
 			return "";
 		}
-		
-
-		
 
 	}
 
@@ -326,4 +344,125 @@ public class AutoMLMDialog extends Dialog {
 		cmbExampleModel.getItems().addAll(files);
 	}
 
+	private class ExtendedAutoMLMdialog extends Dialog {
+		private GridPane grid;
+
+		private TextField txtCoveredWordSenses;
+		private TextField txtRejectedHypernynTopLevel;
+		private TextField txtAcceptingSimiliarityValue;
+		private TextField txtRejectingSimilitrityValue;
+
+		private Label lblGeneralization;
+		private Label lblCoveredWordSenses;;
+		private Label lblRejectedHypernynTopLevel;
+		private Label lblAcceptingSimiliarityValue;
+		private Label lblRejectingSimilitrityValue;
+
+		private Button butApplyChanges;
+
+		public ExtendedAutoMLMdialog() {
+			this.setTitle("AutoMLM - Extended Options");
+			this.grid = new GridPane();
+			
+			// text for extended options field
+			lblGeneralization = new Label("Generalization");
+			lblCoveredWordSenses = new Label("Maximum number of Word Senses covered");
+			lblRejectedHypernynTopLevel = new Label("Maximum Level for rejecting Hypernyms");
+			lblAcceptingSimiliarityValue = new Label("Accepting Value for Similiarity");
+			lblRejectingSimilitrityValue = new Label("Rejecting Value for Similiarity");
+
+			txtCoveredWordSenses = new TextField(String.valueOf(maximumWordSenses));
+			txtRejectedHypernynTopLevel = new TextField(String.valueOf(minimumDepthOfTopLevelHypernym));
+			txtAcceptingSimiliarityValue = new TextField(String.valueOf(acceptingSimiliarityValue));
+			txtRejectingSimilitrityValue = new TextField(String.valueOf(rejectingSimiliarityValue));
+
+			butApplyChanges = new Button("Apply Changes");
+
+			butApplyChanges.setOnAction(e -> {
+				butApplyChangesPressed();
+			});
+
+			getDialogPane().setContent(buildGridPane());
+			
+			getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+		}
+
+		private void butApplyChangesPressed() {
+
+			// assign new values
+			try {
+				int a = Integer.valueOf(txtCoveredWordSenses.getText());
+				maximumWordSenses = a;
+			} catch (NumberFormatException e) {
+				System.err.println(e);
+			}
+
+			try {
+				int a = Integer.valueOf(txtRejectedHypernynTopLevel.getText());
+				minimumDepthOfTopLevelHypernym = a;
+			} catch (NumberFormatException e) {
+				System.err.println(e);
+			}
+
+			try {
+				Float a = Float.valueOf(txtAcceptingSimiliarityValue.getText());
+				acceptingSimiliarityValue = a;
+			} catch (NumberFormatException e) {
+				System.err.println(e);
+			}
+
+			try {
+				Float a = Float.valueOf(txtRejectingSimilitrityValue.getText());
+				rejectingSimiliarityValue = a;
+			} catch (NumberFormatException e) {
+				System.err.println(e);
+			}
+
+		}
+
+		private GridPane buildGridPane() {
+
+			buildGrid();
+
+			grid.add(lblGeneralization, 0, 0);
+
+			grid.add(lblCoveredWordSenses, 0, 1);
+			grid.add(txtCoveredWordSenses, 1, 1);
+
+			grid.add(lblRejectedHypernynTopLevel, 0, 2);
+			grid.add(txtRejectedHypernynTopLevel, 1, 2);
+
+			grid.add(lblAcceptingSimiliarityValue, 0, 3);
+			grid.add(txtAcceptingSimiliarityValue, 1, 3);
+
+			grid.add(lblRejectingSimilitrityValue, 0, 4);
+			grid.add(txtRejectingSimilitrityValue, 1, 4);
+			
+			grid.add(butApplyChanges,0,5);
+			
+			return grid;
+		}
+
+		// basic grid pane settings
+		private void buildGrid() {
+			// same width for columns
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(65.00);
+
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(35.00);
+
+			// Add the ColumnConstraints to the GridPane
+			grid.getColumnConstraints().addAll(col1, col2);
+
+			// margins for grid
+			grid.setHgap(10);
+			grid.setVgap(10);
+			grid.setPadding(new Insets(10, 10, 10, 10));
+			grid.setMinWidth(550);
+			grid.setMaxWidth(550);
+		}
+
+	}
 }

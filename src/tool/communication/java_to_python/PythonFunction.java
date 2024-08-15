@@ -10,7 +10,7 @@ public enum PythonFunction {
 	ILLEGAL_ARGUMENTS("illegal_arguments", 1, ReturnType.STRING),
 	CALL_EXECUTION("perform_promotion_process_from_java", 1, ReturnType.STRING), 
 	GETPROJECTNAME("getProjectName",1,ReturnType.STRING),
-	PROMOTE_DIAGRAM("promoteDiagram", 2, ReturnType.STRING),
+	PROMOTE_DIAGRAM("promoteDiagram", 6, ReturnType.STRING),
 	GETDIAGRAMNAME("getDiagramName",1,ReturnType.STRING);
 
 	
