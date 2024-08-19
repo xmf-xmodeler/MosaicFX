@@ -264,9 +264,7 @@ public class ControlCenter extends Stage {
 
 		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
-		newDiagram2.disableProperty().bind(
-				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
+
 		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
@@ -283,6 +281,7 @@ public class ControlCenter extends Stage {
 		TreeItem<String> loading = new TreeItem<String>("Loading");
 		projectTree.setRoot(loading);
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
+		
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 		
@@ -304,7 +303,10 @@ public class ControlCenter extends Stage {
 				d.showAndWait();
 			});
 			
-		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {		
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
 		grid.add(refreshAll, 2, 1);
 		grid.add(concreteSyntaxWizardStart, 3, 4);
 		grid.add(loadModelDir, 2, 4);
@@ -313,9 +315,15 @@ public class ControlCenter extends Stage {
 		grid.add(newModel, 3, 1);
 		grid.add(howToStart, 4, 4);
 		grid.add(newDiagram, 4, 1);			
-
 		}
 		else {
+		projectTree.setOnMouseClicked(e->{
+			if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
+			newDiagram2.setDisable(true);
+			} else {
+				newDiagram2.setDisable(false);
+			}
+		});
 		projectLabel.setText("Models");
 		grid.add(newDiagram2, 4, 1);
 		toolWidth = toolWidth - 237;
@@ -476,12 +484,11 @@ public class ControlCenter extends Stage {
 	
 	private void removeNoneProjectEntries() {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-			if(projectTree.getRoot().getChildren().get(0).getChildren().size()>1) {
-				projectTree.getRoot().getChildren().get(0).getChildren().remove(1);
-			}
-			else {
-				projectTree.getRoot().getChildren().get(0).getChildren().remove(0);
-			}
+			for(int i = 0; i<projectTree.getRoot().getChildren().get(0).getChildren().size(); i++) {
+				if(!projectTree.getRoot().getChildren().get(0).getChildren().get(i).toString().contains("MyProjects")) {
+					projectTree.getRoot().getChildren().get(0).getChildren().remove(i);
+				}
+			}		
 		}
 	}
 		
