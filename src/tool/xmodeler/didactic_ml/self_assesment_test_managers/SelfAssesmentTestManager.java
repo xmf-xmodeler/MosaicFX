@@ -150,8 +150,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	public static boolean isInitialized() {
 		return (instance != null);
 	}
-	
-	//TODO mark lu as passed
+
 	public void stop() {
 		ControlCenterClient.removeProject(projectName);
 		SelfAssessmentTestTasks.tearDown() ;

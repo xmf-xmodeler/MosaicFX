@@ -91,6 +91,7 @@ public class LearningUnitTabPane extends TabPane {
 	private void startAssessment(ActionEvent event) {
 		SelfAssessmentTest test = assessmentTableView.getSelectionModel().getSelectedItem();
 		LearningUnitManagerFactory.createLearningUnitManager(test).start();
+		learningUnitChooser.close();
 	}
 
 	private void openExampleDiagram(ActionEvent event) {
