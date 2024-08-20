@@ -304,12 +304,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				labels.add(new Label(" "));
 				labels.add(new Label(" "));
 				labels.add(new Label(LabelAndHeaderTitle.type));
+				labels.add(new Label(LabelAndHeaderTitle.identifier));
 				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
 					
 				sourceNodes.add(newDisplayName);
 				sourceNodes.add(new Label(" "));
 				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 				sourceNodes.add(newTypeSource);
+				sourceNodes.add(newIdentifierSource);
 				sourceNodes.add(multTargetToSourceBox);
 				sourceNodes.add(sourceVisibleFromTargetBox);
 //				sourceNodes.add(symmetricBox);
@@ -319,6 +321,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				targetNodes.add(new Label(" "));
 				targetNodes.add(new Label (LabelAndHeaderTitle.end));
 				targetNodes.add(newTypeTarget);
+				targetNodes.add(newIdentifierTarget);
 				targetNodes.add(multSourceToTargetBox);
 				targetNodes.add(targetVisibleFromSourceBox);
 

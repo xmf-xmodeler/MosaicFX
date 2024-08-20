@@ -1,4 +1,10 @@
 {
-  "learningUnits": [],
-  "comment" : " use git update-index --assume-unchanged data/dev/didacticMlmUserData.json to not get bothered by changes"
+  "learningUnits": [
+    {
+      "learningUnitName": "Classification and Instantiation",
+      "finishedSelfAssessmentTests": [
+        "Classification and Instantiation 1"
+      ]
+    }
+  ]
 }
