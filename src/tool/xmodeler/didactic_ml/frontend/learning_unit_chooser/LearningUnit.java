@@ -13,7 +13,7 @@ public enum LearningUnit {
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","", 3, false),
 	DEFICIENT_CLASSES("Deficient Classes","", 4, false),
 	ATTRIBUTE_TYPES("Types for Attributes: Default types, Domain-specific types, and Enumerations","", 5, false),
-	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and Abstract Classes","", 6, false),
+	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and Abstract Classes","", 6, true),
 	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation","", 7, false),
 	CIRCLES("Model Circles","", 8, false),
 	DERIVED_CONCEPTS("Derivable Attributes and Operations","", 9, false),
