@@ -122,7 +122,7 @@ public class FmmlxPalette {
 		miscs.getChildren().add(note);
 	}
 
-	public synchronized void update(DiagramViewPane viewPane) {
+	public synchronized void update(DiagramViewPane viewPane) {			//ToDO: make updates each their own function to be more flexible with their order
 		Platform.runLater(() -> {
 			treeView.getSelectionModel().clearSelection();
 			elements.getChildren().clear();
