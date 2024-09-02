@@ -23,8 +23,10 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 		FmmlxObject car = diagram.getObjectByName("Car");
 		FmmlxObject train = diagram.getObjectByName("Train");
 		FmmlxObject vehicle = diagram.getObjectByName("Vehicle");
-		if(car.getAllAncestors().get(0)==vehicle && train.getAllAncestors().get(0)==vehicle){
-			correctParent = true;
+		if(car.getAllAncestors().size()>0 && train.getAllAncestors().size()>0) {	
+			if(car.getAllAncestors().get(0)==vehicle && train.getAllAncestors().get(0)==vehicle){
+				correctParent = true;
+			}
 		}
 		return correctParent;
 	}

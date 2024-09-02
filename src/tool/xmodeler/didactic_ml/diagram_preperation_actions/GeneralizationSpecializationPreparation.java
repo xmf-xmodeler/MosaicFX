@@ -25,13 +25,13 @@ public class GeneralizationSpecializationPreparation extends DiagramPreparationA
 		createAttributeOnLevelNull(diagram, vehicleClass, "horsePower", "Integer");
 		createAttributeOnLevelNull(diagram, vehicleClass, "numberOfPassengers", "Integer");
 
-		createMetaClass(diagram, 1, trainClass, new int[]{400, 0});
+		createMetaClass(diagram, 1, trainClass, new int[]{0, 0});
 		createAttributeOnLevelNull(diagram, trainClass, "numberOfWheels", "Integer");
 		
-		createMetaClass(diagram, 1, carClass, new int[]{400, 0});
+		createMetaClass(diagram, 1, carClass, new int[]{200, 0});
 		createAttributeOnLevelNull(diagram, carClass, "numberOfWheels", "Integer");
 		
-		createMetaClass(diagram, 1, horseClass, new int[]{400, 0});
+		createMetaClass(diagram, 1, horseClass, new int[]{600, 0});
 		createAttributeOnLevelNull(diagram, horseClass, "horseName", "String");
 	}
 }

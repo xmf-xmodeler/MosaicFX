@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic 3</title>
+    <title>Inheritance and Abstract Classes</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="content">
-        <h2>Basic 3</h2>
-        <p>Movies are shown to users in a showing that happens on a particular date.</p>
-        <p>Add another class with the name "MovieShowing". This class should have an attribute "showDate" of the type Date.</p>
+        <h1>3. Reflect about Inheritance</h1>
+         It might have been obvious that <strong>Car</strong> and <strong>Train</strong> have similar attributes and can be regarded as children of <strong>Vehicle</strong>.
+         However, depending on what is being modeled it can also make sense to also add this inheritance to <strong>Horse</strong>.
+		 Since, the attributes of <strong>Vehicle</strong> are also applicable to it. Thus, adding all three classes as children of <strong>Vehicle</strong> is also a viable solution.</p>
+		<p>For example, if one would want to simply compare methods of transportation to find the fastest travelling option it might be appropriate to consider a horse a vehicle.
+		 However, in a scenario where one would maybe own and maintain cars and horses their requirements could be to different to inherit from the same class.
+		 Horses might need to have a vet, be taken outside regularly, or have their attributes like horse power change as they get older.
+		 Especially if they are not the only animals being maintained it might make more sense for them to be children of another class (e.g. animal or mammal) which would fit their requirements more closely.</p>
+		<p>The importan thing to note is that these decisions depent on the intended use and context. So, there is always more than one correct solution.</p>
     </div>
 </body>
 </html>

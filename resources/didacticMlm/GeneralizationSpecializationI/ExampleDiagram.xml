@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::GeneralizationSpecializationABC" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::GeneralizationSpecializationABC">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Horse" package="Root::GeneralizationSpecializationABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Car" package="Root::GeneralizationSpecializationABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Train" package="Root::GeneralizationSpecializationABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Vehicle" package="Root::GeneralizationSpecializationABC" singleton="false"/>
+        <changeParent class="Root::GeneralizationSpecializationABC::Car" new="Root::GeneralizationSpecializationABC::Vehicle" old="" package="Root::GeneralizationSpecializationABC"/>
+        <changeParent class="Root::GeneralizationSpecializationABC::Train" new="Root::GeneralizationSpecializationABC::Vehicle" old="" package="Root::GeneralizationSpecializationABC"/>
+        <addAttribute class="Root::GeneralizationSpecializationABC::Car" level="0" multiplicity="Seq{1,1,true,false}" name="numberOfWheels" package="Root::GeneralizationSpecializationABC" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::GeneralizationSpecializationABC::Horse" level="0" multiplicity="Seq{1,1,true,false}" name="horseName" package="Root::GeneralizationSpecializationABC" type="Root::XCore::String"/>
+        <addAttribute class="Root::GeneralizationSpecializationABC::Train" level="0" multiplicity="Seq{1,1,true,false}" name="numberOfWheels" package="Root::GeneralizationSpecializationABC" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::GeneralizationSpecializationABC::Vehicle" level="0" multiplicity="Seq{1,1,true,false}" name="horsePower" package="Root::GeneralizationSpecializationABC" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::GeneralizationSpecializationABC::Vehicle" level="0" multiplicity="Seq{1,1,true,false}" name="numberOfPassengers" package="Root::GeneralizationSpecializationABC" type="Root::XCore::Integer"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="GeneralizationSpecializationXYZ" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::GeneralizationSpecializationABC::Car" xCoordinate="191" yCoordinate="21"/>
+                <Instance hidden="false" path="Root::GeneralizationSpecializationABC::Train" xCoordinate="-170" yCoordinate="22"/>
+                <Instance hidden="false" path="Root::GeneralizationSpecializationABC::Vehicle" xCoordinate="75" yCoordinate="-224"/>
+                <Instance hidden="false" path="Root::GeneralizationSpecializationABC::Horse" xCoordinate="551" yCoordinate="30"/>
+            </Instances>
+            <Edges>
+                <Edge path="InheritanceMapping: Root::GeneralizationSpecializationABC::Train/Root::GeneralizationSpecializationABC::Vehicle" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="-16.663477" yCoordinate="-60.35254"/>
+                        <IntermediatePoint xCoordinate="146.91145" yCoordinate="-60.35254"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::GeneralizationSpecializationABC::Car/Root::GeneralizationSpecializationABC::Vehicle" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="343.7365" yCoordinate="-59.2"/>
+                        <IntermediatePoint xCoordinate="218.82292" yCoordinate="-59.2"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="219.2" ty="364.8" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

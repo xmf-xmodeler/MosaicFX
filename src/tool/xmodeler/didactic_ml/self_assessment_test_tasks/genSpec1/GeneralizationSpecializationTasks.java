@@ -17,7 +17,9 @@ public class GeneralizationSpecializationTasks extends SelfAssessmentTestTasks {
 	@Override
 	public void init() {
 		tasks = Map.ofEntries(
-				Map.entry("ADD_PARENT", 1)
+				Map.entry("Think_About_Inheritance", 1),
+				Map.entry("Add_Parent", 2),
+				Map.entry("Reflect_About_Inheritance", 3)
 				);
 		
 	}
