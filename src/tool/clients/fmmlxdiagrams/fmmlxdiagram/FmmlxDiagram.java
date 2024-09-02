@@ -164,14 +164,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		setPaneCursor(noteCursor);
 	}
 
-	public String getEdgeCreationType() {
-		return edgeCreationType;
-	}
-
-	public String getNodeCreationType() {
-		return nodeCreationType;
-	}
-
 	public String getFilePath() {
 		return filePath;
 	}
