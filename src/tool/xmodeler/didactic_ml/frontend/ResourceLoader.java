@@ -38,6 +38,7 @@ public class ResourceLoader {
 	 * @return description of this task as string
 	 */
 	public static String getTaskDescritpion(SelfAssessmentTest test, String taskName) {
+//		System.out.println(test + " | " +taskName);
 		String taskDescriptionPath = buildTaskDescriptionPath(test, taskName);
 		try {
 			return readFromFile(taskDescriptionPath);

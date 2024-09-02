@@ -16,6 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.helper.IconGenerator;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
