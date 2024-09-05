@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Class Example</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content">
+		<h1>2. Theoretical Background</h1>
+		<p>
+			The term <b>‘object’</b> serves as a linguistic bridge between an
+			everyday notion of object and a technical notion of object. This may
+			sometimes lead to a confusion of software and physical objects in
+			that classes may reproduce deficiencies of natural-language
+			categories. A too narrow replication of everday objects as software
+			objects can lead to redundancies and, as a result, poses a threat to
+			the system’s integrity. Classes that reproduce deficiencies of
+			natural-language terms, and with that lead to conceptual redudancy,
+			are called deficient classes. Cosider as an example the
+			natural-language term <b>“book,”</b> which may refer to a particular
+			book copy I can hold in my hand or also to the intellectual artifact
+			that a copy represents. As such, both of the following expressions
+			are valid in everyday communication: “She is reading a book.”
+			(referring to a particular book copy) “Moby Dick is a book.” (not
+			referring to any particular printed copy, but to the intellectual
+			artifact) To replicate this ambiguity in object models may lead to
+			redundancies and thus threatens the integrity of the system. Example:
+			A <b>library</b> manages <b>books</b> that can be borrowed. A single
+			class <b>Book</b> may serve to represent all exemplars the library
+			possesses and include the attributes “title: String” and “id:
+			String”. The attribute “title: String” would, however, lead to
+			redundancies and threaten system integrity since multiple copies
+			(each with its own id) share the same title (because they are copies
+			of the same intellectual artifact). The example model shows how an
+			improved version of such a scenario might look like.
+
+		</p>
+		<h1>Illustration in Tool:</h1>
+		<p>
+		<ol>
+			<li>Show class diagram with deficient class
+				<ul>
+					<li>“Consider the small example model of a library where
+						customers can lend books. (Show diagram with two classes, Customer
+						and Book, and a “lends” association between them). Superficially,
+						this diagram may look accurate and suited for our purposes. But a
+						closer look at possible instantiations yields shortcomings of the
+						model.”</li>
+				</ul>
+			</li>
+			<li>Instantiate objects of deficient class
+				<ul>
+					<li>The customer with the name “Grace Trinity” lends the book
+						entitled “Catcher in the Rye”. Now the customer “Joey Henson” also
+						lends the book entitled “Catcher in the Rye”. But the same book,
+						as modeled here, cannot be borrowed multiple times. So what
+						happened here? The class Book showcases deficiencies in that
+						single copies of book are confused with the intellectual artifact.</li>
+				</ul>
+			</li>
+			<li>Show improved class diagram
+				<ul>
+					<li>“A closer analysis of the domain yields that the original
+						class book can be dissected into multiple classes: BookCopy and
+						BookArtifact. The dissection into multiple classes also avoids
+						conceptual redundancy…”</li>
+				</ul>
+			</li>
+			<li>Show improved object diagram
+				<ul>
+					<li>“… For now, we only require a single BookArtifact object.
+						Namely, to represent our book Catcher in the Rye. This avoids a
+						redundant specification of the same book title, author and further
+						information related to the intellectual artifact.”</li>
+				</ul>
+			</li>
+		</ol>
+		</p>
+
+	</div>
+</body>
+</html>

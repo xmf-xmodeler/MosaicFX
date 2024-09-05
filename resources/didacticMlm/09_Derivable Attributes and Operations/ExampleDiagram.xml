@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="">
+    <Imports/>
+    <Model name="Root::ExampleDiagram">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Order" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Product" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="OrderItem" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Shipment" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer2" of="Root::ExampleDiagram::Customer" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleDiagram::Customer" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="shipment1" of="Root::ExampleDiagram::Shipment" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="orderItem2" of="Root::ExampleDiagram::OrderItem" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="order2" of="Root::ExampleDiagram::Order" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="product1" of="Root::ExampleDiagram::Product" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="orderItem1" of="Root::ExampleDiagram::OrderItem" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="order1" of="Root::ExampleDiagram::Order" package="Root::ExampleDiagram" singleton="false"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="customerID" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::OrderItem" level="0" multiplicity="Seq{1,1,true,false}" name="quantity" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Product" level="0" multiplicity="Seq{1,1,true,false}" name="price" package="Root::ExampleDiagram" type="Root::XCore::Float"/>
+        <addAttribute class="Root::ExampleDiagram::Shipment" level="0" multiplicity="Seq{1,1,true,false}" name="delivered" package="Root::ExampleDiagram" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleDiagram::Shipment" level="0" multiplicity="Seq{1,1,true,false}" name="shipmentDate" package="Root::ExampleDiagram" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleDiagram::Shipment" level="0" multiplicity="Seq{1,1,true,false}" name="shipmentID" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getOrdercontainss[monitor=false]():Set(Root::ExampleDiagram::OrderItem)&#10;  self.ordercontains&#10;end" class="Root::ExampleDiagram::Order" level="0" monitored="false" name="getOrdercontainss" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Set(OrderItem)"/>
+        <addOperation body="@Operation getOrderitemincludess[monitor=false]():Set(Root::ExampleDiagram::Product)&#10;  self.orderitemincludes&#10;end" class="Root::ExampleDiagram::OrderItem" level="0" monitored="false" name="getOrderitemincludess" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Set(Product)"/>
+        <addOperation body="@Operation getOrders():XCore::Element&#10;  null&#10;end" class="Root::ExampleDiagram::Customer" level="0" monitored="false" name="getOrders" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Element"/>
+        <addOperation body="@Operation getPrice[monitor=false,getterKey=&quot;price&quot;]():Float&#10;  self.price&#10;end" class="Root::ExampleDiagram::Product" level="0" monitored="false" name="getPrice" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Float"/>
+        <addOperation body="@Operation getTotalMonitaryAmount[monitor=true,delToClassAllowed=false]():XCore::Element&#10;  let sum = 0&#10;  in self.getOrdercontainss()-&gt;collect(i |&#10;       sum := sum + i.getOrderitemincludess().price * i.quantity);&#10;     sum&#10;  end&#10;end" class="Root::ExampleDiagram::Order" level="0" monitored="true" name="getTotalMonitaryAmount" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Element"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer1" package="Root::ExampleDiagram" slotName="customerID" valueToBeParsed="7858"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer1" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[74,111,104,110,32].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer1" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[83,109,105,116,104].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer2" package="Root::ExampleDiagram" slotName="customerID" valueToBeParsed="1324"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer2" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[84,97,121,108,111,114].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::customer2" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[69,118,97,110,115].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::orderItem1" package="Root::ExampleDiagram" slotName="quantity" valueToBeParsed="1"/>
+        <changeSlotValue class="Root::ExampleDiagram::orderItem2" package="Root::ExampleDiagram" slotName="quantity" valueToBeParsed="10"/>
+        <changeSlotValue class="Root::ExampleDiagram::product1" package="Root::ExampleDiagram" slotName="price" valueToBeParsed="9.0"/>
+        <changeSlotValue class="Root::ExampleDiagram::shipment1" package="Root::ExampleDiagram" slotName="delivered" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleDiagram::shipment1" package="Root::ExampleDiagram" slotName="shipmentDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 9, 18)"/>
+        <changeSlotValue class="Root::ExampleDiagram::shipment1" package="Root::ExampleDiagram" slotName="shipmentID" valueToBeParsed="12456"/>
+        <addAssociation accessSourceFromTargetName="customerplaces" accessTargetFromSourceName="customerplaces" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Customer" classTarget="Root::ExampleDiagram::Order" fwName="places" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="ordercontains" accessTargetFromSourceName="ordercontains" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Order" classTarget="Root::ExampleDiagram::OrderItem" fwName="contains" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="orderitemincludes" accessTargetFromSourceName="orderitemincludes" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::OrderItem" classTarget="Root::ExampleDiagram::Product" fwName="includes" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="shipmentcontains" accessTargetFromSourceName="shipmentcontains" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Shipment" classTarget="Root::ExampleDiagram::Order" fwName="contains" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,-1,false,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleDiagram::customer1" classTarget="Root::ExampleDiagram::order2" name="customerplaces" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::customer2" classTarget="Root::ExampleDiagram::order1" name="customerplaces" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::order1" classTarget="Root::ExampleDiagram::orderItem1" name="ordercontains" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::order2" classTarget="Root::ExampleDiagram::orderItem2" name="ordercontains" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::orderItem1" classTarget="Root::ExampleDiagram::product1" name="orderitemincludes" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::orderItem2" classTarget="Root::ExampleDiagram::product1" name="orderitemincludes" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::shipment1" classTarget="Root::ExampleDiagram::order1" name="shipmentcontains" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::shipment1" classTarget="Root::ExampleDiagram::order2" name="shipmentcontains" package="Root::ExampleDiagram"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="example" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleDiagram::orderItem1" xCoordinate="818" yCoordinate="516"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::order2" xCoordinate="212" yCoordinate="741"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::order1" xCoordinate="234" yCoordinate="518"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Shipment" xCoordinate="1013" yCoordinate="297"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Customer" xCoordinate="709" yCoordinate="-119"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::orderItem2" xCoordinate="839" yCoordinate="681"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::OrderItem" xCoordinate="798" yCoordinate="104"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::product1" xCoordinate="1147" yCoordinate="701"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::shipment1" xCoordinate="-448" yCoordinate="534"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Product" xCoordinate="1253" yCoordinate="186"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::customer1" xCoordinate="328" yCoordinate="896"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::customer2" xCoordinate="24" yCoordinate="331"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Order" xCoordinate="88" yCoordinate="170"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="762.0" yCoordinate="201.03532"/>
+                        <IntermediatePoint xCoordinate="762.0" yCoordinate="139.21446"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::customer1/Root::ExampleDiagram::order2/AssociationMapping: Root::ExampleDiagram::Customer::customerplaces" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="317.9016" yCoordinate="949.7194"/>
+                        <IntermediatePoint xCoordinate="317.9016" yCoordinate="784.5755"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::order1/Root::ExampleDiagram::orderItem1/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="NORTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="338.44595" yCoordinate="401.0"/>
+                        <IntermediatePoint xCoordinate="868.0803" yCoordinate="401.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleDiagram::order1/Root::ExampleDiagram::orderItem1/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" xCoordinate="113.0" yCoordinate="-81.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::OrderItem::orderitemincludes" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1122.1727" yCoordinate="139.21446"/>
+                        <IntermediatePoint xCoordinate="1122.1727" yCoordinate="221.43164"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::orderItem2/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::OrderItem::orderitemincludes" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1008.1013" yCoordinate="713.4594"/>
+                        <IntermediatePoint xCoordinate="1008.1013" yCoordinate="733.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleDiagram::orderItem2/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::OrderItem::orderitemincludes" xCoordinate="-58.0" yCoordinate="34.29544"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::shipment1/Root::ExampleDiagram::order2/AssociationMapping: Root::ExampleDiagram::Shipment::shipmentcontains" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="177.70728" yCoordinate="605.81525"/>
+                        <IntermediatePoint xCoordinate="177.70728" yCoordinate="773.76495"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::shipment1/Root::ExampleDiagram::order1/AssociationMapping: Root::ExampleDiagram::Shipment::shipmentcontains" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="180.32056" yCoordinate="569.7801"/>
+                        <IntermediatePoint xCoordinate="180.32056" yCoordinate="561.5755"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::order2/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1031.2764" yCoordinate="566.43164"/>
+                        <IntermediatePoint xCoordinate="1031.2764" yCoordinate="563.2422"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Customer::customerplaces" sourcePort="WEST" targetPort="NORTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="538.2522" yCoordinate="-61.947266"/>
+                        <IntermediatePoint xCoordinate="538.2522" yCoordinate="140.2072"/>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="140.2072"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleDiagram::Customer::customerplaces" xCoordinate="-57.57587" yCoordinate="-26.9035"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::order2/Root::ExampleDiagram::orderItem2/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="557.16235" yCoordinate="762.9544"/>
+                        <IntermediatePoint xCoordinate="557.16235" yCoordinate="713.4594"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleDiagram::order2/Root::ExampleDiagram::orderItem2/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" xCoordinate="-41.0" yCoordinate="-17.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::order1/Root::ExampleDiagram::product2/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="486.27637" yCoordinate="517.2422"/>
+                        <IntermediatePoint xCoordinate="486.27637" yCoordinate="705.2422"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::order1/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::Order::ordercontains" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="696.9878" yCoordinate="495.6211"/>
+                        <IntermediatePoint xCoordinate="696.9878" yCoordinate="563.2422"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::customer2/Root::ExampleDiagram::order1/AssociationMapping: Root::ExampleDiagram::Customer::customerplaces" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="190.5149" yCoordinate="385.505"/>
+                        <IntermediatePoint xCoordinate="190.5149" yCoordinate="539.9544"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Shipment::shipmentcontains" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="628.28784" yCoordinate="354.05273"/>
+                        <IntermediatePoint xCoordinate="628.28784" yCoordinate="239.57048"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::orderItem1/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::OrderItem::orderitemincludes" sourcePort="EAST" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1202.0" yCoordinate="548.68896"/>
+                        <IntermediatePoint xCoordinate="1202.0" yCoordinate="669.0"/>
+                        <IntermediatePoint xCoordinate="1197.0" yCoordinate="669.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleDiagram::orderItem1/Root::ExampleDiagram::product1/AssociationMapping: Root::ExampleDiagram::OrderItem::orderitemincludes" xCoordinate="46.0" yCoordinate="-75.93164"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="188.23907" ty="142.66693" xx="0.6484198"/>
+                <View name="new View" tx="344.94537" ty="-205.00713" xx="1.0905077"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>
