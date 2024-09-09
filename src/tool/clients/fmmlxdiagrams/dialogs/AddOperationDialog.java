@@ -280,7 +280,6 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	}
 
 	public void initAttributeSetter(FmmlxAttribute attribute) {
-//		umlFunctionSignature.setText("get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1) + "()"+":"+attribute.getType());
 		this.levelComboBox.getSelectionModel().select(attribute.getLevel());
 		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
 		
@@ -304,8 +303,6 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		String type = (endMult.upperLimit && endMult.max <=1)?
 				(typeName):
 				("Set("+typeName+")");
-		
-//		umlFunctionSignature.setText( name.substring(0,1).toUpperCase() + name.substring(1) + "()"+":"+ typeName);
 
 		codeBoxPair.setBodyText(
 				"@Operation "+name+"[monitor=false]()"+":"+type+"\n" +
