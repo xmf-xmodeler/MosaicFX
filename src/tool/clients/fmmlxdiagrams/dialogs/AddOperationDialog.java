@@ -150,6 +150,27 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				);
 	}
 	
+	private void createSignature() {
+		String[] codeBody;
+		codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+		codeBody = codeBody[0].split("");
+		 String signature = "";
+		 boolean bracket = false;
+		for(int i = 10;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
+			if(codeBody[i].equals("[")) {
+				bracket = true;
+			}
+			if(!bracket) {
+			signature = signature + codeBody[i];
+			}
+			if(codeBody[i].equals("]")) {
+				bracket = false;
+			}
+		}
+	
+		umlFunctionSignature.setText(signature);
+	}
+	
 	private void layoutUML(Button defaultOperationButton, GridPane theGrid, FmmlxOperation oldOp) {
 		umlFunctionSignature = new TextField();
 		umlFunctionSignature.setPrefWidth(200);
@@ -171,15 +192,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
 		
 		codeBoxPair.getBodyScrollPane().setOnKeyReleased(e -> {
-			String[] codeBody;
-			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
-			codeBody = codeBody[0].split(" ");
-			 String signature = "";
-			for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
-				signature = signature + codeBody[i];
-			}
-		
-			umlFunctionSignature.setText(signature);
+			createSignature();
 		});
 		
 		umlFunctionSignature.setOnKeyTyped(event -> {		//synchronise expert mode code with function signature
@@ -267,6 +280,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	}
 
 	public void initAttributeSetter(FmmlxAttribute attribute) {
+//		umlFunctionSignature.setText("get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1) + "()"+":"+attribute.getType());
 		this.levelComboBox.getSelectionModel().select(attribute.getLevel());
 		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
 		
@@ -274,6 +288,8 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				"@Operation "+name+"[monitor=false, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
 				"  self."+attribute.getName()+"\n" +
 				"end");
+		
+		createSignature();
 	}
 
 	public void initAssociationSetter(
@@ -281,17 +297,21 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			Integer endInstLevel,
 			String typeName,
 			Multiplicity endMult) {
-
+		
 		this.levelComboBox.getSelectionModel().select(endInstLevel);
 		String name = "get" + endName.substring(0,1).toUpperCase() + endName.substring(1);
 		if(!(endMult.upperLimit && endMult.max <=1)) name = name + "s";
 		String type = (endMult.upperLimit && endMult.max <=1)?
 				(typeName):
 				("Set("+typeName+")");
+		
+//		umlFunctionSignature.setText( name.substring(0,1).toUpperCase() + name.substring(1) + "()"+":"+ typeName);
 
 		codeBoxPair.setBodyText(
 				"@Operation "+name+"[monitor=false]()"+":"+type+"\n" +
 				"  self."+endName+"\n" +
 				"end");
+		createSignature();
+		
 	}
 }
