@@ -34,8 +34,8 @@ public class StringValue {
 		public static final String selectAllowedLevelTarget = "Select Allowed End Level.";
 		public static final String enterValidNameIdentifierTarget = "Type Valid Name For End Identifier!";
 		public static final String enterValidNameIdentifierSource = "Type Valid Name For Start Identifier!";
-		public static final String enterValidNameDisplaySource = "Type Valid Name For Start Display-Name!";
-		public static final String enterValidNameDisplayTarget = "Type Valid Name For End Display-Name!";
+		public static final String enterValidNameDisplaySource = "Type Valid Name For Start Display Name!";
+		public static final String enterValidNameDisplayTarget = "Type Valid Name For End Display Name!";
 		public static final String selectMetaClassA = "Select MetaClass-A!";
 		public static final String selectMetaClassB = "Select MetaClass-B!";
 		public static final String selectInstanceA = "Select Instance of MetaClass-A!";
