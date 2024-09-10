@@ -156,7 +156,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		codeBody = codeBody[0].split("");
 		 String signature = "";
 		 boolean bracket = false;
-		for(int i = 10;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
+		for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
 			if(codeBody[i].equals("[")) {
 				bracket = true;
 			}
