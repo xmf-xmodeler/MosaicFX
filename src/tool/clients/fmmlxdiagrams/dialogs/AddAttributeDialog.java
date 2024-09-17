@@ -67,7 +67,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
-		primitiveTypes.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.Primitive));
+		primitiveTypes.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.Primitive));
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
@@ -173,6 +173,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		}
 		// check whether entered type is valid
+		// TODO remove: leave that to XMF
 		if (!validTypes.contains(datatype)) {
 			errorLabel.setText(StringValue.ErrorMessage.selectCorrectType);
 			return false;

@@ -491,10 +491,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return hitLabel;
 	}
 
-	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
-		return new PaletteItem(tool);
-	}
+//	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
+//		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
+//		return new PaletteItem(tool);
+//	}
 
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
