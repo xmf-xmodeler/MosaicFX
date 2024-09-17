@@ -60,6 +60,10 @@ public enum LearningUnit {
 	 */
 	boolean isFinished() {
 		List<SelfAssessmentTest> relatedTests = SelfAssessmentTest.getRelatedTests(this);
+		if (relatedTests.isEmpty())
+		{
+			return false;
+		}
 		for (SelfAssessmentTest selfAssessmentTest : relatedTests) {
 			if (!UserDataProcessor.userHasFinishedTest(selfAssessmentTest)) {
 				return false;
