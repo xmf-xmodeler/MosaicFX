@@ -40,8 +40,8 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 	
 	private boolean checkParent() {	//not checking for horse because that one is deemed correct either way
 		boolean correctParent = false;	
-		if(car.getAllAncestors().size()>0 && train.getAllAncestors().size()>0) {	
-			if(car.getAllAncestors().get(0)==vehicle && train.getAllAncestors().get(0)==vehicle && bus.getAllAncestors().get(0)==vehicle && horse.getAllAncestors().size()==0){
+		if(car.getAllAncestors().size()>0 && train.getAllAncestors().size()>0 && bus.getAllAncestors().size()>0 && horse.getAllAncestors().size()==0) {	
+			if(car.getAllAncestors().get(0)==vehicle && train.getAllAncestors().get(0)==vehicle && bus.getAllAncestors().get(0)==vehicle){
 				correctParent = true;
 			}
 		}
