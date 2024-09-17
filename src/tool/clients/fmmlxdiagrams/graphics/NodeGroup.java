@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.io.File;
 import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
@@ -13,23 +14,17 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
-	
-	/*
-	 * This should be on a higher level, as only the whole group can be dragged
-	 */
-	private transient Affine dragAffine;
-	
+		
 	public NodeGroup(Affine myTransform) {
+		super();
 		this.myTransform = myTransform;
-		dragAffine = new Affine();
 		updateBounds();
 	}
 	
@@ -50,6 +45,12 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 	
+	public final void addNodeElementAtFirst(NodeElement nodeElement) {
+		nodeElements.add(0, nodeElement);
+		nodeElement.setOwner(this);
+		updateBounds();
+	}
+	
 	public final void addAllNodeElements(Vector<NodeElement> nodeElementList) {
 		nodeElements.addAll(nodeElementList);
 		for(NodeElement e : nodeElements) {
@@ -65,7 +66,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagram) {
 		for(NodeElement n : new Vector<>(nodeElements)) {
 			if(n.isHit(mouseX, mouseY, diagram)) return true;
 		}
@@ -73,12 +74,23 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
-		NodeBaseElement hitLabel = null;
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram) {
+		NodeElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
-			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, diagram);
+			 hitLabel =  e.getHitElement(mouse, g, currentTransform, diagram);
 		}
+		if(hitLabel==null && isHit(mouse.getX(), mouse.getY(), diagram)) return this;
 		return hitLabel;
+	}
+	
+	@Override
+	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas diagram) {
+		Action action = null;
+		for(NodeElement e : nodeElements) if(action == null) {
+			action =  e.getAction(mouse, g, currentTransform, diagram);
+		}
+		if(action==null && isHit(mouse.getX(), mouse.getY(), diagram)) return this.action;
+		return action;
 	}
 
 	@Override
@@ -103,7 +115,7 @@ public class NodeGroup extends NodeElement {
 		return a;
 	}
 
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeGroup owner) {
 		this.owner = owner;
 		updateBounds();
 	}
@@ -131,20 +143,6 @@ public class NodeGroup extends NodeElement {
 		this.bounds = bounds;
 	}
 
-	public void dragTo(Affine dragAffine) {
-		this.dragAffine = dragAffine;		
-	}
-
-	public void drop() {
-		myTransform.append(dragAffine);
-		dragAffine = new Affine();		
-	}
-
-	public Transform getDragAffine() {
-		if(dragAffine == null) return new Affine(); // HACK
-		return dragAffine;
-	}
-
 	@Override
 	public Bounds getBounds() {
 		if(bounds == null) 
@@ -153,7 +151,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	protected Vector<NodeElement> getChildren() {
+	public Vector<NodeElement> getChildren() {
 		return nodeElements;
 	}
 	
@@ -162,15 +160,10 @@ public class NodeGroup extends NodeElement {
 		return "G"+ (id==null?"":("("+id+")"));
 	}
 
-	public Node save(Document document) {
+	public Node save(Document document, File baseFile) {
 		Element myElement = document.createElement("Group");
-		myElement.setAttribute("xx", myTransform.getMxx()+"");
-		myElement.setAttribute("yy", myTransform.getMyy()+"");
-		myElement.setAttribute("xy", myTransform.getMxy()+"");
-		myElement.setAttribute("yx", myTransform.getMyx()+"");
-		myElement.setAttribute("tx", myTransform.getTx()+"");
-		myElement.setAttribute("ty", myTransform.getTy()+"");
-		ConcreteSyntax.saveChildren(document, nodeElements, myElement);
+		saveTransformation(myElement);
+		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement, baseFile);
 		return myElement;
 	}
 
@@ -182,33 +175,86 @@ public class NodeGroup extends NodeElement {
 		return null;
 	}
 	
+	private static Action findAction(Vector<ActionInfo> actions, NodeElement nodeElement, FmmlxObject object, FmmlxDiagram diagram)  {
+		for(ActionInfo a : actions) {
+			if(nodeElement.matchID(a.id, a.localId))
+				return a.getAction(object, diagram);
+		}
+		return null;
+	}
+	
 	@Override
-	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
 		for(NodeElement nodeElement : this.nodeElements) {
 			Modification mod = findMod(modifications, nodeElement);
+			Action action = findAction(actions, nodeElement, object, diagram);
+			nodeElement.setAction(action);
 			boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
-					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
-					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().evalBool(object)
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().evalBool(object);
 			
-			/// Special case for labels( and later also texts):
+			/// Special case for importing meta
+			if(nodeElement instanceof ConcreteSyntax && ((ConcreteSyntax)nodeElement).isMetaImport()) {
+				Vector<Modification> allMods = new Vector<>(); 
+				allMods.addAll(modifications);
+				allMods.addAll(((ConcreteSyntax)nodeElement).getModifications());
+				NodeElement nl = nodeElement.createInstance(object.getOf(), allMods, actions, diagram);
+				nl.setAction(action);
+				that.addNodeElement(nl);
+			} else
+				
+			/// Special case for changing colours
+			if(nodeElement instanceof NodePath) {
+				if(add) {
+					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
+					nl.setAction(action);
+					that.addNodeElement(nl);
+				} else {
+					if(mod.getConsequence() == Modification.Consequence.SET_COLOR) {
+						NodePath thatPath = ((NodePath)nodeElement).createInstance(object, modifications, actions, diagram);
+						thatPath.setColor((mod.getCondition()).evalString(object));
+						thatPath.setAction(action);
+						that.addNodeElement(thatPath);
+					}
+				}
+			} else
+			
+			/// Special case for labels
 			if(nodeElement instanceof NodeLabel) {
 				if(add) {
-					that.addNodeElement(nodeElement.createInstance(object, modifications));
+					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
+					nl.setAction(action);
+					that.addNodeElement(nl);
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
-						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications);
-						thatLabel.setText((mod.getCondition()).evalText(object));
+						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications, actions, diagram);
+						thatLabel.setText((mod.getCondition()).evalString(object));
+						thatLabel.setAction(action);
 						that.addNodeElement(thatLabel);
 					}
 				}
 			} else {
 				if(add) {
-					that.addNodeElement(nodeElement.createInstance(object, modifications));
+					NodeElement ne = nodeElement.createInstance(object, modifications, actions, diagram);
+					ne.setAction(action);
+					that.addNodeElement(ne);
 				}
-			}			
+			}	
 		}
 		return that;
 	}	
 	
+	public NodeGroup getRoot() {
+		NodeGroup owner = getOwner();
+		return owner == null?this:owner.getRoot();
+	}	
+
+	public void setAction(Action action) {
+		super.setAction(action);
+	}
+
+	public Vector<NodeElement> getNodeElements() {
+		return nodeElements;
+	}
 }

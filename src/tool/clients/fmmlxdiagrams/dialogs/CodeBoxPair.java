@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -34,18 +35,19 @@ public class CodeBoxPair {
 
 	void checkBodySyntax() {
 		ReturnCall<OperationException> returnCall = opException -> {
-			if (opException == null) {
-				checkPassed = true;
-				errorTextArea.setText("This operation compiles without parse/syntax error!");
-				errorTextArea.setStyle("-fx-text-fill: darkgreen;" + "-fx-font-weight: bold;");
-			} else {
-				errorTextArea.setText(opException.message);
-				errorTextArea.setStyle("-fx-text-fill: darkred;" + "-fx-font-weight: bold;");
-				errorTextArea.setWrapText(true);
-			}
-			okButtonListener.actionPerformed(null);
+			Platform.runLater(() -> {
+				if (opException == null) {
+					checkPassed = true;
+					errorTextArea.setText("This operation compiles without parse/syntax error!");
+					errorTextArea.setStyle("-fx-text-fill: darkgreen;" + "-fx-font-weight: bold;");
+				} else {
+					errorTextArea.setText(opException.message);
+					errorTextArea.setStyle("-fx-text-fill: darkred;" + "-fx-font-weight: bold;");
+					errorTextArea.setWrapText(true);
+				}
+				okButtonListener.actionPerformed(null);
+			});
 		};
-
 		diagram.getComm().checkSyntax(diagram, isConstraint?("@Operation test() " + bodyCodeBox.getText() + " end"):bodyCodeBox.getText(), returnCall);
 	}
 	

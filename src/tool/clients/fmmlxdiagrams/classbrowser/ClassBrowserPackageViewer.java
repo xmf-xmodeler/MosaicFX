@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.*;
@@ -23,17 +24,12 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public Vector<String> getEnumItems(String type) {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
+			for (FmmlxObject object : objects.values()) {
+				if (object.getLevel().isClass()) {
 					objectList.add(object);
 				}
 			}
@@ -56,5 +52,16 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
 		view.setStatusButton(newStatus);		
-	}	
+	}
+	
+	@Override
+	public void updateDiagram() {
+		//Updated diagram without returnCall
+		super.updateDiagram(view.getScene().getRoot(), r -> {});		
+	}
+
+	@Override
+	public void updateDiagram(ReturnCall<Object> onDiagramUpdated) {
+		super.updateDiagram(view.getScene().getRoot(), r -> {onDiagramUpdated.run(null);});
+	}
 }

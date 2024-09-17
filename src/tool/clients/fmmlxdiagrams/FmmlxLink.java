@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
@@ -29,11 +30,14 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override
+	public void layoutLabels(FmmlxDiagram diagram) {
 		try{
 			createLabel(getAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public FmmlxAssociation getAssociation() {
@@ -58,21 +62,52 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 			}	
 		}
 	}
-	
+
 	@Override
 	protected Color getPrimaryColor() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			String s = type.colorLink;
+			return Color.web(s);
+		} catch (Exception e) {
+//		  System.err.println("getPrimaryColor FAIL: " + e.getMessage());
+		}
 		return Color.GRAY;
 	}
 
 	@Override
-	protected Double getLineDashes() {
-		return 10d;
+	protected double getStrokeWidth() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			return 1. * type.strokeWidthLink;
+		} catch (Exception e) {
+//		  System.err.println("getStrokeWidth FAIL: " + e.getMessage());
+		}
+		return 1.;
+	}
+
+	@Override
+	protected double[] getLineDashes() {
+		try{
+			AssociationType type = getAssociation().getAssociationType();
+			if("".equals(type.dashArrayLink)) return new double[]{};
+			String[] dashesS = type.dashArrayLink.split(",");
+			double[] dashes = new double[dashesS.length];
+			for(int i = 0; i < dashesS.length; i++) {
+				dashes[i] = Double.parseDouble(dashesS[i]);
+			}
+			return dashes;
+		} catch (Exception e) {
+//			System.err.println("getLineDashes FAIL: " + e.getMessage());
+			return new double[] {10.,10.};
+		}
 	}
 
 	@Override
 	protected String getSvgDashes() {
 		return "10";
 	}
+	
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
@@ -109,4 +144,18 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		FmmlxAssociation assoc = getAssociation();
 		return assoc!=null?assoc.getSourceDecoration():tool.clients.fmmlxdiagrams.Edge.HeadStyle.NO_ARROW;
 	}
+	
+	public static FmmlxLink getFmmlxLink(FmmlxDiagram diagram, String source, String target, String name) {
+		String nameString = name + "#" + source + "#" + target;
+		Vector<FmmlxLink> associations = diagram.getFmmlxLinks();
+
+		for (FmmlxLink link : associations) {
+			if (link.sourceNode.name.equals(source)
+					&& (link.getTargetNode().name.equals(target)) &&
+					link.getName().equals(nameString)) {
+				return link;
+			}
+		}
+		return null;
+	}	
 }

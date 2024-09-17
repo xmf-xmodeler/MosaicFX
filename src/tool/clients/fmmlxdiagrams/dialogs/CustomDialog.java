@@ -1,28 +1,36 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.List;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import tool.clients.fmmlxdiagrams.*;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
-import tool.clients.importer.Conflict;
-import tool.xmodeler.ControlCenter;
-import tool.xmodeler.ControlCenterClient;
-import tool.xmodeler.XModeler;
-
-import java.util.List;
-
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.helper.IconGenerator;
 
 public class CustomDialog<R> extends Dialog<R> {
 
 	protected int COLUMN_WIDTH = 150;
-
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
@@ -31,24 +39,22 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	public CustomDialog() {
 		super();
-		
 		initializeGrid();
-		setOnShowing(e ->{
-			ControlCenter controlCenter = ControlCenterClient.getClient().getControlCenter();
-			if(controlCenter.isIconified()) {
-				controlCenter.setIconified(false);
-			}
-		});
 		flow = new FlowPane();
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
 		vBoxControl = new VBoxControl();
-
-		initOwner(XModeler.getStage());
-		
+		/*
+		 * 2022-11-04-TS If you set the Stage.Modality to Application_Modal, the Dialog
+		 * will block all open application windows. if you want to focus field in other
+		 * windows you have to close the dialog. This prevents, that the user will do
+		 * actions in the background which could corrupt the running application
+		 */
+		initModality(javafx.stage.Modality.APPLICATION_MODAL);
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		flow.getChildren().add(grid);
-
 		errorLabel = new Label();
 		errorLabel.setTextFill(Color.RED);
 		flow.getChildren().add(errorLabel);
@@ -193,78 +199,6 @@ public class CustomDialog<R> extends Dialog<R> {
 		listView.getSelectionModel().setSelectionMode(selectionMode);
 		return listView;
 	}
-
-	public ListView<Conflict> initializeConflictListView(ObservableList<Conflict> list, SelectionMode selectionMode, String mode) {
-
-		ListView<Conflict> listView = new ListView<>(list);
-		listView.setPrefHeight(75);
-		listView.setPrefWidth(COLUMN_WIDTH);
-
-		switch (mode) {
-			case "t":
-				listView.setCellFactory(param -> new ListCell<Conflict>() {
-					@Override
-					protected void updateItem(Conflict object, boolean empty) {
-						super.updateItem(object, empty);
-
-						if (empty || object == null || object.getType() == null) {
-							setText(null);
-						} else {
-							setText(object.getType());
-						}
-					}
-				});
-				break;
-			case "d":
-				listView.setCellFactory(param -> new ListCell<Conflict>() {
-					@Override
-					protected void updateItem(Conflict object, boolean empty) {
-						super.updateItem(object, empty);
-
-						if (empty || object == null || object.getDescription() == null) {
-							setText(null);
-						} else {
-							setText(object.getDescription());
-						}
-					}
-				});
-				break;
-			case "w":
-				listView.setCellFactory(param -> new ListCell<Conflict>() {
-					@Override
-					protected void updateItem(Conflict object, boolean empty) {
-						super.updateItem(object, empty);
-
-						if (empty || object == null || object.getIn() == null) {
-							setText(null);
-						} else {
-							setText(object.getIn().toString());
-						}
-					}
-				});
-				break;
-			default:
-				listView.setCellFactory(param -> new ListCell<Conflict>() {
-					@Override
-					protected void updateItem(Conflict object, boolean empty) {
-						super.updateItem(object, empty);
-
-						if (empty || object == null) {
-							setText(null);
-						} else {
-							setText(object.toString());
-						}
-					}
-				});
-				break;
-		}
-
-
-		listView.getSelectionModel().setSelectionMode(selectionMode);
-		return listView;
-	}
-
-
 	
 	public ListView<FmmlxLink> initializeListViewAssociation(ObservableList<FmmlxLink> instanceOfAssociation, SelectionMode selectionMode){
 		ListView<FmmlxLink> listView = new ListView<>(instanceOfAssociation);
@@ -300,7 +234,7 @@ public class CustomDialog<R> extends Dialog<R> {
 				} else {
 					setText(item.getName());
 				}
-//				// Notlösung..
+//				// Notlï¿½sung..
 //				if ( item == null ) {
 //					empty = true;
 //				}
@@ -331,43 +265,6 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 		
-	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(AbstractPackageViewer diagram, FmmlxAttribute attribute) {
-		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
-		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
-			@Override
-			protected void updateItem(IValueGenerator item, boolean empty) {
-				super.updateItem(item, empty);
-
-				if (empty || item == null) {
-					setText(null);
-				} else {
-					setText(item.getValueGeneratorName());
-				}
-			}
-		});
-
-		comboBox.setConverter(new StringConverter<IValueGenerator>() {
-			@Override
-			public String toString(IValueGenerator object) {
-				if (object == null) {
-					return null;
-				} else {
-					return object.getName2();
-				}
-			}
-
-			@Override
-			public IValueGenerator fromString(String string) {
-				return null;
-			}
-		});
-		
-		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog(diagram));
-		
-		comboBox.setPrefWidth(COLUMN_WIDTH);
-		return comboBox;
-	}
-	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
 		ComboBox<FmmlxEnum> comboBox = new ComboBox<>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {

@@ -3,7 +3,6 @@ package tool.xmodeler;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Vector;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -44,7 +43,6 @@ public class ControlCenterClient {
 			vec.add(message.args[0].values[i].strValue());
 		}
 		Collections.sort(vec);
-		controlCenter.setAllCategories(vec);
 	}
 	
 	public void getAllProjects() {
@@ -112,7 +110,7 @@ public class ControlCenterClient {
 		}
 		controlCenter.setDiagrams(vec);
 	}
-	
+
 	public void createNewProject() {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Name for new Project");
@@ -128,9 +126,36 @@ public class ControlCenterClient {
 			} else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
-					new ButtonType("Damned", ButtonData.YES)).showAndWait();
+					new ButtonType("OK", ButtonData.YES)).showAndWait();
 			}
 		}
+	}
+
+	public void renameProject(String projectPath) {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("new Name for Project");
+		dialog.setHeaderText("Enter a new name for the Project");
+		Optional<String> result = dialog.showAndWait();
+		String projectName = "";
+		if (result.isPresent()) {
+			if(InputChecker.isValidIdentifier(result.get())) {
+				projectName = result.get();
+				Message message = WorkbenchClient.theClient().getHandler().newMessage("renameProject",2);
+				message.args[0] = new Value(projectPath);
+				message.args[1] = new Value(projectName);
+				WorkbenchClient.theClient().getHandler().raiseEvent(message);
+			} else {
+				new Alert(AlertType.ERROR, 
+					"\"" + result.get() + "\" is not a valid identifier.", 
+					new ButtonType("OK", ButtonData.YES)).showAndWait();
+			}
+		}
+	}
+	
+	public static void removeProject(String projectPath) {
+		Message message = WorkbenchClient.theClient().getHandler().newMessage("removeProject",1);
+		message.args[0] = new Value(projectPath);
+		WorkbenchClient.theClient().getHandler().raiseEvent(message);
 	}
 
 	public ControlCenter getControlCenter() {

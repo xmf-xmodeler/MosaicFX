@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Class Example</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content">
+		<h1>2. Theoretical Background:</h1>
+		<p>Class diagrams consist of classes that are interrelated by
+			associations. If a class A is associated with itself – either
+			directly (what we call a self-referential class) or indirectly – we
+			encouter a so-called model circle. Model circles pose a threat to
+			referential integrity. A simple example would be to model a single
+			class employee and add a self-referential association
+			“is_superior_of”. Such an association would also allow an employee to
+			be its own superior. Model circles may be useful or sometimes
+			unavoidable even if they pose threats to model integrity. In such
+			cases, integrity-violating states should be prevented by specifying
+			custom constraints. Custom constraints are explained in LU10. The
+			example model includes a model circle. Description of violation</p>
+
+		<h1>Illustration in Tool:</h1>
+		<ol>
+			<li>Show class diagram with model circle
+				<ul>
+					<li>Product orders from UMO1</li>
+				</ul>
+			</li>
+			<li>Show object diagram that does not violate referential
+				integrity</li>
+			<li>Extend object diagram so that it does violate referential
+				integrity</li>
+		</ol>
+	</div>
+</body>
+</html>

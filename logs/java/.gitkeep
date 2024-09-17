@@ -1,0 +1,1 @@
+This folder is need for the export of the stderr from java. The startup script will search for this folder if it does not exist, there will be an errro.

@@ -6,6 +6,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Optional;
@@ -15,12 +16,12 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
-	private final String reverseName;
+	private final String typePath;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
 	private Integer levelStart;
 	private Integer levelEnd;
-	private final Integer parentAssociationId;
+	private final String parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
 	private boolean sourceFromTargetVisible;
@@ -38,11 +39,11 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 			String path,
 			String startPath,
 			String endPath,
-			Integer parentAssociationId,
+			String parentAssociationId,
 			Vector<Point2D> points,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			String name,
-			String reverseName,
+			String typePath,
 			String accessNameStartToEnd,
 			String accessNameEndToStart,
 			int levelStart,
@@ -60,7 +61,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 
 		this.name = name;
 		this.parentAssociationId = parentAssociationId;
-		this.reverseName = reverseName;
+		this.typePath = typePath;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
 		this.levelStart = levelStart;
@@ -73,21 +74,27 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		this.transitive = transitive;
 	}
 
-	public Integer getParentAssociationId() {
+	public String getParentAssociationId() {
 		return parentAssociationId;
 	}
 
-	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+	@Override public void layoutLabels(FmmlxDiagram diagram) {
+		String text = name;
+		if(parentAssociationId != null && !"".equals(parentAssociationId)) {
+			text += " depends on " + parentAssociationId;
+		}
 		if( sourceNode == targetNode) {
-			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+			createLabel(text, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {
-			createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+			createLabel(text, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
 		
+		if(!diagram.umlMode) {	//Have to be hidden for uml Diagrams
 		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK,diagram);
 		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK, diagram); 
+		}
 		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT, diagram);
 		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT, diagram);
 		layoutingFinishedSuccesfully = true;
@@ -98,8 +105,11 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		return name;
 	}
 
-	public String getReverseName() {
-		return reverseName;
+	public AssociationType getAssociationType() {
+		for(AssociationType type : diagram.associationTypes) {
+			if(this.typePath.equals(type.path)) return type;
+		}
+		return null;
 	}
 
 	@Override
@@ -155,10 +165,45 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationContextMenu(this, actions);
 	}
+	
+	@Override
+	protected Color getPrimaryColor() {
+		try{
+			AssociationType type = getAssociationType();
+			String s = type.color;
+			return Color.web(s);
+		} catch (Exception e) {
+//		  System.err.println("getPrimaryColor FAIL: " + e.getMessage());
+		}
+		return Color.BLACK;
+	}
 
 	@Override
-	protected Double getLineDashes() {
-		return (double) 0;
+	protected double getStrokeWidth() {
+		try{
+			AssociationType type = getAssociationType();
+			return 1. * type.strokeWidth;
+		} catch (Exception e) {
+//		  System.err.println("getStrokeWidth FAIL: " + e.getMessage());
+		}
+		return 1.;
+	}
+
+	@Override
+	protected double[] getLineDashes() {
+		try{
+			AssociationType type = getAssociationType();
+			if("".equals(type.dashArray)) return new double[]{};
+			String[] dashesS = type.dashArray.split(",");
+			double[] dashes = new double[dashesS.length];
+			for(int i = 0; i < dashesS.length; i++) {
+				dashes[i] = Double.parseDouble(dashesS[i]);
+			}
+			return dashes;
+		} catch (Exception e) {
+//			System.err.println("getLineDashes FAIL: " + e.getMessage());
+			return new double[]{};
+		}
 	}
 
 	private final Runnable showChangeFwNameDialog = () -> {
@@ -166,7 +211,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationForwardName(diagram.getID(), this.getName(), result.get());
+			diagram.getComm().changeAssociationForwardName(diagram.getID(), this, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -178,7 +223,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.getName(), level);
+				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -191,7 +236,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.getName(), result.get());
+			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -200,7 +245,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
 		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this.getName(), mr.get());
+			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this, mr.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -212,7 +257,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.getName(), level);
+				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -225,7 +270,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.getName(), result.get());
+			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -234,18 +279,26 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
 		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this.getName(), mr.get());
+			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this, mr.get());
 			diagram.updateDiagram();
 		}
 	};
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
+		if(diagram.umlMode) {
+		if(targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
+		}}
 		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
 	}
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
+		if(diagram.umlMode) {
+		if(targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
+		}}
 		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
 	}
 
@@ -255,5 +308,22 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	@Override
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
+	}
+	
+	public static FmmlxAssociation getFmmlxAssociation(FmmlxDiagram diagram, String source, String target, String name) {
+		Vector<FmmlxAssociation> associations = diagram.getFmmlxAssociations();
+
+		for (FmmlxAssociation assoc : associations) {
+			if (assoc.sourceNode.name.equals(source)
+					&& (assoc.getTargetNode().name.equals(target)) &&
+						assoc.name.equals(name)) {
+				return assoc;
+			}
+		}
+		return null;
+	}
+
+	public boolean isDependent() {
+		return !(parentAssociationId == null || "".equals(parentAssociationId));
 	}
 }

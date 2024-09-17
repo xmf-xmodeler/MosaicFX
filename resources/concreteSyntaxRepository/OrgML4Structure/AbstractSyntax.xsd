@@ -1,0 +1,50 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="AbstractSyntax">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="SVG" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute type="xs:string" name="path" use="required"/>
+                                <!--
+                         <xs:attribute type="xs:string" name="id" use="required"/>
+                        -->
+                                <xs:attribute type="xs:float" name="tx" use="optional"/>
+                                <xs:attribute type="xs:float" name="ty" use="optional"/>
+                                <xs:attribute type="xs:float" name="xx" use="optional"/>
+                                <xs:attribute type="xs:float" name="xy" use="optional"/>
+                                <xs:attribute type="xs:float" name="yx" use="optional"/>
+                                <xs:attribute type="xs:float" name="yy" use="optional"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Label" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute type="xs:string" name="align" use="optional" default="right"/>
+                                <xs:attribute type="xs:string" name="id" use="required"/>
+                                <!-- As long as the only way to writet text to an Label is to use a modification the use of the id-attribute has to be required-->
+                                <xs:simpleType type="xs:string" name="color" use="optional" default="000000">
+                                
+                                    <xs:restriction base="xs:string">
+                                        <xs:length value="6"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                                
+                                <xs:attribute type="xs:float" name="tx" use="optional"/>
+                                <xs:attribute type="xs:float" name="ty" use="optional"/>
+                                <xs:attribute type="xs:float" name="xx" use="optional"/>
+                                <xs:attribute type="xs:float" name="xy" use="optional"/>
+                                <xs:attribute type="xs:float" name="yx" use="optional"/>
+                                <xs:attribute type="xs:float" name="yy" use="optional"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

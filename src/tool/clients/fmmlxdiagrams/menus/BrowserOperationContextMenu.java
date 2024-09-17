@@ -20,7 +20,7 @@ public class BrowserOperationContextMenu extends ContextMenu {
 		this.actions = packageViewer.getActions();
 		setAutoHide(true);
 		
-		if(object != null && object.getLevel() >= 1) {
+		if(object != null && object.getLevel().isClass()) {
 			MenuItem addItem = new MenuItem("Add Operation");
 			addItem.setOnAction(e -> actions.addOperationDialog(object));
 			getItems().add(addItem);

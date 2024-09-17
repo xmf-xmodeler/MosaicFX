@@ -17,12 +17,14 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.AssociationType;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
+import tool.xmodeler.XModeler;
 
 public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 
@@ -46,6 +48,11 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 
 	private CheckBox targetVisibleFromSourceBox;
 	private CheckBox sourceVisibleFromTargetBox;
+
+	private OptionalTextField targetGetterField;
+	private OptionalTextField sourceGetterField;
+	private OptionalTextField targetSetterField;
+	private OptionalTextField sourceSetterField;
 	private CheckBox symmetricBox;
 	private CheckBox transitiveBox;
 	
@@ -53,6 +60,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private MultiplicityBox multSourceToTargetBox;
 
 	private Vector<FmmlxAssociation> associations;
+	
+	private ComboBox<AssociationType> associationTypeBox;
 	
 	private ArrayList<Node> labels;
 	private List<Node> sourceNodes;
@@ -81,9 +90,6 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		});
 
 		setResultConverter();
-		
-		
-		
 	}
 
 	public AssociationDialog(AbstractPackageViewer diagram, FmmlxObject source, FmmlxObject target, boolean editMode) {
@@ -131,6 +137,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	}
 
 	private void layoutContent() {
+
 		if(editMode) {
 			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.editAssociation);
 		} else if (!editMode){
@@ -151,29 +158,17 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		newTypeSource =  initializeComboBox(diagram.getPossibleAssociationEnds());
 		newTypeTarget =  initializeComboBox(diagram.getPossibleAssociationEnds());
-		/*newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.source = newValue;
-				setLevelList(newInstLevelSource, source);
-				setIdentifier(newIdentifierSource, source.getName());
-			}
-		});
-		newTypeTarget.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				this.target = newValue;
-				setLevelList(newInstLevelTarget, target);
-				setIdentifier(newIdentifierTarget, newValue.getName());
-			}
-		});*/
+
+		sourceGetterField = new OptionalTextField("", false);
+		sourceSetterField = new OptionalTextField("", false);
+		targetGetterField = new OptionalTextField("", false);
+		targetSetterField = new OptionalTextField("", false);
+		
 		newInstLevelSource = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelSource.setEditable(true);
-//		newInstLevelSource.getSelectionModel().select(0);
 		newInstLevelTarget = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, 5));
 		newInstLevelTarget.setEditable(true);
-//		newInstLevelTarget.getSelectionModel().select(0);
 		newDisplayName = new TextField();
-//		newDisplayNameTarget = new TextField();
-//		newDisplayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		newIdentifierSource = new TextField();
 		newIdentifierTarget = new TextField();
 		
@@ -186,14 +181,22 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		
 		sourceVisibleFromTargetBox = new CheckBox("sourceVisibleFromTarget");
 		targetVisibleFromSourceBox = new CheckBox("targetVisibleFromSource");
+		sourceGetterField.setEditable(false);
+		sourceSetterField.setEditable(false);
+		targetVisibleFromSourceBox.setSelected(true);
+		targetVisibleFromSourceBox.setDisable(true);
+		sourceVisibleFromTargetBox.setSelected(true);
+		sourceVisibleFromTargetBox.selectedProperty().addListener((x0, x1, sourceVisible) -> {
+			sourceGetterField.setEditable(sourceVisible);
+			sourceSetterField.setEditable(sourceVisible);
+		});
+		
 		symmetricBox = new CheckBox("symmetric");
 		transitiveBox = new CheckBox("transitive");
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.getSelectionModel().selectFirst();
-//		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-//			if (newValue != null) {				
-//				selectedAssociation = newValue;
+
 		if(association!=null) {
 			FmmlxObject startNode = association.getSourceNode();
 			FmmlxObject targetNode = association.getTargetNode();
@@ -232,76 +235,104 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				}
 			});
 			
-			multTargetToSourceBox.setMultiplicity(Multiplicity.OPTIONAL);
-			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);
+			multTargetToSourceBox.setMultiplicity(new Multiplicity(0, -1, false, false, false));
+			if(!diagram.isUMLMode()) {
+			multSourceToTargetBox.setMultiplicity(Multiplicity.OPTIONAL);}
+			else {
+			multSourceToTargetBox.setMultiplicity(new Multiplicity(0, -1, false, false, false));}
 		}
 		
-				
-		
-				
-		
-				
-//				Multiplicity newMultiplicitySource = association.getMultiplicityStartToEnd();
-//				updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
-//				
-//				newDisplayNameTarget.setText(association.getReverseName());
-//				Multiplicity newMultiplicityTarget = association.getMultiplicityEndToStart();
-//				updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
-
-					
-//			}
-//		});
-
-		
+		Vector<AssociationType> assocTypeItems = new Vector<>();
+		assocTypeItems.addAll(diagram.getAssociationTypes());
+		associationTypeBox = new ComboBox<>(FXCollections.observableList(assocTypeItems));
+		associationTypeBox.getSelectionModel().select(0);
 		labels = new ArrayList<>();
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
-		
-		labels.add(new Label(LabelAndHeaderTitle.displayName));
-		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
-		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
-		labels.add(new Label(" "));
-		labels.add(new Label(" "));
-		labels.add(new Label(LabelAndHeaderTitle.type));
-		labels.add(new Label(LabelAndHeaderTitle.instLevel));
-		labels.add(new Label(LabelAndHeaderTitle.identifier));
-		labels.add(new Label(LabelAndHeaderTitle.multiplicity));
-		labels.add(new Label("Visibility"));
-		
-		sourceNodes.add(newDisplayName);
-		sourceNodes.add(selectedObject);
-		sourceNodes.add(selectAssociationComboBox);
-		sourceNodes.add(new Label(" "));
-		sourceNodes.add(new Label(LabelAndHeaderTitle.start));
-		sourceNodes.add(newTypeSource);
-		sourceNodes.add(newInstLevelSource);
-		sourceNodes.add(newIdentifierSource);
-		sourceNodes.add(multTargetToSourceBox);
-		sourceNodes.add(sourceVisibleFromTargetBox);
-		sourceNodes.add(symmetricBox);
-		sourceNodes.add(transitiveBox);
-		
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label(" "));
-		targetNodes.add(new Label (LabelAndHeaderTitle.end));
-		targetNodes.add(newTypeTarget);
-		targetNodes.add(newInstLevelTarget);
-		targetNodes.add(newIdentifierTarget);
-		targetNodes.add(multSourceToTargetBox);
-		targetNodes.add(targetVisibleFromSourceBox);
+
+		if(!diagram.isUMLMode()) {	//This creates a little redundancy but is overall still cleaner than having a dozen if statements. Putting it in a seperate function would also be messy because all the variable would have to be given as parameters
+			labels.add(new Label("Association Type"));		
+			labels.add(new Label(LabelAndHeaderTitle.displayName));
+			labels.add(new Label(LabelAndHeaderTitle.selectedObject));
+			labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
+			labels.add(new Label(" "));
+			labels.add(new Label(" "));
+			labels.add(new Label(LabelAndHeaderTitle.type));
+			labels.add(new Label(LabelAndHeaderTitle.instLevel));
+			labels.add(new Label(LabelAndHeaderTitle.identifier));
+			labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+			labels.add(new Label("Visibility"));
+			if(XModeler.isAlphaMode()) {
+				labels.add(new Label("Generate Getter"));
+				labels.add(new Label("Generate Setter"));
+			}
+			
+			sourceNodes.add(associationTypeBox);	
+			sourceNodes.add(newDisplayName);
+			sourceNodes.add(selectedObject);
+			sourceNodes.add(selectAssociationComboBox);
+			sourceNodes.add(new Label(" "));
+			sourceNodes.add(new Label(LabelAndHeaderTitle.start));
+			sourceNodes.add(newTypeSource);
+			sourceNodes.add(newInstLevelSource);
+			sourceNodes.add(newIdentifierSource);
+			sourceNodes.add(multTargetToSourceBox);
+			sourceNodes.add(sourceVisibleFromTargetBox);
+			if(XModeler.isAlphaMode()) {
+				sourceNodes.add(sourceGetterField);
+				sourceNodes.add(sourceSetterField);
+			}
+			
+			targetNodes.add(new Label(" "));	
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label(" "));
+			targetNodes.add(new Label (LabelAndHeaderTitle.end));
+			targetNodes.add(newTypeTarget);
+			targetNodes.add(newInstLevelTarget);
+			targetNodes.add(newIdentifierTarget);
+			targetNodes.add(multSourceToTargetBox);
+			targetNodes.add(targetVisibleFromSourceBox);
+			if(XModeler.isAlphaMode()) {
+				targetNodes.add(targetGetterField);
+				targetNodes.add(targetSetterField);
+			}
+		}
+		else {
+				labels.add(new Label(LabelAndHeaderTitle.displayName));
+				labels.add(new Label(" "));
+				labels.add(new Label(" "));
+				labels.add(new Label(LabelAndHeaderTitle.type));
+				labels.add(new Label(LabelAndHeaderTitle.identifier));
+				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+					
+				sourceNodes.add(newDisplayName);
+				sourceNodes.add(new Label(" "));
+				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
+				sourceNodes.add(newTypeSource);
+				sourceNodes.add(newIdentifierSource);
+				sourceNodes.add(multTargetToSourceBox);
+				sourceNodes.add(sourceVisibleFromTargetBox);
+//				sourceNodes.add(symmetricBox);
+//				sourceNodes.add(transitiveBox);
+					
+				targetNodes.add(new Label(" "));
+				targetNodes.add(new Label(" "));
+				targetNodes.add(new Label (LabelAndHeaderTitle.end));
+				targetNodes.add(newTypeTarget);
+				targetNodes.add(newIdentifierTarget);
+				targetNodes.add(multSourceToTargetBox);
+				targetNodes.add(targetVisibleFromSourceBox);
+
+		}
 
 		
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
-		
 	}
-	
-	
-
-	
+		
 
 	private boolean validateUserInput() {
 		 if (newTypeSource.getSelectionModel().getSelectedItem()==null) {
@@ -322,29 +353,38 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-			}  else if (!AllValueList.generateLevelListToThreshold(0, newTypeSource.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
-			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel()-1));
+			}  else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
+			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel().getMinLevel()-1));
 			return false;
-			} else if (!AllValueList.generateLevelListToThreshold(0, newTypeTarget.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
-			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel()-1));
+			} else if (!diagram.isUMLMode() && !AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
+			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel().getMinLevel()-1));
 			return false;
 			} 
-		}else {
-			  if (!AllValueList.generateLevelListToThreshold(0, newTypeSource.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
-					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel()-1));
+		}else if (!diagram.isUMLMode()) {		//modified to else if to include umlMode
+			  if (!AllValueList.generateLevelListToThreshold(-1, newTypeSource.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
+					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel().getMinLevel()-1));
 					return false;
-					} else if (!AllValueList.generateLevelListToThreshold(0, newTypeTarget.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
-					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (target.getLevel()-1));
+					} else if (!AllValueList.generateLevelListToThreshold(-1, newTypeTarget.getSelectionModel().getSelectedItem().getLevel().getMinLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
+					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (target.getLevel().getMinLevel()-1));
 					return false;
 					} 
 			}
+		if(sourceGetterField.getText().isPresent() && !InputChecker.isValidIdentifier(sourceGetterField.getText().get())) {
+			errorLabel.setText("Source Getter name not valid!"); return false;}
+		if(targetGetterField.getText().isPresent() && !InputChecker.isValidIdentifier(targetGetterField.getText().get())) {
+			errorLabel.setText("Target Getter name not valid!"); return false;}
+		if(sourceSetterField.getText().isPresent() && !InputChecker.isValidIdentifier(sourceSetterField.getText().get())) {
+			errorLabel.setText("Source Setter name not valid!"); return false;}
+		if(targetSetterField.getText().isPresent() && !InputChecker.isValidIdentifier(targetSetterField.getText().get())) {
+			errorLabel.setText("Target Setter name not valid!"); return false;}
+
 		return true;
 		}
 	
 	private boolean validateNewIdentifierTarget() {
 		String name = newIdentifierTarget.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
@@ -356,7 +396,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewIdentifierSource() {
 		String name = newIdentifierSource.getText();
 		
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {	//modified to check for umlMode
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
@@ -368,7 +408,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private boolean validateNewDisplayName() {
 		String name = newDisplayName.getText();
 
-		if (!InputChecker.isValidIdentifier(name)) {
+		if (!InputChecker.isValidIdentifier(name) && !diagram.isUMLMode()) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {
@@ -379,7 +419,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	
 	private void setLevelList(ComboBox<Integer> comboBox, FmmlxObject refObject) {
 		if (refObject != null) {
-			comboBox.setItems(AllValueList.generateLevelListToThreshold(0, refObject.getLevel()));
+			comboBox.setItems(AllValueList.generateLevelListToThreshold(-1, refObject.getLevel().getMinLevel()));
 		}
 	}
 	
@@ -399,12 +439,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				if(!diagram.isUMLMode()) {
 				return new Result(association,
 						source,
 						target,
 						getComboBoxIntegerValue(newInstLevelSource),
 						getComboBoxIntegerValue(newInstLevelTarget),
 						newDisplayName.getText(),
+						associationTypeBox.getSelectionModel().getSelectedItem(),
 						newIdentifierSource.getText(),
 						newIdentifierTarget.getText(),
 						multTargetToSourceBox.getMultiplicity(),
@@ -412,8 +454,35 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 						sourceVisibleFromTargetBox.isSelected(),
 						targetVisibleFromSourceBox.isSelected(),
 						symmetricBox.isSelected(),
-						transitiveBox.isSelected()
+						transitiveBox.isSelected(),
+						sourceGetterField.getText().orElse(null),
+						sourceSetterField.getText().orElse(null),
+						targetGetterField.getText().orElse(null),
+						targetSetterField.getText().orElse(null)
 				);
+				}
+				else {
+					return new Result(association,
+							source,
+							target,
+							0,
+							0,
+							newDisplayName.getText(),
+							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
+							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							source.getName().toLowerCase() + newDisplayName.getText(),
+							multTargetToSourceBox.getMultiplicity(),
+							multSourceToTargetBox.getMultiplicity(),
+							sourceVisibleFromTargetBox.isSelected(),
+							targetVisibleFromSourceBox.isSelected(),
+							false,
+							false,
+							sourceGetterField.getText().orElse(null),
+							sourceSetterField.getText().orElse(null),
+							targetGetterField.getText().orElse(null),
+							targetSetterField.getText().orElse(null)
+							);
+				}
 			}
 			return null;
 		});		
@@ -427,6 +496,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		public final int newInstLevelSource;
 		public final int newInstLevelTarget;
 		public final String newDisplayName;
+		public final AssociationType assocType;
 		public final String newIdentifierSource;
 		public final String newIdentifierTarget;
 		public final Multiplicity multTargetToSource;
@@ -434,17 +504,25 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		public final boolean sourceVisibleFromTarget;
 		public final boolean targetVisibleFromSource;
 		public final boolean symmetric;
-		public final boolean transitive;	
+		public final boolean transitive;
+		public final String sourceGetterName;
+		public final String sourceSetterName;
+		public final String targetGetterName; 
+		public final String targetSetterName;	
 		
 	public Result(FmmlxAssociation selectedAssociation, FmmlxObject source, FmmlxObject target, 
 			Integer newInstLevelSource, Integer  newInstLevelTarget, 
-			String  newDisplayName,  			
+			String  newDisplayName, AssociationType assocType,		
 			String  newIdentifierSource, String  newIdentifierTarget,		
 			Multiplicity multTargetToSource, Multiplicity multSourceToTarget,		
 			boolean sourceVisibleFromTarget,
 			boolean targetVisibleFromSource,
 			boolean symmetric,
-			boolean transitive) {
+			boolean transitive,
+			String sourceGetterName,
+			String sourceSetterName,
+			String targetGetterName, 
+			String targetSetterName) {
 		
 			this.selectedAssociation = selectedAssociation;
 			this.source = source;
@@ -452,6 +530,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			this.newInstLevelSource = newInstLevelSource;
 			this.newInstLevelTarget = newInstLevelTarget;
 			this.newDisplayName = newDisplayName;
+			this.assocType = assocType;
 			this.newIdentifierSource = newIdentifierSource;
 			this.newIdentifierTarget = newIdentifierTarget;
 			this.multTargetToSource = multTargetToSource;
@@ -460,6 +539,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			this.targetVisibleFromSource = targetVisibleFromSource;
 			this.symmetric = symmetric;
 			this.transitive = transitive;
+			this.sourceGetterName = sourceGetterName;
+			this.sourceSetterName = sourceSetterName;
+			this.targetGetterName = targetGetterName;
+			this.targetSetterName = targetSetterName;
 		}
 	}
 }	

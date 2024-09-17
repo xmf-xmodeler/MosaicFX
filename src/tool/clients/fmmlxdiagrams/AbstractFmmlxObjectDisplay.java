@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+
 public abstract class AbstractFmmlxObjectDisplay {
 	
 	protected final FmmlxDiagram diagram;

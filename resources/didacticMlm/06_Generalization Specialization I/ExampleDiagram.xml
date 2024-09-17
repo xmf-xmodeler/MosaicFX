@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="">
+    <Imports/>
+    <Model name="Root::ExampleDiagram">
+        <addMetaClass abstract="true" level="1" maxLevel="1" name="Lecturer" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Professor" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Assistent" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="professor1" of="Root::ExampleDiagram::Professor" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="assistent1" of="Root::ExampleDiagram::Assistent" package="Root::ExampleDiagram" singleton="false"/>
+        <changeParent class="Root::ExampleDiagram::Assistent" new="Root::ExampleDiagram::Lecturer" old="" package="Root::ExampleDiagram"/>
+        <changeParent class="Root::ExampleDiagram::Professor" new="Root::ExampleDiagram::Lecturer" old="" package="Root::ExampleDiagram"/>
+        <addEnumeration name="academicDegree"/>
+        <addEnumerationValue enum_name="academicDegree" enum_value_name="AssociateDegree"/>
+        <addEnumerationValue enum_name="academicDegree" enum_value_name="BachlorDegree"/>
+        <addEnumerationValue enum_name="academicDegree" enum_value_name="DoctoralDegree"/>
+        <addEnumerationValue enum_name="academicDegree" enum_value_name="MasterDegree"/>
+        <addEnumerationValue enum_name="academicDegree" enum_value_name="ProfessionalDegree"/>
+        <addAttribute class="Root::ExampleDiagram::Lecturer" level="0" multiplicity="Seq{1,1,true,false}" name="academicDegree" package="Root::ExampleDiagram" type="Root::ExampleDiagram::academicDegree"/>
+        <addAttribute class="Root::ExampleDiagram::Lecturer" level="0" multiplicity="Seq{1,1,true,false}" name="firstname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Lecturer" level="0" multiplicity="Seq{1,1,true,false}" name="lastname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleDiagram::assistent1" package="Root::ExampleDiagram" slotName="academicDegree" valueToBeParsed="Root::ExampleDiagram::academicDegree::MasterDegree"/>
+        <changeSlotValue class="Root::ExampleDiagram::assistent1" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[74,97,110,101].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::assistent1" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[68,111,101].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::professor1" package="Root::ExampleDiagram" slotName="academicDegree" valueToBeParsed="Root::ExampleDiagram::academicDegree::DoctoralDegree"/>
+        <changeSlotValue class="Root::ExampleDiagram::professor1" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[74,111,104,110,32].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::professor1" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[83,109,105,116,104].asString()"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="example" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleDiagram::Assistent" xCoordinate="837" yCoordinate="527"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::assistent1" xCoordinate="972" yCoordinate="722"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::professor1" xCoordinate="365" yCoordinate="740"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Lecturer" xCoordinate="662" yCoordinate="266"/>
+                <Instance hidden="true" path="Root::ExampleDiagram::academicDegree" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Professor" xCoordinate="323" yCoordinate="524"/>
+            </Instances>
+            <Edges>
+                <Edge path="InheritanceMapping: Root::ExampleDiagram::Professor/Root::ExampleDiagram::Lecturer" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="460.3112" yCoordinate="454.55273"/>
+                        <IntermediatePoint xCoordinate="751.7793" yCoordinate="454.55273"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleDiagram::Dog/Root::ExampleDiagram::Animal" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="591.8364" yCoordinate="267.0"/>
+                        <IntermediatePoint xCoordinate="822.709" yCoordinate="267.0"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleDiagram::Cat/Root::ExampleDiagram::Animal" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1066.8364" yCoordinate="268.0"/>
+                        <IntermediatePoint xCoordinate="883.41797" yCoordinate="268.0"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="-68.9332" ty="-154.8981" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

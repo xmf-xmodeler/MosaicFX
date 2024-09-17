@@ -3,25 +3,17 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import java.util.Collections;
 import java.util.Vector;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.Skin;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
-import javafx.util.converter.DefaultStringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -106,12 +98,7 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	                super.updateItem(text, empty);
 	                if (text != null) {
 	                	setText(text);
-//	                	System.err.println(getIndex() + " ? " + tableView.getSelectionModel().getSelectedIndices());
-//	                	if(!(tableView.getSelectionModel().getSelectedItem() == tableView.getItems().get(getIndex()))) {
 	                		setStyle(tableView.getItems().get(getIndex()).getColor());
-//	                	} else {
-//	                		System.err.println("none");
-//	                	}
 	                } else { setText(""); setGraphic(null); }
 	            }
 	        };

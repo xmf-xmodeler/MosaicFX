@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Class Example</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content">
+		<h1>2. Theoretical Background:</h1>
+		<p>
+			In the examples and exercises of the preceding learning units, slot
+			values had to be entered manually. In some cases, however, they might
+			also be determined by calculation. The attributes of such slots are
+			called <i>derivable attributes</i>. Derivable attributes are
+			attributes the value of which is either (i) already indirectly
+			available within the model or (ii) dependent on some other attribute
+			with a constant value not yet depicted within the model. That is, the
+			slots of derivable attributes can be <i>calculated</i> rather then
+			entered manually. This calculation requires the use of operations.
+			Operations consist of a signature and an operation body. The
+			signature determines the name of the operation, its input parameters
+			(each of which has a name and a type), and its return type.
+			Operations are specified at the class level (they are a property of
+			classes) and executed at the object level. UML++ uses the Executable
+			Object Constraint Language (XOCL) for the specification of
+			operations. The XOCL is a variant of the widely distributed OCL
+			standard.
+		</p>
+		<h1>Illustration in Tool:</h1>
+		<h2>For (i): “already available in model”</h2>
+		<ol>
+			<li>Show class and object diagram with derivable attribute of
+				kind (i).
+				<ul>
+					<li>For example: number of products ordered, total amount of
+						order</li>
+				</ul>
+			</li>
+			<li>Change object diagram so that derivable slot violates model
+				integrity</li>
+			<li>Add operation that automatically calculates value</li>
+		</ol>
+
+		<h2>For (ii): “dependent on some other attribute not yet 
+			depicted”</h2>
+		<ol>
+			<li>Show class and object diagram with derivable attribute of
+				kind (ii) (e.g., age)</li>
+			<li>Show explanation why this may violate model integrity</li>
+			<li>Add “base” attribute the derivable attribute is dependent on
+				(e.g., dateOfBirth)</li>
+			<li>Add operation that automatically calculates derivable slot</li>
+			<li>Change base attribute to showcase dynamic calculation</li>
+		</ol>
+	</div>
+</body>
+</html>

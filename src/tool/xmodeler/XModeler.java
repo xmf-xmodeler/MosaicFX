@@ -31,6 +31,8 @@ import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import xos.OperatingSystem;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,10 +45,15 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static org.burningwave.core.assembler.StaticComponentContainer.Modules;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 //import com.ceteva.oleBridge.OleBridgeClient;
 //import com.ceteva.undo.UndoClient;
@@ -62,18 +69,15 @@ public class XModeler extends Application {
   
   static final String    NAME                = "XModeler";
   static String          busyMessage         = "";
-  static int             TOOL_X              = 100;
-  static int             TOOL_Y              = 100;
-  static int             TOOL_WIDTH          = 1200;
-  static int             TOOL_HEIGHT         = 900;
   static OperatingSystem xos                 = new OperatingSystem();
   static String          projDir             = null;
   static String          loadedImagePath     = null;
   static String          version             = "";
+  static String          buildDate           = null;
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
-  public static PropertyManager propertyManager 	 = new PropertyManager("user.properties");
+  public static PropertyManager propertyManager 	 = new PropertyManager();
 
   //JavaFX
   static Stage 			 stage 		 		 = null;
@@ -87,10 +91,18 @@ public class XModeler extends Application {
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
-  public static ControlCenter  newStage            = null;
+  public static ControlCenter  controlCenterStage            = null;
 
-    public static ControlCenter getNewStage() {
-        return newStage;
+  public static String getVersion() {
+	return version;
+  }
+
+  public static String getBuildDate() {
+	return buildDate;
+  }
+
+	public static ControlCenter getNewStage() {
+        return controlCenterStage;
     }
 
     public static String attributeValue(Node node, String name) {
@@ -166,10 +178,19 @@ public class XModeler extends Application {
     return menuBar;
   }
 
-  private static String getVersion(String[] args) {
+  private static String setVersion(String[] args) {
       for (String arg : args) {
           if (arg.startsWith("version:")) {
               return arg.replace("version:", "");
+          }
+      }
+    return "";
+  }
+  
+  private static String setBuildDate(String[] args) {
+      for (String arg : args) {
+          if (arg.startsWith("buildDate:")) {
+              return arg.replace("buildDate:", "");
           }
       }
     return "";
@@ -183,11 +204,6 @@ public class XModeler extends Application {
 	  return propertyManager;
   }
 
-//  @Deprecated 
-//  public static Shell getXModeler() {
-//    return null;
-//  }
-
   private static String img2xml(String imgString) {
     File img = new File(imgString);
     File path = img.getParentFile();
@@ -199,9 +215,6 @@ public class XModeler extends Application {
 
   public static void inflate(String inflationPath) {
     inflationPath = img2xml(loadedImagePath);
-    // System.err.println("loadedImagePath: " + loadedImagePath);
-    // System.err.println("inflationPath: " + inflationPath);
-    // new RuntimeException("XML").printStackTrace();
     try {
       File fXmlFile = new File(inflationPath);
       if (fXmlFile.exists()) {
@@ -212,21 +225,13 @@ public class XModeler extends Application {
         String root = doc.getDocumentElement().getNodeName();
         Node node = doc.getDocumentElement();
         if (root.equals("XModeler")) {
-          final int x = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "x")));
-          final int y = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "y")));
-          final int width = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "width")));
-          final int height = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "height")));
-          stage.setX(x);
-          stage.setY(y);
-          stage.setHeight(height);
-          stage.setWidth(width);
+          FmmlxDiagramCommunicator.initCommunicator();        
           ModelBrowserClient.theClient().inflateXML(doc);
           DiagramClient.theClient().inflateXML(doc);
           MenuClient.theClient().inflateXML(doc);
           EditorClient.theClient().inflateXML(doc);
           ConsoleClient.theConsole().inflateXML(doc);
           FormsClient.theClient().inflateXML(doc);
-          FmmlxDiagramCommunicator.initCommunicator();        
         }
       }
     } catch (Throwable e) {
@@ -242,23 +247,16 @@ public class XModeler extends Application {
     return null;
   }
 
-  private static String lookupArg(String string, String[] args) {
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equals("-arg") && args[i + 1].startsWith("projects:")) { return args[i + 1].substring(9); }
-    }
-    return null;
-  }
+//  private static String lookupArg(String string, String[] args) {
+//    for (int i = 0; i < args.length; i++) {
+//      if (args[i].equals("-arg") && args[i + 1].startsWith("projects:")) { return args[i + 1].substring(9); }
+//    }
+//    return null;
+//  }
 
   public static void main(String[] args) {
 	  System.setProperty("prism.order", "sw");
 	  Locale.setDefault(Locale.ENGLISH);
-//	try {
-//		PrintStream R = new PrintStream(new File("err.txt"));
-//		System.setErr(R);
-//	} catch (FileNotFoundException e) {
-//		e.printStackTrace();
-//	} 
-	  
 	// Prevent loggin of external library
 	PrintStream out = System.out;
 	OutputStream tmp = new OutputStream() {
@@ -367,8 +365,9 @@ public class XModeler extends Application {
   }
 
   private static void setProjectDirectory(String[] args) {
-    projDir = lookupArg("projects", args);
-    if (projDir == null) throw new Error("you have not set the project directory in the initialisation arguments:\n" + Arrays.toString(args));
+    projDir = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
+//	 projDir = lookupArg("projects", args);
+//    if (projDir == null) throw new Error("you have not set the project directory in the initialisation arguments:\n" + Arrays.toString(args));
   }
 
 	public static void setToolTitle() {
@@ -431,7 +430,6 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
     WorkbenchClient.theClient().startFmmlxClient();
-//    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
   public static void initClients() { // only sets the tab pane
@@ -444,28 +442,28 @@ public class XModeler extends Application {
 	  //ClassBrowserClient.start();
   }
   
-  public static void openXModeler() {
-		stage.show();
-  }
-
     @Override
   public void start(Stage primaryStage) throws Exception {
       stage = primaryStage;
-      createXmodeler();
+      buildXmodelerStage();
 	  startXOS(copyOfArgs[0]);
 	  singleton = this;
 	  initClients();
       startClients();
-	  //openXModeler();
-      newStage = new ControlCenter();
-      stage= newStage;
-      newStage.show();
+      controlCenterStage = new ControlCenter();
+      int toolX = Integer.valueOf(PropertyManager.getProperty("toolX"));
+      controlCenterStage.setX(toolX);
+      int toolY = Integer.valueOf(PropertyManager.getProperty("toolY"));
+      controlCenterStage.setY(toolY);
+      stage= controlCenterStage;
+      controlCenterStage.show(); 
       
   }
+    
+  
 
 
-
-    public void createXmodeler() throws Exception {
+    public void buildXmodelerStage() throws Exception {
 	  		outerSplitPane = new SplitPane();
 			// Tabs for projects
 //			browserTab = new TabPane();
@@ -493,17 +491,12 @@ public class XModeler extends Application {
 			notificationPane.setMouseTransparent(true);
 			// set on top of each other for notifications
 			StackPane stackPane = new StackPane(containingBox, notificationPane);
-			
 			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
-			scene = new Scene(stackPane, TOOL_WIDTH, TOOL_HEIGHT);
-			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
+			scene = new Scene(stackPane);
 			scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
 			// Set up Stage
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
-			
-			stage.setX(PropertyManager.getProperty("TOOL_X", TOOL_X));
-			stage.setY(PropertyManager.getProperty("TOOL_Y", TOOL_Y));
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
@@ -525,10 +518,6 @@ public class XModeler extends Application {
 	  Platform.runLater(()->{
           	stage.close();
           	busyMessage = "";
-          	TOOL_X = 100;
-          	TOOL_Y = 100;
-          	TOOL_WIDTH = 1200;
-          	TOOL_HEIGHT = 900;
           	xos = new OperatingSystem();
           	loadedImagePath = null;
           	showLoad = true;
@@ -544,7 +533,9 @@ public class XModeler extends Application {
     final String[] args = xos.getInitArgs(initFile);
     // /*QUICKFIX FOR HI_RES*/FormsClient.HIGH_RESOLUTION = checkHiRes(args);
     setProjectDirectory(args);
-    version = getVersion(args);
+    version = setVersion(args);
+    buildDate = setBuildDate(args);
+    
     setImage(args);
     Thread t = new Thread() {
       public void run() {
@@ -604,16 +595,18 @@ public class XModeler extends Application {
 //  }
 
     public static void finishOpenDiagramFromXml() {
-	    newStage.getControlCenterClient().getAllProjects();
+	    controlCenterStage.getControlCenterClient().getAllProjects(); // TODO get rid of
     }
 
     public static void bringControlCenterToFront() {
-	    Platform.runLater(() -> newStage.toFront());
+	    Platform.runLater(() -> controlCenterStage.toFront());
     }
 
     public static void bringControlCenterToBack() {
-        Platform.runLater(() -> newStage.toBack());
+        Platform.runLater(() -> controlCenterStage.toBack());
     }
+    
+    public static boolean isAlphaMode() {return "true".equals(PropertyManager.getProperty("alphaMode"));}
 }
 
 @SuppressWarnings("unchecked")
@@ -640,4 +633,5 @@ class AllModulesToAllModulesExporter {
 //    		exc.printStackTrace();
     	}
     }
+    
 }

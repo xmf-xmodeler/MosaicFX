@@ -42,7 +42,7 @@ public class SVGReader {
 		return readSVG(new File(fileName), affine);
 	}
 
-	static SVGGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
+	public static SVGGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
 		Document doc = f.createDocument(file.toURI().toString());

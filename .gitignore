@@ -8,13 +8,9 @@
 /resources/tmp4ops/*
 
 # user
-/ini_Bjoern_win_multi.txt
-/ini_Bjoern_win.txt
-/classpath-jens
-/ini-Jens-linux.txt
-/ini-Jens-win.txt
 /user_properties.xml
-*.properties
+/user.properties
+user.properties
 /ini3.txt
 
 # /doc/old/RequirementsAndSpecifications/.gitignore
@@ -27,9 +23,16 @@
 
 # /build/.gitignore
 /build/output/
+/build/build.properties
+
 
 # Test
 /XModeler2.launch
 
 #wahidClassPath
 /.classpath
+
+#ignore log files
+logs/*
+/testXMLImport.xml
+/testXMLTransformation.xml

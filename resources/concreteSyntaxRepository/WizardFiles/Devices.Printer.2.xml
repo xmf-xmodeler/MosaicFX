@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::Devices::Printer" level="2">
+  <Import path="printerSymbol.xml" id="symbol"/>  
+</ConcreteSyntax>

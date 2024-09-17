@@ -42,6 +42,4 @@ tool.console.ConsoleClient:com.ceteva.console
 -arg
 projects:
 -arg
-initFile:./xmf-addons/Multilevel-Editor/boot_XMF2.o
--arg
 version:@@VERSION@@

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Class Example</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content">
+		<h1>2. Theoretical Background</h1>
+		<p>
+			Generalization/Specialization is a central feature of object-oriented
+			languages. While classification (see LU1) serves as an abstraction
+			over objects, generalization serves as an abstraction over classes. A
+			generalized class is called the superclass or ancestor of its
+			specialized classes, which are referred to as subclasses or
+			descendants. The key mechanism of specialization is inheritance.
+			Through <i>inheritance</i> all properties that are specified in the
+			superclass are available to all subclasses. These properties may be
+			overwritten (and results in a form of <i>polymorphy</i>, not
+			discussed here) and extended. “Extended” means that each subclass may
+			add their own properties which are not available to any other
+			subclass. Through generalization/specialization, we desire to
+			construct more general abstractions and aim at improving reusability
+			and maintainability. Subclasses should always serve as a substitute
+			to its superclass (the <i>substitution principle</i>). A violation to
+			this principle might lead to violations of model integrity.
+			Sometimes, it is reasonable to add generalization/specialization
+			hierarchies to realize benefits of reusability and maintainability
+			only. In such cases, we might want to prohibit that superclasses can
+			be instantiated into objects themselves. To prohibit the
+			instantiation of objects, we can make the class abstract. An abstract
+			class is a class which cannot be instantiated. Further difficulties
+			of generalization/Specialization are discussed in LU7.
+		</p>
+		<h1>Illustration in Tool:</h1>
+		<h2>A: Inheritance</h2>
+		<ol>
+			<li>Show class diagram with potential for inheritance (same
+				attributes, same association)
+				<ul>
+					<li>Important: clarify that these classes also share a common,
+						conceptual ancestor -> reusability and maintainability depend on
+						the quality of the abstraction</li>
+				</ul>
+			</li>
+			<li>Introduce superclass and inherit all properties.</li>
+			<li>Show object diagram: properties of superclass are also
+				available.</li>
+			<li>But: we can also instantiate the superclass. We want to
+				avoid this by making our superclass abstract.</li>
+		</ol>
+
+		<h2>B: Substitutability principle</h2>
+		<ol>
+			<li>Show class diagram where substitutability constraint is
+				violated.</li>
+			<li>Show object diagram that leads to confusion.</li>
+		</ol>
+
+
+	</div>
+
+</body>
+</html>

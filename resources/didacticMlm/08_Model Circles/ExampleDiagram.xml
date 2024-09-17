@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="">
+    <Imports/>
+    <Model name="Root::ExampleDiagram">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Employee" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Department" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Manager" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="manager1" of="Root::ExampleDiagram::Manager" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="department1" of="Root::ExampleDiagram::Department" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee1" of="Root::ExampleDiagram::Employee" package="Root::ExampleDiagram" singleton="false"/>
+        <addAttribute class="Root::ExampleDiagram::Department" level="0" multiplicity="Seq{1,1,true,false}" name="departmentname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Department" level="0" multiplicity="Seq{1,1,true,false}" name="id" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Employee" level="0" multiplicity="Seq{1,1,true,false}" name="firstname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Employee" level="0" multiplicity="Seq{1,1,true,false}" name="id" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Employee" level="0" multiplicity="Seq{1,1,true,false}" name="lastname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Manager" level="0" multiplicity="Seq{1,1,true,false}" name="firstname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Manager" level="0" multiplicity="Seq{1,1,true,false}" name="id" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Manager" level="0" multiplicity="Seq{1,1,true,false}" name="lastname" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleDiagram::department1" package="Root::ExampleDiagram" slotName="departmentname" valueToBeParsed="[83,97,108,101,115].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::department1" package="Root::ExampleDiagram" slotName="id" valueToBeParsed="2"/>
+        <changeSlotValue class="Root::ExampleDiagram::employee1" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[65,108,105,99,101].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::employee1" package="Root::ExampleDiagram" slotName="id" valueToBeParsed="0"/>
+        <changeSlotValue class="Root::ExampleDiagram::employee1" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[83,109,105,116,104].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::manager1" package="Root::ExampleDiagram" slotName="firstname" valueToBeParsed="[65,108,105,99,101].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::manager1" package="Root::ExampleDiagram" slotName="id" valueToBeParsed="0"/>
+        <changeSlotValue class="Root::ExampleDiagram::manager1" package="Root::ExampleDiagram" slotName="lastname" valueToBeParsed="[83,109,105,116,104].asString()"/>
+        <addAssociation accessSourceFromTargetName="departmentmanaged_by" accessTargetFromSourceName="departmentmanaged_by" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Department" classTarget="Root::ExampleDiagram::Manager" fwName="managed_by" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="employeesupervised_by" accessTargetFromSourceName="employeesupervised_by" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Employee" classTarget="Root::ExampleDiagram::Manager" fwName="supervised_by" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="employeeworks_for" accessTargetFromSourceName="employeeworks_for" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Employee" classTarget="Root::ExampleDiagram::Department" fwName="works_for" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleDiagram::department1" classTarget="Root::ExampleDiagram::manager1" name="departmentmanaged_by" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::employee1" classTarget="Root::ExampleDiagram::department1" name="employeeworks_for" package="Root::ExampleDiagram"/>
+        <addLink classSource="Root::ExampleDiagram::employee1" classTarget="Root::ExampleDiagram::manager1" name="employeesupervised_by" package="Root::ExampleDiagram"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="example" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleDiagram::Department" xCoordinate="513" yCoordinate="136"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::manager1" xCoordinate="886" yCoordinate="594"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::employee1" xCoordinate="292" yCoordinate="542"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Employee" xCoordinate="163" yCoordinate="232"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::department1" xCoordinate="627" yCoordinate="462"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Manager" xCoordinate="920" yCoordinate="223"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Employee::employeeworks_for" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="413.51587" yCoordinate="270.03516"/>
+                        <IntermediatePoint xCoordinate="413.51587" yCoordinate="181.98308"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::employee1/Root::ExampleDiagram::manager1/AssociationMapping: Root::ExampleDiagram::Employee::employeesupervised_by" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="646.7124" yCoordinate="614.0703"/>
+                        <IntermediatePoint xCoordinate="646.7124" yCoordinate="666.3861"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Department::departmentmanaged_by" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="776.51587" yCoordinate="181.98308"/>
+                        <IntermediatePoint xCoordinate="776.51587" yCoordinate="261.03516"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::employee1/Root::ExampleDiagram::department1/AssociationMapping: Root::ExampleDiagram::Employee::employeeworks_for" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="524.9719" yCoordinate="578.03516"/>
+                        <IntermediatePoint xCoordinate="524.9719" yCoordinate="505.4001"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleDiagram::department1/Root::ExampleDiagram::manager1/AssociationMapping: Root::ExampleDiagram::Department::departmentmanaged_by" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="819.9719" yCoordinate="505.4001"/>
+                        <IntermediatePoint xCoordinate="819.9719" yCoordinate="630.35095"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="51.206764" ty="15.364237" xx="1.0905077"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

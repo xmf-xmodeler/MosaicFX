@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Test::HauptsignalForm3" level="0">
+	<SVG path="hf3.svg" id="main"/>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="0"/>
+		<Affected id="main" localId="hp0"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="1"/>
+		<Affected id="main" localId="hp1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification> 
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="2"/>
+		<Affected id="main" localId="hp2"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="E"/>
+		<Affected id="main" localId="zs1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>	 
+	<Action id="main" localId="layer2" type="CHANGE_SLOT_VALUE:status"/>
+</ConcreteSyntax>

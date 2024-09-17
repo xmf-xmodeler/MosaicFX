@@ -2,23 +2,35 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import java.util.Arrays;
 
-import javax.management.RuntimeErrorException;
-
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Modification {
+public class Modification{
 	
-	private Condition condition;
+	private Condition<?> condition;
 	private Consequence consequence;
 	private String affectedId;
 	private String affectedParentId;
 	
+	public String getID() {return affectedId;} 
+	public String getParentID() {return affectedParentId;} 
+	public Consequence getConsequence() {return consequence;} 
+	public Condition<?> getCondition() {return condition;}
+	
 	public static enum Consequence{
 		SHOW_ALWAYS, SHOW_NEVER,
-		SHOW_IF, SHOW_IF_NOT,
-		READ_FROM_SLOT}		
+		SHOW_IF, SHOW_IF_NOT, SHOW_ON_FAIL,
+		READ_FROM_SLOT,
+		SET_COLOR}		
+	
+	public Modification(Condition<?> condition, Consequence consequence, String affectedId, String affectedParentId) {
+		this.condition = condition;
+		this.consequence = consequence;
+		this.affectedId = affectedId;
+		this.affectedParentId = affectedParentId;
+	}
 	
 	public Modification(Element modElement) {
 		Element conditionElement = null;
@@ -60,13 +72,37 @@ public class Modification {
 			} else if("BooleanSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				condition = new Condition.BooleanSlotCondition(slotName);
+			} else if("BooleanOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				condition = new Condition.BooleanOpValCondition(opName);
+			} else if("BooleanConstraintCondition".equals(conditionType)) {
+				String conName =  conditionElement.getAttribute("conName");
+				condition = new Condition.BooleanConstraintCondition(conName);
 			} else if("ReadFromOpValCondition".equals(conditionType)) {
 				String opName = conditionElement.getAttribute("opName");
 				condition = new Condition.ReadFromOpValCondition(opName);
 			} else if("StringMatchSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				String match = conditionElement.getAttribute("match");
-				condition = new Condition.StringMatchSlotCondition(slotName,match);
+				condition = new Condition.StringMatchSlotCondition(slotName, match);
+			} else if("StringMatchOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				String match = conditionElement.getAttribute("match");
+				condition = new Condition.StringMatchOpValCondition(opName, match);
+			} else if("SlotNumCompareCondition".equals(conditionType) || "NumCompareSlotCondition".equals(conditionType)) {
+				String slotName =  conditionElement.getAttribute("slotName");
+				Double low = Double.NEGATIVE_INFINITY;
+				Double high = Double.POSITIVE_INFINITY;
+				try{low = Double.parseDouble(conditionElement.getAttribute("lowBound"));} catch (Exception e) {}
+				try{high = Double.parseDouble(conditionElement.getAttribute("highBound"));} catch (Exception e) {}
+				condition = new Condition.NumCompareSlotCondition(slotName, low, high);
+			} else if("NumCompareOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				Double low = Double.NEGATIVE_INFINITY;
+				Double high = Double.POSITIVE_INFINITY;
+				try{low = Double.parseDouble(conditionElement.getAttribute("lowBound"));} catch (Exception e) {}
+				try{high = Double.parseDouble(conditionElement.getAttribute("highBound"));} catch (Exception e) {}
+				condition = new Condition.NumCompareOpValCondition(opName, low, high);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}
@@ -86,10 +122,27 @@ public class Modification {
 		
 	}
 
-	public String getID() {return affectedId;} 
-	public String getParentID() {return affectedParentId;} 
-	public Consequence getConsequence() {return consequence;} 
-	public Condition getCondition() {return condition;} 
+	@Override 
+	public String toString() {
+		return affectedId + " " + consequence + " " + condition + ".";
+	}
+	
+	public Node save(Document document) { Element modificationElement = document.createElement("Modification");
+		Element conditionElement = document.createElement("Condition");
+		modificationElement.appendChild(conditionElement);
+		condition.save(conditionElement);
+			 
+		Element affectedElement = document.createElement("Affected");
+		modificationElement.appendChild(affectedElement);
+		affectedElement.setAttribute("id", affectedParentId);
+		affectedElement.setAttribute("localId", affectedId);
+		
+		
+		Element consequenceElement = document.createElement("Consequence");
+		modificationElement.appendChild(consequenceElement);
+		consequenceElement.setAttribute("type", consequence.toString());
+		return modificationElement;
+	} 
 		
 	
 }

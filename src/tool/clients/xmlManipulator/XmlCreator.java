@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import javafx.geometry.Bounds;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
-import tool.clients.serializer.SerializerConstant;
+import tool.helper.persistence.SerializerConstant;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +22,11 @@ import java.io.File;
 *This class has two creators.
 *   First, Creator to create XML files used to keep FMMlx Data Data.
 *   Second, creator to make the SVG file used to export the FmmlxDiagram into a graphic asset*/
+
+/**
+ * @deprecated use instead {@link XMLCreator}.
+ */
+@Deprecated
 public class XmlCreator {
     private static final int version = SerializerConstant.SERIALIZER_VERSION;
 
@@ -38,7 +43,7 @@ public class XmlCreator {
     }
 
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store FMMLXDiagram data.*/
-    private void initXML(Document document) {
+    public static void initXML(Document document) {
         Element root = document.createElement(SerializerConstant.TAG_NAME_ROOT);
         document.appendChild(root);
 
@@ -48,7 +53,7 @@ public class XmlCreator {
         Element projects = document.createElement(SerializerConstant.TAG_NAME_PROJECTS);
         Element diagrams = document.createElement(SerializerConstant.TAG_NAME_DIAGRAMS);
         Element logs = document.createElement(SerializerConstant.TAG_NAME_LOGS);
-
+        
         root.appendChild(formatVersion);
         root.appendChild(categories);
         root.appendChild(projects);

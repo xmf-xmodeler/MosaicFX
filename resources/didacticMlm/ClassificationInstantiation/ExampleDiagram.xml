@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ToolIntroductionABC" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ToolIntroductionABC">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Ticket" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Customer" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Movie" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="MovieShowing" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="ticket2" of="Root::ToolIntroductionABC::Ticket" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movie2" of="Root::ToolIntroductionABC::Movie" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="ticket1" of="Root::ToolIntroductionABC::Ticket" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movieShowing2" of="Root::ToolIntroductionABC::MovieShowing" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ToolIntroductionABC::Customer" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movieShowing1" of="Root::ToolIntroductionABC::MovieShowing" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movie1" of="Root::ToolIntroductionABC::Movie" package="Root::ToolIntroductionABC" singleton="false"/>
+        <addEnumeration name="RatingEnum"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="G"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="PG_13"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="R"/>
+        <addAttribute class="Root::ToolIntroductionABC::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ToolIntroductionABC" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ToolIntroductionABC::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ToolIntroductionABC" type="Root::XCore::String"/>
+        <addAttribute class="Root::ToolIntroductionABC::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ToolIntroductionABC" type="Root::XCore::String"/>
+        <addAttribute class="Root::ToolIntroductionABC::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="durationInMinutes" package="Root::ToolIntroductionABC" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ToolIntroductionABC::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="rating" package="Root::ToolIntroductionABC" type="Root::ToolIntroductionABC::RatingEnum"/>
+        <addAttribute class="Root::ToolIntroductionABC::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="title" package="Root::ToolIntroductionABC" type="Root::XCore::String"/>
+        <addAttribute class="Root::ToolIntroductionABC::MovieShowing" level="0" multiplicity="Seq{1,1,true,false}" name="showDate" package="Root::ToolIntroductionABC" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ToolIntroductionABC::Ticket" level="0" multiplicity="Seq{1,1,true,false}" name="price" package="Root::ToolIntroductionABC" type="Root::XCore::Float"/>
+        <addOperation body="@Operation getAge[monitor=true]():XCore::Integer&#10;  if self.dateOfBirth &lt;&gt; null&#10;  then self.dateOfBirth.age()&#10;  else &quot;No date of birth entered&quot;&#10;  end &#10;end" class="Root::ToolIntroductionABC::Customer" level="0" monitored="true" name="getAge" package="Root::ToolIntroductionABC" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation requiredAgeToWatch[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  if rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(&quot;PG_13&quot;)&#10;  then 13&#10;  elseif rating = Root::ToolIntroductionABC::RatingEnum.getEnumElement(&quot;R&quot;)&#10;  then 17&#10;  else 0&#10;  end &#10;end" class="Root::ToolIntroductionABC::Movie" level="0" monitored="true" name="requiredAgeToWatch" package="Root::ToolIntroductionABC" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addConstraint body="self.customerbuys.getAge() &gt;= self.movieshowing.movieshown_in.requiredAgeToWatch()" class="Root::ToolIntroductionABC::Ticket" constName="mayWatchMovie" instLevel="0" package="Root::ToolIntroductionABC" reason="&quot;Customer not allowed to watch the movie.&quot;"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::customer1" package="Root::ToolIntroductionABC" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2010, 6, 17)"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::customer1" package="Root::ToolIntroductionABC" slotName="firstName" valueToBeParsed="[74,111,115,105,101].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::customer1" package="Root::ToolIntroductionABC" slotName="lastName" valueToBeParsed="[68,111,117,103,104].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie1" package="Root::ToolIntroductionABC" slotName="durationInMinutes" valueToBeParsed="122"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie1" package="Root::ToolIntroductionABC" slotName="rating" valueToBeParsed="[82].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie1" package="Root::ToolIntroductionABC" slotName="title" valueToBeParsed="[74,111,107,101,114].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie2" package="Root::ToolIntroductionABC" slotName="durationInMinutes" valueToBeParsed="195"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie2" package="Root::ToolIntroductionABC" slotName="rating" valueToBeParsed="[80,71,95,49,51].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movie2" package="Root::ToolIntroductionABC" slotName="title" valueToBeParsed="[84,105,116,97,110,105,99].asString()"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movieShowing1" package="Root::ToolIntroductionABC" slotName="showDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 7)"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::movieShowing2" package="Root::ToolIntroductionABC" slotName="showDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 6, 3)"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::ticket1" package="Root::ToolIntroductionABC" slotName="price" valueToBeParsed="10.6"/>
+        <changeSlotValue class="Root::ToolIntroductionABC::ticket2" package="Root::ToolIntroductionABC" slotName="price" valueToBeParsed="2.0"/>
+        <addAssociation accessSourceFromTargetName="customerbuys" accessTargetFromSourceName="ticket" associationType="Root::Associations::DefaultAssociation" classSource="Root::ToolIntroductionABC::Customer" classTarget="Root::ToolIntroductionABC::Ticket" fwName="buys" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ToolIntroductionABC" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="movieshown_in" accessTargetFromSourceName="movieshown_in" associationType="Root::Associations::DefaultAssociation" classSource="Root::ToolIntroductionABC::Movie" classTarget="Root::ToolIntroductionABC::MovieShowing" fwName="shown_in" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ToolIntroductionABC" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="ticket" accessTargetFromSourceName="movieshowing" associationType="Root::Associations::DefaultAssociation" classSource="Root::ToolIntroductionABC::Ticket" classTarget="Root::ToolIntroductionABC::MovieShowing" fwName="valid_for" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ToolIntroductionABC" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ToolIntroductionABC::customer1" classTarget="Root::ToolIntroductionABC::ticket1" name="ticket" package="Root::ToolIntroductionABC"/>
+        <addLink classSource="Root::ToolIntroductionABC::customer1" classTarget="Root::ToolIntroductionABC::ticket2" name="ticket" package="Root::ToolIntroductionABC"/>
+        <addLink classSource="Root::ToolIntroductionABC::movie1" classTarget="Root::ToolIntroductionABC::movieShowing1" name="movieshown_in" package="Root::ToolIntroductionABC"/>
+        <addLink classSource="Root::ToolIntroductionABC::movie2" classTarget="Root::ToolIntroductionABC::movieShowing2" name="movieshown_in" package="Root::ToolIntroductionABC"/>
+        <addLink classSource="Root::ToolIntroductionABC::ticket1" classTarget="Root::ToolIntroductionABC::movieShowing2" name="movieshowing" package="Root::ToolIntroductionABC"/>
+        <addLink classSource="Root::ToolIntroductionABC::ticket2" classTarget="Root::ToolIntroductionABC::movieShowing1" name="movieshowing" package="Root::ToolIntroductionABC"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ToolIntroductionDiagramXYZ" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::movie1" xCoordinate="17" yCoordinate="648"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::customer1" xCoordinate="914" yCoordinate="464"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::Customer" xCoordinate="400" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::MovieShowing" xCoordinate="1205" yCoordinate="127"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::ticket2" xCoordinate="57" yCoordinate="497"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::ticket1" xCoordinate="54" yCoordinate="393"/>
+                <Instance hidden="true" path="Root::ToolIntroductionABC::RatingEnum" xCoordinate="-433" yCoordinate="283"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::Ticket" xCoordinate="-61" yCoordinate="102"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::movie2" xCoordinate="-48" yCoordinate="242"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::Movie" xCoordinate="589" yCoordinate="-33"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::movieShowing1" xCoordinate="975" yCoordinate="651"/>
+                <Instance hidden="false" path="Root::ToolIntroductionABC::movieShowing2" xCoordinate="800" yCoordinate="250"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::customer1/Root::ToolIntroductionABC::ticket1/AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="687.5314" yCoordinate="507.78525"/>
+                        <IntermediatePoint xCoordinate="687.5314" yCoordinate="436.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ToolIntroductionABC::customer1/Root::ToolIntroductionABC::ticket1/AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" xCoordinate="204.59659" yCoordinate="-3.8018105"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::customer1/Root::ToolIntroductionABC::ticket2/AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="555.5901" yCoordinate="529.9063"/>
+                        <IntermediatePoint xCoordinate="555.5901" yCoordinate="529.5775"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ToolIntroductionABC::customer1/Root::ToolIntroductionABC::ticket2/AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" xCoordinate="52.829113" yCoordinate="-16.314245"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="275.29395" yCoordinate="57.052734"/>
+                        <IntermediatePoint xCoordinate="275.29395" yCoordinate="133.82812"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ToolIntroductionABC::Customer::ticket" xCoordinate="-41.86072" yCoordinate="-5.3042235"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::ticket1/Root::ToolIntroductionABC::movieShowing2/AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="752.9461" yCoordinate="422.87677"/>
+                        <IntermediatePoint xCoordinate="752.9461" yCoordinate="293.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ToolIntroductionABC::ticket1/Root::ToolIntroductionABC::movieShowing2/AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" xCoordinate="-115.11525" yCoordinate="20.588009"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ToolIntroductionABC::Movie::movieshown_in" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="820.7157" yCoordinate="13.7064"/>
+                        <IntermediatePoint xCoordinate="820.7157" yCoordinate="150.54648"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ToolIntroductionABC::Movie::movieshown_in" xCoordinate="-32.27903" yCoordinate="29.647167"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::ticket2/Root::ToolIntroductionABC::movieShowing1/AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" sourcePort="SOUTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="106.70819" yCoordinate="594.8633"/>
+                        <IntermediatePoint xCoordinate="558.69214" yCoordinate="594.8633"/>
+                        <IntermediatePoint xCoordinate="558.69214" yCoordinate="672.28064"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ToolIntroductionABC::ticket2/Root::ToolIntroductionABC::movieShowing1/AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" xCoordinate="-325.36707" yCoordinate="-38.396667"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="466.79395" yCoordinate="149.24219"/>
+                        <IntermediatePoint xCoordinate="466.79395" yCoordinate="174.24219"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ToolIntroductionABC::Ticket::movieshowing" xCoordinate="-55.424374" yCoordinate="-15.580094"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::movie1/Root::ToolIntroductionABC::movieShowing1/AssociationMapping: Root::ToolIntroductionABC::Movie::movieshown_in" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="563.13403" yCoordinate="714.6338"/>
+                        <IntermediatePoint xCoordinate="563.13403" yCoordinate="693.90173"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ToolIntroductionABC::movie2/Root::ToolIntroductionABC::movieShowing2/AssociationMapping: Root::ToolIntroductionABC::Movie::movieshown_in" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="556.49927" yCoordinate="285.35666"/>
+                        <IntermediatePoint xCoordinate="556.49927" yCoordinate="271.6211"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="240.09647" ty="40.589413" xx="0.70710677"/>
+                <View name="Main View" tx="361.24506" ty="-7.9937286" xx="0.70710677"/>
+                <View name="Main View" tx="207.93144" ty="64.8246" xx="0.6484198"/>
+                <View name="Main View" tx="209.1373" ty="125.305275" xx="0.6484198"/>
+                <View name="Main View" tx="248.24088" ty="115.61698" xx="0.59460354"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

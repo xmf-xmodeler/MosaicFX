@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::Devices::Printer" level="0">
+  <ImportMeta path="Devices.Printer.1.xml" id="of" xx="0.6" yy="0.6"/>
+  <Group tx="-42.56219070589735" ty="-63.39682951297997" xx="1.0" xy="0.0" yx="0.0" yy="1.0">
+    <SVG id="svg6" path="../ITML/ITML_Multi23/LowInk.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+    <SVG id="svg4" path="../ITML/ITML_Multi23/LowPaper.svg" tx="30.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+    <SVG id="svg5" path="../ITML/ITML_Multi23/NoWiFi.svg" tx="60.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  </Group>
+  <Label align="CENTER" bgColor="0x00000000" color="0x4d804dff" id="label1" tx="0" ty="65.1963478652896" xx="1.7411011265922482" xy="0.0" yx="0.0" yy="1.7411011265922482"/>
+  <Modification>
+    <Condition slotName="ignore" type="BooleanSlotCondition"/>
+    <Affected id="of" localId="label0"/>
+    <Consequence type="SHOW_NEVER"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="inkLow" type="BooleanSlotCondition"/>
+    <Affected id="svg6" localId="svg6"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="paperLow" type="BooleanSlotCondition"/>
+    <Affected id="svg4" localId="svg4"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="wifiProblem" type="BooleanSlotCondition"/>
+    <Affected id="svg5" localId="svg5"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="ipAddress" type="ReadFromSlot"/>
+    <Affected id="label1" localId="label1"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

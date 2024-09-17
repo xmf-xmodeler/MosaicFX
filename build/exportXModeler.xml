@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="exportProject" basedir=".">
+	<description>
+	This script first executes buildXMF. Afterwards AutoMLM is copied to the project folder.
+	All needes files are packed into a Zip-Archive which can be provided to an end user.
+	</description>
+	<property file="build.properties"/>
+	<target name="exportProject" depends="compile, initExport, packProject">
+		<antcall target="zip"/>
+		<antcall target="makeSetupExe"/>
+	</target>
+	<target name="makeSetupExe">
+		<property name="makeScriptPath" value="./startSetupScript.ps1"/>
+		<!-- Defined in build.properties -->
+		<property name="innoSetupPath" value="${path_to_innosetup}"/>
+		<!-- Call PowerShell script -->
+		<exec executable="powershell" failonerror="true">
+			<arg value="-File"/>
+			<arg value="${makeScriptPath}"/>
+			<arg value="${innoSetupPath}"/>
+		</exec>
+	</target>
+	<target name="zip">
+		<zip destfile="${outputArchive}" compress="yes" duplicate="fail">
+			<zipfileset dir="${outputDirectory}"/>
+		</zip>
+	</target>
+	<target name="compile">
+		<ant antfile="buildXMF.xml"/>
+	</target>
+	<target name="packProject">
+		<ant antfile="packXModeler.xml"/>
+	</target>
+	<target name="initExport">
+		<property name="outputDirectory" location="output/XModeler"/>
+		<property name="outputArchive" location="output/XModeler-${version}.zip"/>
+		 <delete verbose="true">
+            <dirset dir="output" includes="*/"/>
+			<fileset dir="output"/>
+        </delete>
+	</target>
+</project>

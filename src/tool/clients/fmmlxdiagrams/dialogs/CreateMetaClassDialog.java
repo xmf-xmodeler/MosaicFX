@@ -6,31 +6,33 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
+import tool.clients.fmmlxdiagrams.Level;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Result> {
 
 	private AbstractPackageViewer diagram;
 	private ObservableList<FmmlxObject> possibleParents;
 
-	private Label nameLabel;
-	private Label levelLabel;
-	private Label abstractLabel;
-	private Label parentLabel;
 	private TextField nameTextField;
-	private ComboBox<Integer> levelComboBox;
+	private LevelBox levelComboBox;
 	private ListView<FmmlxObject> parentListView;
 	private CheckBox abstractCheckbox;
+	private CheckBox singletonCheckbox;
 
 	public CreateMetaClassDialog(AbstractPackageViewer diagram) {
 		super();
 		this.diagram = diagram;
 
 		DialogPane dialog = getDialogPane();
+		if(diagram.isUMLMode()) {
+			dialog.setHeaderText("New Class");
+		} else {
 		dialog.setHeaderText("New MetaClass");
+		}
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -49,45 +51,71 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	}
 
 	private void layoutContent() {
-		nameLabel = new Label("Name");
-		levelLabel = new Label("Level");
-		abstractLabel = new Label("Abstract");
-		parentLabel = new Label("Parent");
+		Label nameLabel = new Label("Name");
+		Label levelLabel = new Label("Level");
+		Label abstractLabel = new Label("Abstract");
+		Label singletonLabel = new Label("Singleton");
+		Label parentLabel = new Label("Parent");
 
 		nameTextField = new TextField();
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
-		levelComboBox = new ComboBox<>(AllValueList.levelList);
-		levelComboBox.setConverter(new IntegerStringConverter());
-		levelComboBox.setEditable(true);
-		levelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				possibleParents = diagram.getAllPossibleParents(newValue);
+		levelComboBox = new LevelBox();
+		levelComboBox.setLevelListener(level -> {
+			try {
+				possibleParents = diagram.getAllPossibleParents(level);
 				parentListView.setItems(possibleParents);
 				parentListView.setDisable(false);
-				if (possibleParents.size() == 0) {
+				if (possibleParents.isEmpty()) {
 					parentListView.setDisable(true);
 				}
+			} catch (Exception ex) {
+				//ex.printStackTrace();
 			}
 		});
 		abstractCheckbox = new CheckBox();
+		singletonCheckbox = new CheckBox();
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		
+		// FH tab order is relevant -> therefore two ifs are needed
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(nameTextField, 1, 0);
-		grid.add(levelLabel, 0, 1);
-		grid.add(levelComboBox, 1, 1);
+
+		if (!diagram.isUMLMode()) { // hidden for UMLMode
+			grid.add(levelLabel, 0, 1);
+			grid.add(levelComboBox, 1, 1);
+		}
+
 		grid.add(abstractLabel, 0, 2);
 		grid.add(abstractCheckbox, 1, 2);
-		grid.add(parentLabel, 0, 3);
-		grid.add(parentListView, 1, 3);
+		
+		if (!diagram.isUMLMode()) { // hidden for UMLMode
+			grid.add(singletonLabel, 0, 3);
+			grid.add(singletonCheckbox, 1, 3);
+		}
+		
+		grid.add(parentLabel, 0, 4);
+		grid.add(parentListView, 1, 4);
 	}
 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				if(!diagram.isUMLMode()) {	//exception for uml mode
 				return new Result(nameTextField.getText(),
-						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), parentListView.getSelectionModel().getSelectedItems());
+						levelComboBox.getLevel(), 
+						abstractCheckbox.isSelected(), 
+						singletonCheckbox.isSelected(), 
+						parentListView.getSelectionModel().getSelectedItems());
+				}
+				else {
+					return new Result(nameTextField.getText(),
+							new Level(1,1), 
+							abstractCheckbox.isSelected(), 
+							false, 
+							parentListView.getSelectionModel().getSelectedItems());
+				}
 			}
 			return null;
 		});
@@ -104,8 +132,13 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
 			errorLabel.setText("Name already used");
 			return false;
-		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
-			errorLabel.setText("Enter level as integer!");
+//		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
+//			errorLabel.setText("Enter level as integer!");
+//			return false;
+		}
+		try {if(!diagram.isUMLMode()) { Level.parseLevel(levelComboBox.levelTextField.getText());} }	//circumvent error message in UML mode
+		catch(Level.UnparseableException le) {
+			errorLabel.setText(le.getMessage());
 			return false;
 		}
 		return true;
@@ -113,14 +146,16 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 	
 	public class Result {
 		public final String name;
-		public final  int level;
-		public final  boolean isAbstract;
-		public final  ObservableList<FmmlxObject> parent;
+		public final Level level;
+		public final boolean isAbstract;
+		public final boolean isSingleton;
+		private final ObservableList<FmmlxObject> parent;
 
-		public Result(String name, int level, boolean isAbstract, ObservableList<FmmlxObject> parent) {
+		private Result(String name, Level level, boolean isAbstract, boolean isSingleton, ObservableList<FmmlxObject> parent) {
 			this.name = name;
 			this.level = level;
 			this.isAbstract = isAbstract;
+			this.isSingleton = isSingleton;
 			this.parent = parent;
 		}
 

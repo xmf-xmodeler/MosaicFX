@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge::Aggregated" level="1">
+<ConcreteSyntax classPath="Root::Challenge::Aggregated" level="1">
   <SVG path="ProcessAggregated.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
   <Label align="CENTER" tx="70.0" ty="80.0" id="bottomLabelID"/>
   <Label align="CENTER" tx="70.0" ty="105.0" id="bottomLabel"/>

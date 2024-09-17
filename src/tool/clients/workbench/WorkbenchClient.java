@@ -17,7 +17,7 @@ public class WorkbenchClient extends Client {
   }
 
   public void sendMessage(final Message message) {
-	System.err.println("WorkbenchClient message:" + message);
+//	System.err.println("WorkbenchClient message:" + message);
     if (message.hasName("shutdown"))
       shutdown(message);
     else if (message.hasName("saveInflater"))

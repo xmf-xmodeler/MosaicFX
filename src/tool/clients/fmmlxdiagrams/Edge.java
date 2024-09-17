@@ -3,8 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
@@ -12,6 +10,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -140,7 +139,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 	
 	@Override
-	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(view.getDiagram()); 
@@ -165,9 +164,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 			// normal
 			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
-			g.setLineWidth(isSelected() ? 3 : 1);
+			g.setLineWidth(getStrokeWidth() + (view.getDiagram().isSelected(this) ? 2 : 0));
 			g.setLineDashes(getLineDashes());
-
+			
 			for (int i = 0; i < points.size() - 1; i++) {
 //				if(i!=0) try {
 //					g.setFill(Color.PURPLE);
@@ -283,6 +282,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		}
 	}
 
+	protected double getStrokeWidth() {
+		return 1.;
+	}
+
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
 			Point2D pointForEdge) {
 
@@ -347,7 +350,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	public abstract HeadStyle getTargetDecoration();
 	public abstract HeadStyle getSourceDecoration();
 
-	protected Vector<Point2D> getAllPoints() {
+	public Vector<Point2D> getAllPoints() {
 		Vector<Point2D> allPoints = new Vector<>();
 		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
@@ -355,7 +358,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return allPoints;
 	}
 
-	protected abstract void layoutLabels(FmmlxDiagram diagram);
+	public abstract void layoutLabels(FmmlxDiagram diagram);
 
 	public void align() {
 		checkVisibilityMode();
@@ -403,8 +406,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return Color.BLACK;
 	}
 
-	protected Double getLineDashes() {
-		return (double) 0;
+	protected double[] getLineDashes() {
+		return new double[]{};
 	}
 
 	protected String getSvgDashes() {
@@ -415,12 +418,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return "1";
 	}
 
-	private boolean isSelected() {
-		return false;
-	}
-
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramCanvas view) {
 		if(!isVisible()) return false;
 		return null != isHit(new Point2D(mouseX, mouseY), 2.5, view.getCanvasTransform());
 	}
@@ -454,7 +453,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramCanvas diagram, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
 		//if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		//MenuItem repairItem = new MenuItem("Repair Edge Alignment");
@@ -465,7 +464,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
-	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas view) {
 	  try {
 		Point2D mouse = new Point2D(mouseX, mouseY);
 		Point2D raw = view.getCanvasTransform().inverseTransform(mouse);
@@ -627,7 +626,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		storeLatestValidPointConfiguration();
 
 		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {
-				diagram.getComm().sendCurrentPositions(diagram.getID(), this);
+				diagram.getComm().sendCurrentEdgePositions(diagram.getID(), this);
 		}
 		 
 		pointToBeMoved = -1;
@@ -661,6 +660,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return labelPositions.get(localId);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initLabelPositionMap(Vector<Object> labelPositions2) {
 		labelPositions = new HashMap<>();
 		for (Object labelPositionO : labelPositions2) {

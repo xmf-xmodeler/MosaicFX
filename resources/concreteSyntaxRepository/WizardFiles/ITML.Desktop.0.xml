@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::ITML::Desktop" level="0">
+  <SVG id="svg0" path="../ITML/ITML_Multi23/Case_Workstation.svg" tx="0.3307085524933697" ty="-0.26456684199470715" xx="4.0" xy="0.0" yx="0.0" yy="4.0"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x001a80ff" id="serial" tx="76.0" ty="125.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Modification>
+    <Condition slotName="serialNo" type="ReadFromSlot"/>
+    <Affected id="serial" localId="serial"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

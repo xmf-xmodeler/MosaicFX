@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import tool.clients.diagrams.Edge.HeadStyle;
 import tool.clients.diagrams.Edge.Position;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
 public class EdgePainter {
 	
@@ -206,7 +207,8 @@ public class EdgePainter {
 //	      gc.setBackground(c);
 	      for (Label label : edge.labels)
 	        label.paint(gc, xOffset, yOffset);
-	      paintDecorations(gc, color, xOffset, yOffset);
+	      if(/*!FmmlxDiagramCommunicator.getCommunicator().getDiagram(0).isUMLMode()*/false) {	//ToDo get real diagram id THIS DOES NOT WORK WHERE ARE THE REAL ARROWS
+	      paintDecorations(gc, color, xOffset, yOffset);}
 //	      gc.setLineWidth(width);
 	    }
 	  }

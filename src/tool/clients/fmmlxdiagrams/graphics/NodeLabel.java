@@ -16,15 +16,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeLabel extends NodeBaseElement {
 	
 	private Pos alignment;
-	private final FontWeight fontWeight;
+	private FontWeight fontWeight;
 	private final FontPosture fontPosture;
 	private final int fontSize = 14;
 	private final double fontScale;
@@ -40,26 +40,36 @@ public class NodeLabel extends NodeBaseElement {
 	
 	private boolean special = false;
 	private double availableWidth;
+	
+	public void setTextWidth(double textWidth) {
+		this.textWidth = textWidth;
+	}
 
+	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
+		this(alignment, a, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this.isIssue = isIssue;
+		this.issueNumber = issueNumber;
+	}
+	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
 		this.isIssue = isIssue;
 		this.issueNumber = issueNumber;
 	}
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 			 String text) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
 	}
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 			 String text, FontPosture fontPosture, FontWeight fontWeight) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
 	}
 	
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
-		super(new Affine(1,0,x,0,1,y), null, actionObject, action);
+		super(a, null, actionObject, action);
 		this.alignment = alignment;
 		this.fgColor = fgColor;
 		this.bgColor = bgColor;
@@ -73,6 +83,19 @@ public class NodeLabel extends NodeBaseElement {
 		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
 	}
 	
+	/**
+	 * Returns default NodeLabel. For default variable values see method body. The object then can be adjusted by the getter and setter of the class.
+	 */
+	public NodeLabel(String text) {
+		super();
+		this.fontWeight = FontWeight.NORMAL;
+		this.fontPosture = FontPosture.REGULAR;
+		this.fontScale = 1;
+		setBgColor(Color.TRANSPARENT);
+		setFgColor(Color.BLACK);
+		this.text = text;
+	}
+	
 	private Affine getBoxTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -80,16 +103,18 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign - BOX_GAP,  - BOX_GAP - textHeight));
+		total.append(getDragAffine());
 		return total;
 	}
 	
-	private Affine getTextTransform(Affine canvasTransform) {
+	protected Affine getTextTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign, - Y_BASELINE_DIFF));
+		total.append(getDragAffine());
 		return total;
 	}
 
@@ -113,7 +138,7 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagramView) {
 		boolean hit = false;
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
@@ -226,19 +251,53 @@ public class NodeLabel extends NodeBaseElement {
 	public Node save(Document document) {
 		Element myElement = document.createElement("Label");
 		myElement.setAttribute("align", alignment==Pos.BASELINE_CENTER?"CENTER":alignment==Pos.BASELINE_RIGHT?"RIGHT":"LEFT");
-		myElement.setAttribute("tx", myTransform.getTx()+"");
-		myElement.setAttribute("ty", myTransform.getTy()+"");
+		saveTransformation(myElement);
+		myElement.setAttribute("id", id);
+		myElement.setAttribute("color", NodeElement.color2Web(fgColor));
+		myElement.setAttribute("bgColor", NodeElement.color2Web(bgColor));
 		return myElement;
 	}
 
 	@Override
-	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications) {
-		NodeLabel that = new NodeLabel(alignment, myTransform.getTx(), myTransform.getTy(), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
+	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+		NodeLabel that = new NodeLabel(alignment, myTransform, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
 		return that;
 	}
 	
 	void setText(String newText) {
 		this.text = newText;
 		textWidth = FmmlxDiagram.calculateTextWidth(text);
+	}
+
+	public Pos getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Pos alignment) {
+		this.alignment = alignment;
+	}
+
+	public Color getFgColor() {
+		return fgColor;
+	}
+
+	public void setFgColor(Color fgColor) {
+		this.fgColor = fgColor;
+	}
+
+	public Color getBgColor() {
+		return bgColor;
+	}
+
+	public void setBgColor(Color bgColor) {
+		this.bgColor = bgColor;
+	}
+
+	public void setFontWeight(FontWeight fontWeight) {
+		this.fontWeight = fontWeight;
+	}
+
+	public double getTextHeight() {
+		return textHeight;
 	}
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Root::DigitalTwin::OfficeBuilding" level="0">
+  <SVG id="svg0" path="../DigitalTwins/building-svgrepo-com.svg" tx="0.0" ty="0.0" xx="1.4" xy="0.0" yx="0.0" yy="1.4"/>
+  <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" id="year" tx="45.0" ty="110.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Modification>
+    <Condition slotName="constructionYear" type="ReadFromSlot"/>
+    <Affected id="year" localId="year"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

@@ -44,7 +44,7 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialog.Resu
 		listOfPossibleLinkEnds = classAtOtherEnd.getInstancesByLevel(levelAtOtherEnd);
 		listOfPossibleClassesForCreateAndLink = classAtOtherEnd.getInstancesByLevel(levelAtOtherEnd+1);
 		
-		if(classAtOtherEnd.getLevel() == levelAtOtherEnd+1) {
+		if(classAtOtherEnd.getLevel().getMinLevel() == levelAtOtherEnd+1) {
 			listOfPossibleClassesForCreateAndLink.addAll(classAtOtherEnd.getAllSubclasses());
 		}
 		

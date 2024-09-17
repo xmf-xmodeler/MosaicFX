@@ -138,14 +138,14 @@ public class AssociationValueDialog extends CustomDialog<Void>{
 	}
 
 	private void addAssociationInstance(FmmlxObject startNode, FmmlxObject endNode){		
-		diagram.getComm().addAssociationInstance(diagram.getID(), startNode.getName(), endNode.getName(), selectAssociationComboBox.getSelectionModel().getSelectedItem().getName());
+		diagram.getComm().addLink(diagram.getID(), startNode.getName(), endNode.getName(), selectAssociationComboBox.getSelectionModel().getSelectedItem().getAccessNameStartToEnd());
 		diagram.updateDiagram();
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
 	private void removeAssociationInstance(FmmlxLink link) {
 		diagram.getComm().removeAssociationInstance(diagram.getID(), 
-				link.getOfName(), 
+				link.getAssociation().getAccessNameStartToEnd(), 
 				link.getSourceNode().getName(), 
 				link.getTargetNode().getName());
 		associationListView.getItems().remove(link);

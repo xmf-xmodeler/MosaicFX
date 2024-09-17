@@ -36,7 +36,7 @@ public class ChangeOwnerDialog<Property extends FmmlxProperty> extends CustomDia
 		super();
 		this.object = object;
 		this.type = type;
-		this.objects = diagram.getObjects();
+		this.objects = diagram.getObjectsReadOnly();
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

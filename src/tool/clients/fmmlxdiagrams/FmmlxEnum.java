@@ -22,4 +22,13 @@ public class FmmlxEnum {
 	public Vector<String> getItems() {
 		return items;
 	}
+	
+	public boolean contains(String name) {
+		for (String item : items) {
+			if (item.equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

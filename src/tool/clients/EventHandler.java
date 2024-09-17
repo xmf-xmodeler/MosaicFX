@@ -24,10 +24,6 @@ public class EventHandler {
       eventsOut.raiseEvent(client, message);
     }
   }
-  
-  /*public Value call(Message message) {
-	  return eventsOut.call(client, message);
-  }*/
 
   public void setCommandMode(boolean mode) {
     commandMode = mode;

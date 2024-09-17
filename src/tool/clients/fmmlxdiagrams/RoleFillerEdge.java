@@ -4,7 +4,9 @@ import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
 public class RoleFillerEdge extends Edge<FmmlxObject> {
 
@@ -18,13 +20,20 @@ public class RoleFillerEdge extends Edge<FmmlxObject> {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels(FmmlxDiagram diagram) {
+	public void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
-		return new ContextMenu();
+		MenuItem deleteDelegationItem = new MenuItem("delete");
+		ContextMenu menu = new ContextMenu();
+		menu.getItems().add(deleteDelegationItem);
+		deleteDelegationItem.setOnAction(e -> {
+			diagram.getComm().removeRoleFiller(diagram.getID(), sourceEnd.getNode().getName());
+		    diagram.updateDiagram();
+		});
+		return menu;
 	}
 
 	protected Color getPrimaryColor() {

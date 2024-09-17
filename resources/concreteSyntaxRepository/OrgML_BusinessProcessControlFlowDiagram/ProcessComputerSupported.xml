@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge::compSupported" level="1">
+<ConcreteSyntax classPath="Root::Challenge::compSupported" level="1">
   <SVG path="ProcessArrow.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
   <SVG path="ProcessComputerSupported.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
   <Label align="CENTER" tx="45.0" ty="60.0" id="bottomLabelID"/>

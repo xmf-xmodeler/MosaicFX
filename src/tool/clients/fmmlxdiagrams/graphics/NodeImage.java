@@ -6,16 +6,15 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Vector;
 
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeImage extends NodeBaseElement {
@@ -39,7 +38,7 @@ public class NodeImage extends NodeBaseElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramCanvas diagram) {
 		return false;
 	}
 
@@ -80,7 +79,7 @@ public class NodeImage extends NodeBaseElement {
 	public void updateBounds() {}
 
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		throw new RuntimeException("Not yet implemented!");
 	}
 
