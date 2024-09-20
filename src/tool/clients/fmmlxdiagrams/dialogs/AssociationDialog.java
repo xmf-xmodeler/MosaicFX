@@ -469,8 +469,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							0,
 							newDisplayName.getText(),
 							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
-							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
-							source.getName().toLowerCase() + newDisplayName.getText(),
+							newIdentifierSource.getText(),
+							newIdentifierTarget.getText(),
+							//source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							//source.getName().toLowerCase() + newDisplayName.getText(),
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
 							sourceVisibleFromTargetBox.isSelected(),

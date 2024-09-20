@@ -6,6 +6,8 @@ body {
 }
 
 .content {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
@@ -35,6 +37,11 @@ p {
 
 .execution p {
     font-size: 12px;
+}
+
+.table-view{
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
 }
 
 .successCondition::before{
@@ -91,6 +98,8 @@ p {
 }
 
 .tab {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0px;

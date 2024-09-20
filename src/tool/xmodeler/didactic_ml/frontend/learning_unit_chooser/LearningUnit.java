@@ -8,17 +8,17 @@ import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest
 public enum LearningUnit {
 	
 	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true),
-
 	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "01_Classification and Instantiation", 1, true),
 	OBJECT_REFERENCES("References between Objects: Associations and Links", "02_References between objects", 2, true),
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","03_Multiplicity of attributes", 3, true),
 	DEFICIENT_CLASSES("Deficient Classes","04_Deficient Classes", 4, true),
-	ATTRIBUTE_TYPES("Types for Attributes: Default types, Domain-specific types, and Enumerations","05_Types for attributes", 5, true),
+	ATTRIBUTE_TYPES("Types for Attributes: Default types, Domain-specific types, and Enumerations","05_Types for attributes", 5, false),
 	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and Abstract Classes","06_Generalization Specialization I", 6, true),
-	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation","07_Generalization Specialization II", 7, true),
+	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation","07_Generalization Specialization II", false),
 	CIRCLES("Model Circles","08_Model Circles", 8, true),
 	DERIVED_CONCEPTS("Derivable Attributes and Operations","09_Derivable Attributes and Operations", 9, true),
-	CONSTRAINTS("Custom Constraints using an OCL-based Language","10_Custom Constraints", 10, true);
+	CONSTRAINTS("Custom Constraints using an OCL-based Language","10_Custom Constraints", 10, false);
+
 	
 	private final String prettyName;
 	private final int id;

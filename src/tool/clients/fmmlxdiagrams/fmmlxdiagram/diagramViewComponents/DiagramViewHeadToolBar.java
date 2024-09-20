@@ -430,7 +430,7 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildHelpMenu(Menu helpMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
 		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elements", e -> showImageDialog());
-		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Open Online Tutorials", e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Open Online Tutorials", e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
 	}
 	
 	private void openWebpage(String url) {
