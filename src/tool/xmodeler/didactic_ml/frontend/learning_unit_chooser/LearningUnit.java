@@ -8,7 +8,7 @@ import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest
 public enum LearningUnit {
 	
 	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true),
-	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "ClassificationInstantiation", 1, false),
+	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "ClassificationInstantiation", 1, true),
 	OBJECT_REFERENCES("References between Objects: Associations and Links", "", 2, false),
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","", 3, false),
 	DEFICIENT_CLASSES("Deficient Classes","", 4, false),

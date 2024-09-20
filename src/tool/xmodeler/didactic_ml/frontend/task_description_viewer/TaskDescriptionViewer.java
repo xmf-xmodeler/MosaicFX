@@ -60,10 +60,10 @@ public class TaskDescriptionViewer extends Stage {
 		event.consume();
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirm closing");
-		alert.setHeaderText("You are going to end the Tool Introduction");
+		alert.setTitle("Confirm Closing");
+		alert.setHeaderText("You are going to end the UML++ Introduction");
 		alert.setContentText(
-				"If you confirm the Tool Introduction is aborted and you return to the start view of the XModeler");
+				"If you confirm, the UML++ Introduction is aborted and you return to the Control Center of UML-MX");
 		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
 
