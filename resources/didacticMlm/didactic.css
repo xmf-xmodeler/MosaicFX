@@ -152,3 +152,10 @@ p {
     -fx-padding: 0;
     -fx-text-fill: #ffffff;
 }
+
+code {
+     font-weight: bold;
+    font-size: inherit;
+    font-family: inherit;
+}
+

@@ -27,15 +27,34 @@ public class ToolIntroductionPreparation extends DiagramPreparationActions {
 		}
 
 	}
+	
+	private static int findBuysAssoc(FmmlxDiagram diagram) {//To dynamically get the identifier name
+		int buysIndex = 0;
+		for(int i = 0; i<diagram.getAssociations().size(); i++) {
+			if(diagram.getAssociations().get(i)!=null&&diagram.getAssociations().get(i).getName().equals("buys")){
+				buysIndex=i;
+			}
+		}
+		return buysIndex;
+	}
+	
+	private static int findValidForAssoc(FmmlxDiagram diagram) {//To dynamically get the identifier name
+		int buysIndex = 0;
+		for(int i = 0; i<diagram.getAssociations().size(); i++) {
+			if(diagram.getAssociations().get(i)!=null&&diagram.getAssociations().get(i).getName().equals("valid_for")){
+				buysIndex=i;
+			}
+		}
+		return buysIndex;
+	}
 
 	private static void addTicketConstrain(FmmlxDiagram diagram) {
 		diagram.getComm().addConstraintAsync(diagram.getID(),
 				"Root::ToolIntroductionABC::Ticket",
 				"mayWatchMovie",
 				0,
-				"self.customer.getAge() >= self.movieshowing.movieshown_in.requiredAgeToWatch()",
-				"\"Customer not allowed to watch the movie.\"");
-		
+				"self."+ diagram.getAssociations().get(findBuysAssoc(diagram)).getAccessNameEndToStart() +".getAge() >= self."+ diagram.getAssociations().get(findValidForAssoc(diagram)).getAccessNameStartToEnd() +".movieshown_in.requiredAgeToWatch()",//dynamically gets the name of the identifier
+				"\"Customer not allowed to watch the movie.\"");	
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {

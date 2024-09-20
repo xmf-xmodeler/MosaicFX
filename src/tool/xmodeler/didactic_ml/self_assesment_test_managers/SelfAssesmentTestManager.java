@@ -7,6 +7,7 @@ import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationActions;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.genSpec1.GeneralizationSpecializationIManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 import tool.xmodeler.didactic_ml.sucess_conditions.SuccessCondition;
@@ -95,7 +96,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	public static synchronized <Manager extends SelfAssesmentTestManager> Manager getInstance() {
 		if (instance == null) {
 			if (TESTMODUS) {
-				instance = new ToolIntroductionManager(); //change type to the LearningUnit you want to test
+				instance = new GeneralizationSpecializationIManager(); //change type to the LearningUnit you want to test
 				instance.getDescriptionViewer().show();
 			}
 		} else {
