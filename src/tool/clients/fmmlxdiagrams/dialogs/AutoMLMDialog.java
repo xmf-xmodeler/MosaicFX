@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+
+import javafx.scene.control.ProgressBar;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -16,12 +19,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
 
 import tool.helper.persistence.StartupModelLoader;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 
 public class AutoMLMDialog extends Dialog {
 
@@ -163,33 +168,67 @@ public class AutoMLMDialog extends Dialog {
 		if (!isInputValid(category, model))
 			return;
 
-		if (model == "Use Current Model") {
-			// TODO promotion process from current model
-			// has to be saved and then the path can be used
-			// path =
-			// PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
-			// sendToPython(path);
-			return;
-		}
-
 		// get extendedOptions
 		String strMaxWordSenses = String.valueOf(maximumWordSenses);
 		String strDepthTopLevel = String.valueOf(minimumDepthOfTopLevelHypernym);
 		String strAcceptingValueSim = String.valueOf(acceptingSimiliarityValue);
 		String strRejectingValueSim = String.valueOf(rejectingSimiliarityValue);
 
-		String path = getPath(category, model);
+		String path = "";
+		if (model == "Use Current Model") {
+			// TODO add a warning that the model has to be saved before
+			// has to be saved and then the path can be used
+			path = PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
+			// sendToPython(path);
+
+		} else {
+			path = getPath(category, model);
+		}
 
 		String[] args = { category, path, strMaxWordSenses, strDepthTopLevel, strAcceptingValueSim,
 				strRejectingValueSim };
+		
+		/*
+		ProgressBar progressBar = new ProgressBar(0);
+
+		// Total Time ~ 240 second; 240.000 ms
+		int maxSteps = 240;
+
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				for (int i = 1; i <= maxSteps; i++) {
+					updateProgress(i, maxSteps); // Update progress bar by 10% increments
+					Thread.sleep(1000); // Simulate background work (1 second delay)
+				}
+				return null;
+			}
+		};
+
+		// Bind the progress property of the task to the progress bar
+		progressBar.progressProperty().bind(task.progressProperty());
+
+		// Run the task in a background thread
+		new Thread(task).start();
+
+		Scene scene = new Scene(progressBar, 300, 200);
+
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("Progress Bar Task Example");
+		stage.show();
+		*/
+		
 		PythonRequestWrapper wrapper = new PythonRequestWrapper(PythonFunction.PROMOTE_DIAGRAM, args);
+
 		wrapper.execute();
+
 		String newPath = (String) wrapper.getResponse();
 
 		new StartupModelLoader().loadModelsFromPath(newPath);
 
-		String projectName = getProjectNameFromFile(newPath);
 		String diagramName = getDiagramNameFromFile(newPath);
+		String projectName = getProjectNameFromFile(newPath);
 
 		// raise alert to ensure model is loaded
 		Alert alert = new Alert(AlertType.NONE);
@@ -363,7 +402,7 @@ public class AutoMLMDialog extends Dialog {
 		public ExtendedAutoMLMdialog() {
 			this.setTitle("AutoMLM - Advanced Promotion Options");
 			this.grid = new GridPane();
-			
+
 			// text for extended options field
 			lblGeneralization = new Label("Generalization");
 			lblCoveredWordSenses = new Label("Maximum number of Word Senses covered");
@@ -383,7 +422,7 @@ public class AutoMLMDialog extends Dialog {
 			});
 
 			getDialogPane().setContent(buildGridPane());
-			
+
 			getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 
 		}
@@ -438,9 +477,9 @@ public class AutoMLMDialog extends Dialog {
 
 			grid.add(lblRejectingSimilitrityValue, 0, 4);
 			grid.add(txtRejectingSimilitrityValue, 1, 4);
-			
-			grid.add(butApplyChanges,0,5);
-			
+
+			grid.add(butApplyChanges, 0, 5);
+
 			return grid;
 		}
 
