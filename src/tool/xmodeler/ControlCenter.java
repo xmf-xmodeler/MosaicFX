@@ -177,7 +177,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem,getSourceCodeItem, getBluebook, aboutItem);
+			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem, getOnlineTutorial,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void openWebpage(String url) {
