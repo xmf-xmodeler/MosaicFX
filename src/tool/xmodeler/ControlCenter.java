@@ -165,6 +165,9 @@ public class ControlCenter extends Stage {
 			MenuItem getUMLInformationItem = new MenuItem("Get Information on UML-MX");
 			getUMLInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
 			
+			MenuItem getOnlineTutorial = new MenuItem("Open Online Tutorial");
+			getOnlineTutorial.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
+			
 			MenuItem getSourceCodeItem = new MenuItem("Get Source Code");
 			getSourceCodeItem.setOnAction(e->openWebpage("https://github.com/xmf-xmodeler"));
 			
