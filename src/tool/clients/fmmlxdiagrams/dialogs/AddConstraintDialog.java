@@ -107,8 +107,15 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		HBox hBox1 = new HBox(5,
-				label1, nameField, label2, levelField);
+		
+		HBox hBox1 = null;
+		if(!diagram.isUMLMode()) {
+		hBox1 = new HBox(5,
+				label1, nameField, label2, levelField);}
+		else {
+		hBox1 = new HBox(5,
+				label1, nameField);}
+		
 		VBox mainBox = new VBox(5, 
 				hBox1, 
 				bodyBox.getBodyScrollPane(),
