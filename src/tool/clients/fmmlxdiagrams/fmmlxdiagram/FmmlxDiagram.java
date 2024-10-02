@@ -898,6 +898,12 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 						canvas.setCursor(Cursor.DEFAULT);
 
 					}
+				}
+				if (edgeCreationType.equals("parent")) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Parent);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
 				} else if (edgeCreationType.equals("associationInstance")) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
@@ -976,6 +982,10 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 					mouseMode = MouseMode.STANDARD;
 					FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
 					switch (drawEdgeType) {
+					case Parent:
+						actions.addSingleParent(newEdgeSource, newEdgeTarget);
+						setStandardMouseMode();
+						break;
 					case Association:
 						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
 						setStandardMouseMode();

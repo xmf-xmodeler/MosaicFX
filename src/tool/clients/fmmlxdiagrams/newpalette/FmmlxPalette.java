@@ -134,7 +134,10 @@ public class FmmlxPalette {
 			elements.getChildren().clear();
 			relationships.getChildren().clear();
 			treeView.setShowRoot(false);
-		
+			
+
+			DefaultTool parentTool = 
+					new DefaultTool("Generalization", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("parent"));
 			DefaultTool associationTool = 
 					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
 //			DefaultTool associationTypeTool =
@@ -153,6 +156,7 @@ public class FmmlxPalette {
 						new DefaultTool("Class", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 			}
 			
+			TreeItem<AbstractTreeType> parent = new TreeItem<AbstractTreeType>(parentTool);
 			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 //			TreeItem<AbstractTreeType> associationType = new TreeItem<AbstractTreeType>(associationTypeTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
@@ -160,7 +164,7 @@ public class FmmlxPalette {
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
 			
 			elements.getChildren().add(metaClass);
-			addChildrenToRelationship(association, link, delegation, viewPane);
+			addChildrenToRelationship(parent, association, link, delegation, viewPane);
 			
 //			associationTypes.getChildren().add(associationType);
 			Vector<AssociationType> allAssociationTypes = fmmlxDiagram.getAssociationTypes();
@@ -210,9 +214,10 @@ public class FmmlxPalette {
 		});
 	}
 
-	private void addChildrenToRelationship(TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
+	private void addChildrenToRelationship(TreeItem<AbstractTreeType> parent, TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
 			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
-
+		
+			relationships.getChildren().add(parent);
 			relationships.getChildren().add(association);			
 		if (viewPane.getDiagramViewState().getPrecedence() > 4) {
 			relationships.getChildren().add(link);			
