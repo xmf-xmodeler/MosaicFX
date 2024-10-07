@@ -137,7 +137,7 @@ public class FmmlxPalette {
 			
 
 			DefaultTool parentTool = 
-					new DefaultTool("Generalization", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("parent"));
+					new DefaultTool("Generalization", "resources/gif/XCore/Generalization.gif", point -> fmmlxDiagram.setEdgeCreationType("parent"));
 			DefaultTool associationTool = 
 					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
 //			DefaultTool associationTypeTool =
