@@ -34,7 +34,6 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 		if(diagram.getObjectByName("Vehicle")!=null) {
 		vehicle = diagram.getObjectByName("Vehicle");}
 		else {return false;}
-		
 		return checkParent() && checkAllAttributes();
 	}
 	
@@ -45,6 +44,7 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 				correctParent = true;
 			}
 		}
+		System.out.println("checkParent="+correctParent);
 		return correctParent;
 	}
 	
@@ -61,39 +61,43 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 		if(!checkAttributes(vehicle)) {
 			return false;
 		}
+		System.out.println("All Attributes Correct");
 		return true;
 	}
 	
 	private boolean checkAttributes(FmmlxObject o) {
-		if(DiagramConditionChecks.hasAttributeOfType(o, "constructionDate", "Date") && o!=vehicle) {
+		System.out.println(o.getOwnAttributes());
+		if(DiagramConditionChecks.hasOwnAttributeOfType(o, "constructionDate", "Date") && o!=vehicle) {	//only vehicle has construction date
+			System.out.println(o+"containt constructionDate!!!");
 			return false;
 		}
-		if(DiagramConditionChecks.hasAttributeOfType(o, "maxNumberOfPassengers", "Integer") && o!=vehicle && o!=horse) {
+		if(DiagramConditionChecks.hasOwnAttributeOfType(o, "maxNumberOfPassengers", "Integer") && o!=vehicle && o!=horse) {	//only vehicle and horse have max passengers
 			return false;
 		}
 		if(o==car) {
-			if(!(DiagramConditionChecks.hasAttributeOfType(o, "hasBoardComputer", "Boolean") && DiagramConditionChecks.hasAttributeOfType(o, "brandName", "String"))) {
+			if(!(DiagramConditionChecks.hasOwnAttributeOfType(o, "hasBoardComputer", "Boolean") && DiagramConditionChecks.hasAttributeOfType(o, "brandName", "String"))) {	//car needs boardComputer and brandName
 			return false;
 			}
 		}
 		if(o==train) {
-			if(!(DiagramConditionChecks.hasAttributeOfType(o, "usedForPublicTransportation", "Boolean") && DiagramConditionChecks.hasAttributeOfType(o, "trainCategory", "String"))) {
+			if(!(DiagramConditionChecks.hasOwnAttributeOfType(o, "usedForPublicTransportation", "Boolean") && DiagramConditionChecks.hasAttributeOfType(o, "trainCategory", "String"))) { //train needs these attributes
 			return false;
 			}
 		}
 		if(o==bus) {
-			if(!( DiagramConditionChecks.hasAttributeOfType(o, "lineNumber", "String"))) {
+			if(!( DiagramConditionChecks.hasOwnAttributeOfType(o, "lineNumber", "String"))) {	//Bus needs line number
 			return false;
 			}
 		}
-		if(o==vehicle) {
-			if(!(DiagramConditionChecks.hasAttributeOfType(o, "constructionDate", "Date") &&
-					DiagramConditionChecks.hasAttributeOfType(o, "maxNumberOfPassengers", "Integer") &&
-					DiagramConditionChecks.hasAttributeOfType(o, "numberOfSeats", "Integer") &&
-					DiagramConditionChecks.hasAttributeOfType(o, "isElectric", "Boolean"))) {
+		if(o==vehicle) {	//vehicle requires all of these attributes
+			if(!(DiagramConditionChecks.hasOwnAttributeOfType(o, "constructionDate", "Date") &&
+					DiagramConditionChecks.hasOwnAttributeOfType(o, "maxNumberOfPassengers", "Integer") &&
+					DiagramConditionChecks.hasOwnAttributeOfType(o, "numberOfSeats", "Integer") &&
+					DiagramConditionChecks.hasOwnAttributeOfType(o, "isElectric", "Boolean"))) {
 			return false;
 			}
 		}
+		System.out.println("Attributes for"+ o + " Correct");
 		return true;
 	}
 
