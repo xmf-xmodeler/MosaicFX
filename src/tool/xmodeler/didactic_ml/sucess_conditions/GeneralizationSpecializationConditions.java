@@ -44,7 +44,6 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 				correctParent = true;
 			}
 		}
-		System.out.println("checkParent="+correctParent);
 		return correctParent;
 	}
 	
@@ -61,14 +60,11 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 		if(!checkAttributes(vehicle)) {
 			return false;
 		}
-		System.out.println("All Attributes Correct");
 		return true;
 	}
 	
 	private boolean checkAttributes(FmmlxObject o) {
-		System.out.println(o.getOwnAttributes());
 		if(DiagramConditionChecks.hasOwnAttributeOfType(o, "constructionDate", "Date") && o!=vehicle) {	//only vehicle has construction date
-			System.out.println(o+"containt constructionDate!!!");
 			return false;
 		}
 		if(DiagramConditionChecks.hasOwnAttributeOfType(o, "maxNumberOfPassengers", "Integer") && o!=vehicle && o!=horse) {	//only vehicle and horse have max passengers
@@ -97,7 +93,6 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 			return false;
 			}
 		}
-		System.out.println("Attributes for"+ o + " Correct");
 		return true;
 	}
 
