@@ -896,7 +896,6 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 						canvas.setCursor(Cursor.DEFAULT);
-
 					}
 				}
 				if (edgeCreationType.equals("parent")) {
@@ -912,6 +911,11 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 				} else if (edgeCreationType.equals("delegation")) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Delegation);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				} else if (edgeCreationType.equals("roleFiller")) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.RoleFiller);
 						canvas.setCursor(Cursor.DEFAULT);
 					}
 				}
@@ -976,7 +980,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 			Point2D p = new Point2D(e.getX(), e.getY());
-
+			
 			if (hitObject != null) {
 				if (mouseMode == MouseMode.DRAW_EDGE) {
 					mouseMode = MouseMode.STANDARD;

@@ -146,6 +146,8 @@ public class FmmlxPalette {
 					new DefaultTool("Link", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
 			DefaultTool delegationTool = 
 					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
+			DefaultTool roleFillerTool = 
+					new DefaultTool("Role Filler", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("roleFiller"));
 			DefaultTool metaClassTool;
 			if(!fmmlxDiagram.isUMLMode()) {
 			metaClassTool = 
@@ -161,10 +163,11 @@ public class FmmlxPalette {
 //			TreeItem<AbstractTreeType> associationType = new TreeItem<AbstractTreeType>(associationTypeTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
 			TreeItem<AbstractTreeType> delegation = new TreeItem<AbstractTreeType>(delegationTool);
+			TreeItem<AbstractTreeType> roleFiller = new TreeItem<AbstractTreeType>(roleFillerTool);
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
 			
 			elements.getChildren().add(metaClass);
-			addChildrenToRelationship(parent, association, link, delegation, viewPane);
+			addChildrenToRelationship(parent, association, link, delegation,roleFiller, viewPane);
 			
 //			associationTypes.getChildren().add(associationType);
 			Vector<AssociationType> allAssociationTypes = fmmlxDiagram.getAssociationTypes();
@@ -215,7 +218,7 @@ public class FmmlxPalette {
 	}
 
 	private void addChildrenToRelationship(TreeItem<AbstractTreeType> parent, TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
-			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
+			TreeItem<AbstractTreeType> delegation, TreeItem<AbstractTreeType> roleFiller, DiagramViewPane viewPane) {
 		
 			relationships.getChildren().add(parent);
 			relationships.getChildren().add(association);			
@@ -223,7 +226,7 @@ public class FmmlxPalette {
 			relationships.getChildren().add(link);			
 		}
 		if (viewPane.getDiagramViewState().getPrecedence() >= 100) {
-			relationships.getChildren().addAll(delegation);			
+			relationships.getChildren().addAll(delegation,roleFiller);			
 		}
 	}
 
