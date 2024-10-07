@@ -21,7 +21,7 @@ public class GeneralizationSpecializationPreparation extends DiagramPreparationA
 		String carClass = "Car";
 		String horseClass = "Horse";
 		
-		createMetaClass(diagram, 1, busClass, new int[]{400, 0});
+		createMetaClass(diagram, 1, busClass, new int[]{600, 0});
 		createAttributeOnLevelNull(diagram, busClass, "lineNumber", "String");
 		createAttributeOnLevelNull(diagram, busClass, "maxNumberOfPassengers", "Integer");
 		createAttributeOnLevelNull(diagram, busClass, "constructionDate", "Date");
@@ -34,14 +34,14 @@ public class GeneralizationSpecializationPreparation extends DiagramPreparationA
 		createAttributeOnLevelNull(diagram, trainClass, "constructionDate", "Date");
 		addGetAgeFunction(diagram, trainClass);
 		
-		createMetaClass(diagram, 1, carClass, new int[]{200, 0});
+		createMetaClass(diagram, 1, carClass, new int[]{300, 0});
 		createAttributeOnLevelNull(diagram, carClass, "brandName", "String");
 		createAttributeOnLevelNull(diagram, carClass, "hasBoardComputer", "Boolean");
 		createAttributeOnLevelNull(diagram, carClass, "maxNumberOfPassengers", "Integer");
 		createAttributeOnLevelNull(diagram, carClass, "constructionDate", "Date");
 		addGetAgeFunction(diagram, carClass);
 		
-		createMetaClass(diagram, 1, horseClass, new int[]{600, 0});
+		createMetaClass(diagram, 1, horseClass, new int[]{900, 0});
 		createAttributeOnLevelNull(diagram, horseClass, "maxNumberOfPassengers", "Integer");
 		createAttributeOnLevelNull(diagram, horseClass, "dateOfBirth", "Date");
 		createAttributeOnLevelNull(diagram, horseClass, "typeOfBreed", "String");
