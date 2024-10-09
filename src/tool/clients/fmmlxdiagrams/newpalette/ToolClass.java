@@ -2,7 +2,8 @@ package tool.clients.fmmlxdiagrams.newpalette;
 
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 
-public class ToolClass extends PaletteTool{
+@Deprecated
+public class ToolClass extends PaletteTool{ // UNUSED
 	
 
 	public ToolClass(FmmlxDiagram fmmlxDiagram, String name, String path, int level, boolean isAbstract, String icon) {
@@ -12,6 +13,6 @@ public class ToolClass extends PaletteTool{
 
 	@Override
 	public void widgetSelected() {
-		getDiagram().setNodeCreationType(getId());
+//		getDiagram().setNodeCreationType(getId());
 	}
 }

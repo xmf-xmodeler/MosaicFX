@@ -743,10 +743,10 @@ public class DiagramActions {
 		});
 	}
 
-	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
+	public void addAssociationDialog(FmmlxObject source, FmmlxObject target, AssociationType assocType) {
 
 		Platform.runLater(() -> {
-			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false);
+			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false, assocType);
 			Optional<AssociationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

@@ -54,7 +54,7 @@ public class DefaultContextMenu extends ContextMenu {
 		Menu addMenu = new Menu("Add");
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
 		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
-			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null, null));
 		}
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
 		return addMenu;
@@ -66,7 +66,7 @@ public class DefaultContextMenu extends ContextMenu {
 		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 6) {
 			getItems().addAll(enumerationMenu);			
 		}
-		if (XModeler.isAlphaMode()) {
+		if (diagram.getViewPane().getDiagramViewState().getPrecedence() > 3) {
 			getItems().addAll(new SeparatorMenuItem(), addAssocType);
 		}
 	}

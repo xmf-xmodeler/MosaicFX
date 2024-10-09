@@ -24,7 +24,7 @@ public class BrowserAssociationContextMenu extends ContextMenu {
 		
 		if(object != null && object.isClass()) {
 			MenuItem addItem = new MenuItem("Add Association");
-			addItem.setOnAction(e -> actions.addAssociationDialog(object,null));
+			addItem.setOnAction(e -> actions.addAssociationDialog(object,null,null));
 			
 			MenuItem editItem = new MenuItem("Edit Association");
 			editItem.setOnAction(e-> actions.editAssociationDialog(association));

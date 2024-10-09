@@ -34,6 +34,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private FmmlxAssociation association;
 	private FmmlxObject source;	
 	private FmmlxObject target;
+	private AssociationType assocType;
 		
 	private ComboBox<FmmlxAssociation> selectAssociationComboBox;
 	
@@ -67,11 +68,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private List<Node> sourceNodes;
 	private List<Node> targetNodes;
 	
-	public AssociationDialog(AbstractPackageViewer diagram, FmmlxAssociation association, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, 
+			FmmlxAssociation association, 
+			boolean editMode) {
 		
 		this.diagram=diagram;
 		this.association = association;
 		this.editMode=editMode;
+		this.assocType = association.getAssociationType();
 		
 		this.source=association.getSourceNode();
 		this.target=association.getTargetNode();
@@ -92,12 +96,16 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		setResultConverter();
 	}
 
-	public AssociationDialog(AbstractPackageViewer diagram, FmmlxObject source, FmmlxObject target, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, 
+			FmmlxObject source, FmmlxObject target,
+			boolean editMode,
+			AssociationType assocType) {
 		
-		this.editMode=editMode;
-		this.diagram = diagram;
-		this.source = source;
-		this.target = target;
+		this.editMode  = editMode;
+		this.diagram   = diagram;
+		this.source    = source;
+		this.target    = target;
+		this.assocType = assocType;
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -244,7 +252,12 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		Vector<AssociationType> assocTypeItems = new Vector<>();
 		assocTypeItems.addAll(diagram.getAssociationTypes());
 		associationTypeBox = new ComboBox<>(FXCollections.observableList(assocTypeItems));
-		associationTypeBox.getSelectionModel().select(0);
+		if(assocType == null) {			
+			associationTypeBox.getSelectionModel().select(0);
+		} else {
+			associationTypeBox.getSelectionModel().select(assocType);
+		}
+		
 		labels = new ArrayList<>();
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
