@@ -12,12 +12,12 @@ public enum LearningUnit {
 	OBJECT_REFERENCES("References between Objects: Associations and Links", "02_References between objects", 2, true),
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","03_Multiplicity of attributes", 3, true),
 	DEFICIENT_CLASSES("Deficient Classes","04_Deficient Classes", 4, true),
-	ATTRIBUTE_TYPES("Types for Attributes: Default types, Domain-specific types, and Enumerations","05_Types for attributes", 5, false),
-	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization I: Inheritance and Abstract Classes","06_Generalization Specialization I", 6, true),
-	GENERALIZATION_SPECIALIZATION_II("Generalization/Specialization II: Pitfalls of Specialization and Delegation","07_Generalization Specialization II",7, false),
+	ATTRIBUTE_TYPES("Types for Attributes","05_Types for attributes", 5, false),
+	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization: Inheritance and Abstract Classes","06_Generalization Specialization I", 6, true),
+	GENERALIZATION_SPECIALIZATION_II("Pitfalls of Specialization and Delegation","07_Generalization Specialization II", 7, false),
 	CIRCLES("Model Circles","08_Model Circles", 8, true),
 	DERIVED_CONCEPTS("Derivable Attributes and Operations","09_Derivable Attributes and Operations", 9, true),
-	CONSTRAINTS("Custom Constraints using an OCL-based Language","10_Custom Constraints", 10, false);
+	CONSTRAINTS("Custom Constraints with XOCL","10_Custom Constraints", 10, false);
 
 	
 	private final String prettyName;

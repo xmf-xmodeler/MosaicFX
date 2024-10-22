@@ -8,11 +8,6 @@
     <div class="content objectives">
         <h1>LU10 - Custom Constraints with XOCL</h1>
         <h2>Learning Objectives</h2>
-        Students should be able to...
-		<ul>
-			<li>evaluate whether a custom constraint is required to meet a modeling requirement</li>
-			<li>write constraints using XOCL</li>
-		</ul>		
-		</div>
+        <p>LU not yet implemented.</div>
 </body>
 </html>
