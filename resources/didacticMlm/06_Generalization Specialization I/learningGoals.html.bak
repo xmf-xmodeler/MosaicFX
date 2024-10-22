@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div class="content objectives">
+		<h1 class="small">LU6 - Generalization/Specialization I: Inheritance and Abstract Classes</h1>
+        <h2>Learning Objectives</h2>
+		Students should be able to…
+		<ul>
+			<li>apply generalization/specialization to improve the quality of software models</li>
+			<li>explain the benefits of using generalization/specialization in software models</li>
+			<li>evaluate the adequateness of a generalization/specialization relationships</li>
+			<li>evaluate the adequateness of an abstract class</li>
+			<li>identify violations to the substitutability principle in generalization/specialization hierarchies</li>
+		</ul>
+	</div>
+</body>
+</html>

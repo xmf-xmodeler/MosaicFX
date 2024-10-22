@@ -371,6 +371,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 	
 	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		int plusWidth = (int) FmmlxDiagram.calculateTextWidth("+ ");		//extra width for uml from the plus in front
 		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 
 
 		try {
@@ -396,7 +397,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperation o : object.getOwnOperations()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS)  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);		//last + for the added width from plus and minus signs
 				}
 			}	
 			for (FmmlxOperation o : object.getOtherOperations()) {
@@ -404,7 +405,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);//last + for the added width from plus and minus signs
 					}
 				}
 			}	
@@ -413,7 +414,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);
 					}
 				}
 			}
@@ -422,7 +423,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + plusWidth, neededWidth);
 					}
 				}
 			}

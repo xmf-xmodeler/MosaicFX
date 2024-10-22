@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Customers and Tickets</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="content">
+        <h2>6. Adding Customers and Tickets</h2>
+        <p>Great! Now our local cinema has entered one movie and one movie showing. 
+		At last, we want to add customers and tickets. To make things a little easier, we have already done this for you. 
+		Because we do not know where you placed your elements, your diagram could look a little chaotic now. 
+		Just move the elements by drag and drop so you have everything in place.</p>
+       		<p> Josie Dough now also buys a ticket for a movie showing of Joker. <b> Add a new ticket object and link it with 
+		Josie Dough and the movie showing of Joker.</b> For this purpose, the cinema must allow one customer to buy multiple tickets.
+		Change the multiplicity of the “buys” association from 0..1 to <b>0..*</b>.</p>
+		<p>You must enter a price for the new ticket object that is higher than 0.0.</p>
+    </div>
+	<br>
+	<div class="execution">
+		<h3>How To Change the Multiplicity of an Association</h3>
+		<p>The simplest way to change the multiplicity of an association is by double-clicking on the respective multiplicity.</p>
+		<p>Alternatively, you can either double-click on the line of an association
+		or right-click on it and select <strong>'Edit'</strong>.
+		In either case, a window will open where you can adjust the multiplicity.</p>
+		<p><u>Hint</u>: In the first way, you can only change the specific multiplicity that was clicked on, 
+		whereas in the other two ways, you can adjust all multiplicities.</p>
+	</div>
+	<div class="successCondition">
+		Either (i) the multiplicities of the "buys" association between "Customer" and "Ticket" has not been changed correctly, 
+		(ii) the price of the object "ticket2" is still 0.0, or (iii) or no "buys" link between "customer1" and "ticket2" is present.	
+	</div>
+</body>
+</html>

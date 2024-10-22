@@ -1,11 +1,12 @@
 package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 
+import java.awt.Desktop;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.w3c.dom.Document;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,22 +26,19 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.DiagramDisplayModel;
 import tool.clients.fmmlxdiagrams.DiagramDisplayProperty;
-import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.Note;
+import tool.clients.fmmlxdiagrams.dialogs.EditorElements;
 import tool.clients.fmmlxdiagrams.dialogs.ShortcutDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.communication.java_to_python.MissingPythonRespondException;
 import tool.communication.java_to_python.PythonFunction;
 import tool.communication.java_to_python.PythonRequestWrapper;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
-import tool.helper.persistence.XMLUtil;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class DiagramViewHeadToolBar extends VBox {
 
@@ -70,13 +68,26 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu refactorMenu = new Menu("Refactor");
 		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
+
+		}
+		else
+		{
+			menuBar.getMenus().addAll(modelMenu, viewMenu, helpMenu);
+
+		}
 //		setMenuBarOpenMenusOnHover(hBox, menuBar);
 
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);
 		// buildRefactorMenu(refactorMenu);
-		buildAutoMlmMenu(autoMlmMenu);
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			buildAutoMlmMenu(autoMlmMenu);
+
+		}
 		buildHelpMenu(helpMenu);
 
 		toolBar = buildToolBar();
@@ -258,11 +269,24 @@ public class DiagramViewHeadToolBar extends VBox {
 		constraintsMenu.getItems().addAll(itemMap.get(DiagramDisplayProperty.CONSTRAINTS),
 				itemMap.get(DiagramDisplayProperty.CONSTRAINTREPORTS));
 
+		if (!fmmlxDiagram.isUMLMode())
+		{
+			
+		
 		viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
 				itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
 				itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu,
 				itemMap.get(DiagramDisplayProperty.METACLASSNAME), itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
 				itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+		}
+		else {
+			viewMenu.getItems().addAll(operationsMenu, itemMap.get(DiagramDisplayProperty.SLOTS),
+					itemMap.get(DiagramDisplayProperty.GETTERSANDSETTERS),
+					itemMap.get(DiagramDisplayProperty.DERIVEDATTRIBUTES), constraintsMenu, 
+					itemMap.get(DiagramDisplayProperty.CONCRETESYNTAX),
+					itemMap.get(DiagramDisplayProperty.ISSUETABLE));
+			
+		}
 
 		viewMenu.getItems().add(new SeparatorMenuItem());
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Switch to Concrete Syntax Wizard", e -> {
@@ -375,7 +399,7 @@ public class DiagramViewHeadToolBar extends VBox {
 
 		addEnumMenue(modelMenu);
 
-		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variabel",
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Assign Global Variable",
 				e -> diagramActions.assignGlobalVariable());
 		modelMenu.getItems().add(new SeparatorMenuItem());
 
@@ -404,12 +428,28 @@ public class DiagramViewHeadToolBar extends VBox {
 	}
 
 	private void buildHelpMenu(Menu helpMenu) {
-		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcutlist", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Shortcuts", e -> showShortcutDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Editor Elements", e -> showImageDialog());
+		JavaFxMenuAuxiliary.addMenuItem(helpMenu, "Open Online Tutorials", e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
+	}
+	
+	private void openWebpage(String url) {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.browse(new URL(url).toURI());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
 	}
 
 	private void showShortcutDialog() {
 		new ShortcutDialog().show();
 	}
+	private void showImageDialog() {
+        new EditorElements().show();
+    }
 
 	public FmmlxDiagram getFmmlxDiagram() {
 		return fmmlxDiagram;

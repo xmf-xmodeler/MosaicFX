@@ -23,19 +23,17 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.IconGenerator;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.tool_introduction.DiagramViewState;
-import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
@@ -2227,6 +2225,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
@@ -2238,7 +2237,7 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		if (diagram.getViewPane().isIntroductionMode()) {
+		if (diagram.getViewPane().isInToolIntroductionMode()) {
 			//finds task description pane and shows warning dialog before close
 			stage.setOnCloseRequest((e) -> {
 				if (ToolIntroductionManager.isInitialized()) {
@@ -2829,5 +2828,55 @@ public class FmmlxDiagramCommunicator {
 			new Value(classPath1),
 			new Value(idAssoc1)};
 		sendMessage("addAssociationDependency", message);
+	}
+	
+	/**
+	 * Exception used in searchDiagrams. If no diagram can be found for a search string this exception shows used values.
+	 */
+	public class NoDiagramFound extends Exception {
+	    public NoDiagramFound(String projectName, String diagramName, int maxIteration) {
+	        super(String.format("Attempt to find model failed. The top %d models have been checked. The search value was \"%s::%s\".", maxIteration, projectName, diagramName));
+	    }
+
+	    public NoDiagramFound(String message) {
+	        super(message);
+	    }
+	}
+	
+	/**
+	 * Returns diagram for specific name. !! Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id use 0 for first call. param necessary for recursion
+	 * @return FmmlxDiagram for projectName and DiagramName combination
+	 * @throws NoDiagramFound after maxNumber of iterations and no found diagram this exception is thrown
+	 */
+	public FmmlxDiagram searchDiagram(String projectName, String diagramName, int id) throws NoDiagramFound {
+		int maxIterations = 25;
+		FmmlxDiagram diagram = getMatchingFmmlxDiagram(projectName, diagramName, id);
+		if (diagram != null) {
+			return diagram;
+		}
+		id ++;
+		if (id <= maxIterations) {
+			return searchDiagram(projectName, diagramName, id);
+		}
+		throw new NoDiagramFound(projectName, diagramName, maxIterations);
+	}
+	
+	
+	/**
+	 * Searches backend for a diagram for a specific diagram id. Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id
+	 * @return null if diagram not matches specification and diagram if its matches
+	 */
+	public FmmlxDiagram getMatchingFmmlxDiagram(String projectName, String diagramName, int id) {
+		FmmlxDiagram diagram = getDiagram(id);
+		if (diagram != null && projectName.equals(diagram.getProjectName()) && diagramName.equals(diagram.getDiagramName())) {
+			return diagram;
+		}
+		return null;
 	}
 }

@@ -1,0 +1,16 @@
+{
+  "learningUnits": [
+    {
+      "learningUnitName": "Classification and Instantiation",
+      "finishedSelfAssessmentTests": [
+        "Classification and Instantiation 1"
+      ]
+    },
+    {
+      "learningUnitName": "Generalization/Specialization I: Inheritance and Abstract Classes",
+      "finishedSelfAssessmentTests": [
+        "Generalization and Specialization 1"
+      ]
+    }
+  ]
+}

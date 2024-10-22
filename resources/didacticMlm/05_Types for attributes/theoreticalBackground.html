@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="content background">
+		<h1>LU5 - Types for Attributes</h1>
+        <h2>Theoretical Background</h2>
+		
+		<p>Each attribute must specify exactly one type. 
+		The type of an attribute determines the range of available slot values and permitted operations. 
+		The following data types are included in UML++:
+		<ul>
+			<li><i>Boolean</i>: Used for truth values. Only allows two values: <code>True</code> and <code>False</code></li>
+			<li><i>Integer</i>: Used for integers. Only allows numerical characters, may be preceded with a minus sign (<code>-</code>)</li>
+			<li><i>Float</i>: Used for real numbers. Only allows numerical characters; must include a decimal point (<code>.</code>) with an integer and a fraction part (e.g., <code>1.23</code> or <code>2.0</code>),  may be preceded with a minus sign (<code>-</code>)</li>
+			<li><i>String</i>: Used for text. Allows any sequence of any characters</li>
+			<li><i>Date</i>: Used for dates. Always requires day, month, and year combination following Gregorian calender</li>
+			<li><i>MonetaryValue</i>: Advanced type, used for prices. Consists of one float value and a currency value</li>
+			<li><i>Currency</i>: Advanced type, used for currencies. Only allows values from predefined list of currencies.</li>
+		
+		</ul></p>
+		<p><code>Currency</code> and <code>MonetaryValue</code> can only be selected after the checkbox "Show all data types" is activated. 
+		Some attributes are more restrictive than others. 
+		While <code>Boolean</code> attributes only allow for two values, <code>Integer</code> values are more or less endless. 
+		<code>String</code> is the least restrictive type available here; it allows for any set of characters whether they are numeric or not. 
+		The type choosen for an attribute should always be as restrictive as possible to prohibit erroneous slot values. 
+				
+		<u>Example</u>: A class <code>Course</code> has an attribute <code>creditPoints</code>. 
+		The type <code>Boolean</code> would be too restrictive, 
+		since two values are insufficient to depict credit points. 
+		The type <code>String</code> would be too unrestrictive because it allows many values we know to be wrong (e.g., "Any text"). 
+		A fitting type here would be <code>Integer</code>.		
+		</p>
+		
+		<p> We may encounter many attributes that can be restricted to a closer set of values than the default types do: 
+		height, video resolution, e-mail address, or ISBN for example.
+		To restrict slot values as much as reasonable, it may be beneficial to specify custom types.
+		For the specification of custom types, we have two options: To specify an <i>Enumeration</i> or a <i>Domain-specific Type</i>.
+		</p>
+		
+		<p><i>Enumerations</i> specify a custom list of specific values available to a slot. An example might be the traveling class of a flight ticket. 
+		Here, we can specify a <code>travelingClassEnum</code> that contains the values <code>EconomyClass</code>, <code>BusinessClass</code>, and 
+		<code>FirstClass</code>. In UML-MX, users can then select a slot value per drop down. Enumeration values may not include spaces or 
+		pure integers. For help on specifying enumerations, go to the UML++ Introduction in <lu>LU-1</lu>.
+		</p>
+		
+		<p>Up until now, we have used classes as a modularization of information systems 
+		&endash; they allow us to dissect the large system into smaller more manageable units, so-called modules. 
+		Classes may also serve as types for attributes themselves, we call such types <i>domain-specific types</i>. 
+		Using classes as attribute types allows for more complex types since a class may inlcude multiple attributes. 
+		An example might be the resolution of a video. The resolution of a video may be assumed to not possess its own identity; 
+		an association from a class <code>Video</code> to a class <code>Resolution</code> should thus be omitted (see <lu>LU-3</lu>). 
+		But the value of a resolution may still be dissected into the attributes <code>numberOfPixelsX: Integer</code> 
+		and <code>numberOfPixelsY: Integer</code>. Domain-specific classes can be choosen as an attribute type by clicking on "Domain-specific type"
+		and then selecting the desired class in the attribute specification dialog.</p>
+    </div>
+</body>
+</html>

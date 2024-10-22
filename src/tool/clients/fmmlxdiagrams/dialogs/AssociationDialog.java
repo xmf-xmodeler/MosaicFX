@@ -193,6 +193,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		sourceSetterField.setEditable(false);
 		targetVisibleFromSourceBox.setSelected(true);
 		targetVisibleFromSourceBox.setDisable(true);
+		sourceVisibleFromTargetBox.setSelected(true);
 		sourceVisibleFromTargetBox.selectedProperty().addListener((x0, x1, sourceVisible) -> {
 			sourceGetterField.setEditable(sourceVisible);
 			sourceSetterField.setEditable(sourceVisible);
@@ -316,13 +317,16 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				labels.add(new Label(" "));
 				labels.add(new Label(" "));
 				labels.add(new Label(LabelAndHeaderTitle.type));
+				labels.add(new Label(LabelAndHeaderTitle.identifier));
 				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
 					
 				sourceNodes.add(newDisplayName);
 				sourceNodes.add(new Label(" "));
 				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 				sourceNodes.add(newTypeSource);
+				sourceNodes.add(newIdentifierSource);
 				sourceNodes.add(multTargetToSourceBox);
+				sourceNodes.add(sourceVisibleFromTargetBox);
 //				sourceNodes.add(symmetricBox);
 //				sourceNodes.add(transitiveBox);
 					
@@ -330,7 +334,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				targetNodes.add(new Label(" "));
 				targetNodes.add(new Label (LabelAndHeaderTitle.end));
 				targetNodes.add(newTypeTarget);
+				targetNodes.add(newIdentifierTarget);
 				targetNodes.add(multSourceToTargetBox);
+				targetNodes.add(targetVisibleFromSourceBox);
+
 		}
 
 		
@@ -475,12 +482,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							0,
 							newDisplayName.getText(),
 							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
-							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
-							source.getName().toLowerCase() + newDisplayName.getText(),
+							newIdentifierSource.getText(),
+							newIdentifierTarget.getText(),
+							//source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							//source.getName().toLowerCase() + newDisplayName.getText(),
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
-							true,	
-							true,	//both visibilities true as is default in UML
+							sourceVisibleFromTargetBox.isSelected(),
+							targetVisibleFromSourceBox.isSelected(),
 							false,
 							false,
 							sourceGetterField.getText().orElse(null),

@@ -58,7 +58,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.persistence.StartupModelLoader;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
+import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnitChooser;
 
 public class ControlCenter extends Stage {
 	
@@ -69,6 +70,9 @@ public class ControlCenter extends Stage {
 	private final ListView<String> diagramLV = new ListView<String>();
 	private MenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
+	
+	private int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
+	private int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -76,22 +80,24 @@ public class ControlCenter extends Stage {
 
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
+		setResizable(false);
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			setTitle("UML-MX" + Character.toString(169) + " Control Center");
+			//169 is the unicode number of the copyright symbol
+		}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
 	
-		VBox root = new VBox();
+		VBox root = new VBox(5);
 		menuBar = new ControlCenterMenuBar();
 		GridPane grid = buildGridPane(); 
 		root.getChildren().addAll(menuBar, grid);
-		int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
-		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-			toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"))-237;	//Adjustment for removed elements
-		}
-		int toolHeight = Integer.valueOf(PropertyManager.getProperty("toolHeight"));
+		root.setAlignment(Pos.TOP_CENTER);
+		
 		Scene scene = new Scene(root, toolWidth, toolHeight);
+		scene.getStylesheets().add(ResourceLoader.getDidacticCssUrl().toExternalForm());
 		setScene(scene);
-				
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
 		setOnCloseRequest(closeEvent -> showCloseWarningDialog(closeEvent));
 				
@@ -109,15 +115,19 @@ public class ControlCenter extends Stage {
 			public void handle(KeyEvent event) {	
 				final KeyCombination keyCombinationShiftC = new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN);
 				if (keyCombinationShiftC.match(event)) {
-					testDiagramViewIntro();
+					System.err.println("Use to test functions");
 				}		
 			}
 		});
 				
 	}
 	
-	protected void testDiagramViewIntro() {
-		new ToolIntroductionManager(this).start();
+	private Button buildLearningUnitsButton() {
+		Button b = new Button();
+		b.setText("Open UML++ Learning Units");
+		b.getStyleClass().add("didactic-button"); 
+		b.setOnAction(a -> new LearningUnitChooser().show());
+		return b;
 	}
 
 	private void showCloseWarningDialog(Event event) {
@@ -127,7 +137,7 @@ public class ControlCenter extends Stage {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setTitle("Close Warning");
 		alert.setHeaderText("Application is closing!");
-		alert.setContentText("Proceed?");
+		alert.setContentText("All unsaved changes will be lost. Do you want to proceed?");
 		
 		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().add(buttonTypeCancel);
@@ -149,8 +159,14 @@ public class ControlCenter extends Stage {
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
-			MenuItem getProjectInformationItem = new MenuItem("Get Project Information");
-			getProjectInformationItem.setOnAction(e->openWebpage("https://le4mm.org/"));
+			MenuItem getProjectInformationItem = new MenuItem("Get Information on XModelerML");
+			getProjectInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/"));
+			
+			MenuItem getUMLInformationItem = new MenuItem("Get Information on UML-MX");
+			getUMLInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
+			
+			MenuItem getOnlineTutorial = new MenuItem("Open Online Tutorial");
+			getOnlineTutorial.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
 			
 			MenuItem getSourceCodeItem = new MenuItem("Get Source Code");
 			getSourceCodeItem.setOnAction(e->openWebpage("https://github.com/xmf-xmodeler"));
@@ -161,7 +177,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
+			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem, getOnlineTutorial,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void openWebpage(String url) {
@@ -236,19 +252,8 @@ public class ControlCenter extends Stage {
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
 		
-//		Button renameProject = new Button("Rename Project");
-//		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-//		grid.add(renameProject, 2, 5);
-//		GridPane.setHalignment(renameProject, HPos.LEFT);
-//		
-//		Button removeProject = new Button("Delete Project");
-//		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
-//		grid.add(removeProject, 2, 6);
-//		GridPane.setHalignment(removeProject, HPos.LEFT);
-
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
-		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		
 		Label modelLabel = new Label("Models");	//Button added later because of DidacticMode check
@@ -260,13 +265,10 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
 
-		Button newDiagram2 = new Button("Create UML Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
+		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
-		newDiagram2.disableProperty().bind(
-				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
+
 		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
-		grid.add(newDiagram2, 4, 4);
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
@@ -275,7 +277,6 @@ public class ControlCenter extends Stage {
 				);
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
 		
-		grid.add(newDiagram, 4, 1);			
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
 		projectTree.setPrefSize(250, 150);
@@ -283,6 +284,7 @@ public class ControlCenter extends Stage {
 		TreeItem<String> loading = new TreeItem<String>("Loading");
 		projectTree.setRoot(loading);
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
+		
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 		
@@ -297,24 +299,40 @@ public class ControlCenter extends Stage {
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());
 		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
-
-		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-		grid.add(concreteSyntaxWizardStart, 3, 4);
-		grid.add(loadModelDir, 2, 4);
-		grid.add(modelLabel, 3, 1);
-		grid.add(modelLV, 3, 2);
-		grid.add(newModel, 3, 1);}
 		
 		Button howToStart = new Button("How to...");
-		if(XModeler.isAlphaMode()) {
 			howToStart.setOnAction(e -> {
 				HowToDialog d = new HowToDialog();
 				d.showAndWait();
 			});
-			grid.add(howToStart, 4, 4);
-		}		
-		
-//		grid.add(concreteSyntaxWizardStart, 3, 4);
+			
+		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {		
+		newDiagram2.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		grid.add(refreshAll, 2, 1);
+		grid.add(concreteSyntaxWizardStart, 3, 4);
+		grid.add(loadModelDir, 2, 4);
+		grid.add(modelLabel, 3, 1);
+		grid.add(modelLV, 3, 2);
+		grid.add(newModel, 3, 1);
+		grid.add(howToStart, 4, 4);
+		grid.add(newDiagram, 4, 1);			
+		}
+		else {
+		projectTree.setOnMouseClicked(e->{
+			if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
+			newDiagram2.setDisable(true);
+			} else {
+				newDiagram2.setDisable(false);
+			}
+		});
+		projectLabel.setText("Models");
+		grid.add(newDiagram2, 4, 1);
+		toolWidth = toolWidth - 237;
+		Button learningUnits = this.buildLearningUnitsButton();
+		grid.add(learningUnits, 2, 4);
+		}
 		
 		return grid;
 	}
@@ -421,7 +439,15 @@ public class ControlCenter extends Stage {
 							setGraphic(null);
 						}
 					}
-				}
+					if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()))) && item!=null) {	//Changes name of projects to models for didactit mode
+						if(item.equals("Projects")) {
+							setText("Models");
+						}
+						if(item.equals("MyProjects")) {
+							setText("MyModels");
+						}
+						}
+					}
 			};
 		}
 	}
@@ -456,7 +482,17 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
-		});
+		this.removeNoneProjectEntries();
+});	}
+	
+	private void removeNoneProjectEntries() {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.
+		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			for(int i = 0; i<projectTree.getRoot().getChildren().get(0).getChildren().size(); i++) {
+				if(!projectTree.getRoot().getChildren().get(0).getChildren().get(i).toString().contains("MyProjects")) {
+					projectTree.getRoot().getChildren().get(0).getChildren().remove(i);
+				}
+			}		
+		}
 	}
 		
 	public void setProjectModels(Vector<String> vec) {

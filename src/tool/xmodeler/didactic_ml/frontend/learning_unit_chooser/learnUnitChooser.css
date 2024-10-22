@@ -1,0 +1,8 @@
+.not-implemented .table-cell {
+	-fx-text-fill: lightgrey;
+}
+
+.table-view{
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}

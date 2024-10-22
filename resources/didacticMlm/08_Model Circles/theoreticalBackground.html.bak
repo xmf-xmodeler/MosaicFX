@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div class="content background">
+		<h1>LU8 - Model Circles</h1>
+        <h2>Theoretical Background</h2>
+		<p>Class diagrams consist of classes that are interrelated by 
+			associations. If a class is associated with itself – either 
+			directly (what we call a <i>self-referential class</i>, see <lu>LU2</lu>) or indirectly – we 
+			encouter a so-called <i>model circle</i>. Model circles pose a threat to 
+			referential integrity.</p>
+<p>			<u>Example:</u> A simple example would be to model a  
+			class <code>Employee</code> and add a self-referential association 
+			<code>is_superior_of</code>. Such an association would also allow an employee to 
+			be its own superior, which might be unsuited for the modeled domain.
+			</p><p>Model circles may be useful or sometimes 
+			unavoidable even if they pose threats to model integrity. In such 
+			cases, integrity-violating states should be prevented by specifying 
+			custom constraints. Custom constraints are explained in <lu>LU10</lu>. The 
+			example model includes a model circle.</p>
+
+	</div>
+</body>
+</html>

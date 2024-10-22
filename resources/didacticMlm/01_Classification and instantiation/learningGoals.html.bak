@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="content objectives">
+		<h1>LU1 - Classification and Instantiation</h1>
+        <h2>Learning Objectives</h2>
+        Students should be able to...
+        <ul>
+        <li>distinguish classes from objects </li>
+		<li>describe the difference between classification and instantiation </li>
+		<li>recognize correct and incorrect instances of a given class </li>
+		<li>recognize correct and incorrect classifications for a given object </li>
+		<li>construct suitable classifications for a given set of objects </li>
+		</ul>
+
+    </div>
+</body>
+</html>

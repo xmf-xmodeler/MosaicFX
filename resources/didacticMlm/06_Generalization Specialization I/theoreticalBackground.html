@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Class Example</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content background">
+		<h1 class="small">LU6 - Generalization/Specialization: Inheritance and Abstract Classes</h1>
+        <h2>Theoretical Background</h2>
+		<p>
+			<i>Generalization/specialization</i> is a central feature of object-oriented 
+			languages. While classification (see <lu>LU1</lu>) serves as an abstraction 
+			over objects, generalization serves as an abstraction over classes. A 
+			generalized class is called the <i>superclass</i>, parent class, or ancestor of its 
+			specialized classes, which are referred to as <i>subclasses</i> or 
+			descendants. </p>
+			<p>
+			The key mechanism of specialization is <i>inheritance</i>. 
+			Through inheritance, all properties (i.e., attributes, operations, constraints, associations) 
+			that are specified in the superclass are available to all subclasses. These properties may be 
+			overwritten (and result in a form of <i>polymorphy</i>, not 
+			discussed here) and extended. “Extended” means that each subclass may 
+			add their own properties which are not available to any other 
+			subclass. Through generalization/specialization, we desire to 
+			construct more general abstractions and aim at improving reusability 
+			and maintainability. </p>
+			<p>
+			A superclass should always serve as a substitute 
+			to its subclasses (the <i>substitution principle</i>). A violation to 
+			this principle might lead to violations of model integrity. 
+			Sometimes, it is reasonable to add generalization/specialization 
+			hierarchies to realize benefits of reusability and maintainability 
+			only. In such cases, we might want to prohibit that superclasses can 
+			be instantiated into objects themselves. To prohibit the 
+			instantiation of objects, we can make a class abstract. An <i>abstract 
+			class</i> is a class which cannot be instantiated. Names of abstract classes are written in italic. Further difficulties 
+			of generalization/specialization are discussed in <lu>LU7</lu>.
+		</p>
+	</div>
+
+</body>
+</html>

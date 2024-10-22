@@ -114,7 +114,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
-			dlg.setTitle("Add metaclass");
+			if(diagram.isUMLMode()) {
+				dlg.setTitle("Add Class");
+			} else {
+				dlg.setTitle("Add metaclass");
+			}
 			Optional<CreateMetaClassDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -169,7 +173,11 @@ public class DiagramActions {
 	public void addMetaClassDialog(Point2D p) {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
-			dlg.setTitle("Add metaclass");
+			if(diagram.isUMLMode()) {
+				dlg.setTitle("Add Class");
+			} else {
+				dlg.setTitle("Add metaclass");
+			}
 			Optional<CreateMetaClassDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {

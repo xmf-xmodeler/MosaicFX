@@ -8,6 +8,9 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteItem;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteTool;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.ToolClass;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
@@ -408,6 +411,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public FmmlxAttribute getAttributeByName(String name){
 		for (FmmlxAttribute att : getAllAttributes()){
+			if (att.getName().equals(name)){
+				return att;
+			}
+		}
+		return null;
+	}
+	
+	public FmmlxAttribute getOwnAttributeByName(String name){	//like above but ignores inherited attributes. Currently used for Learning Unit success conditions
+		for (FmmlxAttribute att : getOwnAttributes()){
 			if (att.getName().equals(name)){
 				return att;
 			}

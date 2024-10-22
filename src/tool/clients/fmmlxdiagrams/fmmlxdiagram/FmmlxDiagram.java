@@ -44,7 +44,6 @@ import tool.clients.fmmlxdiagrams.Edge;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.InheritanceEdge;
@@ -60,8 +59,6 @@ import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.xmlManipulator.XmlHandler;
-import tool.xmodeler.tool_introduction.SucessCondition;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
 
 public class FmmlxDiagram extends AbstractPackageViewer {
 
@@ -96,6 +93,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 
 	public Vector<DiagramCanvas> views = new Vector<>();
+	private boolean isInLearningUnitMode = false;
 
 	static {
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
@@ -1433,5 +1431,13 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	
 	public Stage getStage() {
 		return this.stage;
+	}
+	
+	public boolean isInLearningUnitMode() {
+		return isInLearningUnitMode;
+	}
+
+	public void setInLearningUnitMode(boolean isInLearningUnitMode) {
+		this.isInLearningUnitMode = isInLearningUnitMode;
 	}
 }

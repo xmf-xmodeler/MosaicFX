@@ -67,13 +67,16 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
-		primitiveTypes.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.Primitive));
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
+		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+
+		if(!diagram.isUMLMode()) {
+			types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
+			types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+		}
 
 		// add enums to type list
 		diagramEnums = diagram.getEnums();
@@ -205,7 +208,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else {
+		}
+		else if(name.equals("name")){		//name already used by objects so extra error caught here
+			errorLabel.setText("The attribute name 'name' cannot be used. Try using a more specific name.");
+			return false;
+		}
+		else {
 			errorLabel.setText("");
 			return true;
 		}

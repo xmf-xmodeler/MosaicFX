@@ -36,14 +36,14 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxPattern;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
-import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.helper.persistence.XMLCreator;
-import tool.xmodeler.tool_introduction.DiagramPreperationActions;
-import tool.xmodeler.tool_introduction.DiagramViewState;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
 /**
  * SplitPane instance that serves as full gui for the diagram view. All diagram
@@ -62,7 +62,11 @@ public class DiagramViewPane extends SplitPane {
 	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
-	private DiagramViewState diagramViewState = null;
+	//TODO check architecture and make documentation this in only neede for tool intro, kann man es besser machen? ++ rename
+	/**
+	 * This string represents the current task the user have to success. The value is only use if LearningUnitManager.isInitialized()  
+	 */
+	private String taksName = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -75,29 +79,34 @@ public class DiagramViewPane extends SplitPane {
 		diagram = fmmlxDiagram;
 
 		initDiagramViewState();
-		buildViewComponents(diagramViewState);
-	}
-
-	private void initDiagramViewState() {
-		if (isIntroductionMode()) {
-			diagramViewState = DiagramViewState.CREATE_CLASS_MOVIE;
-			ToolIntroductionManager.getInstance().setDiagram(diagram);
-		} else {
-			diagramViewState = DiagramViewState.FULL_GUI;
+		//if the tool is in instruction mode the task precedence decides which gui elements are shown
+		if (isInToolIntroductionMode()) {
+			buildViewComponents(ToolIntroductionTasks.getPrecedence(taksName));			
+		}else {
+			//the number 100 represents a full gui
+			buildViewComponents(100);
+		}
+		if (SelfAssesmentTestManager.isInitialized()) {
+			SelfAssesmentTestManager.getInstance().setDiagram(diagram);
 		}
 	}
 
-	public  boolean isIntroductionMode() {
+	private void initDiagramViewState() {
+		if (SelfAssesmentTestManager.isInitialized()) {
+			taksName = SelfAssessmentTestTasks.getTaskName(1);}
+	}
+
+	public  boolean isInToolIntroductionMode() {
 		return diagram.getProjectName().equals("ToolIntroductionABC")
 				&& diagram.getDiagramName().equals("ToolIntroductionDiagramXYZ");
 	}
 
-	private void buildViewComponents(DiagramViewState state) {
+	private void buildViewComponents(int statePrecedence) {
 		configPane();
 		palettSideBar = buildPalettSideBar();
 		DiagramCanvas zoomView = buildZoomView();
 
-		fmmlxPalette = new FmmlxPalette(this, state);
+		fmmlxPalette = new FmmlxPalette(this, statePrecedence);
 
 		palettSideBar.getItems().clear();
 		palettSideBar.getItems().addAll(fmmlxPalette.getToolBar(), zoomView);
@@ -422,10 +431,22 @@ public class DiagramViewPane extends SplitPane {
 		}
 	}
 
+	/**
+	 * This function gets called by a learning unit manager. The function is used to
+	 * prepare the gui and the model for the next task.
+	 */
 	public void loadNextStage() {
-		DiagramPreperationActions.prepair(diagram);
-		buildViewComponents(diagramViewState.getNextState());
-		diagramViewState = diagramViewState.getNextState();
+		if (SelfAssesmentTestManager.getInstance().needsPreparationActions()) {
+			SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
+		}
+		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taksName);
+		// only in tool intro the gui is adapted
+		if (isInToolIntroductionMode()) {
+			buildViewComponents(nextTaskPrecedencePrecedence);
+		} else {
+			buildViewComponents(100);
+		}
+		taksName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
@@ -456,11 +477,7 @@ public class DiagramViewPane extends SplitPane {
 		this.issueTable = issueTable;
 	}
 
-	public void setDiagramViewState(DiagramViewState diagramViewState) {
-		this.diagramViewState = diagramViewState;
-	}
-
-	public DiagramViewState getDiagramViewState() {
-		return diagramViewState;
+	public String getCurrentTaskName() {
+		return taksName;
 	}
 }

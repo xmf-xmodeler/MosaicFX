@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div class="content background">
+		<h1>LU9 - Derivable Attributes and Operations</h1>
+        <h2>Theoretical Background</h2>
+		<p>
+			In the examples and exercises of the preceding learning units, slot 
+			values had to be entered manually. In some cases, however, they might 
+			also be determined by calculation. The attributes of such slots are 
+			called <i>derivable attributes</i>. Derivable attributes are 
+			attributes the value of which is either (i) already indirectly 
+			available within the model or (ii) dependent on some other attribute 
+			with a constant value not yet depicted within the model. Consequently, the 
+			slots of derivable attributes can be <i>calculated</i> rather then 
+			entered manually.</p>
+			
+			<p><u>Example for (i)</u>: Imagine an object model that represents customer and product orders. Here, I may want to capture how many product 
+			orders each customer placed. This value corresponds to the number of links between a customer object and product-order objects. The value 
+			is derivable from information already available in the model &ndash; it should not be entered manually.
+			</p>
+			
+			<p><u>Example for (ii)</u>: A prominent example for case (ii) is the age of the person. Age is a dynamic value which changes regularly. 
+			Modeling age as a regular attribute thus threatens systems integrity: it is possible that the value is entered faulty or is simply outdated. 
+			The age of a person is dependent on the date of birth of a person. Thus, it is preferable to calculate a person's age based on its date of birth.
+			</p>
+			
+			
+<p>			The calculation of values requires the use of <i>operations</i>. 
+			Operations consist of a signature and an operation body. The 
+			signature determines the name of the operation, its input parameters 
+			(each of which has a name and a type), and its return type. 
+			Operations are specified at the class level (they are a property of 
+			classes) and executed at the object level. UML++ uses the <i>Executable 
+			Object Constraint Language (XOCL)</i> for the specification of 
+			operations. The XOCL is a variant of the widely distributed OCL 
+			standard.
+		</p>
+	</div>
+</body>
+</html>
