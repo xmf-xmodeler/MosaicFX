@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
+import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 
 /**
  * This class is used to handle all KeyInputs form the FmmlxDiagram that are
@@ -66,19 +67,20 @@ public class FmmlxDiagramControlKeyHandler {
 	}
 	
 	private Stage findTaskDescriptionStage() {
-		Iterator<Window> i = Window.impl_getWindows();
-		
-        while(i.hasNext()) {
-        	Window window = i.next();
-            if (window instanceof Stage) {
-                Stage stage = (Stage) window;
-                Object stageID = stage.getProperties().get("stageID");
-                if ("TaskViewerStage".equals(stageID)) {
-                    return stage;
-                }
-            }
-        }
-        return null;
+		return TaskDescriptionViewer.mostRecentWindow;
+//		Iterator<Window> i = Window.impl_getWindows();
+//		
+//        while(i.hasNext()) {
+//        	Window window = i.next();
+//            if (window instanceof Stage) {
+//                Stage stage = (Stage) window;
+//                Object stageID = stage.getProperties().get("stageID");
+//                if ("TaskViewerStage".equals(stageID)) {
+//                    return stage;
+//                }
+//            }
+//        }
+//        return null;
     }
 
 	private void handleS() {

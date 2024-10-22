@@ -31,9 +31,13 @@ public class TaskDescriptionViewer extends Stage {
 	private final Button backwardsButton = createButton("< Back", (a) -> descriptionHistory.navigateBack());
 	private final Button forwardsButton = createButton("Forward >", (a) -> descriptionHistory.navigateForward());
 	private final ToolBar buttonBar = new ToolBar();
+	
+	public static TaskDescriptionViewer mostRecentWindow = null;
 
 	public TaskDescriptionViewer() {
 
+		mostRecentWindow = this;
+		
 		setOnCloseRequest(this::showWarningDialog);
 		setTitle("Task Description");
 		//Used to identify stage to open it on shortcut

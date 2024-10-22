@@ -76,19 +76,19 @@ public class LearningUnitChooser extends Dialog<Void> {
 		TableColumn<LearningUnit, Integer> idColumn = new TableColumn<>("ID");
 		idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 		idColumn.setSortable(false);
-		idColumn.impl_setReorderable(false);
+//		idColumn.impl_setReorderable(false);
 		idColumn.setResizable(false);
 
 		TableColumn<LearningUnit, String> nameColumn = new TableColumn<>("Learning Unit Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
 		nameColumn.setSortable(false);
-		nameColumn.impl_setReorderable(false);
+//		nameColumn.impl_setReorderable(false);
 		nameColumn.setMinWidth(350);
 		//nameColumn.setResizable(false);
 
 		TableColumn<LearningUnit, Boolean> selectedColumn = new TableColumn<>("Passed");
 		selectedColumn.setSortable(false);
-		selectedColumn.impl_setReorderable(false);
+//		selectedColumn.impl_setReorderable(false);
 		selectedColumn.setResizable(false);
 		selectedColumn.setCellValueFactory(cellData -> {
 			LearningUnit unit = cellData.getValue();
