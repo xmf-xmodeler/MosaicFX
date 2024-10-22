@@ -22,6 +22,8 @@ import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
+import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
+import tool.clients.fmmlxdiagrams.graphics.SVGReader;
 import tool.xmodeler.ControlCenterClient;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
@@ -34,6 +36,9 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	final int INST_LEVEL_WIDTH = 7;
 	final int MIN_BOX_HEIGHT = 4;
 	final int EXTRA_Y_PER_LINE = 3;
+
+	private static SVGGroup cogWheelExplicit;
+	private static SVGGroup cogWheelImplicit;
 
 	
 	public DefaultFmmlxObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
@@ -109,7 +114,14 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		header.addNodeElement(metaclassLabel);
 		if(!isEnum) header.addNodeElement(levelLabel);
 		header.addNodeElement(nameLabel);
-
+		
+		if(object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT
+	    || object.isControlClass() == FmmlxObject.ControlClass.IMPLICIT) {
+			SVGGroup cogWheel = object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT?getCogWheelExplicitIcon():getCogWheelImplicitIcon();
+			cogWheel.setMyTransform(new Affine(1., 0., 15. + object.level.toString().length()*5., 0., 1., 3.));
+			header.addNodeElement(cogWheel);
+		}
+		
 		if ((!"".equals(parentString))) {
 			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1., diagram), null, object, NO_ACTION, parentString, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.NORMAL);
 			header.addNodeElement(parentsLabel);
@@ -373,6 +385,49 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
 	}
 
+	/*private SVGGroup getCogWheelExplicitIcon() {
+		if(cogWheelExplicit == null){
+			try {
+				cogWheelExplicit = SVGReader.readSVG(new java.io.File("resources/svg/cogwheel.svg"), new Affine());
+			} catch(Exception any) {
+				System.err.println("Cannot read file for cogwheel.");
+				any.printStackTrace();
+			}
+		}
+		return cogWheelExplicit;
+	}
+
+	private SVGGroup getCogWheelImplicitIcon() {
+		if(cogWheelImplicit == null){
+			try {
+				cogWheelImplicit = SVGReader.readSVG(new java.io.File("resources/svg/cogwheel2.svg"), new Affine());
+			} catch(Exception any) {
+				System.err.println("Cannot read file for cogwheel.");
+				any.printStackTrace();
+			}
+		}
+		return cogWheelImplicit;
+	}*/
+	
+	private SVGGroup getCogWheelExplicitIcon() {
+			try {
+				return SVGReader.readSVG(new java.io.File("resources/svg/cogwheel.svg"), new Affine());
+			} catch(Exception any) {
+				System.err.println("Cannot read file for cogwheel.");
+				any.printStackTrace();
+				return null;
+			}
+	}
+
+	private SVGGroup getCogWheelImplicitIcon() {
+			try {
+				return SVGReader.readSVG(new java.io.File("resources/svg/cogwheel2.svg"), new Affine());
+			} catch(Exception any) {
+				System.err.println("Cannot read file for cogwheel.");
+				any.printStackTrace();
+				return null;
+			}
+	}
 	/**
 	 * Display too long method returns in alert stage. A TextArea is used so the return value is selectable + copyable
 	 * @param return value as string representation

@@ -418,8 +418,9 @@ public class FmmlxDiagramCommunicator {
 					parentListS.add((String) o);
 				}
 				String type = "FMMLX";
-//				Boolean isSingleton = false;
+				Boolean isControlClass = false;
 				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
+				try{ isControlClass = (Boolean) responseObjectList.get(9); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
 				Integer maxLevel = (Integer) responseObjectList.get(3);
 				if(maxLevel == -1) maxLevel = null;
 				FmmlxObject object = new FmmlxObject(
@@ -431,6 +432,7 @@ public class FmmlxDiagramCommunicator {
 						parentListS,                         // parentsPath
 						(Boolean) responseObjectList.get(5), // isAbstract
 						(Boolean) responseObjectList.get(4), // isSingleton
+						isControlClass, 
 						(Integer) responseObjectList.get(6), // x-Position
 						(Integer) responseObjectList.get(7), // y-Position 
 						(Boolean) responseObjectList.get(8), // hidden

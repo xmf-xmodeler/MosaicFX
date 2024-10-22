@@ -12,15 +12,13 @@ import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
-import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
-import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
-import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 import tool.clients.fmmlxdiagrams.uml.UmlObjectDisplay;
 
 import java.util.*;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
+	public static enum ControlClass {NO, EXPLICIT, IMPLICIT};
 	final String name;
 	final String ownPath;
 	final String ofPath;
@@ -28,6 +26,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	private final boolean isAbstract;
 	private final boolean isSingleton;
+	private final boolean isControlClass;
 	final Level level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
@@ -52,6 +51,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			Vector<String> parentPaths,
 			Boolean isAbstract,
 			Boolean isSingleton,
+			Boolean isControlClass,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
 		super();
@@ -63,6 +63,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.level = new Level(minlevel, maxLevel);
 		this.isAbstract = isAbstract;
 		this.isSingleton = isSingleton;
+		this.isControlClass = isControlClass;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
@@ -352,6 +353,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			}
 		}
 		return subclasses;
+	}
+	
+	public HashSet<FmmlxObject> getAllParents() {
+		HashSet<FmmlxObject> superclasses = new HashSet<FmmlxObject>();
+		superclasses.add(this);
+		for (FmmlxObject p : diagram.getObjectsReadOnly()) {
+			if(this.parentsPaths.contains(p.ownPath)) {
+				superclasses.addAll(p.getAllParents());
+			}
+		}
+		return superclasses;
 	}
 	
 	public int getAttributeCountByLevel(int level) {
@@ -651,5 +663,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public Vector<FmmlxSlot> getSlots() {
 		return slots;
+	}
+
+	public ControlClass isControlClass() {
+		if(isControlClass) return ControlClass.EXPLICIT;
+		for(FmmlxObject p : getAllParents()) {
+			if(p != this && p.isControlClass() != ControlClass.NO) return ControlClass.IMPLICIT;
+		}
+		return ControlClass.NO;
 	}
 }
