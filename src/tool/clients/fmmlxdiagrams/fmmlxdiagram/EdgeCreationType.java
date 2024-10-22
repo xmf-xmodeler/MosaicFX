@@ -16,4 +16,5 @@ public interface EdgeCreationType {
 	public static EdgeCreationType LINK = new EdgeCreationType() {};
 	public static EdgeCreationType DELEGATION = new EdgeCreationType() {};
 	public static EdgeCreationType ROLEFILLER = new EdgeCreationType() {};
+	public static EdgeCreationType PARENT = new EdgeCreationType() {};
 }

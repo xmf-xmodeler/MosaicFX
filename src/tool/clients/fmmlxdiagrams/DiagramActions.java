@@ -69,6 +69,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
+import tool.helper.persistence.SerializerConstant;
 import tool.helper.user_properties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -581,6 +582,18 @@ public class DiagramActions {
 			}
 		});
 
+	}
+	
+	public void addSingleParent(FmmlxObject object, FmmlxObject parent) {	//for adding parents without opening the dialogue window
+		Vector<FmmlxObject> parents = object.getAllAncestors();
+		Vector<String> parentNames = new Vector<String>();
+		for(FmmlxObject p : parents) {
+			parentNames.add(p.getName());
+		}
+		
+		Vector<String> parentV = new Vector<String>(parentNames);
+		parentV.add(parent.toString());
+		diagram.getComm().changeParent(diagram.getID(),object.getName(), parentNames, parentV);
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {

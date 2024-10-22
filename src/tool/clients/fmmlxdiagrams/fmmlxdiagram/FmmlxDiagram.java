@@ -889,6 +889,11 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 						canvas.setCursor(Cursor.DEFAULT);
 					}
+				} else if (edgeCreationType == EdgeCreationType.PARENT) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Parent);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
 				} else if (edgeCreationType == EdgeCreationType.LINK) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
@@ -899,7 +904,12 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Delegation);
 						canvas.setCursor(Cursor.DEFAULT);
 					}
-				}
+				} else if (edgeCreationType == EdgeCreationType.ROLEFILLER) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.RoleFiller);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				} 
 			} else if (nodeCreationType == NodeCreationType.NOTE) {
 				actions.addNote(this.getDiagram(), unTransformedPoint);
 				canvas.setCursor(Cursor.DEFAULT);
@@ -961,12 +971,16 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 			Point2D p = new Point2D(e.getX(), e.getY());
-
+			
 			if (hitObject != null) {
 				if (mouseMode == MouseMode.DRAW_EDGE) {
 					mouseMode = MouseMode.STANDARD;
 					FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
 					switch (drawEdgeType) {
+					case Parent:
+						actions.addSingleParent(newEdgeSource, newEdgeTarget);
+						setStandardMouseMode();
+						break;
 					case Association:
 						actions.addAssociationDialog(newEdgeSource, newEdgeTarget, edgeCreationType == null?null:((EdgeCreationType.CreateAssociation)edgeCreationType).assocType);
 						setStandardMouseMode();
