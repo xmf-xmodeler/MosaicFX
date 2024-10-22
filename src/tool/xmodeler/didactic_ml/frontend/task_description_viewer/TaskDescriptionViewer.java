@@ -3,6 +3,7 @@ package tool.xmodeler.didactic_ml.frontend.task_description_viewer;
 import java.util.Optional;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -10,27 +11,34 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.IconGenerator;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.genSpec1.GeneralizationSpecializationIManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 public class TaskDescriptionViewer extends Stage {
 
 	private final WebView webView = new WebView();
 	private final TaskDescriptionHistory descriptionHistory = new TaskDescriptionHistory(this);
-	private Button checkButton = createButton("Check Condition", (a) -> SelfAssesmentTestManager.getInstance().checkSucessCondition());
+	private Button checkButton = createButton("Check Condition", (a) -> SelfAssesmentTestManager.getInstance().checkSucessCondition(this));
 	private final Button backwardsButton = createButton("< Back", (a) -> descriptionHistory.navigateBack());
 	private final Button forwardsButton = createButton("Forward >", (a) -> descriptionHistory.navigateForward());
 	private final ToolBar buttonBar = new ToolBar();
+	private ListView<ObservableList<?>> anwserLV = new ListView();
+	GridPane grid = new GridPane();
 
 	public TaskDescriptionViewer() {
 
@@ -40,10 +48,10 @@ public class TaskDescriptionViewer extends Stage {
 		getProperties().put("stageID", "TaskViewerStage");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		
-		
 		BorderPane root = new BorderPane();
+		grid.add(webView, 0, 0);
 		webView.setContextMenuEnabled(false);
-		root.setCenter(webView);
+		root.setCenter(grid);
 		root.setBottom(buttonBar);
 		buttonBar.getItems().add(checkButton);
 		Scene scene = new Scene(root, 800, 600);
@@ -141,7 +149,7 @@ public class TaskDescriptionViewer extends Stage {
 				// style. I did not find a good solution.
 				// setStyle(null) and setBackground(null) lead to bad results.
 				buttonBar.getItems().remove(checkButton);
-				checkButton = createButton("Check Condition", (a) -> ToolIntroductionManager.getInstance().checkSucessCondition());
+				checkButton = createButton("Check Condition", (a) -> ToolIntroductionManager.getInstance().checkSucessCondition(this));
 				buttonBar.getItems().add(checkButton);
 			});
 		};
@@ -164,6 +172,29 @@ public class TaskDescriptionViewer extends Stage {
 				SelfAssesmentTestManager.getInstance().stop();
 			});
 		});
+	}
+	
+	//For certain exercise types which require a list view in the task description
+	public void addListView(FmmlxDiagram diagram) {
+//		FmmlxDiagram diagram = FmmlxDiagramCommunicator.getCommunicator().getDiagram(0);
+		System.err.println(diagram.getAllMetaClass() + ":::" + diagram.getObjectsReadOnly());
+		switch (SelfAssesmentTestManager.getSelfAssessmentTest()) {		//cases are given for individual exercises so the contents of the list are also set on an individual basis and semi-hard coded
+
+		case  DEFICIENT_ATTRIBUTES:
+			if(diagram.getViewPane().getCurrentTaskName().equals("Select_Deficient_Attributes")) {	//need to check individually for each test if we are at the right task. 
+				
+				grid.add(anwserLV, 0, 1);
+				System.err.println(diagram.getDiagramName() + diagram.getObjectsReadOnly());
+				System.err.println(diagram.getObjectByName("Person")+" has Attributes:"+diagram.getObjectByName("Person").getAllAttributesAsList());
+				anwserLV.getItems().add(diagram.getObjectByName("Person").getAllAttributesAsList());
+		
+			}
+			else {grid.getChildren().remove(anwserLV);}
+			break;
+			
+		default:
+			break;
+		}
 	}
 
 	/**

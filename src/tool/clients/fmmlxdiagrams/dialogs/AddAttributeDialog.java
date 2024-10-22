@@ -93,7 +93,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		this.selectedObject = selectedObject;
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
 		layout();
 
 		dialogPane.setContent(flow);

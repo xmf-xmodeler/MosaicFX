@@ -3,6 +3,7 @@ package tool.xmodeler.didactic_ml.frontend.learning_unit_chooser;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssesmentTestManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.classification_instantioation.ClassificationInstantiationManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.deficient_attributes.DeficientAttributesManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.genSpec1.GeneralizationSpecializationIManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
@@ -20,6 +21,8 @@ public class LearningUnitManagerFactory {
 				return new ClassificationInstantiationManager();
 			case GENERALIZATION_SPECIALIZATION_I:
 				return new GeneralizationSpecializationIManager();
+			case DEFICIENT_ATTRIBUTES:
+				return new DeficientAttributesManager();
 			default:
 				throw new IllegalArgumentException(
 						"If the learning unit is not represented in this factory maybe its not implemented: "

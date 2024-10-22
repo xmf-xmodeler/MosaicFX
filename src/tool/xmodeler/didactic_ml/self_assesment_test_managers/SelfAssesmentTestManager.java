@@ -109,7 +109,7 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	 * This function is called to check if the user matches the condition of the current task.
 	 * The conditions are defined in the sucessCondition reference of this class.
 	 */
-	public void checkSucessCondition() {
+	public void checkSucessCondition(TaskDescriptionViewer taskView) {
 		// is needed because otherwise the changes of the update are not reflected in
 		// the check...just for security if the user clicks fast
 		try {
@@ -118,13 +118,16 @@ public abstract class SelfAssesmentTestManager implements Startable {
 			throw new RuntimeException();
 		}
 
-		if (sucessCondition.checkSuccessCondition()) {
+		if (sucessCondition.checkSuccessCondition(descriptionViewer)) {
 			descriptionViewer.giveUserFeedback(true);
 			diagram.getViewPane().loadNextStage();
 			String nextDescription = (ResourceLoader.getTaskDescritpion(selfAssessmentTest, diagram.getViewPane().getCurrentTaskName()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
+			//System.err.println(diagram + "::" + diagram.getAllMetaClass() + ", name:  " + diagram.getComm().getDiagram(diagram.getID()).getMaxLevel());  //diagram.getComm().getAllObjectPositions(0));
+			descriptionViewer.addListView(diagram);
+
 			if (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) == SelfAssessmentTestTasks.getHighestPrecedence()) {
 				//this time is needed to survive the user feedback
 				try {

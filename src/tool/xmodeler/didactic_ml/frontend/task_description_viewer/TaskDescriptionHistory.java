@@ -25,6 +25,7 @@ public class TaskDescriptionHistory extends Stack<String> {
 	public void navigateBack() {
 		forwardStack.push(this.pop());
 		viewer.loadHtmlContent(this.peek());
+		viewer.addListView();
 		viewer.updateGui();
 	}
 
@@ -32,6 +33,7 @@ public class TaskDescriptionHistory extends Stack<String> {
 		String forwardContent = forwardStack.pop();
 		this.push(forwardContent);
 		viewer.loadHtmlContent(forwardContent);
+		viewer.addListView();
 		viewer.updateGui();
 	}
 }

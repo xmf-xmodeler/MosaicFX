@@ -5,6 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
+import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
@@ -13,7 +14,7 @@ public class ToolIntroductionConditions extends SuccessCondition {
 	private static final String MOVIE_CLASS_NAME = "Movie";
 
 	@Override
-	public boolean checkSuccessCondition() {
+	public boolean checkSuccessCondition(TaskDescriptionViewer taskViewer) {
 		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 1:
 			return isClassMovieCreated();

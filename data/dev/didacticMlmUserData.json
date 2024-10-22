@@ -11,6 +11,12 @@
       "finishedSelfAssessmentTests": [
         "Generalization and Specialization 1"
       ]
+    },
+    {
+      "learningUnitName": "Derivable Attributes and Operations",
+      "finishedSelfAssessmentTests": [
+        "Deficient Attributes"
+      ]
     }
   ]
 }
