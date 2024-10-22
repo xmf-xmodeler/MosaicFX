@@ -138,7 +138,6 @@ public class ObjectContextMenu extends ContextMenu {
 			getItems().addAll(
 					changeParentItem, 
 					abstractClassItem,
-					browseInstanceItem, 
 					attributeMenu, 
 					associationMenu, 
 					operationMenu, 
@@ -151,7 +150,7 @@ public class ObjectContextMenu extends ContextMenu {
 		}
 		if (!diagram.isUMLMode())
 		{
-			getItems().addAll(associationInstanceMenu,singletonClassItem,
+			getItems().addAll(browseInstanceItem,associationInstanceMenu,singletonClassItem,
 								slotMenu);
 		}
 		getItems().addAll(delegationMenu);
