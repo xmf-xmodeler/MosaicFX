@@ -45,7 +45,6 @@ h1, h3 {
 	font-size: 17px;
 }
 
-
 p {
     color: #555;
 }
@@ -192,6 +191,8 @@ p {
 }
 
 code {
-   
+     font-weight: bold;
+    font-size: inherit;
+    font-family: inherit;
 }
 

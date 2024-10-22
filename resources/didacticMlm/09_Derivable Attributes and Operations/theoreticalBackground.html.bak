@@ -24,10 +24,9 @@
 			is derivable from information already available in the model &ndash; it should not be entered manually.
 			</p>
 			
-			<p><u>Example for (ii)</u>: A prominent example for case (ii) is the age of the person. Age is a dynamic value, 
-			which changes regularly, but is dependent on one constant &ndash; a person's date of birth. 
-			Modeling age as a regular attribute thus threatens systems integrity: the value may be incorrect or outdated. 
-			It should rather be calculated as the difference between today's date and the person's date of birth.
+			<p><u>Example for (ii)</u>: A prominent example for case (ii) is the age of the person. Age is a dynamic value which changes regularly. 
+			Modeling age as a regular attribute thus threatens systems integrity: it is possible that the value is entered faulty or is simply outdated. 
+			The age of a person is dependent on the date of birth of a person. Thus, it is preferable to calculate a person's age based on its date of birth.
 			</p>
 			
 			

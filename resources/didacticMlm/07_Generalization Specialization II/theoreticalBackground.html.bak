@@ -26,7 +26,7 @@
 		<p>To overcome this issue, we would use <i>delegation</i> associations. In delegation we differentiate a 
 		<i>role object</i> (e.g., a student object) from a <i>role-filler object</i> (e.g., a person object). 
 		If an object sends a request to a student object (e.g., the exam registration office requires the student's address), 
-		and the student object cannot handle the message, it is delegated to its role-filler object. Continuing the example from above, 
+		and the student object cannot handle the message, it is delegated to its role-filler object. Continuing the example from above,
 		we would now require one person (role-filler) object and one student and one employee (role) objects. Shared properties like name 
 		or address are no longer redundantly defined in each object, but only in the role-filler object.
 		This allows us to realize the benefits of generalization/specialization without comprising on redundancy issues.</p>

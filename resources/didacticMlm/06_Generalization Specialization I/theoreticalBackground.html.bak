@@ -36,7 +36,7 @@
 			only. In such cases, we might want to prohibit that superclasses can 
 			be instantiated into objects themselves. To prohibit the 
 			instantiation of objects, we can make a class abstract. An <i>abstract 
-			class</i> is a class which cannot be instantiated. Names of abstract classes are written in italic. Further difficulties 
+			class</i> is a class which cannot be instantiated. Further difficulties 
 			of generalization/specialization are discussed in <lu>LU7</lu>.
 		</p>
 	</div>
