@@ -147,7 +147,7 @@ public class FmmlxPalette {
 			DefaultTool delegationTool = 
 					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType(EdgeCreationType.DELEGATION));
 			DefaultTool roleFillerTool = 
-					new DefaultTool("Role Filler", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType(EdgeCreationType.ROLEFILLER));
+					new DefaultTool("Role Filler", "resources/gif/XCore/Delegation2.png", point -> fmmlxDiagram.setEdgeCreationType(EdgeCreationType.ROLEFILLER));
 			DefaultTool metaClassTool;
 			if(!fmmlxDiagram.isUMLMode()) {
 			metaClassTool = 
