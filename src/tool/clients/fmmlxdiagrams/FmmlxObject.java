@@ -402,6 +402,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return null;
 	}
+	
+	public FmmlxAttribute getOwnAttributeByName(String name){	//like above but ignores inherited attributes. Currently used for Learning Unit success conditions
+		for (FmmlxAttribute att : getOwnAttributes()){
+			if (att.getName().equals(name)){
+				return att;
+			}
+		}
+		return null;
+	}
 
 	public FmmlxOperation getOperationByName(String newValue) {		
 		for (FmmlxOperation op : getAllOperations()) {
