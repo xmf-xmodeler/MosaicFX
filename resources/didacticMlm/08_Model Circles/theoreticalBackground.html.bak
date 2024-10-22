@@ -13,7 +13,7 @@
 			directly (what we call a <i>self-referential class</i>, see <lu>LU2</lu>) or indirectly – we 
 			encouter a so-called <i>model circle</i>. Model circles pose a threat to 
 			referential integrity.</p>
-<p>			<u>Example</u>: A simple example would be to model a  
+<p>			<u>Example:</u> A simple example would be to model a  
 			class <code>Employee</code> and add a self-referential association 
 			<code>is_superior_of</code>. Such an association would also allow an employee to 
 			be its own superior, which might be unsuited for the modeled domain.

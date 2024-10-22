@@ -18,7 +18,7 @@
 			concepts. A too narrow replication of everday objects as software 
 			objects can lead to redundancies and, as a result, poses a threat to 
 			the system’s integrity. Classes that reproduce deficiencies of 
-			natural-language terms, and with that lead to conceptual redundancy, 
+			natural-language terms, and with that lead to conceptual redudancy, 
 			are called <i>deficient classes</i>.</p>
 <p>			Cosider as an example the natural-language term “book,” which may refer to a particular 
 			book copy I can hold in my hand or also to the intellectual artifact 

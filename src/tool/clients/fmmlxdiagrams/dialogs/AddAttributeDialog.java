@@ -207,7 +207,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else {
+		}
+		else if(name.equals("name")){		//name already used by objects so extra error caught here
+			errorLabel.setText("The attribute name 'name' can not be used. Try using a more specific name.");
+			return false;
+		}
+		else {
 			errorLabel.setText("");
 			return true;
 		}

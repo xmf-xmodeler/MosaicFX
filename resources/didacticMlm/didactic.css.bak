@@ -1,5 +1,4 @@
 body {
-	-webkit-user-select: none;
     font-family: Arial, sans-serif;
     line-height: 1.6;
     margin: 20px;
@@ -45,7 +44,6 @@ h1, h3 {
 .content h1.small {
 	font-size: 17px;
 }
-
 
 p {
     color: #555;
@@ -193,6 +191,8 @@ p {
 }
 
 code {
-   
+     font-weight: bold;
+    font-size: inherit;
+    font-family: inherit;
 }
 

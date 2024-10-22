@@ -60,7 +60,7 @@
 		Consider for example the price of a product. 
 		The price may consist of an <code>amount: Float</code> and a <code>currency: String</code> value, i.e., 
 		is too complex to depict as an attribute with a default data type. 
-		But it should still be modeled as an attribute since price objects do not possess their own identity &ndash; 
+		But it should still be modeled as an attribute since price objects do not possess their own identity &mdash; 
 		if one product's price changes from 4.99€ to 2.99€, 
 		I don’t to want to change the price value of all 4.99€-priced products. 
 		In such a case, we would use a <i>domain-specific type</i> for the price attribute (see <lu>LU5</lu>).
