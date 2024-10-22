@@ -1146,6 +1146,13 @@ public class DiagramActions {
 	public void exportSvg() {
 		Platform.runLater(() ->{
 		FileChooser fc = new FileChooser();
+		
+	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+	    if (!initalDirectory.equals("")) {
+	    	File dir = new File(initalDirectory);
+    		if(dir.exists()) fc.setInitialDirectory(dir);
+    	}
+		
 		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
 		fc.setTitle("Export File");
 		File file = fc.showSaveDialog(XModeler.getStage());
