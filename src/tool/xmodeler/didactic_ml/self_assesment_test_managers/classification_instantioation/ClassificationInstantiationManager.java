@@ -12,7 +12,7 @@ public class ClassificationInstantiationManager extends SelfAssesmentTestManager
 	public ClassificationInstantiationManager() {
 		super("ClassificationInstantiationABC", "ClassificationInstantiationDiagramXYZ");
 		new ClassificationInstantiationTasks().init();
-		selfAssessmentTest = SelfAssessmentTest.CLASSIFICATION_INSTANTIATION;
+		selfAssessmentTest = null; //SelfAssessmentTest.CLASSIFICATION_INSTANTIATION;
 		sucessCondition = new ClassificationInstantiationConditions();
 		preperationActions = new ClassificationInstantiationPreparation();
 	}	

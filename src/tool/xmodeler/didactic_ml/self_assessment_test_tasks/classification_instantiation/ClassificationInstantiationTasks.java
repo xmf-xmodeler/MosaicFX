@@ -10,7 +10,7 @@ public class ClassificationInstantiationTasks extends SelfAssessmentTestTasks {
 	public ClassificationInstantiationTasks() {
 		super(SelfAssessmentTest.CLASSIFICATION_INSTANTIATION);
 	}
-
+ 
 	@Override
 	public void init() {
 		tasks = Map.ofEntries(

@@ -54,7 +54,7 @@
 		An example might be the resolution of a video. The resolution of a video may be assumed to not possess its own identity; 
 		an association from a class <code>Video</code> to a class <code>Resolution</code> should thus be omitted (see <lu>LU-3</lu>). 
 		But the value of a resolution may still be dissected into the attributes <code>numberOfPixelsX: Integer</code> 
-		and <code>numberOfPixelsY: Integer</code>. Domain-specific classes can be choosen as an attribute type by clicking on "Domain-specific type"
+		and </code>numberOfPixelsY: Integer</code>. Domain-specific classes can be choosen as an attribute type by clicking on "Domain-specific type"
 		and then selecting the desired class in the attribute specification dialog.</p>
     </div>
 </body>
