@@ -155,7 +155,7 @@ public class LearningUnitTabPane extends TabPane {
 		idColumn.setPrefWidth(20);
 		idColumn.setSortable(false);
 		idColumn.setResizable(false);
-		idColumn.setReorderable(false);
+		idColumn.impl_setReorderable(false);
 
 		TableColumn<SelfAssessmentTest, String> testNameColumn = new TableColumn<>("Test Name");
 		testNameColumn.setCellValueFactory(new PropertyValueFactory<>("prettyName"));
@@ -163,7 +163,7 @@ public class LearningUnitTabPane extends TabPane {
 		testNameColumn.setMinWidth(300);
 		testNameColumn.setSortable(false);
 		testNameColumn.setResizable(true);
-		testNameColumn.setReorderable(false);
+		testNameColumn.impl_setReorderable(false);
 
 		TableColumn<SelfAssessmentTest, Boolean> passedColumn = new TableColumn<>("Passed");
 		 passedColumn.setCellValueFactory(cellData -> {
@@ -175,7 +175,7 @@ public class LearningUnitTabPane extends TabPane {
 		passedColumn.setSortable(false);
 		passedColumn.setPrefWidth(50);
 		passedColumn.setResizable(false);
-		passedColumn.setReorderable(false);
+		passedColumn.impl_setReorderable(false);
 		
 		
 		tableView.getColumns().addAll(idColumn, testNameColumn, passedColumn);

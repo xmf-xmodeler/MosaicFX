@@ -49,6 +49,7 @@ public abstract class SelfAssessmentTestTasks {
 	 * @return precedence of task
 	 */
 	public static int getPrecedence(String taskName) {
+		System.err.println("taskName: " + taskName);
 		return tasks.get(taskName);
 	}
 

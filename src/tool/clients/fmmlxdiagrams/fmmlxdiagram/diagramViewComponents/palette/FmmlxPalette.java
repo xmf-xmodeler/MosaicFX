@@ -25,8 +25,12 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.AssociationType;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.EdgeCreationType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.fmmlxdiagram.NodeCreationType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.DiagramViewPane;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
@@ -37,6 +41,7 @@ public class FmmlxPalette {
 	private final FmmlxDiagram fmmlxDiagram;
 	private TreeItem<AbstractTreeType> root = new TreeItem<AbstractTreeType>();
 	private TreeItem<AbstractTreeType> relationships = new TreeItem<AbstractTreeType>(new TreeGroup("Relationships"));
+	private TreeItem<AbstractTreeType> associationTypes = new TreeItem<AbstractTreeType>(new TreeGroup("Association Types"));
 	private TreeItem<AbstractTreeType> elements = new TreeItem<AbstractTreeType>(new TreeGroup("Elements"));
 	private TreeItem<AbstractTreeType> miscs = new TreeItem<AbstractTreeType>(new TreeGroup("Miscellaneous"));
 	private boolean showMetaClassName = false;
@@ -110,6 +115,7 @@ public class FmmlxPalette {
 		
 		if (diagramViewStatePrecedence > 3) {
 			root.getChildren().add(relationships);			
+			root.getChildren().add(associationTypes);
 		}
 		root.getChildren().add(miscs);
 		root.getChildren().add(elements);
@@ -124,34 +130,44 @@ public class FmmlxPalette {
 
 	public synchronized void update(DiagramViewPane viewPane) {
 		Platform.runLater(() -> {
+			
 			treeView.getSelectionModel().clearSelection();
+			
+			associationTypes.getChildren().clear();
 			elements.getChildren().clear();
 			relationships.getChildren().clear();
+			
 			treeView.setShowRoot(false);
 		
-			DefaultTool associationTool = 
-					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
 			DefaultTool linkTool = 
-					new DefaultTool("Link", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
+					new DefaultTool("Link", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType(EdgeCreationType.LINK));
 			DefaultTool delegationTool = 
-					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
+					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType(EdgeCreationType.DELEGATION));
 			DefaultTool metaClassTool;
 			if(!fmmlxDiagram.isUMLMode()) {
 			metaClassTool = 
-					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType(NodeCreationType.METACLASS));
 			}
 			else {
 			metaClassTool = 
-						new DefaultTool("Class", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+						new DefaultTool("Class", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType(NodeCreationType.METACLASS));
 			}
 			
-			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
 			TreeItem<AbstractTreeType> delegation = new TreeItem<AbstractTreeType>(delegationTool);
 			TreeItem<AbstractTreeType> metaClass = new TreeItem<AbstractTreeType>(metaClassTool);
 			
 			elements.getChildren().add(metaClass);
-			addChildrenToRelationship(association, link, delegation, viewPane);
+			addChildrenToRelationship(link, delegation, viewPane);
+			
+			Vector<AssociationType> allAssociationTypes = fmmlxDiagram.getAssociationTypes();
+			for(AssociationType aTyp : allAssociationTypes) {
+				TreeItem<AbstractTreeType> assoc = new TreeItem<AbstractTreeType>(
+						new DefaultTool(aTyp.getDisplayName(), "resources/gif/Association.gif", 
+								point -> fmmlxDiagram.setEdgeCreationType(new EdgeCreationType.CreateAssociation(aTyp))));
+				associationTypes.getChildren().add(assoc);
+			}
+			associationTypes.setExpanded(true);
 			
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
@@ -182,7 +198,9 @@ public class FmmlxPalette {
 			for(final FmmlxObject o : objects) {
 				if (o.getLevel().getMinLevel() > 0 && !o.isAbstract()) {
 					TreeItem<AbstractTreeType> levelGroup = levels.get(o.getLevel().getMinLevel());
-					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(new InstanceTool(o, p -> fmmlxDiagram.setNodeCreationType(o.getPath())));
+					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(
+							new InstanceTool(o, 
+									p -> fmmlxDiagram.setNodeCreationType(new NodeCreationType.CreateObject(o))));
 					levelGroup.getChildren().add(classItem);
 				}
 			}
@@ -193,10 +211,9 @@ public class FmmlxPalette {
 		});
 	}
 
-	private void addChildrenToRelationship(TreeItem<AbstractTreeType> association, TreeItem<AbstractTreeType> link,
+	private void addChildrenToRelationship(TreeItem<AbstractTreeType> link,
 			TreeItem<AbstractTreeType> delegation, DiagramViewPane viewPane) {
 
-		relationships.getChildren().add(association);
 		//only if the tool is in instruction mode the task precedence is used to define the elements that are shown in the palette
 		if (viewPane.isInToolIntroductionMode()) {
 			if (ToolIntroductionTasks.getPrecedence(viewPane.getCurrentTaskName()) > 4) {

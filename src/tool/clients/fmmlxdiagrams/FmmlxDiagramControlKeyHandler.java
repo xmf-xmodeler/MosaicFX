@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Iterator;
+
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -64,7 +66,10 @@ public class FmmlxDiagramControlKeyHandler {
 	}
 	
 	private Stage findTaskDescriptionStage() {
-        for (Window window : Window.getWindows()) {
+		Iterator<Window> i = Window.impl_getWindows();
+		
+        while(i.hasNext()) {
+        	Window window = i.next();
             if (window instanceof Stage) {
                 Stage stage = (Stage) window;
                 Object stageID = stage.getProperties().get("stageID");

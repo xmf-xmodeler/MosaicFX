@@ -82,7 +82,7 @@ public class ControlCenter extends Stage {
 		setTitle("XModeler ML Control Center");
 		setResizable(false);
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
-			setTitle("UML-MX" + Character.toString(169) + " Control Center");
+			setTitle("UML-MX\u00a9 Control Center");
 			//169 is the unicode number of the copyright symbol
 		}
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));

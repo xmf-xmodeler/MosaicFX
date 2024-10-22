@@ -47,8 +47,11 @@ public class UserDataProcessor {
 	public static void appendSelfAssessmentTest(SelfAssessmentTest test) {
 		JsonObject doc = getUserData();
 		Optional<JsonObject> learningUnit = getLearningUnitObject(doc, test);
-		learningUnit.ifPresentOrElse(foundItem -> appendTest(doc, foundItem, test),
-				() -> createNewLearningUnitObject(doc, learningUnit, test));
+		if(learningUnit.isPresent()) {
+			appendTest(doc, learningUnit.get(), test);
+		} else {
+			createNewLearningUnitObject(doc, learningUnit, test);
+		}
 	}
 
 	private static void appendTest(JsonObject doc, JsonObject learningUnit, SelfAssessmentTest test) {

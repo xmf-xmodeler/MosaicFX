@@ -1,5 +1,6 @@
 package tool.xmodeler.didactic_ml.self_assessment_test_tasks.genSpec1;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import tool.xmodeler.didactic_ml.diagram_preperation_actions.GeneralizationSpecializationPreparation;
@@ -16,12 +17,10 @@ public class GeneralizationSpecializationTasks extends SelfAssessmentTestTasks {
 
 	@Override
 	public void init() {
-		tasks = Map.ofEntries(
-				Map.entry("Think_About_Inheritance", 1),
-				Map.entry("Add_Parent", 2),
-				Map.entry("Reflect_About_Inheritance", 3)
-				);
-		
+		tasks = new HashMap<String, Integer>();
+		tasks.put("Think_About_Inheritance", 1);
+		tasks.put("Add_Parent", 2);
+		tasks.put("Reflect_About_Inheritance", 3);		
 	}
 
 }
