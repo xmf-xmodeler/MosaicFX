@@ -9,21 +9,17 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
 
 public class DeficientAttributesPreparation extends DiagramPreparationActions {
 	static String[][] classesList ={
-				{"Customer", "name", "String", "phoneNumber","Integer", "gender", "String", "age", "Integer"},
+				{"Customer", "lastname", "String", "phoneNumber","Integer", "gender", "String", "age", "Integer"},
 				{"Reservation", "reservationNumber", "Integer", "reservationDate", "Date", "numberOfTickets", "Integer", "price", "Float"},
 				{"Ticket", "seatNumber", "String", "ticketPrice", "Float", "isAvailable", "Boolean"},
-				{"MovieShow", "date", "Date", "timeOfShowing","Integer","extraCost","Float","availableSeats","Integer"},
+				{"MovieShow", "date", "Date","extraCost","Float","availableSeats","Integer"},
 				{"Movie", "title", "String", "movieLengthInMinutes","Integer","releaseDate", "Date", "inHD", "Boolean"},
 				{"Hall", "numberOfSeats", "Integer"}
 		};
 	
 	static Multiplicity oneToOne = new Multiplicity(1, 1, true, false, false);		
-	
 	static 	Multiplicity zeroToMany = new Multiplicity(0, 0, false, false, false);
 	static 	Multiplicity oneToMany = new Multiplicity(1, 0, false, false, false);
-	static 	Multiplicity sourceToTargetMult02 = new Multiplicity(0, 0, false, false, false);
-	static 	Multiplicity sourceToTargetMult03 = new Multiplicity(0, 0, false, false, false);
-	static 	Multiplicity sourceToTargetMult04 = new Multiplicity(0, 0, false, false, false);
 
 //	static Object[][] associationList = {			//not really usable since assocs are to specific and cant all be done in a loop
 //			{classesList[1][0],classesList[0][0],"belongs_to", targetToSourceMult00,sourceToTargetMult00}
