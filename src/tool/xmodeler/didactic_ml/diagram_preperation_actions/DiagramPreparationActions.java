@@ -1,5 +1,6 @@
 package tool.xmodeler.didactic_ml.diagram_preperation_actions;
 
+import java.util.List;
 import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -23,8 +24,9 @@ public abstract class DiagramPreparationActions {
 	 * If in task 6 things should be there, the case must be 5.
 	 * 
 	 * @param diagram on which these actions are performed.
+	 * @return 
 	 */
-	public abstract void prepair(FmmlxDiagram diagram);
+	public abstract String[][] prepair(FmmlxDiagram diagram);
 
 	static void createAttributeOnLevelNull(FmmlxDiagram diagram, String className, String attName,
 			String type) {

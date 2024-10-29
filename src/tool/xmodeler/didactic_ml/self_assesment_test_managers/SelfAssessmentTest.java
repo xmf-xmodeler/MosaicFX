@@ -16,7 +16,8 @@ public enum SelfAssessmentTest {
 	CLASSIFICATION_INSTANTIATION("Classification and Instantiation 1", LearningUnit.CLASSIFICATION_INSTANTIATION, 1),
 	CLASSIFICATION_INSTANTIATION1("Classification and Instantiation 2", LearningUnit.CLASSIFICATION_INSTANTIATION, 2),
 	CLASSIFICATION_INSTANTIATION2("Classification and Instantiation 3", LearningUnit.CLASSIFICATION_INSTANTIATION, 3),
-	GENERALIZATION_SPECIALIZATION_I("Generalization and Specialization 1", LearningUnit.GENERALIZATION_SPECIALIZATION_I, 1);
+	GENERALIZATION_SPECIALIZATION_I("Generalization and Specialization 1", LearningUnit.GENERALIZATION_SPECIALIZATION_I, 1),
+	DEFICIENT_ATTRIBUTES("Deficient Attributes", LearningUnit.DERIVED_CONCEPTS, 1);
 	
 	private final String prettyName;
 	private final LearningUnit learningUnit;

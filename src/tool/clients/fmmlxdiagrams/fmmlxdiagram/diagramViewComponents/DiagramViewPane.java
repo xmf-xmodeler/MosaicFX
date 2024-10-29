@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -434,10 +435,12 @@ public class DiagramViewPane extends SplitPane {
 	/**
 	 * This function gets called by a learning unit manager. The function is used to
 	 * prepare the gui and the model for the next task.
+	 * @return 
 	 */
-	public void loadNextStage() {
+	public String[][] loadNextStage() {
+		String[][] attributeList = null;
 		if (SelfAssesmentTestManager.getInstance().needsPreparationActions()) {
-			SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
+		attributeList =	SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
 		}
 		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taskName);
 		// only in tool intro the gui is adapted
@@ -446,7 +449,8 @@ public class DiagramViewPane extends SplitPane {
 		} else {
 			buildViewComponents(100);
 		}
-		taskName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
+		taksName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
+		return attributeList;
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {
