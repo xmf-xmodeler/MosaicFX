@@ -24,11 +24,15 @@ public class DeficientAttributesConditions extends SuccessCondition {
 	}
 	
 	private boolean checkPhase2(TaskDescriptionViewer taskViewer) {
-		List selectedAnwsers =  taskViewer.getAnwserLV().getSelectionModel().getSelectedIndices();
-		for(int i=0; i<selectedAnwsers.size();i++) {
-			if(Integer.parseInt(taskViewer.getAnwserLV().getSelectionModel().getSelectedIndices().get(i).toString()) == correctAnwsers[i]) {
+		List selectedAnswers =  taskViewer.getAnwserLV().getSelectionModel().getSelectedIndices();
+		numberOfCorrectAnwsers=0;
+		for(int i=0; i<selectedAnswers.size();i++) {
+		for(int i2=0; i2<correctAnwsers.length;i2++) {
+			if(Integer.parseInt(taskViewer.getAnwserLV().getSelectionModel().getSelectedIndices().get(i).toString()) == correctAnwsers[i2]) {
 				numberOfCorrectAnwsers++;
+				System.err.println(numberOfCorrectAnwsers);
 			}
+		}
 		}
 		return numberOfCorrectAnwsers==correctAnwsers.length;
 	}

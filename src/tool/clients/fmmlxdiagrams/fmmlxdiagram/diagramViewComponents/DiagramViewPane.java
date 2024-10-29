@@ -449,7 +449,7 @@ public class DiagramViewPane extends SplitPane {
 		} else {
 			buildViewComponents(100);
 		}
-		taksName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
+		taskName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
 		return attributeList;
 	}
 
