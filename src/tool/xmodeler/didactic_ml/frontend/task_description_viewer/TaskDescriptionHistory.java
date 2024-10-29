@@ -2,6 +2,8 @@ package tool.xmodeler.didactic_ml.frontend.task_description_viewer;
 
 import java.util.Stack;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+
 public class TaskDescriptionHistory extends Stack<String> {
 		
 	private final TaskDescriptionViewer viewer; 
@@ -25,7 +27,7 @@ public class TaskDescriptionHistory extends Stack<String> {
 	public void navigateBack() {
 		forwardStack.push(this.pop());
 		viewer.loadHtmlContent(this.peek());
-		viewer.addListView();
+		viewer.addListView(FmmlxDiagramCommunicator.getCommunicator().getDiagram(0), null);
 		viewer.updateGui();
 	}
 
@@ -33,7 +35,7 @@ public class TaskDescriptionHistory extends Stack<String> {
 		String forwardContent = forwardStack.pop();
 		this.push(forwardContent);
 		viewer.loadHtmlContent(forwardContent);
-		viewer.addListView();
+		viewer.addListView(FmmlxDiagramCommunicator.getCommunicator().getDiagram(0), null);
 		viewer.updateGui();
 	}
 }

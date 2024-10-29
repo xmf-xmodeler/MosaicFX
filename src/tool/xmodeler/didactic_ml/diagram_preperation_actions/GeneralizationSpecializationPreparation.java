@@ -1,17 +1,19 @@
 package tool.xmodeler.didactic_ml.diagram_preperation_actions;
 
+import java.util.List;
+
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 public class GeneralizationSpecializationPreparation extends DiagramPreparationActions {
 
 	@Override
-	public void prepair(FmmlxDiagram diagram) {
+	public String[][] prepair(FmmlxDiagram diagram) {
 		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 1:
 			addClasses(diagram);
-			return;
-		default:return;	
+			return null;
+		default:return null;	
 	}
 }
 	

@@ -1,5 +1,7 @@
 package tool.xmodeler.didactic_ml.self_assesment_test_managers;
 
+import java.util.List;
+
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
@@ -108,26 +110,25 @@ public abstract class SelfAssesmentTestManager implements Startable {
 	/**
 	 * This function is called to check if the user matches the condition of the current task.
 	 * The conditions are defined in the sucessCondition reference of this class.
+	 * @return 
 	 */
 	public void checkSucessCondition(TaskDescriptionViewer taskView) {
 		// is needed because otherwise the changes of the update are not reflected in
 		// the check...just for security if the user clicks fast
+		String[][] attributeList = null;
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			throw new RuntimeException();
 		}
-
 		if (sucessCondition.checkSuccessCondition(descriptionViewer)) {
 			descriptionViewer.giveUserFeedback(true);
-			diagram.getViewPane().loadNextStage();
+			attributeList = diagram.getViewPane().loadNextStage();
 			String nextDescription = (ResourceLoader.getTaskDescritpion(selfAssessmentTest, diagram.getViewPane().getCurrentTaskName()));
 			descriptionViewer.loadHtmlContent(nextDescription);
 			descriptionViewer.getDescriptionHistory().push(nextDescription);
 			descriptionViewer.updateGui();
-			//System.err.println(diagram + "::" + diagram.getAllMetaClass() + ", name:  " + diagram.getComm().getDiagram(diagram.getID()).getMaxLevel());  //diagram.getComm().getAllObjectPositions(0));
-			descriptionViewer.addListView(diagram);
-
+			descriptionViewer.addListView(diagram, attributeList);
 			if (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) == SelfAssessmentTestTasks.getHighestPrecedence()) {
 				//this time is needed to survive the user feedback
 				try {

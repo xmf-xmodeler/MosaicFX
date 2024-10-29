@@ -1,5 +1,7 @@
 package tool.xmodeler.didactic_ml.frontend.task_description_viewer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -12,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -33,6 +36,7 @@ public class TaskDescriptionViewer extends Stage {
 
 	private final WebView webView = new WebView();
 	private final TaskDescriptionHistory descriptionHistory = new TaskDescriptionHistory(this);
+	private String[][] attributeList;
 	private Button checkButton = createButton("Check Condition", (a) -> SelfAssesmentTestManager.getInstance().checkSucessCondition(this));
 	private final Button backwardsButton = createButton("< Back", (a) -> descriptionHistory.navigateBack());
 	private final Button forwardsButton = createButton("Forward >", (a) -> descriptionHistory.navigateForward());
@@ -41,8 +45,6 @@ public class TaskDescriptionViewer extends Stage {
 	GridPane grid = new GridPane();
 
 	public TaskDescriptionViewer() {
-
-		setOnCloseRequest(this::showWarningDialog);
 		setTitle("Task Description");
 		//Used to identify stage to open it on shortcut
 		getProperties().put("stageID", "TaskViewerStage");
@@ -70,9 +72,9 @@ public class TaskDescriptionViewer extends Stage {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm Closing");
-		alert.setHeaderText("You are going to end the UML++ Introduction");
+		alert.setHeaderText("You are going to end the current exercise");
 		alert.setContentText(
-				"If you confirm, the UML++ Introduction is aborted and you return to the Control Center of UML-MX");
+				"If you confirm, the exercise is aborted and you return to the Control Center of UML-MX");
 		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
 
@@ -175,18 +177,27 @@ public class TaskDescriptionViewer extends Stage {
 	}
 	
 	//For certain exercise types which require a list view in the task description
-	public void addListView(FmmlxDiagram diagram) {
-//		FmmlxDiagram diagram = FmmlxDiagramCommunicator.getCommunicator().getDiagram(0);
-		System.err.println(diagram.getAllMetaClass() + ":::" + diagram.getObjectsReadOnly());
+	public void addListView(FmmlxDiagram diagram, String[][] attributeList2) {
+		if(attributeList2 != null) {
+			attributeList = attributeList2;
+		}
+		
+//		setOnCloseRequest(this::showWarningDialog);
 		switch (SelfAssesmentTestManager.getSelfAssessmentTest()) {		//cases are given for individual exercises so the contents of the list are also set on an individual basis and semi-hard coded
 
 		case  DEFICIENT_ATTRIBUTES:
+			anwserLV.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			if(diagram.getViewPane().getCurrentTaskName().equals("Select_Deficient_Attributes")) {	//need to check individually for each test if we are at the right task. 
+				ArrayList formattedList = new ArrayList();
+				
+				for(int i = 0; i<attributeList.length;i++) {
+					for(int i2 = 1; i2<attributeList[i].length;i2=i2+2) {
+						formattedList.add("[" + attributeList[i][0] + "] " + attributeList[i][i2] + ": " +attributeList[i][i2+1] );
+					}
+				}
 				
 				grid.add(anwserLV, 0, 1);
-				System.err.println(diagram.getDiagramName() + diagram.getObjectsReadOnly());
-				System.err.println(diagram.getObjectByName("Person")+" has Attributes:"+diagram.getObjectByName("Person").getAllAttributesAsList());
-				anwserLV.getItems().add(diagram.getObjectByName("Person").getAllAttributesAsList());
+				anwserLV.getItems().addAll(formattedList);
 		
 			}
 			else {grid.getChildren().remove(anwserLV);}
@@ -233,6 +244,9 @@ public class TaskDescriptionViewer extends Stage {
 		if (descriptionHistory.isBackwardNavigable() && !isBackwardsButtonContained()) {
 			buttonBar.getItems().add(0, backwardsButton);
 		}
+	}
+	public ListView getAnwserLV() {
+		return anwserLV;
 	}
 
 	/**
