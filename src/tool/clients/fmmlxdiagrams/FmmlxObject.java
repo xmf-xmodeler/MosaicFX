@@ -8,9 +8,6 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteItem;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.PaletteTool;
-import tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents.palette.ToolClass;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxIcon;
@@ -21,6 +18,7 @@ import java.util.*;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
+	public static enum ControlClass {NO, EXPLICIT, IMPLICIT};
 	final String name;
 	final String ownPath;
 	final String ofPath;
@@ -28,6 +26,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	private final boolean isAbstract;
 	private final boolean isSingleton;
+	private final boolean isControlClass;
 	final Level level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
@@ -52,6 +51,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			Vector<String> parentPaths,
 			Boolean isAbstract,
 			Boolean isSingleton,
+			Boolean isControlClass,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
 		super();
@@ -63,6 +63,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.level = new Level(minlevel, maxLevel);
 		this.isAbstract = isAbstract;
 		this.isSingleton = isSingleton;
+		this.isControlClass = isControlClass;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
@@ -354,6 +355,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return subclasses;
 	}
 	
+	public HashSet<FmmlxObject> getAllParents() {
+		HashSet<FmmlxObject> superclasses = new HashSet<FmmlxObject>();
+		superclasses.add(this);
+		for (FmmlxObject p : diagram.getObjectsReadOnly()) {
+			if(this.parentsPaths.contains(p.ownPath)) {
+				superclasses.addAll(p.getAllParents());
+			}
+		}
+		return superclasses;
+	}
+	
 	public int getAttributeCountByLevel(int level) {
 		int count = 0;
 		for(FmmlxAttribute attribute : getAllAttributes()){
@@ -396,6 +408,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public FmmlxAttribute getAttributeByName(String name){
 		for (FmmlxAttribute att : getAllAttributes()){
+			if (att.getName().equals(name)){
+				return att;
+			}
+		}
+		return null;
+	}
+	
+	public FmmlxAttribute getOwnAttributeByName(String name){	//like above but ignores inherited attributes. Currently used for Learning Unit success conditions
+		for (FmmlxAttribute att : getOwnAttributes()){
 			if (att.getName().equals(name)){
 				return att;
 			}
@@ -491,10 +512,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return hitLabel;
 	}
 
-	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
-		return new PaletteItem(tool);
-	}
+//	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
+//		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), ownPath+"", getLevel().getMinLevel(), isAbstract||isSingleton, "");
+//		return new PaletteItem(tool);
+//	}
 
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
@@ -651,5 +672,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public Vector<FmmlxSlot> getSlots() {
 		return slots;
+	}
+
+	public ControlClass isControlClass() {
+		if(isControlClass) return ControlClass.EXPLICIT;
+		for(FmmlxObject p : getAllParents()) {
+			if(p != this && p.isControlClass() != ControlClass.NO) return ControlClass.IMPLICIT;
+		}
+		return ControlClass.NO;
 	}
 }

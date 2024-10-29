@@ -87,8 +87,8 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	private final String diagramName;
 	private String filePath;
 	public String updateID = null;
-	private String edgeCreationType = null;
-	private String nodeCreationType = null;
+	private EdgeCreationType edgeCreationType = null;
+	private NodeCreationType nodeCreationType = null;
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 
@@ -140,34 +140,26 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		edgeCreationType = null;
 		nodeCreationType = null;
 		// if the palette is not updated no new actions could be performed
-		viewPane.getFmmlxPalette().update(viewPane);
+		// really??? viewPane.getFmmlxPalette().update(viewPane);
 	}
 
-	public void setEdgeCreationType(String edgeCreationType) {
+	public void setEdgeCreationType(EdgeCreationType edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
 		this.nodeCreationType = null;
 		// TODO getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 
-	public void setNodeCreationType(String nodeCreationType) {
+	public void setNodeCreationType(NodeCreationType nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
 		// TODO getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 
 	public void activateNoteCreationMode() {
-		setNodeCreationType("Note");
+		setNodeCreationType(NodeCreationType.NOTE);
 		Image noteImage = new Image(new File("resources/png/note.16.png").toURI().toString());
 		Cursor noteCursor = new ImageCursor(noteImage);
 		setPaneCursor(noteCursor);
-	}
-
-	public String getEdgeCreationType() {
-		return edgeCreationType;
-	}
-
-	public String getNodeCreationType() {
-		return nodeCreationType;
 	}
 
 	public String getFilePath() {
@@ -270,7 +262,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 		Point2D p = getActiveDiagramViewPane().getCanvasTransform()
 				.transform(new Point2D(source.getCenterX(), source.getCenterY()));
 		storeLastClick(p.getX(), p.getY());
-		deselectAll();
+		selectedObjects.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -316,7 +308,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 	}
 
 	public void setSelectedObject(CanvasElement source) {
-		deselectAll();
+		selectedObjects.clear();
 		selectedObjects.add(source);
 	}
 
@@ -886,36 +878,47 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 			} catch (javafx.scene.transform.NonInvertibleTransformException ex) {
 			}
 
-			if (nodeCreationType == null && edgeCreationType == null) {
+			if (nodeCreationType == null && edgeCreationType == null) { // if nothing in palette is selected
 				handleLeftPressedDefault(e, hitObject);
-
-			} else if (edgeCreationType != null) {
-				if (edgeCreationType.equals("association")) {
+			} else if (mouseMode == MouseMode.DRAW_EDGE) { // if something has been previously selected in palette, 
+				                                           // i.e. the first part of the edge is set and the user clicks on the second
+				handleLeftPressedDefault(e, hitObject);
+			} else if (edgeCreationType != null) { // other cases: if something is selected in palette and the first part of the edge ich clickedon or a new node is dropped
+				if (edgeCreationType instanceof EdgeCreationType.CreateAssociation) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 						canvas.setCursor(Cursor.DEFAULT);
-
 					}
-				} else if (edgeCreationType.equals("associationInstance")) {
+				} else if (edgeCreationType == EdgeCreationType.PARENT) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Parent);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				} else if (edgeCreationType == EdgeCreationType.LINK) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 						canvas.setCursor(Cursor.DEFAULT);
 					}
-				} else if (edgeCreationType.equals("delegation")) {
+				} else if (edgeCreationType == EdgeCreationType.DELEGATION) {
 					if (hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Delegation);
 						canvas.setCursor(Cursor.DEFAULT);
 					}
-				}
-			} else if (nodeCreationType.equals("Note")) {
+				} else if (edgeCreationType == EdgeCreationType.ROLEFILLER) {
+					if (hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.RoleFiller);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				} 
+			} else if (nodeCreationType == NodeCreationType.NOTE) {
 				actions.addNote(this.getDiagram(), unTransformedPoint);
 				canvas.setCursor(Cursor.DEFAULT);
 				deselectPalette();
 			} else {
-				if (nodeCreationType.equals("MetaClass")) {
+				if (nodeCreationType == NodeCreationType.METACLASS) {
 					actions.addMetaClassDialog(unTransformedPoint);
 				} else {
-					actions.addInstanceDialog(getObjectByPath((nodeCreationType)), unTransformedPoint);
+					actions.addInstanceDialog(getObjectByPath(((NodeCreationType.CreateObject)nodeCreationType).metaClass.getPath()), unTransformedPoint);
 				}
 				canvas.setCursor(Cursor.DEFAULT);
 				deselectAll();
@@ -968,14 +971,18 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 
 		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 			Point2D p = new Point2D(e.getX(), e.getY());
-
+			
 			if (hitObject != null) {
 				if (mouseMode == MouseMode.DRAW_EDGE) {
 					mouseMode = MouseMode.STANDARD;
 					FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
 					switch (drawEdgeType) {
+					case Parent:
+						actions.addSingleParent(newEdgeSource, newEdgeTarget);
+						setStandardMouseMode();
+						break;
 					case Association:
-						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
+						actions.addAssociationDialog(newEdgeSource, newEdgeTarget, edgeCreationType == null?null:((EdgeCreationType.CreateAssociation)edgeCreationType).assocType);
 						setStandardMouseMode();
 						break;
 					case AssociationInstance: {
@@ -1034,7 +1041,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 					switch (drawEdgeType) {
 					case Association:
 						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationDialog(newEdgeSource, null);
+						actions.addAssociationDialog(newEdgeSource, null, edgeCreationType == null?null:((EdgeCreationType.CreateAssociation)edgeCreationType).assocType);
 						break;
 					case AssociationInstance:
 						mouseMode = MouseMode.STANDARD;

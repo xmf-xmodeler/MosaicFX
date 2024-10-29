@@ -26,7 +26,7 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 	
 	@Override
 	public void layoutLabels(FmmlxDiagram diagram) {
-		createLabel(""+level, 2, Anchor.TARGET_LEVEL, showChangeLevelDialog, Color.WHITE, getPrimaryColor(), diagram);
+		if(!diagram.isUMLMode()) createLabel(""+level, 2, Anchor.TARGET_LEVEL, showChangeLevelDialog, Color.WHITE, getPrimaryColor(), diagram);
 
 		layoutingFinishedSuccesfully = true;
 	} // NONE

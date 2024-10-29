@@ -33,6 +33,14 @@ public class DiagramConditionChecks {
 		return attr.getType().equals(type);
 	}
 	
+	public static boolean hasOwnAttributeOfType(FmmlxObject obj, String attrName, String type) {
+		FmmlxAttribute attr = obj.getOwnAttributeByName(attrName);
+		if (attr == null) {
+			return false;
+		}
+		return attr.getType().equals(type);
+	}
+	
 	public static boolean hasMatchingSlotValue(FmmlxDiagram diagram, String objectName, String slotName, String slotValue) {
 		FmmlxObject obj = diagram.getObjectByName(objectName);
 		boolean hasCorrectSlotValue;

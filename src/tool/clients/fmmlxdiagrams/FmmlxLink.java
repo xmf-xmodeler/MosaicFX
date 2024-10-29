@@ -98,7 +98,6 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 			}
 			return dashes;
 		} catch (Exception e) {
-//			System.err.println("getLineDashes FAIL: " + e.getMessage());
 			return new double[] {10.,10.};
 		}
 	}

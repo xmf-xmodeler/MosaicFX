@@ -17,8 +17,8 @@ public class LearningUnitManagerFactory {
 		switch (selfAssessmentTest) {
 			case TOOL_INTRO:
 				return new ToolIntroductionManager();
-			case CLASSIFICATION_INSTANTIATION:
-				return new ClassificationInstantiationManager();
+			//case CLASSIFICATION_INSTANTIATION:
+			//	return new ClassificationInstantiationManager();
 			case GENERALIZATION_SPECIALIZATION_I:
 				return new GeneralizationSpecializationIManager();
 			case DEFICIENT_ATTRIBUTES:

@@ -1,0 +1,198 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f9f9f9;
+}
+
+.content {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h3 {
+    color: #333;
+}
+
+.content {
+	color: rgb(50,50,50);
+	font-size: 16px;
+}
+
+.content lu {
+	color: rgb(32,56,100);
+	font-weight: 500;
+}
+
+.content h1 {
+	color: rgb(32,56,100);
+	font-size: 22px;
+	margin: 0;
+}
+
+.content h2 {
+	color: rgb(30,30,30);
+	margin:0 0 15px;
+	padding:0;
+	font-size:28px;
+}
+
+.content h1.small {
+	font-size: 17px;
+}
+
+p {
+    color: #555;
+}
+
+.content i {
+	color: rgb(10,10,10);
+	font-weight: 450;
+}
+
+.background p {
+	text-align: left;
+	padding: 10px 15px 5px;
+}
+
+.execution {
+    border-radius: 8px;
+    background-color: #dfe4f2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 1px 20px;
+    margin: 10px 0;
+}
+
+.execution h3 {
+    font-style: italic;
+    font-size: 18px;
+}
+
+.execution p {
+    font-size: 12px;
+}
+
+.table-view{
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
+}
+
+.successCondition::before{
+	content: "SUCCESS CONDITION NOT MET! ";
+	font-weight: bold;
+	color: rgb(255,0,0);
+}
+
+.successCondition {
+    border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	padding: 5px 20px;
+	margin-top: 10px;
+	background-color: rgb(232, 221, 226);
+	white-space: pre-line;
+	font-size: 14px;
+	display: none;
+}
+
+.successCondition::after {
+	content: "\A Press 'Check Condition' again after reparing your model.";
+	font-size: 12px;
+	font-style: italic;
+}
+
+.didactic-button {
+    -fx-background-color: #203864;
+    -fx-border-color: #dfe4f2;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 4px 8px;
+    -fx-min-width: 80px;
+    -fx-min-height: 30px;
+    -fx-transition: background-color 0.2s ease, -fx-text-fill 0.2s ease;
+}
+
+.didactic-button:hover {
+    -fx-background-color: #2a4d77;
+    -fx-border-color: #dfe4f2;
+}
+
+.didactic-button:pressed {
+    -fx-background-color: #1a3a5e;
+    -fx-text-fill: rgb(220,220,220);
+    -fx-effect: dropshadow(gaussian, #000000, 4, 0.2, 0, 1);
+}
+
+.tab-pane {
+    -fx-background-color: #f9f9f9;
+}
+
+.tab {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding: 4px 8px;
+    -fx-min-width: 80px;
+    -fx-min-height: 30px;
+    -fx-transition: background-color 0.2s ease, -fx-text-fill 0.2s ease;
+}
+
+.tab:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.tab:selected {
+    -fx-background-color: #203864;
+    -fx-text-base-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+.tab-pane .tab-header-area .tab .tab-close-button {
+    -fx-opacity: 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.tab-pane .tab-header-area .tab .tab-close-button:visible {
+    -fx-opacity: 0;
+}
+
+.tab:focused {
+    -fx-focus-color: transparent;
+    -fx-focus-width: 0px;
+}
+
+.tab:selected .tab-label {
+    -fx-focus-color: transparent;
+    -fx-focus-width: 0px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-text-fill: #ffffff;
+}
+
+code {
+     font-weight: bold;
+    font-size: inherit;
+    font-family: inherit;
+}
+

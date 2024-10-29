@@ -33,7 +33,7 @@ import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
+//import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
@@ -69,6 +69,7 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
+import tool.helper.persistence.SerializerConstant;
 import tool.helper.user_properties.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -84,13 +85,13 @@ public class DiagramActions {
 		this.diagram = diagram;
 	}
 	
-	public void openClassBrowserStage(boolean xmf) {
-		if(xmf)  {
-			diagram.getComm().openPackageBrowser();
-		} else {
-			Platform.runLater(() -> ClassBrowserClient.show(diagram));
-		}
-	}
+//	public void openClassBrowserStage(boolean xmf) {
+//		if(xmf)  {
+//			diagram.getComm().openPackageBrowser();
+//		} else {
+//			Platform.runLater(() -> ClassBrowserClient.show(diagram));
+//		}
+//	}
 	
 
 
@@ -582,6 +583,18 @@ public class DiagramActions {
 		});
 
 	}
+	
+	public void addSingleParent(FmmlxObject object, FmmlxObject parent) {	//for adding parents without opening the dialogue window
+		Vector<FmmlxObject> parents = object.getAllAncestors();
+		Vector<String> parentNames = new Vector<String>();
+		for(FmmlxObject p : parents) {
+			parentNames.add(p.getName());
+		}
+		
+		Vector<String> parentV = new Vector<String>(parentNames);
+		parentV.add(parent.toString());
+		diagram.getComm().changeParent(diagram.getID(),object.getName(), parentNames, parentV);
+	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
 		if(hitProperty != null && "Boolean".equals(hitProperty.getType(diagram))){
@@ -751,10 +764,10 @@ public class DiagramActions {
 		});
 	}
 
-	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
+	public void addAssociationDialog(FmmlxObject source, FmmlxObject target, AssociationType assocType) {
 
 		Platform.runLater(() -> {
-			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false);
+			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false, assocType);
 			Optional<AssociationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -1154,6 +1167,13 @@ public class DiagramActions {
 	public void exportSvg() {
 		Platform.runLater(() ->{
 		FileChooser fc = new FileChooser();
+		
+	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+	    if (!initalDirectory.equals("")) {
+	    	File dir = new File(initalDirectory);
+    		if(dir.exists()) fc.setInitialDirectory(dir);
+    	}
+		
 		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
 		fc.setTitle("Export File");
 		File file = fc.showSaveDialog(XModeler.getStage());

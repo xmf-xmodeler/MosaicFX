@@ -253,6 +253,7 @@ public class NodeLabel extends NodeBaseElement {
 		myElement.setAttribute("align", alignment==Pos.BASELINE_CENTER?"CENTER":alignment==Pos.BASELINE_RIGHT?"RIGHT":"LEFT");
 		saveTransformation(myElement);
 		myElement.setAttribute("id", id);
+		myElement.setAttribute("default", text);
 		myElement.setAttribute("color", NodeElement.color2Web(fgColor));
 		myElement.setAttribute("bgColor", NodeElement.color2Web(bgColor));
 		return myElement;

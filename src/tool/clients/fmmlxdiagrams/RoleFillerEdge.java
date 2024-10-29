@@ -54,4 +54,9 @@ public class RoleFillerEdge extends Edge<FmmlxObject> {
 	public String getName() {
 		return "doesNotMatter";
 	}
+	
+	@Override
+	protected double[] getLineDashes() {
+		return new double[] {10.,10.};
+	}
 }

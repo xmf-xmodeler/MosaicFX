@@ -30,7 +30,6 @@ public class AddAttributeDialogDataType {
 			} else {
 				this.displayName = this.name + " [" + displayName.toString() + "]";
 			}
-
 		}
 	}
 

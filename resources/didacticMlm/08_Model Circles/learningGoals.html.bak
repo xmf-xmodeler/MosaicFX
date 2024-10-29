@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="content objectives">
+		<h1>Model Circles</h1>
+        <h2>Learning Objectives</h2>
+		Students should be able to…
+		<ul>
+			<li>identify model circles</li>
+			<li>explain why and how model circles threaten referential integrity</li>
+			<li>redesign models as to remove model circles</li>
+			<li>construct examples that illustrate how a model circle violates referential integrity</li>
+		</ul>
+	</div>
+</body>
+</html>

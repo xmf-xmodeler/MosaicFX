@@ -17,7 +17,6 @@ public class ChangeParentParser extends ModelActionParser {
 		String classpath = modelElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
 		String[] classPathArray = classpath.split("::");
 		String className = classPathArray[classPathArray.length - 1];
-
 		String oldParentPathsString = modelElement.getAttribute("old");
 		Vector<String> oldParents = new Vector<>();
 		if (!oldParentPathsString.equals("")) {

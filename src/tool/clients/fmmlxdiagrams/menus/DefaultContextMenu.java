@@ -55,10 +55,10 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Class...", e -> actions.addMetaClassDialog(view));
 		if (diagram.getRootPane().isInToolIntroductionMode()) {
 			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
-				JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+				JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null, null));
 			}			
 		} else {
-			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null));
+			JavaFxMenuAuxiliary.addMenuItem(addMenu, "Association...", e -> actions.addAssociationDialog(null, null, null));
 		}
 		JavaFxMenuAuxiliary.addMenuItem(addMenu, "Note...", e -> diagram.activateNoteCreationMode());
 		return addMenu;
@@ -72,14 +72,10 @@ public class DefaultContextMenu extends ContextMenu {
 			getItems().addAll(addMenu, searchMenu, unhideItem);
 		}
 		
-		if (diagram.getRootPane().isInToolIntroductionMode()) {
-			if (ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
-				getItems().addAll(enumerationMenu);			
-			}			
-		} else {
-			getItems().addAll(enumerationMenu);
-		}
-		if (XModeler.isAlphaMode()) {
+		if (!(diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
+			getItems().addAll(enumerationMenu);			
+		}		
+		if ((!diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
 			getItems().addAll(new SeparatorMenuItem(), addAssocType);
 		}
 	}

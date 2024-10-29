@@ -63,11 +63,11 @@ public class DiagramViewPane extends SplitPane {
 	private FmmlxPalette fmmlxPalette;
 	private TableView<Issue> issueTable;
 	private Vector<Vector<Object>> listOfViews;
-	//TODO check architecture and make documentation this in only neede for tool intro, kann man es besser machen? ++ rename
+	//TODO check architecture and make documentation this in only needed for tool intro, kann man es besser machen? ++ rename
 	/**
 	 * This string represents the current task the user have to success. The value is only use if LearningUnitManager.isInitialized()  
 	 */
-	private String taksName = null;
+	private String taskName = null;
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
@@ -82,7 +82,7 @@ public class DiagramViewPane extends SplitPane {
 		initDiagramViewState();
 		//if the tool is in instruction mode the task precedence decides which gui elements are shown
 		if (isInToolIntroductionMode()) {
-			buildViewComponents(ToolIntroductionTasks.getPrecedence(taksName));			
+			buildViewComponents(ToolIntroductionTasks.getPrecedence(taskName));			
 		}else {
 			//the number 100 represents a full gui
 			buildViewComponents(100);
@@ -94,7 +94,7 @@ public class DiagramViewPane extends SplitPane {
 
 	private void initDiagramViewState() {
 		if (SelfAssesmentTestManager.isInitialized()) {
-			taksName = SelfAssessmentTestTasks.getTaskName(1);}
+			taskName = SelfAssessmentTestTasks.getTaskName(1);}
 	}
 
 	public  boolean isInToolIntroductionMode() {
@@ -442,7 +442,7 @@ public class DiagramViewPane extends SplitPane {
 		if (SelfAssesmentTestManager.getInstance().needsPreparationActions()) {
 		attributeList =	SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
 		}
-		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taksName);
+		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taskName);
 		// only in tool intro the gui is adapted
 		if (isInToolIntroductionMode()) {
 			buildViewComponents(nextTaskPrecedencePrecedence);
@@ -482,6 +482,6 @@ public class DiagramViewPane extends SplitPane {
 	}
 
 	public String getCurrentTaskName() {
-		return taksName;
+		return taskName;
 	}
 }

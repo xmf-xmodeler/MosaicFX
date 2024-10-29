@@ -1,5 +1,6 @@
 package tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest;
@@ -21,17 +22,17 @@ public class ToolIntroductionTasks extends SelfAssessmentTestTasks {
 
 	@Override
 	public void init() {
-		tasks = Map.ofEntries(
-				Map.entry("CREATE_CLASS_MOVIE", 1),
-				Map.entry("ADD_ATTRIBUTES_TO_MOVIE", 2),
-				Map.entry("CREATE_CLASS_MOVIE_SHOWING", 3),
-				Map.entry("ADD_ASSOC_BETWEEN_MOVIE_AND_SHOWING", 4),
-				Map.entry("ADD_LINK_BETWEEN_MOVIEINST_AND_SHOWINGINST", 5), 
-				Map.entry("CHANGE_CARDINALITY_OF_BUYS", 6),
-				Map.entry("ADD_RATING_ENUM", 7),
-				Map.entry("CHANGE_DATATYPE_TO_ENUM", 8),
-				Map.entry("GET_REQUIRED_AGE_FUN_IS_ADDED", 9), 
-				Map.entry("CONSTRAINT_IS_ADD", 10),
-				Map.entry("FULL_GUI", 100));
+		tasks = new HashMap<>();
+		tasks.put("CREATE_CLASS_MOVIE", 1);
+		tasks.put("ADD_ATTRIBUTES_TO_MOVIE", 2);
+		tasks.put("CREATE_CLASS_MOVIE_SHOWING", 3);
+		tasks.put("ADD_ASSOC_BETWEEN_MOVIE_AND_SHOWING", 4);
+		tasks.put("ADD_LINK_BETWEEN_MOVIEINST_AND_SHOWINGINST", 5); 
+		tasks.put("CHANGE_CARDINALITY_OF_BUYS", 6);
+		tasks.put("ADD_RATING_ENUM", 7);
+		tasks.put("CHANGE_DATATYPE_TO_ENUM", 8);
+		tasks.put("GET_REQUIRED_AGE_FUN_IS_ADDED", 9); 
+		tasks.put("CONSTRAINT_IS_ADD", 10);
+		tasks.put("FULL_GUI", 100);
 	}
 }

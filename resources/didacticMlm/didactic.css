@@ -1,4 +1,5 @@
 body {
+	-webkit-user-select: none;
     font-family: Arial, sans-serif;
     line-height: 1.6;
     margin: 20px;
@@ -15,11 +16,49 @@ body {
 }
 
 h1, h3 {
-    text-fill: #333;
+    color: #333;
 }
 
+.content {
+	color: rgb(50,50,50);
+	font-size: 16px;
+}
+
+.content lu {
+	color: rgb(32,56,100);
+	font-weight: 500;
+}
+
+.content h1 {
+	color: rgb(32,56,100);
+	font-size: 22px;
+	margin: 0;
+}
+
+.content h2 {
+	color: rgb(30,30,30);
+	margin:0 0 15px;
+	padding:0;
+	font-size:28px;
+}
+
+.content h1.small {
+	font-size: 17px;
+}
+
+
 p {
-    text-fill: #555;
+    color: #555;
+}
+
+.content i {
+	color: rgb(10,10,10);
+	font-weight: 450;
+}
+
+.background p {
+	text-align: left;
+	padding: 10px 15px 5px;
 }
 
 .execution {
@@ -154,8 +193,6 @@ p {
 }
 
 code {
-     font-weight: bold;
-    font-size: inherit;
-    font-family: inherit;
+   
 }
 

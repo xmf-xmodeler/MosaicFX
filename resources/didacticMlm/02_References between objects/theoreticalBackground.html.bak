@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Class Example</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content background">
+        <h1>LU2 - Associations and Links</h1>
+        <h2>Theoretical Background</h2>
+        <p><i>Associations</i> serve to connect classes. 
+		An association must always have exactly one source class and exactly one target class. 
+        Typically, the source and target class will be different. If the target class is also the source class, 
+        the class is called <i>self-referential</i> (see <lu>LU8</lu> for more on this special case).  
+        Each association has a name. 
+		The distinction between source and target of an association determines its reading direction. 
+		
+        <u>Example</u>: We have two classes, <code>Student</code> and <code>Teacher</code>, and an 
+		assocation <code>teaches</code> between them. If <code>Student</code> is the source class and <code>Teacher</code> 
+		the target class, the model expresses that a student teaches a teacher. 
+        The reading direction is indicated by the black arrow next to the association name.</p>
+        
+		<p>The instance of an association is called a <i>link</i>. If two classes are connected by an association, 
+		their respective objects may be (or must be) <i>linked</i> with one another. The number of links that may 
+		or must exist between objects of the source and target class depends on the <i>multiplicity </i>
+		of the association. 
+		Both association ends must specify a multiplicity with a minimum and a maximum value. 
+		<u>Example</u>: A <code>Teacher</code> class has a <code>teaches</code> association to a <code>Student</code> class. 
+		The multiplicity at the <code>Student</code> end expresses how many students are taught by a single teacher 
+		(reading: "A teacher teaches at least X, at most Y students"), 
+		the multiplicity at the <code>Teacher</code> end expresses how many teachers teach a single student 
+		(reading: "A student is taught by at least X, at most Y teachers"). 
+		In technical terms, we express how many links an object of a respective class may possess. 
+		If we add a multiplicity of “1..20” to the <code>Student</code> end 
+		(reading: "A teacher teaches at least 1, at most 20 students"), 
+		each teacher object must have at least one link and may have at most 20 links to student objects. 
+		The maximum multiplicity may also be unbound. This is represented by an Asterisk (<code>*</code>) in a UML++ diagram.
+		</p>
+		<p>
+		For experienced programmers, associations are sometimes difficult to understand because they are not matched 
+		by a corresponding concept in programming languages. In common object-oriented programming 
+		languages like Java or C#, an association will be implemented as an attribute. 
+		But there is an important conceptual difference between both. 
+		Associations serve as <i>references</i> between classes, 
+		links as <i>references</i> between objects. Only objects posses their own identity; slots do not. 
+		Slots require initialization for each new object that is being created.  
+		</p>
+		<p><u>Example</u>: Customers must specify exactly one location where they live. 
+		The location is determined by a single String value. 
+		Should the location be modeled as an attribute of customer 
+		or as a separate class <code>Customer</code> is associated with? In the first case (location as attribute), 
+		we must enter a new location for each customer. But locations posses their own identity; many customers may 
+		live at the same location. 
+		If the name of one location changes, the change should affect every customer that lives there. 
+		If location were an attribute of customer, we would have to change all affected customer objects. 
+		If location is a separate class associated with customer, we only need to change the affected location object. 
+		Note that this way of thinking also applies if the type is more complex. 
+		Consider for example the price of a product. 
+		The price may consist of an <code>amount: Float</code> and a <code>currency: String</code> value, i.e., 
+		is too complex to depict as an attribute with a default data type. 
+		But it should still be modeled as an attribute since price objects do not possess their own identity &mdash; 
+		if one product's price changes from 4.99€ to 2.99€, 
+		I don’t to want to change the price value of all 4.99€-priced products. 
+		In such a case, we would use a <i>domain-specific type</i> for the price attribute (see <lu>LU5</lu>).
+		</p>
+		<p>
+		At last, the navigability of an association must be defined. References between classes may be bidirectional, 
+		i.e., the source can access the target and vice versa, but it can also be unidirectional, i.e., 
+		the source can access the target but the target cannot access the source. 
+		The navigability of an association is indicated by an arrow at each association end. 
+		Bidirectional associations are the default. Arrows are not displayed in bidirectional association for improved readability.
+		</p>
+    </div>
+</body>
+</html>
