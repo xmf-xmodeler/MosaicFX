@@ -64,7 +64,7 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 
 	@Override
 	public HeadStyle getTargetDecoration() {
-		return HeadStyle.NO_ARROW;
+		return HeadStyle.NONE;
 	}
 
 	@Override

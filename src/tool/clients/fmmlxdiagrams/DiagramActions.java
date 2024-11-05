@@ -594,6 +594,7 @@ public class DiagramActions {
 		Vector<String> parentV = new Vector<String>(parentNames);
 		parentV.add(parent.toString());
 		diagram.getComm().changeParent(diagram.getID(),object.getName(), parentNames, parentV);
+		diagram.updateDiagram();
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {

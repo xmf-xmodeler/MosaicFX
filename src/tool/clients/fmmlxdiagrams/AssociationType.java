@@ -58,7 +58,7 @@ public class AssociationType implements Comparable<AssociationType> {
 		this.sourceLevel = sourceLevel;
 		this.targetLevel = targetLevel;
 		this.sourceMult = sourceMult;
-		this.targetMult = targetMult;		
+		this.targetMult = targetMult;
 	}
 
 //	@Override

@@ -5,7 +5,6 @@ import tool.clients.fmmlxdiagrams.*;
 import java.util.Map;
 import java.util.Vector;
 
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -23,9 +22,8 @@ import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
-import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
-import tool.xmodeler.ControlCenterClient;
 
 
 
@@ -113,6 +111,13 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2 - heightOffset, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+
+		if(object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT
+	    || object.isControlClass() == FmmlxObject.ControlClass.IMPLICIT) {
+			SVGGroup cogWheel = object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT?getCogWheelExplicitIcon():getCogWheelImplicitIcon();
+			cogWheel.setMyTransform(new Affine(1., 0., 3., 0., 1., 2.));
+			header.addNodeElement(cogWheel);
+		}		
 		
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(nameLabel);

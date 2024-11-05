@@ -132,7 +132,7 @@ public class ObjectContextMenu extends ContextMenu {
 		});
 		
 		//add all items, that are used for all Objects
-		getItems().addAll();			
+			
 		//add items, that are used only for Objects that are not on level 0
 		if (object.getLevel() != null && !(object.getLevel().getMinLevel() == 0)) {
 			getItems().addAll(

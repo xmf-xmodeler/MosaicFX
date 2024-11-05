@@ -286,20 +286,30 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		if(diagram.umlMode) {
-		if(targetFromSourceVisible & sourceFromTargetVisible) {
-			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
-		}}
-		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(this.getAssociationType().endDeco);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + this.getAssociationType().endDeco + " not found");
+		}
+		return targetFromSourceVisible?deco:HeadStyle.NONE;
 	}
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
-		if(diagram.umlMode) {
-		if(targetFromSourceVisible & sourceFromTargetVisible) {
-			return HeadStyle.NO_ARROW;	//No Arrows for Bidirctional associations
-		}}
-		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(this.getAssociationType().startDeco);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + this.getAssociationType().startDeco + " not found");
+		}
+		return sourceFromTargetVisible?deco:HeadStyle.NONE;
 	}
 
 	public boolean isSymmetric() {return symmetric;}
