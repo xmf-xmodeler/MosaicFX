@@ -48,7 +48,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	private HashMap<Integer, Point2D> labelPositions;
 
 	protected enum HeadStyle {
-		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE
+		NONE, ARROW, 
+		DIAMOND, FILLED_DIAMOND, 
+		RHOMBUS, FILLED_RHOMBUS, 
+		TRIANGLE, FILLED_TRIANGLE, 
+		CIRCLE, FILLED_CIRCLE, 
+		PENTAGON, FILLED_PENTAGON
 	}
 
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
@@ -300,13 +305,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		g.setTransform(local);
 		switch (decoration) {
 
-		case NO_ARROW: {
+		case NONE: {
 			final double size = 6;
 			g.setFill(Color.BLACK);
 			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY()-2, size, size);
-
 		}
-			break;
+		break;
 
 		case ARROW: {
 			final double size = 16;
@@ -315,11 +319,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			g.strokeLine(pointForEdge.getX() + size / 2, pointForEdge.getY() + size, pointForEdge.getX(),
 					pointForEdge.getY());
 		}
-			break;
+		break;
 
-		case FULL_TRIANGLE: {
+		case TRIANGLE: 
+		case FILLED_TRIANGLE: {
 			double size = 16;
-			g.setFill(Color.WHITE);
+			g.setFill(decoration == HeadStyle.TRIANGLE ? Color.WHITE : g.getStroke());
 			g.fillPolygon(
 					new double[] { pointForEdge.getX(), pointForEdge.getX() - size / 2,
 							pointForEdge.getX() + size / 2 },
@@ -329,11 +334,79 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 							pointForEdge.getX() + size / 2 },
 					new double[] { pointForEdge.getY(), pointForEdge.getY() + size, pointForEdge.getY() + size }, 3);
 		}
-			break;
+		break;
 
-		case CIRCLE: {
+		case DIAMOND: 
+		case FILLED_DIAMOND: {
+			double size = 16;
+			g.setFill(decoration == HeadStyle.DIAMOND ? Color.WHITE : g.getStroke());
+			double[] xPoints = new double[] { 
+							pointForEdge.getX(), 
+							pointForEdge.getX() - size / 2,
+							pointForEdge.getX(),
+							pointForEdge.getX() + size / 2 };
+			double[] yPoints = new double[] { 
+							pointForEdge.getY(), 
+							pointForEdge.getY() + size / 2 , 
+							pointForEdge.getY() + size, 
+							pointForEdge.getY() + size / 2  };
+
+			g.fillPolygon(xPoints, yPoints, 4);
+			g.strokePolygon(xPoints, yPoints, 4);
+		}
+		break;
+
+		case RHOMBUS: 
+		case FILLED_RHOMBUS: {
+			double size = 16;
+			g.setFill(decoration == HeadStyle.RHOMBUS ? Color.WHITE : g.getStroke());
+			double[] xPoints = new double[] { 
+							pointForEdge.getX(), 
+							pointForEdge.getX() - size / 2,
+							pointForEdge.getX(),
+							pointForEdge.getX() + size / 2 };
+			double[] yPoints = new double[] { 
+							pointForEdge.getY(), 
+							pointForEdge.getY() + size, 
+							pointForEdge.getY() + size * 2, 
+							pointForEdge.getY() + size  };
+
+			g.fillPolygon(xPoints, yPoints, 4);
+			g.strokePolygon(xPoints, yPoints, 4);
+		}
+		break;
+
+		case PENTAGON: 
+		case FILLED_PENTAGON: {
+			double size = 8;
+			g.setFill(decoration == HeadStyle.PENTAGON ? Color.WHITE : g.getStroke());
+			Point2D midPentagon = new Point2D(pointForEdge.getX(), pointForEdge.getY()+size);
+			Point2D point1 = new Point2D(midPentagon.getX() + Math.sin(2*Math.PI/5)*size, midPentagon.getY() - Math.cos(2*Math.PI/5)*size);
+			Point2D point2 = new Point2D(midPentagon.getX() + Math.sin(4*Math.PI/5)*size, midPentagon.getY() - Math.cos(4*Math.PI/5)*size);
+			Point2D point3 = new Point2D(midPentagon.getX() - Math.sin(4*Math.PI/5)*size, midPentagon.getY() - Math.cos(4*Math.PI/5)*size);
+			Point2D point4 = new Point2D(midPentagon.getX() - Math.sin(2*Math.PI/5)*size, midPentagon.getY() - Math.cos(2*Math.PI/5)*size);
+			double[] xPoints = new double[] { 
+					pointForEdge.getX(), 
+					point1.getX(),
+					point2.getX(),
+					point3.getX(),
+					point4.getX()};
+			double[] yPoints = new double[] { 
+					pointForEdge.getY(), 
+					point1.getY(),
+					point2.getY(),
+					point3.getY(),
+					point4.getY()};
+
+			g.fillPolygon(xPoints, yPoints, 5);
+			g.strokePolygon(xPoints, yPoints, 5);			
+		}
+		break;
+
+		case CIRCLE:
+		case FILLED_CIRCLE: {
 			double size = 14;
-			g.setFill(Color.WHITE);
+			g.setFill(decoration == HeadStyle.CIRCLE ? Color.WHITE : g.getStroke());
 			g.setLineWidth(2);
 			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
 			g.strokeOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
@@ -1039,7 +1112,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		Element decor;
 
 		switch (decoration) {
-			case NO_ARROW: {
+			case NONE: {
 				final double size = 3;
 				decor =  xmlHandler.createXmlElement(SvgConstant.TAG_NAME_CIRCLE);
 				decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
@@ -1084,7 +1157,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			}
 			break;
 
-			case FULL_TRIANGLE: {
+			case TRIANGLE: {
 				final double size = 16;
 				decor = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 				StringBuilder pathString = new StringBuilder("M");

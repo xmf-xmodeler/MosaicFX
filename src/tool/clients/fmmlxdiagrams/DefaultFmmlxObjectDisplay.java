@@ -36,10 +36,6 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	final int INST_LEVEL_WIDTH = 7;
 	final int MIN_BOX_HEIGHT = 4;
 	final int EXTRA_Y_PER_LINE = 3;
-
-	private static SVGGroup cogWheelExplicit;
-	private static SVGGroup cogWheelImplicit;
-
 	
 	public DefaultFmmlxObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
 		super(diagram, object);
@@ -409,25 +405,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		return cogWheelImplicit;
 	}*/
 	
-	private SVGGroup getCogWheelExplicitIcon() {
-			try {
-				return SVGReader.readSVG(new java.io.File("resources/svg/cogwheel.svg"), new Affine());
-			} catch(Exception any) {
-				System.err.println("Cannot read file for cogwheel.");
-				any.printStackTrace();
-				return null;
-			}
-	}
 
-	private SVGGroup getCogWheelImplicitIcon() {
-			try {
-				return SVGReader.readSVG(new java.io.File("resources/svg/cogwheel2.svg"), new Affine());
-			} catch(Exception any) {
-				System.err.println("Cannot read file for cogwheel.");
-				any.printStackTrace();
-				return null;
-			}
-	}
 	/**
 	 * Display too long method returns in alert stage. A TextArea is used so the return value is selectable + copyable
 	 * @param return value as string representation
