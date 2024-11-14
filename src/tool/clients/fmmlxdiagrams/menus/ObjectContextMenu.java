@@ -10,6 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.FmmlxObject.ControlClass;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
@@ -91,6 +92,9 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make Concrete":"Make Abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
 		
+		MenuItem controlClassItem = new MenuItem(object.isControlClass()==ControlClass.EXPLICIT?"Make Regular":"Make Control");
+		controlClassItem.setOnAction(e -> actions.toggleControl(object));
+		
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
 		singletonClassItem.setOnAction(e -> actions.toggleSingleton(object));
 		
@@ -138,6 +142,7 @@ public class ObjectContextMenu extends ContextMenu {
 			getItems().addAll(
 				changeParentItem, 
 				abstractClassItem,
+				controlClassItem,
 				attributeMenu, 
 				associationMenu, 
 				operationMenu, 
