@@ -32,7 +32,11 @@ public class RequestLogManager {
 		log.setCallbackExecutionTime(System.currentTimeMillis());
 		log.setReturned();
 		log.setReturnedMessageVector(msgAsVec);
-		logger.debug("Request returned {}", log);
+		if(!FmmlxDiagramCommunicator.USERLOGGINGONLY)
+		{
+			logger.debug("Request returned {}", log);
+		}
+		
 	}
 
 	public RequestLog getLog(int requestId) {
