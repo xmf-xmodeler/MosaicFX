@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.ArrayList;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -168,7 +166,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			}
 		}
 	
-		umlFunctionSignature.setText(signature);
+		if(umlFunctionSignature != null) umlFunctionSignature.setText(signature);
 	}
 	
 	private void layoutUML(Button defaultOperationButton, GridPane theGrid, FmmlxOperation oldOp) {

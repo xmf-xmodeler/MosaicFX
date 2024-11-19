@@ -1873,6 +1873,16 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setClassAbstract", message);
     }
     
+
+    public void setClassControl(int diagramID, String className, boolean isControl) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(isControl)};
+        sendMessage("setClassControl", message);
+    }
+    
+    
     public void setClassSingleton(int diagramID, String className, boolean isSingleton) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),

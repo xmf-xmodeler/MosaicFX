@@ -33,6 +33,7 @@ import tool.clients.customui.CustomUI;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.fmmlxdiagrams.FmmlxObject.ControlClass;
 //import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
@@ -619,6 +620,11 @@ public class DiagramActions {
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
+		diagram.updateDiagram();		
+	}
+	
+	public void toggleControl(FmmlxObject object) {
+		diagram.getComm().setClassControl(diagram.getID(), object.getName(), ControlClass.EXPLICIT != object.isControlClass());
 		diagram.updateDiagram();		
 	}
 	
