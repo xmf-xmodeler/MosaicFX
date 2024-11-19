@@ -92,7 +92,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make Concrete":"Make Abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
 		
-		MenuItem controlClassItem = new MenuItem(object.isControlClass()==ControlClass.EXPLICIT?"Make Regular":"Make Control");
+		MenuItem controlClassItem = new MenuItem(object.isControlClass()==ControlClass.EXPLICIT?"Make Domain Class":"Make Control Class");
 		controlClassItem.setOnAction(e -> actions.toggleControl(object));
 		
 		MenuItem singletonClassItem = new MenuItem(object.isSingleton()?"Remove Singleton Property":"Make Singleton");
