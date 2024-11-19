@@ -286,7 +286,8 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+		//Root::Associations::DefaultAssociation used when chooser is disabled in AsscoiationDialog
+		if(diagram.umlMode && targetFromSourceVisible && sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}
 		HeadStyle deco = HeadStyle.ARROW;
@@ -300,7 +301,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
-		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}
 		HeadStyle deco = HeadStyle.ARROW;
