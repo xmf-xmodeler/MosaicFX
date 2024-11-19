@@ -38,6 +38,7 @@ import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
+	public static final boolean USERLOGGINGONLY = true;
 	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
@@ -343,7 +344,11 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) System.err.println(": Sending synchron request " + xmfFunctionName + "(" + currentRequestID + ") handle " + targetHandle);
 		RequestLog log = new  RequestLog(currentRequestID, true, System.currentTimeMillis(), xmfFunctionName, targetHandle, newParameterList);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Send synchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Send synchron request {}", log);
+		}
+		
 		//copy all elements starting by parameterList[0] to new parameterList[1] 
 		System.arraycopy(parameterList, 0, newParameterList, 1, parameterList.length);
 		//add at position [0] of new parameterList a combined value of diagramID and requestID
@@ -380,7 +385,11 @@ public class FmmlxDiagramCommunicator {
 		returnMap.put(currentRequestID, returnCall);
 		RequestLog log = new RequestLog(currentRequestID, false, System.currentTimeMillis(), message, targetHandle, args2);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Start asynchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Start asynchron request {}", log);
+		}
+		
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 	
@@ -390,10 +399,21 @@ public class FmmlxDiagramCommunicator {
 				int n = message[0].values[1].intValue;
 				System.err.println(": Sending command" + n + ": " + command);
 				timeMap.put(n, System.currentTimeMillis());
+				
 			} catch (Exception e) {
 				
 			}
 		}
+		try
+		{
+//			int n = message[0].intValue;
+//			logger.debug(": Sending command "  + n + ": " + command);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		logger.debug(": Sending command"  + ": " + command);
 		WorkbenchClient.theClient().send(handle, command, message);
 	}
 
@@ -2732,13 +2752,21 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Try to wait for request " + requestID);
 		}
-		logger.debug("Try to wait for request " + requestID);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Try to wait for request " + requestID);
+		}
+		
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
 				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
-				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				if (!USERLOGGINGONLY)
+				{
+					logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				}
+				
 				return;
 			} else {
 				try {
@@ -2752,7 +2780,10 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Request " + requestID + " is returned");
 		}
+		if(!USERLOGGINGONLY)
+		{
 		logger.debug("Try to wait for request " + requestID);
+		}
 	}
 	
 	public void waitForNextRequestReturn() {
