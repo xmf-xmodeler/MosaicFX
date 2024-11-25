@@ -404,16 +404,20 @@ public class FmmlxDiagramCommunicator {
 				
 			}
 		}
-		try
+
+		String messageContent = "";
+		for (Value value : message)
 		{
-//			int n = message[0].intValue;
-//			logger.debug(": Sending command "  + n + ": " + command);
+			if(value != null)
+			{
+				messageContent += value.toString() + ", ";
+			}
+			
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		logger.debug(": Sending command: " + command + ": "+messageContent);
+
 		
-		logger.debug(": Sending command"  + ": " + command);
+		
 		WorkbenchClient.theClient().send(handle, command, message);
 	}
 
