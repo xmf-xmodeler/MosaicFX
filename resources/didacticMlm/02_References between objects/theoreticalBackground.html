@@ -44,8 +44,9 @@
 		languages like Java or C#, an association will be implemented as an attribute. 
 		But there is an important conceptual difference between both. 
 		Associations serve as <i>references</i> between classes, 
-		links as <i>references</i> between objects. Only objects posses their own identity; slots do not. 
-		Slots require initialization for each new object that is being created.  
+		links as <i>references</i> between objects. 
+		Attributes and slots, on the other end, are <i>encapsulated</i> and should not be referenced from outside objects.
+		<!--  Only objects posses their own identity; slots do not. --> 
 		</p>
 		<p><u>Example</u>: Customers must specify exactly one location where they live. 
 		The location is determined by a single String value. 

@@ -13,6 +13,9 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/*  potential solution to avoid error message:-fx-effect: dropshadow(three-pass-box, rgb(0,0,0), 40,10,32,1);
+	But does not work.
+	 */  
 }
 
 h1, h3 {
@@ -47,16 +50,27 @@ h1, h3 {
 }
 
 
-p {
+p, table {
     color: #555;
+}
+
+table {
+	width: 50%;
+	font-size: 13px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+table tr {
+	border-bottom: 1px solid #ddd;
 }
 
 .content i {
 	color: rgb(10,10,10);
-	font-weight: 450;
+	font-weight: 500;
 }
 
-.background p {
+.background p, .background table {
 	text-align: left;
 	padding: 10px 15px 5px;
 }
