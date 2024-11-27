@@ -6,6 +6,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.dialogs.ExtendedAlert;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -149,12 +150,15 @@ public class Issue implements FmmlxProperty, Comparable<Issue>{
 //	    } else { System.err.println("Solution not recognized: " + solution.get(0));
 			
 		} else { // NOT IN AUTO-MODE
-	        Alert alert = new Alert(AlertType.INFORMATION);
-	        alert.setTitle("Resolving Issue");
-	 
-	        // Header Text: null
-	        alert.setHeaderText("This issue cannot be resolved!");
-	        alert.setContentText(text);
+			ExtendedAlert alert = new ExtendedAlert(this);
+			
+			
+//	        Alert alert = new Alert(AlertType.INFORMATION);
+//	        alert.setTitle("Resolving Issue");
+//	 
+//	        // Header Text: null
+//	        alert.setHeaderText("This issue cannot be resolved automatically!");
+//	        alert.setContentText(text);
 	 
 	        alert.showAndWait();
 		}

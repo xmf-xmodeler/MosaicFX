@@ -1,0 +1,234 @@
+
+
+\newcommand{\FMMLx}{FMML\textsuperscript{X}}
+
+\newcommand{\chapterSuffixA}{\addtocounter{chapter}{-1}
+\renewcommand*{\thechapter}{\arabic{chapter}a}}
+
+\newcommand{\chapterBackToNormal}{\renewcommand*{\thechapter}{\arabic{chapter}}}
+
+\newcommand{\chapterA}[1]{
+\addtocounter{chapter}{-1}
+\renewcommand*{\thechapter}{\arabic{chapter}a}
+\chapter{#1}
+\renewcommand*{\thechapter}{\arabic{chapter}}}
+
+\newfloat{lstfloat}{htbp}{lop}
+\floatname{lstfloat}{Listing}
+
+\newcommand{\lstRef}[1]{Listing~\ref{#1}}
+\newcommand{\conRef}[1]{Con.~\ref{#1}}
+
+\newcounter{constCounter}[section] 
+\makeatletter
+\newcommand{\constLabel}[1]{%
+		\refstepcounter{constCounter}
+		\def\@currentlabel{(C \arabic{constCounter})}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		(C \arabic{constCounter})}
+\makeatother
+
+\newcounter{defiCounter}[section] 
+\makeatletter
+\newcommand{\defiLabel}[1]{%
+		\refstepcounter{defiCounter}
+		\def\@currentlabel{(D \arabic{defiCounter})}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		(D \arabic{defiCounter})}
+\makeatother
+
+\newcounter{myCounter}[section] 
+\newcounter{mySubCounter}[myCounter] 
+
+\makeatletter
+\newcommand{\reqLabel}[1]{%
+\myLabel{#1}{Req}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Variante 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\layerOne}[1]{\chapter{#1}}
+\newcommand{\layerOneStar}[1]{\chapter*{#1}}
+\newcommand{\layerTwo}[1]{\section{#1}}
+\newcommand{\layerThree}[1]{\subsection{#1}}
+\newcommand{\layerFour}[1]{\subsubsection{#1}}
+
+\newcommand{\note}[2]{\noindent\fcolorbox{black}{yellow!20}{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule}\cite{#2}
+
+#1\end{minipage}}}
+
+\makeatletter
+	\newcommand{\myLabel}[2]{%
+		\refstepcounter{myCounter}
+		\def\@currentlabel{#2-\thesubsection.\arabic{myCounter}}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		#2-\thesubsection.\arabic{myCounter}}
+\makeatother
+
+\makeatletter
+	\newcommand{\myLabelPrefix}[3]{%
+		\refstepcounter{#3}
+		\def\@currentlabel{#2\arabic{#3}}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		#2\arabic{#3}}
+\makeatother
+
+\makeatletter
+	\newcommand{\myLabelPrefixNoCount}[3]{%
+%		\refstepcounter{#3}
+		\def\@currentlabel{#2#3}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		#2#3}
+\makeatother
+
+%\makeatletter
+%	\newcommand{\myLabelFour}[2]{%
+%		\refstepcounter{myCounter}
+%		\def\@currentlabel{#2-\thesubsection.\arabic{myCounter}}% Update label
+%		\raisebox{\f@size pt}\phantomsection
+%		\label{req:#1}
+%		#2-\thesubsection.\arabic{myCounter}}
+%\makeatother
+%
+%\newcommand{\kmh}{$kmh^{-1}$}
+
+\makeatletter
+	\newcommand{\myLabelB}[2]{%
+		\refstepcounter{mySubCounter}
+		\def\@currentlabel{#2-\thesubsection.\arabic{myCounter}\alph{mySubCounter}}% Update label
+		\raisebox{\f@size pt}\phantomsection
+		\label{#1}\hspace{-2.6mm}
+		#2-\thesubsection.\arabic{myCounter}\alph{mySubCounter}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Variante 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\newcommand{\layerOne}[1]{\part{#1}}
+%\newcommand{\layerOneStar}[1]{\part*{#1}}
+%\newcommand{\layerTwo}[1]{\chapter{#1}}
+%\newcommand{\layerThree}[1]{\section{#1}}
+
+%\makeatletter
+%	\newcommand{\myLabel}[2]{%
+%		\refstepcounter{myCounter}
+%		\def\@currentlabel{#2-\thesubsection.\arabic{myCounter}}% Update label
+%		\raisebox{\f@size pt}\phantomsection
+%		\label{req:#1}
+%		#2-\thesubsection.\arabic{myCounter}}
+%\makeatother
+
+%\makeatletter
+%	\newcommand{\myLabelB}[2]{%
+%		\refstepcounter{mySubCounter}
+%		\def\@currentlabel{#2-\thesubsection.\arabic{myCounter}\alph{mySubCounter}}% Update label
+%		\raisebox{\f@size pt}\phantomsection
+%		\label{req:#1}
+%		#2-\thesubsection.\arabic{myCounter}\alph{mySubCounter}}
+%\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Variante Ende %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+  \newcommand{\myRef}[1]{
+  \ref{req:#1}}
+\makeatother
+
+\makeatletter
+  \newcommand{\comment}{
+  \hspace{1em} \textit{Comment}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% XOCL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{javapurple}{rgb}{0.5,0,0.35} % keywords
+\definecolor{main-color}{rgb}{0.6627, 0.7176, 0.7764}
+\definecolor{back-color}{rgb}{0.1686, 0.1686, 0.1686}
+\definecolor{black-color}{rgb}{0,0,0}
+\definecolor{string-color}{rgb}{0.3333, 0.5254, 0.345}
+\definecolor{comment-color}{rgb}{0.0, 0.2, 0.0}
+\definecolor{key-color}{rgb}{0.8, 0.47, 0.196}
+\definecolor{eclipseBlue}{RGB}{42,0.0,255}
+\definecolor{ref-class}{RGB}{200,100,100}
+\definecolor{eclipsePurple}{RGB}{127,0,85}
+\usepackage[T1]{fontenc}
+
+%\renewcommand{\lstlistingname}{Constraint}
+
+\def\myfontsize{\scriptsize}
+\lstdefinelanguage{XOCL}{
+    basicstyle = {\myfontsize\ttfamily},
+    stringstyle = {\color{string-color}},
+    comment=[l][\color{comment-color}]{//},%
+    keywordstyle = [1]{\myfontsize\ttfamily\bf\color{black-color}},
+    keywordstyle = [2]{\myfontsize\ttfamily\color{ref-class}},
+    keywordstyle = [3]{\myfontsize\ttfamily\color{teal}},
+    keywordstyle = [4]{\myfontsize\ttfamily\color{orange}},    %do,end,grab,or,orelse,case,extends,for,null,data,if,else,in,when,then,let,not,union,letrec,act,self,become,export,probably,and},
+    morekeywords = [1]{import,metapackage,and,andthen,or,orelse,not,forAll,context,intern,reason,if,then,else,implies,elseif,end,do,let,in,when,extends,metaclass},
+    morekeywords = [2]{Slot,Package,Obj,Boolean,Root,String,Integer,Operation,For,Find,Class,Attribute,Constructor,AbstractOp,Constraint},
+    morekeywords = [3]{theClassClass},
+    morekeywords = [4]{self,super},  
+    literate = {@}{{\textcolor{eclipseBlue}{\ttfamily @}}}1
+               {->}{{$\rightarrow$}}2
+               {implies}{{$\Rightarrow$}}2
+               {subseteq}{{$\subseteq$}}1
+               {RefOperation}{{\color{ref-class}Operation}}9
+} 
+
+\lstdefinelanguage{XOCLInline}{
+    basicstyle = {\myfontsize\ttfamily},
+    stringstyle = {\color{string-color}},
+    comment=[l][\color{comment-color}]{//},%
+    keywordstyle = [1]{\myfontsize\ttfamily\bf\color{black-color}},
+    keywordstyle = [2]{\myfontsize\ttfamily\color{ref-class}},
+    keywordstyle = [3]{\myfontsize\ttfamily\color{teal}},
+    keywordstyle = [4]{\myfontsize\ttfamily\color{orange}},    %do,end,grab,or,orelse,case,extends,for,null,data,if,else,in,when,then,let,not,union,letrec,act,self,become,export,probably,and},
+    morekeywords = [1]{and,andthen,or,orelse,not,context,intern,if,then,forAll,else,elseif,end,do,let,in,when,extends,metaclass},
+    literate = {@}{{\textcolor{eclipseBlue}{\ttfamily @}}}1
+               {->}{{$\rightarrow$}}2
+               {implies}{{$\Rightarrow$}}2
+               {subseteq}{{$\subseteq$}}1
+               {RefOperation}{{\color{ref-class}Operation}}9
+} 
+
+\lstset{
+  language={XOCL},
+  mathescape,
+  columns=fixed, % make all characters equal width
+  keepspaces=true, % does not ignore spaces to fit width, convert tabs to spaces
+  showstringspaces=false, % lets spaces in strings appear as real spaces
+  breaklines=true, % wrap lines if they don't fit
+  frame=trbl, % draw a frame at the top, right, left and bottom of the listing
+  escapeinside={(*}{*)},
+  numberstyle=\tiny\ttfamily,
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  captionpos=b,                    % sets the caption-position to bottom
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+	title=\lstname
+}
+
+\lstnewenvironment{XOCL}[2]
+    {\lstset{language={XOCL}, caption=#1, label=#2}}
+    {}
+
+\lstnewenvironment{inlineXOCL}
+    {\lstset{language={XOCL},frame=none}}
+    {}
+
+ \def\code#1{{\normalfont\lstinline[language={XOCLInline},mathescape,basicstyle=\small\ttfamily]{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\consoleTable}[3]{
+\begin{tabular}{|p{0.8\textwidth}|} \hline
+\textbf{In:} #1 \\ \hline
+\textbf{Out:} #2 \\ \hline
+#3\\ \hline
+\end{tabular}
+}
