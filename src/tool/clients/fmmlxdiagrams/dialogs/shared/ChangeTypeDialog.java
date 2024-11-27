@@ -78,7 +78,7 @@ public class ChangeTypeDialog<Property
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
-		types.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.NonPrimitive));
+		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
 		
 		if(!diagram.isUMLMode()) {

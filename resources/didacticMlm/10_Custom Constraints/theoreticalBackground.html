@@ -5,7 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div class="content">
-                <h1>NOT PROVIDED YET</h1>    </div>
+<div class="content background">
+		<h1>LU10 - Custom Constraints with XOCL</h1>
+        <h2>Theoretical Background</h2>
+        <p>Basically all modeling constructs we encountered so far (types for attributes, multiplicities, etc.) serve to constrain the set of 
+		valid model instantiations. In some cases, the restrictions of existing modeling constructs may be insufficient and in order to 
+		ensure the integrity of the system it may be required to specify <i>custom constraints</i>.</p>
+		
+		<p>Constraints are Boolean expressions that are specified for a class and evaluated in every instance of that class. 
+		If a constraint fails, i.e., the evaluated expression returns False, a constraint-violation message is shown within the object. 
+		You also encounter constraint violations if the multiplicity of an attribute or association is violated.</p>
+		
+		<p>
+		<u>Example:</u> In an information system for an amusement park, we want to ensure that all customers are taller 
+		than 110cm. The height of a person is captured in the attribute <code>heightInCM: Integer</code>. 
+		We may then add the following constrain to the class <code>Customer</code> to ensure this:
+		<code>self.heightInCM > 110</code>.
+		The keyword <code>self</code> always refers to the object in which the constraint is evaluated. 
+		Any object of the class <code>Customer</code> that fails to meet this constrain shows an error message 
+		(e.g., "Customer is not tall enough!").
+		</p>
+		
+		<p class="example">No example model is provided!</p>
+		</div>
 </body>
 </html>

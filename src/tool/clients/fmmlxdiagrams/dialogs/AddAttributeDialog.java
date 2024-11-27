@@ -328,20 +328,17 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		grid.add(classLabel, 0, 1);
 		if (!diagram.isUMLMode()) {
 			grid.add(levelLabel, 0, 3);
-			grid.add(multiplicityLabel, 0, 5);
 			grid.add(isIntrinsicLabel, 0, 7);
 			grid.add(isIncompleteLabel, 0, 8);
 			grid.add(isOptionalLabel, 0, 9);
 			grid.add(levelComboBox, 1, 3);
-		}
-			grid.add(typeComboBox, 1, 4);
-			if (!diagram.isUMLMode()) {
 			grid.add(isIntrinsicBox, 1, 7);
 			grid.add(isIncompleteBox, 1, 8);
 			grid.add(isOptionalBox, 1, 9);
-			grid.add(multiplicityButton, 1, 5);
+			grid.add(multiplicityLabel, 0, 5);
 			grid.add(displayMultiplicityLabel, 1, 6);
 		}
+		grid.add(typeComboBox, 1, 4);
 		grid.add(typeLabel, 0, 4);
 
 		grid.add(classTextField, 1, 1);

@@ -56,6 +56,17 @@
 						<td>False</td>
 					</tr>
 				</table>
+				
+			<p>
+			Classes should be <i>encapsulated</i>. Objects should only be accessed and manipulated via respective operations. 
+			Programming languages like Java allow to violate this principle of encapsulation if, e.g., a users marks an attribute as public. 
+			Similarly, the UML allows to specify the <i>visibility</i> of attributes and operations. 
+			By marking an attribute as public (preceding it with a '+'), this, too, allows to violate the encapsulation principle. 
+			UML++ does also not enforce encapsulation - all properties of a class can be publicly accessed. 
+			Visibility of attributes and operations in UML++ cannot be modified. 
+			All attributes are preceded with a minus sign ('-') indicating that they are private and should be directly accessed from outside. 
+			All operations are preceded with a plus sign ('+') showing that they may be called from outside. 
+			</p>
 			
 			<p>The example model includes a class representing the concept of a student with 
 			two instantiated objects representing particular students. Changes to the class will reflect 

@@ -11,7 +11,7 @@
         <h1>LU2 - Associations and Links</h1>
         <h2>Theoretical Background</h2>
         <p><i>Associations</i> serve to connect classes. 
-		An association must always have exactly one source class and exactly one target class. 
+		An association in UML++ must always have exactly one source class and exactly one target class. 
         Typically, the source and target class will be different. If the target class is also the source class, 
         the class is called <i>self-referential</i> (see <lu>LU8</lu> for more on this special case).  
         Each association has a name. 
@@ -52,7 +52,7 @@
 		The location is determined by a single String value. 
 		Should the location be modeled as an attribute of customer 
 		or as a separate class <code>Customer</code> is associated with? In the first case (location as attribute), 
-		we must enter a new location for each customer. But locations posses their own identity; many customers may 
+		we must enter a new location for each customer. But locations possess their own identity; many customers may 
 		live at the same location. 
 		If the name of one location changes, the change should affect every customer that lives there. 
 		If location were an attribute of customer, we would have to change all affected customer objects. 
