@@ -205,7 +205,11 @@ public class ControlCenter extends Stage {
 		
 		private void callAboutStage() {
 			Stage stage = new Stage();
-			stage.setTitle("About XModeler");
+			stage.setTitle("About XModelerML");
+			if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+				stage.setTitle("About UML-MX\u00a9");
+				//169 is the unicode number of the copyright symbol
+			}
 			VBox root = new VBox();
 			root.setAlignment(Pos.BASELINE_CENTER);
 			Scene scene = new Scene(root,400,400);

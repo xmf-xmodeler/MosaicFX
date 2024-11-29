@@ -32,6 +32,10 @@ h1, h3 {
 	font-weight: 500;
 }
 
+lu::before {
+	content: "LU-";
+}
+
 .content h1 {
 	color: rgb(32,56,100);
 	font-size: 22px;

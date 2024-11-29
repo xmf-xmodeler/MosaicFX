@@ -28,6 +28,10 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
+	
+	private Boolean isInDidacticMode;
+	private String activeMode;
+	private String otherMode;
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();
@@ -35,6 +39,7 @@ public class PropertyManagerStage extends Stage {
 		setTitle("Preferences");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		setWidth(450);
+		setHeight(500);
 		setResizable(false);
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
@@ -45,7 +50,7 @@ public class PropertyManagerStage extends Stage {
 		TabPane tabPane = new TabPane();
 		root.getChildren().add(tabPane);
 		Tab directoriesTab = new Tab("Directories");
-		Tab userInterfaceTab = new Tab("UserInterface");
+		Tab userInterfaceTab = new Tab("Control Center Settings");
 		Tab didacticMLTab = createDidacticMlTab();
 		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
 		buildDirectoriesTab(directoriesTab);
@@ -54,10 +59,33 @@ public class PropertyManagerStage extends Stage {
 
 	private Tab createDidacticMlTab() {
 		Tab tab = new Tab();
-		tab.setText("DidacticMl");
-		Button button = new Button("Reset user statistics");
-		button.setOnAction(this::showDeleteStatsDialog);
-		tab.setContent(button);
+			
+		GridPane didacticModeGrid = new GridPane();
+		formatGrid(didacticModeGrid);
+		
+		isInDidacticMode = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()));
+		activeMode = (isInDidacticMode) ? "UML-MX" : "XModelerML";
+		otherMode = (isInDidacticMode) ? "XModelerML" : "UML-MX";
+		tab.setText("Switch to " + otherMode + " ");
+		
+		Label currentMode = new Label("You are currently using " + activeMode);// + " (didacticMode=" + isInDidacticMode.toString() + ")");
+		
+		//Button userStatisticsBtn = new Button("Reset user statistics");
+		//userStatisticsBtn.setOnAction(this::showDeleteStatsDialog);
+		Button toggleDidacticModeBtn = new Button("Switch to " + otherMode);
+		toggleDidacticModeBtn.setOnAction(this::toggleDidacticMode);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		didacticModeGrid.add(currentMode, 0, 1);
+		didacticModeGrid.add(separator, 0, 2);
+		didacticModeGrid.add(toggleDidacticModeBtn, 0, 4);
+		GridPane.setHalignment(toggleDidacticModeBtn, HPos.CENTER);
+		
+		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
+		
+		
+		tab.setContent(didacticModeGrid);
 		return tab;
 	}
 	
@@ -72,6 +100,20 @@ public class PropertyManagerStage extends Stage {
 	        	UserDataProcessor.resetTestStatistics();
 	        }	        
 	    }
+	 
+	 private void toggleDidacticMode(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle("Change to " + otherMode);
+	        alert.setHeaderText(null);
+	        alert.setContentText("Confirm change to " + otherMode + ". Change will apply on restart");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	Boolean newModeBoolean = (isInDidacticMode)? false : true;
+	        	PropertyManager.setProperty(UserProperty.DIDACTIC_MODE.toString(), newModeBoolean.toString());
+	        }	        
+	    }
+
 
 	private void buildDirectoriesTab(Tab directoriesTab) {
 		String savedModlesPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
@@ -140,14 +182,14 @@ public class PropertyManagerStage extends Stage {
 		formatGrid(userInterfaceAppearanceGrid);
 
 		Label header = new Label(
-				"User Interface appearance (confirm changes on enter)" + "\n Changes are applied on restart!");
+				"Change settings of Control Center window (confirm changes on enter)" + "\n Changes are applied on restart!");
 		header.setStyle("-fx-font-weight: bold");
 
 		Label toolX = new Label("Screen_X: ");
 		TextField toolXField = new TextField(PropertyManager.getProperty("toolX"));
 		toolXField.setMaxWidth(80);
 		toolXField.setOnAction(e -> PropertyManager.setProperty("toolX", toolXField.getCharacters().toString()));
-
+		
 		Label toolY = new Label("Screen_Y: ");
 		TextField toolYField = new TextField(PropertyManager.getProperty("toolY"));
 		toolYField.setMaxWidth(80);
@@ -190,6 +232,7 @@ public class PropertyManagerStage extends Stage {
 		userInterfaceAppearanceGrid.add(closingCheckBox, 2, 6);
 		return userInterfaceAppearanceGrid;
 	}
+
 
 	private void formatGrid(GridPane grid) {
 		grid.setPadding(new Insets(5, 5, 5, 5));

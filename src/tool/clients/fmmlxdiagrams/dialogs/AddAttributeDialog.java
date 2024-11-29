@@ -340,7 +340,9 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		}
 		grid.add(typeComboBox, 1, 4);
 		grid.add(typeLabel, 0, 4);
-
+		grid.add(multiplicityButton, 1, 5);
+		grid.add(multiplicityLabel, 0, 5);
+		grid.add(displayMultiplicityLabel, 1, 6);
 		grid.add(classTextField, 1, 1);
 		grid.add(showNonPrimitive, 1, 2);
 
