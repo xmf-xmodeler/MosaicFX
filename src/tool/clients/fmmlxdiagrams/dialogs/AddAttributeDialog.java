@@ -224,7 +224,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
-		showNonPrimitive = new CheckBox("Show all data types");
+		showNonPrimitive = new CheckBox("Show all types");
 		isIntrinsicLabel = new Label("intrinsic");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");
@@ -306,27 +306,30 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		});
 
 		multiplicityButton = new Button();
-		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
+		multiplicityButton.setText("Change Multiplicity");//multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			showMultiplicityDialog();
 		});
 		displayMultiplicityLabel = new Label(multiplicity.toString());
 
 		classTextField.setPrefWidth(COLUMN_WIDTH);
-		showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
+		showNonPrimitive.setPrefWidth(COLUMN_WIDTH*0.3);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
+		multiplicityButton.setPrefWidth(COLUMN_WIDTH*0.75);
+		displayMultiplicityLabel.setPrefWidth(COLUMN_WIDTH*0.3);
+		typeComboBox.setPrefWidth(COLUMN_WIDTH*0.75);
 
 		isIntrinsicBox = new CheckBox();
 		isIntrinsicBox.setSelected(true);
 		isIncompleteBox = new CheckBox();
 		isOptionalBox = new CheckBox();
 
-		grid.add(nameTextField, 1, 0);
-		grid.add(nameLabel, 0, 0);
-		grid.add(classLabel, 0, 1);
 		if (!diagram.isUMLMode()) {
+			grid.add(nameTextField, 1, 0);
+			grid.add(nameLabel, 0, 0);
+			grid.add(classLabel, 0, 1);
+			grid.add(classTextField, 1, 1);
 			grid.add(levelLabel, 0, 3);
 			grid.add(isIntrinsicLabel, 0, 7);
 			grid.add(isIncompleteLabel, 0, 8);
@@ -336,16 +339,29 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			grid.add(isIncompleteBox, 1, 8);
 			grid.add(isOptionalBox, 1, 9);
 			grid.add(multiplicityLabel, 0, 5);
+			grid.add(multiplicityButton, 1, 5);
 			grid.add(displayMultiplicityLabel, 1, 6);
+		} else {
+			displayMultiplicityLabel = new Label(multiplicity.toStringUml());
+			
+			grid.setHgap(20);
+			
+			grid.add(nameLabel, 0, 0, 1, 1);
+			grid.add(nameTextField, 1, 0, 2, 1);
+			
+			grid.add(classLabel, 0, 1, 1, 1);
+			grid.add(classTextField, 1, 1, 2, 1);
+				
+			grid.add(typeLabel, 0, 2, 1, 1);
+			grid.add(typeComboBox, 1, 2, 1, 1);
+			grid.add(showNonPrimitive, 2, 2, 1, 1);
+			
+			grid.add(multiplicityLabel, 0, 3, 1, 1);
+			grid.add(multiplicityButton, 2, 3, 1, 1);
+			grid.add(displayMultiplicityLabel, 1, 3, 1, 1);
+			
 		}
-		grid.add(typeComboBox, 1, 4);
-		grid.add(typeLabel, 0, 4);
-		grid.add(multiplicityButton, 1, 5);
-		grid.add(multiplicityLabel, 0, 5);
-		grid.add(displayMultiplicityLabel, 1, 6);
-		grid.add(classTextField, 1, 1);
-		grid.add(showNonPrimitive, 1, 2);
-
+		
 		// Define an event handler for changes in the state of the checkbox
 		// showNonPrimitives
 		EventHandler<ActionEvent> changedCheckboxPrimitiveEvent = new EventHandler<ActionEvent>() {

@@ -94,18 +94,26 @@ public class LearningUnitTabPane extends TabPane {
 		learningUnitChooser.close();
 	}
 
+	//TODO: current impl leads to error if exampleModel is renamed after initial loading
 	private void openExampleDiagram(ActionEvent event) {
-		loadModel();
-		String[] diagramDef = { "ExampleDiagram", "example" }; //make sure that the exported diagrams have this naming convention
+		LearningUnit currentLU = this.learningUnitChooser.getSelectedLearningUnit();
+		String[] diagramDef = { currentLU.getExampleModelName(), "ExampleDiagram"}; //make sure that the exported diagrams have this naming convention
+		if (!currentLU.getExampleModelOpened()) {
+			currentLU.setExampleModelOpened(true);
+			loadExampleModel();
+			learningUnitChooser.close();
+		}
+		
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(diagramDef[0], diagramDef[1]);
-		learningUnitChooser.close();
 		ControlCenterClient.getClient().getControlCenter().close();
-		setOnCloseOfExampleDiagram(diagramDef);
+		setOnCloseOfExampleDiagram(diagramDef, false);
 	}
-
-	//TODO: does only work once due to backend problems. Deleted diagram is referenced so the listener is attached to the wrong FmmlxDiagramInstance.
-	private void setOnCloseOfExampleDiagram(String[] diagramDef) {
-		Runnable myRunnable = new Runnable() { // needs to be runable becasue if it runs in the same thread it will not find the opened diagram
+	
+	//TODO: deletion does only work once due to backend problems. Deleted diagram is referenced so the listener is attached to the wrong FmmlxDiagramInstance.
+	//only possible to set setOnCloseRequest once. Opening example model from LU-chooser again should be prevented.
+	
+	private void setOnCloseOfExampleDiagram(String[] diagramDef, Boolean deleteProject) {
+		Runnable myRunnable = new Runnable() { // needs to be runnable because if it runs in the same thread it will not find the opened diagram
 			@Override
 			public void run() {
 				try {
@@ -122,7 +130,7 @@ public class LearningUnitTabPane extends TabPane {
 						luChooser.getLearningUnitTable().getSelectionModel().select(learningUnitChooser.getLearningUnitTable().getSelectionModel().getSelectedItem());
 						luChooser.getLearningUnitTabPane().setTheoreticalTabFocused();
 						luChooser.show();
-						ControlCenterClient.getClient().removeProject(diagramDef[0]);
+						if(deleteProject) ControlCenterClient.getClient().removeProject(diagramDef[0]);
 					});
 				} catch (NoDiagramFound e) {
 					System.err.println("Caught NoDiagramFound: " + e.getMessage());
@@ -136,10 +144,11 @@ public class LearningUnitTabPane extends TabPane {
 	/**
 	 * loads example diagram to backend
 	 */
-	private void loadModel() {
+	private void loadExampleModel() {
 		File inputFile = ResourceLoader.getExampleDiagramFile(learningUnitChooser.getSelectedLearningUnit());
 		XMLParser parser = new XMLParser(inputFile);
-		parser.parseXMLDocument();
+		parser.parseXMLDocument(); //parseXMLDocument creates new Project or shows error message if project already present
+		
 		try {
 			Thread.sleep(1000); //wait to avoid to open the diagram before it is loaded to the backend
 		} catch (InterruptedException e) {

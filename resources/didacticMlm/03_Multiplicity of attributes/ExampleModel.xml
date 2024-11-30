@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::Example_AttributeMultiplicity" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::Example_AttributeMultiplicity">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Patient" package="Root::Example_AttributeMultiplicity" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="patient1" of="Root::Example_AttributeMultiplicity::Patient" package="Root::Example_AttributeMultiplicity" singleton="false"/>
+        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::Example_AttributeMultiplicity" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="emailAddress" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
+        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
+        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="id" package="Root::Example_AttributeMultiplicity" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="dateOfBirth" valueToBeParsed="null"/>
+        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="emailAddress" valueToBeParsed="Seq{[106,111,104,110,108,101,119,105,115,64,104,111,116,109,97,105,108,46,99,111,109].asString(),[106,111,104,110,108,101,119,105,115,64,103,109,97,105,108,46,99,111,109].asString()}"/>
+        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="firstName" valueToBeParsed="[74,111,104,110].asString()"/>
+        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="id" valueToBeParsed="748012"/>
+        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="lastName" valueToBeParsed="[76,101,119,105,115].asString()"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::Example_AttributeMultiplicity::Patient" xCoordinate="431" yCoordinate="42"/>
+                <Instance hidden="false" path="Root::Example_AttributeMultiplicity::patient1" xCoordinate="298" yCoordinate="322"/>
+            </Instances>
+            <Edges/>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

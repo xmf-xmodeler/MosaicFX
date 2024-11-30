@@ -69,14 +69,11 @@ public class DefaultContextMenu extends ContextMenu {
 		if(diagram.isUMLMode()) {
 			getItems().addAll(addMenu, unhideItem);
 		} else {
-			getItems().addAll(addMenu, searchMenu, unhideItem);
+			getItems().addAll(addMenu, searchMenu, unhideItem, addAssocType);
 		}
 		
 		if (!(diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
 			getItems().addAll(enumerationMenu);			
-		}		
-		if ((!diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
-			getItems().addAll(new SeparatorMenuItem(), addAssocType);
-		}
+		}	
 	}
 }

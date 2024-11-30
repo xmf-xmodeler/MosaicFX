@@ -2489,7 +2489,7 @@ public class FmmlxDiagramCommunicator {
 				return diagram;
 			}
 		}
-		System.err.println("Diagram " + id + "not found.");
+		//System.err.println("Diagram " + id + " not found.");
 		return null;
 	}
 	// -------------------- merge package ---------------------------- //

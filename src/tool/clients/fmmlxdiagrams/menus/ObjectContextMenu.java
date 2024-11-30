@@ -245,7 +245,7 @@ public class ObjectContextMenu extends ContextMenu {
 				new SeparatorMenuItem(),
 				genGetterItem, genSetterItem);}
 		else {
-			attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeTypeItem,
+			attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeTypeItem, changeMulItem,
 					new SeparatorMenuItem(),
 					genGetterItem, genSetterItem);
 		}

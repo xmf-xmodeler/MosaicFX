@@ -156,7 +156,7 @@ public class ResourceLoader {
 		StringBuilder sB = new StringBuilder(folderPath);
 		sB.append(lu.getPathName());
 		sB.append("/");
-		sB.append("ExampleDiagram.xml");
+		sB.append("ExampleModel.xml");
 		return sB.toString();
 	}
 }

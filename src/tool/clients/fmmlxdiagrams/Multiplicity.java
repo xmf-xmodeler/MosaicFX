@@ -47,6 +47,10 @@ public class Multiplicity {
 				+ (min == max?"":(".." + (upperLimit ? max : "*")));
 //		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
 	}
+	
+	public String toStringUml() {
+		return "[" + min + ".." + max + "]";
+	}
 
 	public static Multiplicity parseMultiplicity(Vector<Object> xmfValue) {
 		try{

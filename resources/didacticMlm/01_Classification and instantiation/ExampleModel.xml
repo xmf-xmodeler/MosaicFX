@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::Example_Classification" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::Example_Classification">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Student" package="Root::Example_Classification" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student1" of="Root::Example_Classification::Student" package="Root::Example_Classification" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student2" of="Root::Example_Classification::Student" package="Root::Example_Classification" singleton="false"/>
+        <addAttribute class="Root::Example_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::Example_Classification" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::Example_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::Example_Classification" type="Root::XCore::String"/>
+        <addAttribute class="Root::Example_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="isCurrentlyEnrolled" package="Root::Example_Classification" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::Example_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::Example_Classification" type="Root::XCore::String"/>
+        <addAttribute class="Root::Example_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::Example_Classification" type="Root::XCore::Integer"/>
+        <changeSlotValue class="Root::Example_Classification::student1" package="Root::Example_Classification" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2003, 8, 18)"/>
+        <changeSlotValue class="Root::Example_Classification::student1" package="Root::Example_Classification" slotName="firstName" valueToBeParsed="[74,97,115,111,110].asString()"/>
+        <changeSlotValue class="Root::Example_Classification::student1" package="Root::Example_Classification" slotName="isCurrentlyEnrolled" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::Example_Classification::student1" package="Root::Example_Classification" slotName="lastName" valueToBeParsed="[82,117,98,121].asString()"/>
+        <changeSlotValue class="Root::Example_Classification::student1" package="Root::Example_Classification" slotName="matriculationNumber" valueToBeParsed="3220283"/>
+        <changeSlotValue class="Root::Example_Classification::student2" package="Root::Example_Classification" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2005, 3, 14)"/>
+        <changeSlotValue class="Root::Example_Classification::student2" package="Root::Example_Classification" slotName="firstName" valueToBeParsed="[83,117,115,97,110,110,97].asString()"/>
+        <changeSlotValue class="Root::Example_Classification::student2" package="Root::Example_Classification" slotName="isCurrentlyEnrolled" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::Example_Classification::student2" package="Root::Example_Classification" slotName="lastName" valueToBeParsed="[74,111,114,100,121,110].asString()"/>
+        <changeSlotValue class="Root::Example_Classification::student2" package="Root::Example_Classification" slotName="matriculationNumber" valueToBeParsed="3419362"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::Example_Classification::student1" xCoordinate="156" yCoordinate="462"/>
+                <Instance hidden="false" path="Root::Example_Classification::Student" xCoordinate="394" yCoordinate="90"/>
+                <Instance hidden="false" path="Root::Example_Classification::student2" xCoordinate="620" yCoordinate="431"/>
+            </Instances>
+            <Edges/>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

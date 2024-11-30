@@ -45,6 +45,7 @@ public class AssociationContextMenu extends ContextMenu {
 				genSource2TargetGetterItem, genTarget2SourceGetterItem);
 		
 //		if(XModeler.isAlphaMode()) {
+		if(!XModeler.isUmlMode()) {
 			if(association.isDependent()) {
 				MenuItem removeDependencyItem = new MenuItem("Remove Dependency");
 				removeDependencyItem.setOnAction(e -> actions.removeAssociationDependency(association));
@@ -54,6 +55,7 @@ public class AssociationContextMenu extends ContextMenu {
 				addDependencyItem.setOnAction(e -> actions.addAssociationDependency(association));
 				getItems().add(addDependencyItem);
 			}
+		}
 //		}
 	}
 }

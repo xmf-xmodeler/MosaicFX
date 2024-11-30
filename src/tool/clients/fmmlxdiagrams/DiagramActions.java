@@ -467,7 +467,6 @@ public class DiagramActions {
 	}
 		
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
-
 		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
