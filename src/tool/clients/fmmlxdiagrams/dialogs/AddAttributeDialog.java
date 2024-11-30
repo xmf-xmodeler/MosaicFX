@@ -311,14 +311,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			showMultiplicityDialog();
 		});
 		displayMultiplicityLabel = new Label(multiplicity.toString());
-
-		classTextField.setPrefWidth(COLUMN_WIDTH);
-		showNonPrimitive.setPrefWidth(COLUMN_WIDTH*0.3);
-		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		multiplicityButton.setPrefWidth(COLUMN_WIDTH*0.75);
-		displayMultiplicityLabel.setPrefWidth(COLUMN_WIDTH*0.3);
-		typeComboBox.setPrefWidth(COLUMN_WIDTH*0.75);
+		
 
 		isIntrinsicBox = new CheckBox();
 		isIntrinsicBox.setSelected(true);
@@ -326,6 +319,13 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		isOptionalBox = new CheckBox();
 
 		if (!diagram.isUMLMode()) {
+			classTextField.setPrefWidth(COLUMN_WIDTH);
+			showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
+			levelComboBox.setPrefWidth(COLUMN_WIDTH);
+			typeComboBox.setPrefWidth(COLUMN_WIDTH);
+			multiplicityButton.setPrefWidth(COLUMN_WIDTH);
+			typeComboBox.setPrefWidth(COLUMN_WIDTH);
+			
 			grid.add(nameTextField, 1, 0);
 			grid.add(nameLabel, 0, 0);
 			grid.add(classLabel, 0, 1);
@@ -342,23 +342,35 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			grid.add(multiplicityButton, 1, 5);
 			grid.add(displayMultiplicityLabel, 1, 6);
 		} else {
-			displayMultiplicityLabel = new Label(multiplicity.toStringUml());
+			displayMultiplicityLabel.setText(multiplicity.toStringUml());
+			classLabel.setText(StringValue.LabelAndHeaderTitle.aClass);
+
+			grid.setHgap(10);
 			
-			grid.setHgap(20);
+			int widthUml = 310;
+			
+			nameTextField.setMaxWidth(widthUml);
+			classTextField.setMaxWidth(widthUml);
+			typeComboBox.setMaxWidth(180);//270
+			
+		/*	nameTextField.setMinWidth(widthUml);
+			classTextField.setMinWidth(widthUml);
+			typeComboBox.setMinWidth(widthUml*0.75);*/
 			
 			grid.add(nameLabel, 0, 0, 1, 1);
-			grid.add(nameTextField, 1, 0, 2, 1);
+			grid.add(nameTextField, 1, 0, 3, 1);
 			
 			grid.add(classLabel, 0, 1, 1, 1);
-			grid.add(classTextField, 1, 1, 2, 1);
+			grid.add(classTextField, 1, 1, 3, 1);
 				
 			grid.add(typeLabel, 0, 2, 1, 1);
-			grid.add(typeComboBox, 1, 2, 1, 1);
-			grid.add(showNonPrimitive, 2, 2, 1, 1);
+			grid.add(typeComboBox, 1, 2, 2, 1);
+			grid.add(showNonPrimitive, 3, 2, 1, 1);
 			
 			grid.add(multiplicityLabel, 0, 3, 1, 1);
+			grid.add(displayMultiplicityLabel, 1, 3, 2, 1);
 			grid.add(multiplicityButton, 2, 3, 1, 1);
-			grid.add(displayMultiplicityLabel, 1, 3, 1, 1);
+			
 			
 		}
 		

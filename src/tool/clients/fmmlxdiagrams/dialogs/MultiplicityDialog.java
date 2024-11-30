@@ -4,8 +4,10 @@ import static tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.Labe
 
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.paint.Color;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
@@ -18,6 +20,7 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 	private CheckBox orderedCheckBox;
 	private CheckBox duplicatesCheckBox;
 	private Multiplicity oldMultiplicity;
+	private Label labelHint;
 
 	public MultiplicityDialog() {
 		this(Multiplicity.OPTIONAL);
@@ -65,6 +68,10 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 		Label labelOrdered = new Label(LabelAndHeaderTitle.ordered);
 		Label labelDuplicates = new Label(LabelAndHeaderTitle.allowDuplicates);
 		Label labelUpperLimit = new Label(LabelAndHeaderTitle.upperLimit);
+		labelHint = new Label();
+		labelHint.setText("HINT: If the maximum multiplicity is > 1, the slot value must be entered as a sequence or set, "
+				+ "regardless of the number of values it contains.");
+		labelHint.setWrapText(true);
 
 		minimumComboBox = new ComboBox<>();
 		minimumComboBox.setValue(oldMultiplicity.min);
@@ -95,15 +102,25 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 
 		minimumComboBox.setPrefWidth(COLUMN_WIDTH);
 		maximumComboBox.setPrefWidth(COLUMN_WIDTH);
+		labelHint.setMaxWidth(COLUMN_WIDTH + 100);
+		labelHint.setPadding(new Insets(10,0,0,0));
+		labelHint.setTextFill(Color.DARKRED);
 
 		isUpperLimitCheckBox.selectedProperty().addListener(this::changedUpperLimit);
 
-		grid.add(labelMin, 0, 0);
-		grid.add(minimumComboBox, 1, 0);
-		grid.add(labelMax, 0, 1);
-		grid.add(maximumComboBox, 1, 1);
-		grid.add(labelUpperLimit, 0, 2);
-		grid.add(isUpperLimitCheckBox, 1, 2);
+		//grid.setVgap(10);
+		
+		grid.add(labelMin, 0, 0, 1, 1);
+		grid.add(minimumComboBox, 1, 0, 1, 1);
+		
+		grid.add(labelMax, 0, 1, 1, 1);
+		grid.add(maximumComboBox, 1, 1, 1, 1);
+		
+		grid.add(labelUpperLimit, 0, 2, 1, 1);
+		grid.add(isUpperLimitCheckBox, 1, 2, 1, 1);
+		
+		grid.add(labelHint, 0, 3, 2, 1);
+		
 		/*			//commented out instead of using an if statement because we cant access a diagram/AbstractPackageViewer object from here
 		grid.add(labelOrdered, 0, 3);
 		grid.add(orderedCheckBox, 1, 3);
