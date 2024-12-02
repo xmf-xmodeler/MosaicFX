@@ -1655,6 +1655,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(aType.targetMult)
                 };
 //        sendMessage("addAssociationType", message);
+
         xmfRequestAsync(handle, diagramID, "addAssociationType", localReturn, message);
     }
 

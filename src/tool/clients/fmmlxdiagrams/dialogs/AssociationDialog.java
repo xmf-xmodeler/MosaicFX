@@ -191,9 +191,15 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		targetVisibleFromSourceBox = new CheckBox("targetVisibleFromSource");
 		sourceGetterField.setEditable(false);
 		sourceSetterField.setEditable(false);
-		targetVisibleFromSourceBox.setSelected(true);
-		targetVisibleFromSourceBox.setDisable(true);
-		sourceVisibleFromTargetBox.setSelected(true);
+        targetVisibleFromSourceBox.setSelected(true);
+
+ targetVisibleFromSourceBox.setDisable(true);
+		
+		
+		
+		
+		
+		sourceVisibleFromTargetBox.setSelected(false);
 		sourceVisibleFromTargetBox.selectedProperty().addListener((x0, x1, sourceVisible) -> {
 			sourceGetterField.setEditable(sourceVisible);
 			sourceSetterField.setEditable(sourceVisible);
