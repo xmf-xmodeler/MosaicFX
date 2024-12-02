@@ -56,6 +56,7 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsoleTabs;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseDeleteUI;
 import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
@@ -166,7 +167,10 @@ public class ControlCenter extends Stage {
 			MenuItem dbConsole = new MenuItem("Database Console");
 			dbConsole.setOnAction(e-> dBConsole());
 			
-			DatabaseMenu.getItems().addAll(getProjectsFromDB,dbConsole);
+			MenuItem deleteProject = new MenuItem("Delete Project");
+			deleteProject.setOnAction(e -> deleteProjectFormDB());
+			
+			DatabaseMenu.getItems().addAll(getProjectsFromDB,dbConsole,deleteProject);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -185,6 +189,10 @@ public class ControlCenter extends Stage {
 			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
+		/**
+		 * @author Nicolas Engel
+		 */
+		
 		private void getProjectsFromDB()
 		{
 			XMLDatabase database = new XMLDatabase();
@@ -196,6 +204,10 @@ public class ControlCenter extends Stage {
 				// TODO: handle exception
 			}
 		}
+
+		/**
+		 * @author Nicolas Engel
+		 */
 		private void dBConsole()
 		{
 			XMLDatabaseConsole console = new XMLDatabaseConsole();
@@ -208,6 +220,20 @@ public class ControlCenter extends Stage {
 				// TODO: handle exception
 			}
 		}
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void deleteProjectFormDB()
+		{
+		    try {
+		       
+		        XMLDatabaseDeleteUI deleteUI = new XMLDatabaseDeleteUI();
+		        deleteUI.start();
+		    } catch (Exception e) {
+		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+		    }
+		    
+	    }
 		
 		
 		private void openWebpage(String url) {

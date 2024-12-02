@@ -15,6 +15,7 @@ import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
 import org.basex.api.client.Session;
 import org.basex.core.BaseXException;
+import org.basex.core.cmd.Open;
 import org.w3c.dom.Document;
 
 import javafx.application.Platform;
@@ -425,4 +426,44 @@ public class XMLDatabase {
 			return null;
 		}
 	}
+	
+	 /**
+     * The method checks whether there is an Internet connection. 
+     * If this is the case, the database is opened and the query passed is executed 
+     * @param query
+     * @return
+     * @throws BaseXException
+     * @throws IOException
+     */
+    protected String executeQuery(String query) throws BaseXException, IOException {
+        if (!isInternetAvailable()) {
+            
+            throw new IOException("Internet not available");
+        }
+        try (ClientSession session = new ClientSession(hostname, port, user, password)) {
+            session.execute(new Open(this.db_name));
+            ClientQuery clientQuery = session.query(query);
+
+            
+
+            StringBuilder resultBuilder = new StringBuilder();
+            while (clientQuery.more()) {
+                String result = clientQuery.next();
+                resultBuilder.append(result).append("\n");
+                System.err.print(result + "\n");
+            }
+
+            clientQuery.close();
+//            System.err.print(hostname + "\n" + port + "\n" + user + "\n" + password + "\n");
+            System.err.print(query + "\n");
+            
+
+            return resultBuilder.toString();
+        }
+        catch (Exception e) {
+			System.err.print("execute failed \n");// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+    }
 }

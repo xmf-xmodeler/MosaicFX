@@ -86,6 +86,21 @@ public class XMLDatabaseQuerys {
         }
     	return query;
     }
+    
+    public String deleteProjectQuery(String db_name, String mainDocumentName) {
+        // Entferne überflüssige Steuerzeichen aus mainDocumentName
+        mainDocumentName = mainDocumentName.trim();
+
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "let $versions := $doc//VersionsContainer/Version/@ref " + // Referenzen der Versionsdokumente sammeln
+               "return ( " +
+               "  for $version in $versions " +
+               "  return db:delete('" + db_name + "', $version), " + // Lösche jedes referenzierte Dokument
+               "  db:delete('" + db_name + "', '" + mainDocumentName + "') " + // Lösche das Hauptdokument selbst
+               ")";
+    }
+
+
 }
 	
 
