@@ -87,35 +87,55 @@ public class XMLDatabaseQuerys {
     	return query;
     }
     
-    public String deleteProjectQuery(String db_name, String mainDocumentName) {
-        // Entferne überflüssige Steuerzeichen aus mainDocumentName
+//    public String deleteProjectQuery(String db_name, String mainDocumentName) {
+//        // Entferne überflüssige Steuerzeichen aus mainDocumentName
+//        mainDocumentName = mainDocumentName.trim();
+//
+//        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+//               "let $versions := $doc//VersionsContainer/Version/@ref " + // Referenzen der Versionsdokumente sammeln
+//               "return ( " +
+//               "  for $version in $versions " +
+//               "  return db:delete('" + db_name + "', $version), " + // Lösche jedes referenzierte Dokument
+//               "  db:delete('" + db_name + "', '" + mainDocumentName + "') " + // Lösche das Hauptdokument selbst
+//               ")";
+//    }
+    
+    public String deleteReferencedVersionsQuery(String db_name, String mainDocumentName) {
         mainDocumentName = mainDocumentName.trim();
-
         return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
-               "let $versions := $doc//VersionsContainer/Version/@ref " + // Referenzen der Versionsdokumente sammeln
+               "let $versions := $doc//VersionsContainer/Version/@ref " +
                "return ( " +
                "  for $version in $versions " +
-               "  return db:delete('" + db_name + "', $version), " + // Lösche jedes referenzierte Dokument
-               "  db:delete('" + db_name + "', '" + mainDocumentName + "') " + // Lösche das Hauptdokument selbst
+               "  return db:delete('" + db_name + "', $version) " +
                ")";
     }
+
+    public String checkMainDocumentExistsQuery(String db_name, String mainDocumentName) {
+        mainDocumentName = mainDocumentName.trim();
+        return "db:exists('" + db_name + "', '" + mainDocumentName + "')";
+    }
+
+    public String deleteMainDocumentQuery(String db_name, String mainDocumentName) {
+        mainDocumentName = mainDocumentName.trim();
+        return "db:delete('" + db_name + "', '" + mainDocumentName + "')";
+    }
+
+    public String getReferencedVersionsQuery(String db_name, String mainDocumentName) {
+        mainDocumentName = mainDocumentName.trim();
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "return $doc//VersionsContainer/Version/@ref";
+    }
+    
+    
+    public String getAvailableVersionsQuery(String db_name, String mainDocumentName) {
+        mainDocumentName = mainDocumentName.trim();
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "return $doc//VersionsContainer/Version/@ref";
+    }
+
+
+
 
 
 }
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-

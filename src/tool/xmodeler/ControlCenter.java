@@ -53,6 +53,7 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
+import tool.clients.fmmlxdiagrams.xmldatabase.VersionSelectionUI;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsoleTabs;
@@ -164,13 +165,16 @@ public class ControlCenter extends Stage {
 			MenuItem getProjectsFromDB = new MenuItem("Get Projects from Database");
 			getProjectsFromDB.setOnAction(e->getProjectsFromDB());
 			
+			MenuItem versionSelection = new MenuItem("Version Selection");
+			versionSelection.setOnAction(e->versionSelection());
+			
 			MenuItem dbConsole = new MenuItem("Database Console");
 			dbConsole.setOnAction(e-> dBConsole());
 			
 			MenuItem deleteProject = new MenuItem("Delete Project");
 			deleteProject.setOnAction(e -> deleteProjectFormDB());
 			
-			DatabaseMenu.getItems().addAll(getProjectsFromDB,dbConsole,deleteProject);
+			DatabaseMenu.getItems().addAll(getProjectsFromDB,versionSelection,dbConsole,deleteProject);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -192,7 +196,6 @@ public class ControlCenter extends Stage {
 		/**
 		 * @author Nicolas Engel
 		 */
-		
 		private void getProjectsFromDB()
 		{
 			XMLDatabase database = new XMLDatabase();
@@ -235,6 +238,19 @@ public class ControlCenter extends Stage {
 		    
 	    }
 		
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void versionSelection()
+		{
+			try {
+			       
+		        VersionSelectionUI versionUI = new VersionSelectionUI();
+		        versionUI.start();
+		    } catch (Exception e) {
+		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+		    }
+		}
 		
 		private void openWebpage(String url) {
 			Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;

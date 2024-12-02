@@ -23,7 +23,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.helper.persistence.XMLCreator;
 import tool.helper.persistence.XMLParser;
@@ -410,7 +409,7 @@ public class XMLDatabase {
 		});
 	}
 
-	private File createFileFromString(String xmlString) {
+	protected File createFileFromString(String xmlString) {
 		try {
 			// Erstellen einer temporären Datei
 			File tempFile = File.createTempFile("tempfile", ".xml");

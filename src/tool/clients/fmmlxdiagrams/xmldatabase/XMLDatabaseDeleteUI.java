@@ -92,14 +92,24 @@ public class XMLDatabaseDeleteUI extends XMLDatabase {
 
     private void deleteProject(String mainDocumentName, ComboBox<String> projectDropdown) {
         try {
-            // Generiere den Lösch-Query
-            String deleteQuery = querys.deleteProjectQuery(super.db_name, mainDocumentName);
+            // Schritt 1: Lösche referenzierte Versionsdokumente
+            String deleteReferencedVersionsQuery = querys.deleteReferencedVersionsQuery(super.db_name, mainDocumentName);
+            executeQuery(deleteReferencedVersionsQuery);
 
-            // Führe den Query aus
-            String result = executeQuery(deleteQuery);
+            // Schritt 2: Lösche das Hauptdokument
+            String deleteMainDocumentQuery = querys.deleteMainDocumentQuery(super.db_name, mainDocumentName);
+            executeQuery(deleteMainDocumentQuery);
 
-            // Erfolgsmeldung überprüfen
-            if (result != null && result.contains("Deletion successful")) {
+            // Schritt 3: Prüfe, ob das Hauptdokument noch existiert
+            String checkMainDocumentQuery = querys.checkMainDocumentExistsQuery(super.db_name, mainDocumentName);
+            String mainDocExists = executeQuery(checkMainDocumentQuery);
+
+            // Schritt 4: Prüfe, ob noch Referenzen existieren
+            String checkReferencesQuery = querys.getReferencedVersionsQuery(super.db_name, mainDocumentName);
+            String referencesResult = executeQuery(checkReferencesQuery);
+
+            if (mainDocExists.trim().equals("false") && (referencesResult == null || referencesResult.isEmpty())) {
+                // Alles erfolgreich gelöscht
                 Alert successDialog = new Alert(AlertType.INFORMATION);
                 successDialog.setTitle("Deletion Successful");
                 successDialog.setHeaderText(null);
@@ -109,13 +119,15 @@ public class XMLDatabaseDeleteUI extends XMLDatabase {
                 // Aktualisiere das Dropdown-Menü
                 projectDropdown.getItems().remove(mainDocumentName);
             } else {
+                // Es existieren noch Daten, die nicht gelöscht wurden
                 Alert warningDialog = new Alert(AlertType.WARNING);
                 warningDialog.setTitle("Deletion Warning");
-                warningDialog.setHeaderText("No changes detected.");
-                warningDialog.setContentText("It seems the main document or its references were not found.");
+                warningDialog.setHeaderText("Some documents could not be deleted.");
+                warningDialog.setContentText("It seems some references or the main document still exist in the database.");
                 warningDialog.showAndWait();
             }
         } catch (Exception e) {
+            // Fehlermeldung anzeigen
             Alert errorDialog = new Alert(AlertType.ERROR);
             errorDialog.setTitle("Deletion Failed");
             errorDialog.setHeaderText("An error occurred while deleting the main document and its references.");
@@ -125,6 +137,7 @@ public class XMLDatabaseDeleteUI extends XMLDatabase {
             e.printStackTrace();
         }
     }
+
 
 
 
