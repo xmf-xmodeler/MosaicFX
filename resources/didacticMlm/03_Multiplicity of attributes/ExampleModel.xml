@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<XModelerPackage path="Root::Example_AttributeMultiplicity" version="4" xModelerVersion="@@VERSION@@">
+<XModelerPackage path="Root::ExampleModel_AttributeMultiplicity" version="4" xModelerVersion="@@VERSION@@">
     <Imports/>
-    <Model name="Root::Example_AttributeMultiplicity">
-        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Patient" package="Root::Example_AttributeMultiplicity" singleton="false"/>
-        <addInstance abstract="false" level="0" maxLevel="0" name="patient1" of="Root::Example_AttributeMultiplicity::Patient" package="Root::Example_AttributeMultiplicity" singleton="false"/>
-        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::Example_AttributeMultiplicity" type="Root::Auxiliary::Date"/>
-        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="emailAddress" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
-        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
-        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="id" package="Root::Example_AttributeMultiplicity" type="Root::XCore::Integer"/>
-        <addAttribute class="Root::Example_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::Example_AttributeMultiplicity" type="Root::XCore::String"/>
-        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="dateOfBirth" valueToBeParsed="null"/>
-        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="emailAddress" valueToBeParsed="Seq{[106,111,104,110,108,101,119,105,115,64,104,111,116,109,97,105,108,46,99,111,109].asString(),[106,111,104,110,108,101,119,105,115,64,103,109,97,105,108,46,99,111,109].asString()}"/>
-        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="firstName" valueToBeParsed="[74,111,104,110].asString()"/>
-        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="id" valueToBeParsed="748012"/>
-        <changeSlotValue class="Root::Example_AttributeMultiplicity::patient1" package="Root::Example_AttributeMultiplicity" slotName="lastName" valueToBeParsed="[76,101,119,105,115].asString()"/>
+    <Model name="Root::ExampleModel_AttributeMultiplicity">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Patient" package="Root::ExampleModel_AttributeMultiplicity" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="patient3" of="Root::ExampleModel_AttributeMultiplicity::Patient" package="Root::ExampleModel_AttributeMultiplicity" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="patient2" of="Root::ExampleModel_AttributeMultiplicity::Patient" package="Root::ExampleModel_AttributeMultiplicity" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="patient1" of="Root::ExampleModel_AttributeMultiplicity::Patient" package="Root::ExampleModel_AttributeMultiplicity" singleton="false"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{0,-1,false,false}" name="specialRequirements" package="Root::ExampleModel_AttributeMultiplicity" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{0,1,true,false}" name="dateOfAdmission" package="Root::ExampleModel_AttributeMultiplicity" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,-1,false,false}" name="emailAddress" package="Root::ExampleModel_AttributeMultiplicity" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_AttributeMultiplicity" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_AttributeMultiplicity" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_AttributeMultiplicity::Patient" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_AttributeMultiplicity" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfAdmission" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 18)"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(1984, 12, 7)"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="emailAddress" valueToBeParsed="Seq{[98,114,101,110,100,111,110,56,52,64,103,109,97,105,108,46,99,111,109].asString()}"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="firstName" valueToBeParsed="[66,114,101,110,100,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="lastName" valueToBeParsed="[74,97,107,117,98,111,119,115,107,105].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient1" package="Root::ExampleModel_AttributeMultiplicity" slotName="specialRequirements" valueToBeParsed="Seq{}"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfAdmission" valueToBeParsed="null"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfBirth" valueToBeParsed="null"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="emailAddress" valueToBeParsed="Seq{[115,104,105,101,108,100,115,64,103,109,97,105,108,46,99,111,109].asString()}"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="firstName" valueToBeParsed="[75,101,101,103,97,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="lastName" valueToBeParsed="[83,104,105,101,108,100,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient2" package="Root::ExampleModel_AttributeMultiplicity" slotName="specialRequirements" valueToBeParsed="Seq{}"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfAdmission" valueToBeParsed="Auxiliary::Date::createDate(2024, 12, 3)"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(1977, 8, 27)"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="emailAddress" valueToBeParsed="[].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="firstName" valueToBeParsed="[65,105,108,101,101,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="lastName" valueToBeParsed="[83,99,104,111,119,97,108,116,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_AttributeMultiplicity::patient3" package="Root::ExampleModel_AttributeMultiplicity" slotName="specialRequirements" valueToBeParsed="[].asString()"/>
     </Model>
     <Diagrams>
         <Diagram name="ExampleDiagram" umlMode="true">
             <Instances>
-                <Instance hidden="false" path="Root::Example_AttributeMultiplicity::Patient" xCoordinate="431" yCoordinate="42"/>
-                <Instance hidden="false" path="Root::Example_AttributeMultiplicity::patient1" xCoordinate="298" yCoordinate="322"/>
+                <Instance hidden="false" path="Root::ExampleModel_AttributeMultiplicity::Patient" xCoordinate="406" yCoordinate="30"/>
+                <Instance hidden="false" path="Root::ExampleModel_AttributeMultiplicity::patient1" xCoordinate="-21" yCoordinate="420"/>
+                <Instance hidden="false" path="Root::ExampleModel_AttributeMultiplicity::patient2" xCoordinate="451" yCoordinate="544"/>
+                <Instance hidden="false" path="Root::ExampleModel_AttributeMultiplicity::patient3" xCoordinate="989" yCoordinate="418"/>
             </Instances>
             <Edges/>
             <DiagramDisplayProperties>
@@ -35,9 +53,64 @@
                 <OPERATIONVALUES>true</OPERATIONVALUES>
                 <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
             </DiagramDisplayProperties>
-            <Notes/>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Multiplicity of attributes: Each PATIENT object must specify exactly one value for "dateOfBirth", "firstName", and "lastName". It may contain multiple values for "emailAddress" and "specialRequirements".</NoteContent>
+                    <NotePosition>
+                        <XPosition>85.0</XPosition>
+                        <YPosition>39.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>If the maximum multiplicity is greater than 1, the slot value must be entered as a sequence or set, regardless of the number of values it shall contain.</NoteContent>
+                    <NotePosition>
+                        <XPosition>643.0</XPosition>
+                        <YPosition>74.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>patient1 with no violations: emailAddress and specialRequirements entered as sequences. You can enter a sequence by using "[]". You must check the checkbox "Is Expression" so that it is not processed as a regular string.</NoteContent>
+                    <NotePosition>
+                        <XPosition>-113.0</XPosition>
+                        <YPosition>320.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Empty sequence: []; single-valued sequence: ["brendon84@gmail.com"]; multiple values are separated by a comma: ["firstMail", "secondMail", "thirdMail"]</NoteContent>
+                    <NotePosition>
+                        <XPosition>-143.0</XPosition>
+                        <YPosition>656.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>4</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>patient2: dateOfBirth slot is initialized as null (no value). This violates its multiplicity of 1..1. A value for dateOfBirth must be entered. Note that the value for dateOfAdmission causes no violation of attribute multiplicity.</NoteContent>
+                    <NotePosition>
+                        <XPosition>424.0</XPosition>
+                        <YPosition>447.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>5</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>patient 3: emailAddress and specialRequirements with their initial value (empty String ""). This violates the attributeSlotStructure (see Note #1).</NoteContent>
+                    <NotePosition>
+                        <XPosition>823.0</XPosition>
+                        <YPosition>320.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
             <Views>
-                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+                <View name="Main View" tx="205.4062" ty="98.319954" xx="0.7711054"/>
             </Views>
         </Diagram>
     </Diagrams>

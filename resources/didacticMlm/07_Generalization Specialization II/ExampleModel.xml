@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_Delegation" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_Delegation">
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="Person_GEN" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Student_GEN" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Employee_GEN" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Student_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Employee_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Person_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee_DEL1" of="Root::ExampleModel_Delegation::Employee_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student_GEN1" of="Root::ExampleModel_Delegation::Student_GEN" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee_GEN1" of="Root::ExampleModel_Delegation::Employee_GEN" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="person_DEL1" of="Root::ExampleModel_Delegation::Person_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student_DEL1" of="Root::ExampleModel_Delegation::Student_DEL" package="Root::ExampleModel_Delegation" singleton="false"/>
+        <changeParent class="Root::ExampleModel_Delegation::Employee_GEN" new="Root::ExampleModel_Delegation::Person_GEN" old="" package="Root::ExampleModel_Delegation"/>
+        <changeParent class="Root::ExampleModel_Delegation::Student_GEN" new="Root::ExampleModel_Delegation::Person_GEN" old="" package="Root::ExampleModel_Delegation"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Employee_DEL" level="0" multiplicity="Seq{1,1,true,false}" name="employeeID" package="Root::ExampleModel_Delegation" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Employee_GEN" level="0" multiplicity="Seq{1,1,true,false}" name="employeeId" package="Root::ExampleModel_Delegation" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Person_DEL" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Delegation" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Person_DEL" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_Delegation" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Person_GEN" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Delegation" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Person_GEN" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_Delegation" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Student_DEL" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::ExampleModel_Delegation" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Delegation::Student_GEN" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::ExampleModel_Delegation" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getFullName[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.firstName + &quot; &quot; + self.lastName&#10;end" class="Root::ExampleModel_Delegation::Person_DEL" level="0" monitored="true" name="getFullName" package="Root::ExampleModel_Delegation" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::employee_DEL1" package="Root::ExampleModel_Delegation" slotName="employeeID" valueToBeParsed="332"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::employee_GEN1" package="Root::ExampleModel_Delegation" slotName="employeeId" valueToBeParsed="332"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::employee_GEN1" package="Root::ExampleModel_Delegation" slotName="firstName" valueToBeParsed="[75,97,114,111,108,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::employee_GEN1" package="Root::ExampleModel_Delegation" slotName="lastName" valueToBeParsed="[71,101,114,98,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::person_DEL1" package="Root::ExampleModel_Delegation" slotName="firstName" valueToBeParsed="[75,97,114,111,108,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::person_DEL1" package="Root::ExampleModel_Delegation" slotName="lastName" valueToBeParsed="[71,101,114,98,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::student_DEL1" package="Root::ExampleModel_Delegation" slotName="matriculationNumber" valueToBeParsed="3424249"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::student_GEN1" package="Root::ExampleModel_Delegation" slotName="firstName" valueToBeParsed="[75,97,114,111,108,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::student_GEN1" package="Root::ExampleModel_Delegation" slotName="lastName" valueToBeParsed="[71,101,114,98,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Delegation::student_GEN1" package="Root::ExampleModel_Delegation" slotName="matriculationNumber" valueToBeParsed="3424249"/>
+        <addDelegation delegateFrom="Root::ExampleModel_Delegation::Employee_DEL" delegateTo="Root::ExampleModel_Delegation::Person_DEL" delegateToLevel="0" package="Root::ExampleModel_Delegation"/>
+        <addDelegation delegateFrom="Root::ExampleModel_Delegation::Student_DEL" delegateTo="Root::ExampleModel_Delegation::Person_DEL" delegateToLevel="0" package="Root::ExampleModel_Delegation"/>
+        <setRoleFiller package="Root::ExampleModel_Delegation" role="Root::ExampleModel_Delegation::employee_DEL1" roleFiller="Root::ExampleModel_Delegation::person_DEL1"/>
+        <setRoleFiller package="Root::ExampleModel_Delegation" role="Root::ExampleModel_Delegation::student_DEL1" roleFiller="Root::ExampleModel_Delegation::person_DEL1"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Person_DEL" xCoordinate="1515" yCoordinate="113"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::student_GEN1" xCoordinate="420" yCoordinate="590"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::employee_GEN1" xCoordinate="822" yCoordinate="575"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Employee_DEL" xCoordinate="1863" yCoordinate="246"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Student_DEL" xCoordinate="1864" yCoordinate="73"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::student_DEL1" xCoordinate="1824" yCoordinate="406"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::person_DEL1" xCoordinate="1462" yCoordinate="514"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Person_GEN" xCoordinate="641" yCoordinate="69"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Employee_GEN" xCoordinate="741" yCoordinate="233"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::employee_DEL1" xCoordinate="1852" yCoordinate="598"/>
+                <Instance hidden="false" path="Root::ExampleModel_Delegation::Student_GEN" xCoordinate="410" yCoordinate="242"/>
+            </Instances>
+            <Edges>
+                <Edge path="DelegationMapping: Root::ExampleModel_Delegation::Student_DEL/Root::ExampleModel_Delegation::Person_DEL" sourcePort="WEST" targetPort="EAST" type="Delegation">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1783.294" yCoordinate="108.43164"/>
+                        <IntermediatePoint xCoordinate="1783.294" yCoordinate="143.82812"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="DelegationMapping: Root::ExampleModel_Delegation::Employee_DEL/Root::ExampleModel_Delegation::Person_DEL" sourcePort="WEST" targetPort="EAST" type="Delegation">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1828.8816" yCoordinate="281.43164"/>
+                        <IntermediatePoint xCoordinate="1828.8816" yCoordinate="174.65625"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Delegation::Employee_GEN/Root::ExampleModel_Delegation::Person_GEN" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="871.5085" yCoordinate="207.24219"/>
+                        <IntermediatePoint xCoordinate="741.2491" yCoordinate="207.24219"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="RoleFillerMapping: Root::ExampleModel_Delegation::employee_DEL1/Root::ExampleModel_Delegation::person_DEL1" sourcePort="WEST" targetPort="EAST" type="RoleFiller">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1727.3682" yCoordinate="643.0279"/>
+                        <IntermediatePoint xCoordinate="1727.3682" yCoordinate="588.0703"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="RoleFillerMapping: Root::ExampleModel_Delegation::student_DEL1/Root::ExampleModel_Delegation::person_DEL1" sourcePort="WEST" targetPort="EAST" type="RoleFiller">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1729.758" yCoordinate="450.45648"/>
+                        <IntermediatePoint xCoordinate="1729.758" yCoordinate="551.03516"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Delegation::Student_GEN/Root::ExampleModel_Delegation::Person_GEN" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="540.5085" yCoordinate="206.74219"/>
+                        <IntermediatePoint xCoordinate="691.0531" yCoordinate="206.74219"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>The main problem is that both classes are conceptually overlapping: students may be employees as well. In such cases two unrelated objects must be maintained separately: a clear threat to integrity.</NoteContent>
+                    <NotePosition>
+                        <XPosition>294.0</XPosition>
+                        <YPosition>79.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Instances of STUDENT_GEN and EMPLOYEE_GEN show how easy model integrity may be violated here. There is no means to know we are referring to the same person.</NoteContent>
+                    <NotePosition>
+                        <XPosition>343.0</XPosition>
+                        <YPosition>503.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Delegation as a solution: only one PERSON_DEL (role filler) object is needed where we can centrally manage the person Karolin Gerber. For each role she fulfills, a separate object is required. If a role object cannot handle an incoming request, it is delegated to the role-filler object.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1472.0</XPosition>
+                        <YPosition>265.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Delegation" tx="-1281.1428" ty="-12.0" xx="1.0"/>
+                <View name="Main View" tx="-116.0" ty="-27.428572" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

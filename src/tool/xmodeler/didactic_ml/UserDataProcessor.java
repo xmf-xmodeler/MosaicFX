@@ -32,10 +32,11 @@ public class UserDataProcessor {
 	private static final String FINISHED_SELF_ASSESSMENT_TESTS = "finishedSelfAssessmentTests";
 
 	static {
-		String envVariableValue = System.getenv("XMODELER_STAGE");
+		/*String envVariableValue = System.getenv("XMODELER_STAGE");
 		USER_DATA_FILE_PATH = (envVariableValue != null && envVariableValue.equals("dev"))
 				? "data\\dev\\didacticMlmUserData.json"
-				: "data\\prod\\didacticMlmUserData.json";
+				: "data\\prod\\didacticMlmUserData.json";*/
+		USER_DATA_FILE_PATH = "data\\prod\\didacticMlmUserData.json";
 	}
 
 	/**

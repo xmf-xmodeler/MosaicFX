@@ -39,7 +39,7 @@ public enum LearningUnit {
 		this.pathName = pathName;
 		this.id = id;
 		this.implemented = implemented;
-		this.exampleModelName = "Example_" + keyword; //exampleModelName built from keyword
+		this.exampleModelName = "ExampleModel_" + keyword; //exampleModelName built from keyword
 		this.exampleModelOpened = false;
 	}
 	

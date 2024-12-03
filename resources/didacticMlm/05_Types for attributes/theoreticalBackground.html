@@ -25,7 +25,7 @@
 		</ul>
 		<p><code>Currency</code> and <code>MonetaryValue</code> can only be selected after the check box "Show all data types" is activated. 
 		Some attributes are more restrictive than others. 
-		While <code>Boolean</code> attributes only allow for two values, <code>Integer</code> values are more or less endless. 
+		While <code>Boolean</code> attributes only allow for two values, <code>Integer</code> attributes allow any numerical character. 
 		<code>String</code> is the least restrictive type available here; it allows for any set of characters whether they are numeric or not. 
 		The type chosen for an attribute should always be as restrictive as possible to prohibit erroneous slot values. 
 				
@@ -45,18 +45,18 @@
 		<p><i>Enumerations</i> specify a custom list of specific values available to a slot. An example might be the traveling class of a flight ticket. 
 		Here, we can specify a <code>travelingClassEnum</code> that contains the values <code>EconomyClass</code>, <code>BusinessClass</code>, and 
 		<code>FirstClass</code>. In UML-MX, users can then select a slot value per drop down. Enumeration values may not include spaces or 
-		pure integers. For help on specifying enumerations, go to the UML++ Introduction in <lu>LU-1</lu>.
+		pure integers. For help on specifying enumerations, go to the UML++ Introduction in <lu>0</lu>.
 		</p>
 		
 		<p>Up until now, we have used classes as a modularization of information systems, 
 		they allow us to partition the large system into smaller more manageable units, so-called modules. 
-		Classes may also serve as types for attributes themselves, we call such types <i>domain-specific types</i>. 
-		Using classes as attribute types allows for more complex types since a class may include multiple attributes. 
-		An example might be the resolution of a video. The resolution of a video may be assumed to not possess its own identity; 
-		an association from a class <code>Video</code> to a class <code>Resolution</code> should thus be omitted (see <lu>LU-3</lu>). 
+		Classes may also serve as types for attributes themselves; we call such types <i>domain-specific types</i>. 
+		Using classes as attribute types allows for more complex types since a class may include multiple attributes and other properties (like constraints, see <lu>10</lu>). 
+		An example might be the resolution of a video. The resolution of a video may be assumed not to possess its own identity; 
+		an association from a class <code>Video</code> to a class <code>Resolution</code> should thus be omitted (see <lu>3</lu>). 
 		But the value of a resolution may still be split into the attributes <code>numberOfPixelsX: Integer</code> 
-		and <code>numberOfPixelsY: Integer</code>. Domain-specific classes can be chosen as an attribute type by clicking on "Domain-specific type"
-		and then selecting the desired class in the attribute specification dialog.</p>
+		and <code>numberOfPixelsY: Integer</code>. Domain-specific classes can be chosen as an attribute type by clicking on "Domain-specific type" 
+		and then selecting the desired class in the attribute specification dialog. The example model from <lu>4</lu> already contains the domain-specific type <code>Abstract_ISBN</code>.</p>
     </div>
 </body>
 </html>
