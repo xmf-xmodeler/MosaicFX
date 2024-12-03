@@ -204,7 +204,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			String nextLine = "";
 			for(int i = 0; i < codeBody.length;i++){
 				if(i==0) {
-					nextLine = "@Operation " + umlFunctionSignature.getText() +"\n";
+					nextLine = "@Operation " + getXoclSignature(umlFunctionSignature.getText()) +"\n";
 				}
 				else if (!codeBody[i].equals("end")) {
 					nextLine = nextLine + codeBody[i] + "\n";
@@ -236,6 +236,15 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	tabPane.setMinHeight(400);
 	tabPane.setMinWidth(450);
 	VBox.setVgrow(tabPane, Priority.ALWAYS);
+	}
+	
+	private String getXoclSignature(String umlSignature) {
+		int parameterIndex = umlSignature.indexOf("():") - 1; //returns -1 if not found or index of "("
+		if (parameterIndex < 1) {
+			return umlSignature; //return uncompilable string
+		} else {
+			return umlSignature.substring(0, parameterIndex + 1) + "[monitor=true, delToClassAllowed=false]" + umlSignature.substring(parameterIndex+1);
+		}
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {
@@ -279,7 +288,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
 		
 		codeBoxPair.setBodyText(
-				"@Operation "+name+"[monitor=false, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
+				"@Operation "+name+"[monitor=true, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
 				"  self."+attribute.getName()+"\n" +
 				"end");
 		
@@ -300,7 +309,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				("Set("+typeName+")");
 
 		codeBoxPair.setBodyText(
-				"@Operation "+name+"[monitor=false]()"+":"+type+"\n" +
+				"@Operation "+name+"[monitor=true]()"+":"+type+"\n" +
 				"  self."+endName+"\n" +
 				"end");
 		createSignature();
