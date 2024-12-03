@@ -114,10 +114,10 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 		GridPane theGrid = new GridPane();
 		if(!diagram.isUMLMode()) {
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
-		theGrid.add(classTextField, 1, 0);
-		theGrid.add(levelComboBox, 1, 1);
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
+			theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
+			theGrid.add(classTextField, 1, 0);
+			theGrid.add(levelComboBox, 1, 1);
+			theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
 		}
 		theGrid.setHgap(5);
 		theGrid.setVgap(5);
@@ -149,29 +149,33 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	}
 	
 	private void createSignature() {
-		String[] codeBody;
-		codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
-		codeBody = codeBody[0].split("");
-		 String signature = "";
-		 boolean bracket = false;
-		for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
-			if(codeBody[i].equals("[")) {
-				bracket = true;
+		String[] codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\\r?\\n");
+		//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+		String originalSignature = codeBody[0];
+		String umlSignature = "";
+		boolean inBracket = false;
+		char currentCharacter;
+		for (int i = 1; i<originalSignature.length(); i++) { //i=1 jumps @ sign
+			currentCharacter = originalSignature.charAt(i);
+			if(currentCharacter == '[') {
+				inBracket = true;
 			}
-			if(!bracket) {
-			signature = signature + codeBody[i];
+			if(!inBracket) {
+				umlSignature = umlSignature + currentCharacter;
 			}
-			if(codeBody[i].equals("]")) {
-				bracket = false;
-			}
+			if(currentCharacter == ']') {
+				inBracket = false;
+			}	
 		}
-	
-		if(umlFunctionSignature != null) umlFunctionSignature.setText(signature);
+		if (umlSignature.startsWith("Operation ")) umlSignature = umlSignature.substring("Operation ".length());
+		
+		if(umlFunctionSignature != null) umlFunctionSignature.setText(umlSignature);
 	}
+	
 	
 	private void layoutUML(Button defaultOperationButton, GridPane theGrid, FmmlxOperation oldOp) {
 		umlFunctionSignature = new TextField();
-		umlFunctionSignature.setPrefWidth(200);
+		umlFunctionSignature.setPrefWidth(400);
 		AddOperationDialog.this.codeBoxPair.setBodyText(
 				"@Operation " + "methodName[monitor=true,delToClassAllowed=false]():XCore::Element" + "\n" +
 				"null" + "\n" + "end");
@@ -216,17 +220,10 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 		if(oldOp!=null) {							//editing an existing operation
 			AddOperationDialog.this.codeBoxPair.setBodyText(oldOp.getBody());
-			String[] codeBody=oldOp.getBody().split("/n");
-			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
-			codeBody = codeBody[0].split(" ");
-			 String signature = "";
-			for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
-				signature = signature + codeBody[i];
-			}
-			umlFunctionSignature.setText(signature);	//cannot just use old name because rest of signature would be missing then
+			createSignature();
 		}
 		else {
-			umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");		//default values for creating a new operation
+			umlFunctionSignature.setText("methodName()" + ":XCore::Element");		//default values for creating a new operation
 		}
 		
 		

@@ -108,7 +108,7 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 
 		isUpperLimitCheckBox.selectedProperty().addListener(this::changedUpperLimit);
 
-		//grid.setVgap(10);
+		grid.setVgap(5);
 		
 		grid.add(labelMin, 0, 0, 1, 1);
 		grid.add(minimumComboBox, 1, 0, 1, 1);
@@ -119,7 +119,7 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 		grid.add(labelUpperLimit, 0, 2, 1, 1);
 		grid.add(isUpperLimitCheckBox, 1, 2, 1, 1);
 		
-		grid.add(labelHint, 0, 3, 2, 1);
+		//grid.add(labelHint, 0, 3, 2, 1); // I removed the hint because it also appears for associations which is more confusing than helping.
 		
 		/*			//commented out instead of using an if statement because we cant access a diagram/AbstractPackageViewer object from here
 		grid.add(labelOrdered, 0, 3);
