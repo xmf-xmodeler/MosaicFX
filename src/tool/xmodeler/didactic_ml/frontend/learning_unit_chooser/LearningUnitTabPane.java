@@ -105,7 +105,7 @@ public class LearningUnitTabPane extends TabPane {
 		}
 		
 		FmmlxDiagramCommunicator.getCommunicator().openDiagram(diagramDef[0], diagramDef[1]);
-		ControlCenterClient.getClient().getControlCenter().close();
+		//ControlCenterClient.getClient().getControlCenter().close();
 		setOnCloseOfExampleDiagram(diagramDef, false);
 	}
 	
