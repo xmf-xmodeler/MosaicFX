@@ -7,7 +7,7 @@ import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest
 
 public enum LearningUnit {
 	
-	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true, "IntroductionExample"),
+	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true, "Introduction"),
 	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "01_Classification and Instantiation", 1, true, "Classification"),
 	OBJECT_REFERENCES("References between Objects: Associations and Links", "02_References between objects", 2, true, "Associations"),
 	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","03_Multiplicity of attributes", 3, true, "AttributeMultiplicity"),
@@ -75,7 +75,7 @@ public enum LearningUnit {
 		List<SelfAssessmentTest> relatedTests = SelfAssessmentTest.getRelatedTests(this);
 		if (relatedTests.isEmpty())
 		{
-			return false;
+			return true; //return true if no exercise available
 		}
 		for (SelfAssessmentTest selfAssessmentTest : relatedTests) {
 			if (!UserDataProcessor.userHasFinishedTest(selfAssessmentTest)) {

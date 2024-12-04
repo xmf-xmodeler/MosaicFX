@@ -54,8 +54,8 @@ public class ToolIntroductionPreparation extends DiagramPreparationActions {
 				"Root::ToolIntroductionABC::Ticket",
 				"mayWatchMovie",
 				0,
-				"self."+ diagram.getAssociations().get(findBuysAssoc(diagram)).getAccessNameEndToStart() +".getAge() >= self."+ diagram.getAssociations().get(findValidForAssoc(diagram)).getAccessNameStartToEnd() +".movieshown_in.requiredAgeToWatch()",//dynamically gets the name of the identifier
-				"\"Customer not allowed to watch the movie.\"");	
+				"self."+ diagram.getAssociations().get(findBuysAssoc(diagram)).getAccessNameEndToStart() +".getAge() >= self."+ diagram.getAssociations().get(findValidForAssoc(diagram)).getAccessNameStartToEnd() +".movie.requiredAgeToWatch()",//dynamically gets the name of the identifier
+				"\"Customer is too young to watch the movie.\"");	
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {

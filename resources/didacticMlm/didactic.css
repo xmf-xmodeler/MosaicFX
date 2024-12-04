@@ -14,7 +14,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 /*  potential solution to avoid error message:-fx-effect: dropshadow(three-pass-box, rgb(0,0,0), 40,10,32,1);
-	But does not work.
+	But does not bring by desired effect.
 	 */  
 }
 

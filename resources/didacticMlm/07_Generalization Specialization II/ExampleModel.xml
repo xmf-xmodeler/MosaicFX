@@ -142,7 +142,7 @@
             </Notes>
             <Views>
                 <View name="Delegation" tx="-1281.1428" ty="-12.0" xx="1.0"/>
-                <View name="Main View" tx="-116.0" ty="-27.428572" xx="1.0"/>
+                <View name="Generalization" tx="-116.0" ty="-27.428572" xx="1.0"/>
             </Views>
         </Diagram>
     </Diagrams>
