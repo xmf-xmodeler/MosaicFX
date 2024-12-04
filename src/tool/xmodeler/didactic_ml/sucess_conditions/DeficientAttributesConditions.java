@@ -9,7 +9,7 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
 public class DeficientAttributesConditions extends SuccessCondition {
 	int numberOfCorrectAnwsers = 0;
 	
-	private int[] correctAnwsers = {3,6,7};
+	private int[] correctAnwsers = {3,6, 7,10, 13}; //should be age, numberOfTickets, totalPriceOfreservation, isAvailable, availableSeats
 	
 	public boolean checkSuccessCondition(TaskDescriptionViewer taskViewer) {
 		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {

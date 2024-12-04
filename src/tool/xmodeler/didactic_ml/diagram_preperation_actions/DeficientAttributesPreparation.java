@@ -9,8 +9,8 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
 
 public class DeficientAttributesPreparation extends DiagramPreparationActions {
 	static String[][] classesList ={
-				{"Customer", "lastname", "String", "phoneNumber","Integer", "gender", "String", "age", "Integer"},
-				{"Reservation", "reservationNumber", "Integer", "reservationDate", "Date", "numberOfTickets", "Integer", "price", "Float"},
+				{"Customer", "lastName", "String", "firstName", "String", "phoneNumber","Integer", "age", "Integer"},
+				{"Reservation", "reservationNumber", "Integer", "reservationDate", "Date", "numberOfTickets", "Integer", "totalPriceOfReservation", "Float"},
 				{"Ticket", "seatNumber", "String", "ticketPrice", "Float", "isAvailable", "Boolean"},
 				{"MovieShow", "date", "Date","extraCost","Float","availableSeats","Integer"},
 				{"Movie", "title", "String", "movieLengthInMinutes","Integer","releaseDate", "Date", "inHD", "Boolean"},

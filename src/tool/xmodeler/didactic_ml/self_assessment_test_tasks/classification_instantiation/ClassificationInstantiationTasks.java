@@ -8,7 +8,7 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTa
 public class ClassificationInstantiationTasks extends SelfAssessmentTestTasks {
 
 	public ClassificationInstantiationTasks() {
-		super(SelfAssessmentTest.CLASSIFICATION_INSTANTIATION);
+		super(null);//SelfAssessmentTest.CLASSIFICATION_INSTANTIATION);
 	}
  
 	@Override

@@ -25,8 +25,8 @@ public class SelfAssesmentTestManagerFaktory {
 			case TOOL_INTRO:
 				return (Manager) ToolIntroductionManager.class.cast(instance);
 	
-			case CLASSIFICATION_INSTANTIATION:
-				return (Manager) ClassificationInstantiationManager.class.cast(instance);
+			/*case CLASSIFICATION_INSTANTIATION:
+				return (Manager) ClassificationInstantiationManager.class.cast(instance);*/
 				
 			case GENERALIZATION_SPECIALIZATION_I:
 				return (Manager) GeneralizationSpecializationIManager.class.cast(instance);
