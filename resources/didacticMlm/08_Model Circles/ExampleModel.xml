@@ -235,8 +235,8 @@
                 </Note>
             </Notes>
             <Views>
-                <View name="Main View" tx="44.048073" ty="77.95703" xx="0.99999994"/>
-                <View name="Object View" tx="175.42857" ty="-666.8572" xx="1.0"/>
+                <View name="Order Class View" tx="44.048073" ty="77.95703" xx="0.99999994"/>
+                <View name="Order Object View" tx="175.42857" ty="-666.8572" xx="1.0"/>
                 <View name="Employee_Example" tx="-1214.8572" ty="28.571428" xx="1.0"/>
             </Views>
         </Diagram>
