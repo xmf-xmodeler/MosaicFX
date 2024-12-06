@@ -209,7 +209,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			return false;
 		}
 		else if(name.equals("name")){		//name already used by objects so extra error caught here
-			errorLabel.setText("The attribute name 'name' cannot be used. Try using a more specific name.");
+			errorLabel.setText("The attribute name 'name' cannot be used.");
 			return false;
 		}
 		else {

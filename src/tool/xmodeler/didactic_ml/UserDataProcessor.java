@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,7 +27,8 @@ public class UserDataProcessor {
 		throw new IllegalStateException("Utility class");
 	}
 
-	private static final String USER_DATA_FILE_PATH;
+	//private static final Path USER_DATA_PATHBUILDER;
+	private static String USER_DATA_FILE_PATH;
 	private static final String LEARNING_UNITS = "learningUnits";
 	private static final String LEARNING_UNIT_NAME = "learningUnitName";
 	private static final String FINISHED_SELF_ASSESSMENT_TESTS = "finishedSelfAssessmentTests";
@@ -36,7 +38,9 @@ public class UserDataProcessor {
 		USER_DATA_FILE_PATH = (envVariableValue != null && envVariableValue.equals("dev"))
 				? "data\\dev\\didacticMlmUserData.json"
 				: "data\\prod\\didacticMlmUserData.json";*/
-		USER_DATA_FILE_PATH = "data\\prod\\didacticMlmUserData.json";
+		//USER_DATA_PATHBUILDER = Path.of("data\\prod\\didacticMlmUserData.json");
+		//USER_DATA_FILE_PATH = "data\\dev\\didacticMlmUserData.json";
+		USER_DATA_FILE_PATH = "data/prod/didacticMlmUserData.json"; //path was changed from \\ to / to work with MacOS
 	}
 
 	/**
