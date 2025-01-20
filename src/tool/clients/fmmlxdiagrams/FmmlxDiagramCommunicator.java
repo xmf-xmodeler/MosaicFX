@@ -2811,6 +2811,7 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(createValueArray(imports))});
 	}
+	
 	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
 		Value[] message = new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
