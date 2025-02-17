@@ -14,6 +14,7 @@ public class ShortcutDialog extends Alert {
 	private String buildContent() {
 		return 	"F5: Update Diagram\n" +
 				"Strg + S: Save Diagram\n" + 
+				"Strg + Shift + S: Save Diagram to default database branch\n"+
 				"Strg + A: Select all Elements\n" + 
 				"Strg + F: Find Objects\n" + 
 				"Strg + Z: Undo\n" + 

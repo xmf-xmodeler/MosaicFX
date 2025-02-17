@@ -37,8 +37,8 @@ import tool.helper.user_properties.PropertyManager;
 public class XMLDatabase {
 	private String document;
 	private FmmlxDiagram diagram;
-	private XMLCreator creator;
-	private XMLDatabaseQuerys querrys;
+	private XMLDatabaseQuerys querys;
+	protected XMLCreator creator;
 	protected String hostname;
 	protected int port;
 	protected String user;
@@ -60,7 +60,7 @@ public class XMLDatabase {
 		this.diagram = diagram;
 		this.creator = new XMLCreator();
 		this.db_name = PropertyManager.getProperty("databaseName");
-		this.querrys = new XMLDatabaseQuerys();
+		this.querys = new XMLDatabaseQuerys();
 
 	}
 
@@ -92,7 +92,7 @@ public class XMLDatabase {
 				boolean mainDocumentExists = false;
 				try {
 					
-					mainDocumentExists = session.query(querrys.mainDocumentExistsQuery(this.db_name, mainDocumentName))
+					mainDocumentExists = session.query(querys.mainDocumentExistsQuery(this.db_name, mainDocumentName))
 							.execute().equals("true");
 				} catch (BaseXException e) {
 					// Das Dokument existiert nicht, mainDocumentExists bleibt false
@@ -110,7 +110,7 @@ public class XMLDatabase {
 					// Höchste Versionsnummer ermitteln
 					newVersionNumber = getHighestVersion(mainDocumentName, session) + 1;
 					// Neuen Verweis im Hauptdokument hinzufügen
-					String updateMainDocumentQuery = querrys.updateMainDocumentQuery(this.db_name, mainDocumentName, diagramName, newVersionNumber);
+					String updateMainDocumentQuery = querys.updateMainDocumentQuery(this.db_name, mainDocumentName, diagramName, newVersionNumber);
 					session.query(updateMainDocumentQuery).execute();
 				}
 
@@ -126,21 +126,13 @@ public class XMLDatabase {
 
 			}
 		};
+		String branchName = "main";
 		this.creator.getXmlRepresentation(diagram.getPackagePath(), onDocumentCreated);
+		DefaultBranchManager branchManager = DefaultBranchManager.getInstance();
+		branchManager.setDefaultBranch(branchName);
+		
 	}
 	
-	public void writeAsToDB (FmmlxDiagram diagram) throws IOException{
-		if (!isInternetAvailable()){
-			showError("Unable to establish an internet connection. "
-					+ "Please check your network settings and try again. "
-					+ "Ensure that your firewall or network policies do not block access to essential services.");
-			return;
-		}
-		ReturnCall<Document> onDocumentCreated = (doc) -> {
-			String xmlDoc = XMLUtil.getStringFromDocument(doc);
-			this.document = xmlDoc;
-		};
-	}
 
 	public void getDiagramsFromDB() {
 		if (!isInternetAvailable()) {
@@ -214,7 +206,7 @@ public class XMLDatabase {
 	private int countProjects(Session session) {
 		try 
 		{
-			String countQuery = querrys.countQuery(this.db_name);
+			String countQuery = querys.countQuery(this.db_name);
 				return Integer.parseInt(session.execute(countQuery));
 		}
 		catch (Exception e) {
@@ -236,13 +228,17 @@ public class XMLDatabase {
 	    List<String> documentNames = new ArrayList<>();
 	    try (ClientSession session = new ClientSession(hostname, port, user, password)) {
 	        // Construct the XQuery that retrieves all document names ending with '_versions.xml'
-	        String query = querrys.getProjectDocumentNamesQuery(this.db_name);
+	        String query = querys.getProjectDocumentNamesQuery(this.db_name);
 
 	        // Execute the query and process the results
 	        String result = session.execute(query);
+
 	        // Assume that the returned result is a newline-separated list of document names
 	        if (result != null && !result.isEmpty()) {
-	            documentNames = Arrays.asList(result.split("\n"));
+	            documentNames = Arrays.stream(result.split("\n"))
+	                                  .map(String::trim)          // Remove leading/trailing spaces
+	                                  .map(s -> s.replace("\r", "")) // Remove any \r characters
+	                                  .toList();
 	        }
 	    } catch (Exception e) {
 	        // Print the error message to standard error
@@ -252,6 +248,7 @@ public class XMLDatabase {
 	    }
 	    return documentNames;
 	}
+
 
 	/**
 	 * Creates a new XML document in the database to serve as a version container
@@ -265,7 +262,7 @@ public class XMLDatabase {
 	 *                     process.
 	 */
 	private void createNewMainDoc(Session session, String diagramName, String mainDocumentName) throws IOException {
-		String initialMainDocumentContent = querrys.initialMainDocumentContentQuery(diagramName);
+		String initialMainDocumentContent = querys.initialMainDocumentContentQuery(diagramName);
 		session.add(mainDocumentName,
 				new ByteArrayInputStream(initialMainDocumentContent.getBytes(StandardCharsets.UTF_8)));
 	}
@@ -281,7 +278,7 @@ public class XMLDatabase {
 	 *                   of the query results.
 	 */
 	protected int getHighestVersion(String mainDocumentName, Session session) throws Exception {
-		String highestVersionQuery = querrys.highestVersionQuery(this.db_name, mainDocumentName);
+		String highestVersionQuery = querys.highestVersionQuery(this.db_name, mainDocumentName);
 		String highestVersionRef = session.query(highestVersionQuery).execute();
 		return Integer.parseInt(highestVersionRef);
 	}
@@ -318,7 +315,7 @@ public class XMLDatabase {
 			}
 
 			// Ermittle alle Hauptdokumente
-			String versionsQuery = querrys.getVersionDocsQuery(this.db_name);
+			String versionsQuery = querys.getVersionDocsQuery(this.db_name);
 			ClientQuery versionsResult = session.query(versionsQuery);
 
 			while (versionsResult.more()) {

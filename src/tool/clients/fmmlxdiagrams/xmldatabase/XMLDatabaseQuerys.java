@@ -132,10 +132,59 @@ public class XMLDatabaseQuerys {
         return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
                "return $doc//VersionsContainer/Version/@ref";
     }
+    
+    
+    
+    
+    
+    
+    public String createBranchQuery(String dbName, String mainDocumentName, String branchName) {
+        return "let $doc := db:open('" + dbName + "', '" + mainDocumentName + "') " +
+               "return insert node <Branch name='" + branchName + "'/> into $doc";
+    }
+
+    
+    public String addVersionToBranchQuery(String db_name, String mainDocumentName, String branchName, String newVersionName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "return insert node <Version ref='" + newVersionName + "'/> " +
+               "into $doc//Branch[@name='" + branchName + "']";
+    }
+    
+    public String getAllBranchesQuery(String db_name, String mainDocumentName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+                "return $doc//Branch/@name/string()";
+    }
+
+    public String getVersionsOfBranchQuery(String db_name, String mainDocumentName, String branchName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "return $doc//Branch[@name='" + branchName + "']/Version/@ref/string()";
+    }
+
+    public String deleteBranchQuery(String db_name, String mainDocumentName, String branchName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "return delete node $doc//Branch[@name='" + branchName + "']";
+    }
+
+    public String getHighestVersionInBranchQuery(String db_name, String mainDocumentName, String branchName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "let $prefix := if ('" + branchName + "' = 'main') then 'version_' else concat('" + branchName + "', '_') " +
+               "let $versions := $doc//Branch[@name='" + branchName + "']/Version/@ref " +
+               "let $numbers := for $v in $versions " +
+               "return xs:integer(substring-before(substring-after($v, $prefix), '.xml')) " +
+               "return if (empty($numbers)) then 0 else max($numbers)";
+    }
 
 
-
-
-
+    public String deleteBranchAndVersionsQuery(String db_name, String mainDocumentName, String branchName) {
+        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+               "let $versions := $doc//Branch[@name='" + branchName + "']/Version/@ref " +
+               "return ( " +
+               "  for $version in $versions " +
+               "  return db:delete('" + db_name + "', $version), " +
+               "  delete node $doc//Branch[@name='" + branchName + "'] " +
+               ")";
+    }
+    
+    
 }
 	

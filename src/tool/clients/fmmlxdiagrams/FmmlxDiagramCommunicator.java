@@ -28,6 +28,8 @@ import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.xmldatabase.BranchManager;
+import tool.clients.fmmlxdiagrams.xmldatabase.DefaultBranchManager;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
@@ -212,6 +214,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(packagePath),
 				new Value(diagramName)
 		};
+		//clear Default Branch
+		DefaultBranchManager defaultBranchmanager = DefaultBranchManager.getInstance();
+		defaultBranchmanager.clearDefaultBranch();
 		sendMessage("showDiagram", message);
 	}
 

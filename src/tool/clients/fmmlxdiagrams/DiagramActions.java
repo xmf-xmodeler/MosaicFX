@@ -1154,25 +1154,23 @@ public class DiagramActions {
 	{
 		Platform.runLater(() -> {
 			try {
-				List<String> documentNames = new ArrayList<>();
-				documentNames = db.getProjectDocumentNames();
-				String diagramName = diagram.getPackagePath().substring(6) + "_versions.xml";
-				diagramName.trim();
+				List<String> documentNames =  db.getProjectDocumentNames();
 				
-				if (db.firstTime)
-				{
+				
+//				if (db.firstTime)
+//				{
 					RenameProjektDialog rpd = new RenameProjektDialog();
 					Platform.runLater(() -> {
-					rpd.start(diagram,db);
+					rpd.start(diagram,db,documentNames);
 					});
 					
-					db.firstTime = false;
-					
-				}
-				else 
-				{
-					db.writeToDB((FmmlxDiagram)this.diagram);
-				}
+//					db.firstTime = false;
+//					
+//				}
+//				else 
+//				{
+//					db.writeToDB((FmmlxDiagram)this.diagram);
+//				}
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

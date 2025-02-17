@@ -184,7 +184,7 @@ public class DiagramViewPane extends SplitPane {
 			if (keyEvent.isControlDown()) {
 				FmmlxDiagramControlKeyHandler handler = new FmmlxDiagramControlKeyHandler(
 						FmmlxDiagramCommunicator.getDiagram(diagram.getID()));
-				handler.handle(keyEvent.getCode());
+				handler.handle(keyEvent);
 			}
 
 			if (keyEvent.getCode() == javafx.scene.input.KeyCode.F5) {
@@ -201,21 +201,24 @@ public class DiagramViewPane extends SplitPane {
 			}
 
 		});
-		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent e) {
-				pressedKeys.add(e.getCode());
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.A)) {
-					diagram.selectAll();
-				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
-				}
-				if (getPressedKeys().contains(KeyCode.F5)) {
-					diagram.getComm().triggerUpdate();
-				}
-			}
-		});
+//		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+//			@Override
+//			public void handle(KeyEvent e) {
+//				pressedKeys.add(e.getCode());
+////				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.A)) {
+////					diagram.selectAll();
+////				}
+////				/*
+////				 * added !getPressedKeys().contains(KeyCode.SHIFT)
+////				 */
+////				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S) && !getPressedKeys().contains(KeyCode.SHIFT)) {
+////					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
+////				}
+//				if (getPressedKeys().contains(KeyCode.F5)) {
+//					diagram.getComm().triggerUpdate();
+//				}
+//			}
+//		});
 		tabPane.getSelectionModel().selectedItemProperty().addListener((foo, goo, newTabItem) -> {
 			if (newTabItem.getContent() == null) {
 				// pane with star selected
