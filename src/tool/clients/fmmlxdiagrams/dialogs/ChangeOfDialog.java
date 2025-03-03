@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.Vector;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -10,6 +12,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 
+	private static final String NONE = "Root::FMMLx::MetaClass";
 	private FmmlxObject object;
 	private final AbstractPackageViewer diagram;
 	private DialogPane dialogPane;
@@ -20,9 +23,9 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 	private Label errorLabel;
 	private TextField selectedObjectTextField;
 	private TextField currentOfTextField;
-	private ComboBox<FmmlxObject> newOfComboBox;
+	private ComboBox<String> newOfComboBox;
 
-	private ObservableList<FmmlxObject> allPossibleOf;
+	private Vector<String> allPossibleOf;
 
 
 	public ChangeOfDialog(AbstractPackageViewer diagram, FmmlxObject object) {
@@ -34,7 +37,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		addElementToLayout();
+		addElementsToLayout();
 
 		dialogPane.setContent(flow);
 
@@ -71,31 +74,40 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 	}
 
 
-	private void addElementToLayout() {
+	private void addElementsToLayout() {
 
 		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOf);
 
 		selectedObjectLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
-		currentOf = new Label("Current Of");
-		newOf = new Label("New Of");
+		currentOf = new Label("Current Metaclass");
+		newOf = new Label("New Metaclass");
 		errorLabel = getErrorLabel();
 
 		selectedObjectTextField = new TextField();
 		selectedObjectTextField.setText(object.getName());
 		selectedObjectTextField.setDisable(true);
 		currentOfTextField = new TextField();
+		currentOfTextField.setText(object.getOfPath());
 
-		for (FmmlxObject fmmlxObject : diagram.getObjectsReadOnly()) {
-			if (object.getOfPath().equals(fmmlxObject.getName())) {
-				currentOfTextField.setText(fmmlxObject.getName());
-			}
-		}
+//		for (FmmlxObject fmmlxObject : diagram.getObjectsReadOnly()) {
+//			if (object.getOfPath().equals(fmmlxObject.getName())) {
+//				currentOfTextField.setText(fmmlxObject.getName());
+//			}
+//		}
 
 		currentOfTextField.setDisable(true);
 
 
-		allPossibleOf = null; //diagram.getAllPossibleOf();
-		newOfComboBox = (ComboBox<FmmlxObject>) initializeComboBox(allPossibleOf);
+		allPossibleOf = new Vector<String>(); //diagram.getAllPossibleOf();
+		allPossibleOf.add(NONE);
+		for (FmmlxObject fmmlxObject : diagram.getObjectsReadOnly()) {
+			if(fmmlxObject != object) {
+				allPossibleOf.add(fmmlxObject.getPath());
+			}
+		}
+		newOfComboBox = new ComboBox<String>();
+		newOfComboBox.getItems().addAll(allPossibleOf);
+//		newOfComboBox = (ComboBox<String>) initializeComboBox(null);
 
 		newOfComboBox.setPrefWidth(COLUMN_WIDTH);
 
@@ -111,12 +123,12 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 	public class Result {	
 		public final FmmlxObject object;
 		public final String oldOfName;
-		public final FmmlxObject newOf;
+		public final String newOfPath;
 		
-		public Result(FmmlxObject object, String oldOfName, FmmlxObject newOf) {
+		public Result(FmmlxObject object, String oldOfName, String newOfPath) {
 			this.object = object;
 			this.oldOfName = oldOfName;
-			this.newOf = newOf;
+			this.newOfPath = newOfPath;
 		}
 	}
 }
