@@ -25,6 +25,32 @@
 
 \chapter{XCore \& {\FMMLx}}
 
+\section{Misc}
+\subsection{Evaluating an Expression from a String} 
+
+See listing~\ref{evalString}. The string in \texttt{text} is first parsed and then evaluated. If this succeeds, a sequence of 2 is returned, with the value at position 0 and null at 1. If this fails, the sequence has null at position 0 and an error message at position 1. 
+A such one can check at(1) = null, whether it was a success.
+
+\begin{lstfloat}
+\begin{XOCL}{current implementation of the generator in java}{evalString}
+try
+  let
+    exp = OCL::OCL.grammar.parseString(text,"Exp1",Seq{XOCL})
+  then
+    value = exp.eval(self,
+                     Env::NullEnv(),
+                     if env = null
+                       then Seq{XCore,Root,Auxiliary} 
+                       else Seq{env,XCore,Root,Auxiliary} 
+                     end)
+  in
+    [value, null]
+  end
+catch(exception)
+  [null, exception.toString()]
+end
+\end{XOCL}
+\end{lstfloat}
 \chapter{Communication between Java and XMF}
 
 \section{Example}
@@ -93,6 +119,29 @@ As the communication with XMF is asynchronous, those requests waiting for an ans
 In this XMF class, the data sent is unwrapped. The evaluation of strings into XMF values usually happens here. The unwrapped data is then in most cases sent to a Manipulator class. The operations are usually designed in a way that the have a variable containing a sequence of errors. This list is then sent back to java, in order to open a popup menu if an error is present. As such, the Manipulator classes MUST return a sequence of errors. 
 
 This should have done by a more conventional exception handling, which might look more familiar and less confusing.
+
+
+\chapter{Persistence}
+
+A model is made persistent in the form of an XML file. 
+
+\section{Saving}
+To save a model, the user chooses the menu item or pressen Ctrl+S, which creates an instance of tool.helper.persistence.XMLCreator and calles the operation createAndSaveXMLRepresentation(). This calls FmmlxDiagramCommunicator.getAllDiagramInfos(), which returns a list of diagrams.
+Then a dummy diagram is created, to fetch a list of imported models and the model data. The model data contains commands required to recreate the model. This is converted to xml. 
+Then the diagram data for each diagram is fetched, including all node and edge positions, as well as settings such as ``show derived attributes'' and the current center of view.
+
+\section{Loading}
+In FmmlxDiagramCommunicator, openXmlFile() is called from XMF, as the menu item calls XMF first.
+A parser object (tool.helper.persistence.XMLParser) is created, which first opens a dialog to choose a model file.
+The operation parseXMLDocument then opens imports the model.
+It first checks for other required models, at the moment only a text message is given if the required models are not yet present.
+Then, a dummy diagram is created whose only purpose is to import the models, not the diagrams yet. However this process requires a diagram to be present. To avoid different handling for the first and the subsequent diagrams. First the model is imported, and then all diagrams are imported.
+
+To import the model, 
+The operation sendModelDataToXMF sends a request for each item in the xml model similar to those when using the diagram. So a class is added by sending the same command to XMF, as if the user had clicked on the menu item for adding a class. The same is done for subclassing, attributes, slot values etc.
+
+Then for each diagram, the operation buildDiagram() sends a command for each node (objects) and for each edge (associations, links, etc.) with their coorodinates, and whether they are shown or not. This is the same command called when an object or edge is moved on the screen.
+
 
 \chapter{Instance Wizard}
 The instance wizard creates a number of instances of a given class on the next level below. 

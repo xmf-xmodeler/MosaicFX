@@ -529,7 +529,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialog.Result result = cod.get();
-				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName, result.newOf.getName());
+				diagram.getComm().changeOf(diagram.getID(), result.object.getPath(), result.oldOfName, result.newOfPath);
 				diagram.updateDiagram();
 			}
 		});

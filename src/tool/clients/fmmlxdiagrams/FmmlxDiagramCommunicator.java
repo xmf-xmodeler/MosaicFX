@@ -1569,10 +1569,10 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeSlotValue", message);
     }
 
-    public void changeOf(int diagramID, String objectName, String oldOfName, String newOfName) {
+    public void changeOf(int diagramID, String objectPath, String oldOfName, String newOfName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(objectName),
+                new Value(objectPath),
                 new Value(oldOfName),
                 new Value(newOfName)};
         sendMessage("changeOf", message);
@@ -2812,6 +2812,7 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(createValueArray(imports))});
 	}
+	
 	public void removeAssociationDependency(int diagramID, FmmlxAssociation assoc) {
 		Value[] message = new Value[]{
 			getNoReturnExpectedMessageID(diagramID),

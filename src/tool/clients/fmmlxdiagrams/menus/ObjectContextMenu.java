@@ -80,7 +80,7 @@ public class ObjectContextMenu extends ContextMenu {
 		{
 			MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 			changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
-			changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+//			changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 			getItems().add(changeOfItem);
 		}
 		
