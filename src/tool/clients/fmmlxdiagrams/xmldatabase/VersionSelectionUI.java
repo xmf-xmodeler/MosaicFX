@@ -193,7 +193,7 @@ public class VersionSelectionUI extends XMLDatabase {
      * @throws IOException if an error occurs during database interaction
      */
     private List<String> getMainBranchVersions(String mainDocumentName) throws IOException {
-        String query = "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        String query = "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                 "return $doc//VersionsContainer/Version/@ref/string()";
         String result = executeQuery(query);
         return Arrays.asList(result.trim().split("\n"));
@@ -207,7 +207,7 @@ public class VersionSelectionUI extends XMLDatabase {
      */
     private void loadSelectedVersion(String mainDocumentName, String selectedVersion) {
         try {
-            String xmlQuery = "db:open('" + db_name + "', '" + selectedVersion+ "')";
+            String xmlQuery = "db:get('" + db_name + "', '" + selectedVersion+ "')";
             String xmlString = executeQuery(xmlQuery);
 
             File tempFile = createFileFromString(xmlString);

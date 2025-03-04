@@ -167,7 +167,7 @@ public class BranchManager extends XMLDatabase {
      * @throws IOException If an error occurs during query execution.
      */
     public List<String> getMainBranchVersions(String mainDocumentName) throws IOException {
-        String query = "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        String query = "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                        "return $doc//VersionsContainer/Version/@ref/string()";
         String result = executeQuery(query);
         return Arrays.asList(result.trim().split("\n"));

@@ -52,7 +52,7 @@ public class PropertyManagerStage extends Stage {
 		TabPane tabPane = new TabPane();
 		root.getChildren().add(tabPane);
 		Tab directoriesTab = new Tab("Directories");
-		Tab userInterfaceTab = new Tab("UserInterface");
+		Tab userInterfaceTab = new Tab("Control Center Settings");
 		Tab xmlDatabaseTab = new Tab("XML Database");
 		// debugTab not running currently
 		// Tab debugTab = new Tab("Debugging");
@@ -63,7 +63,7 @@ public class PropertyManagerStage extends Stage {
 		
 		// buildDebugGrid(debugTab);
     
-    Tab userInterfaceTab = new Tab("Control Center Settings");
+    
 		Tab didacticMLTab = createDidacticMlTab();
 		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
 		buildDirectoriesTab(directoriesTab);

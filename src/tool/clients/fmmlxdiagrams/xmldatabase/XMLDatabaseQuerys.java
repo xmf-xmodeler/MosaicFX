@@ -13,7 +13,7 @@ public class XMLDatabaseQuerys {
 	
 	public String updateMainDocumentQuery (String db_name,String mainDocumentName, String diagramName, int newVersionNumber)
 	{
-		return	"let $doc := db:open('" + db_name + "','" + mainDocumentName
+		return	"let $doc := db:get('" + db_name + "','" + mainDocumentName
 				+ "')" + "return insert node <Version ref=\"" + diagramName + "_version_" + newVersionNumber
 				+ ".xml\"/> into $doc//VersionsContainer";
 	}
@@ -51,7 +51,7 @@ public class XMLDatabaseQuerys {
 	
 	public String getVersionDocsQuery(String db_name)
 	{
-		return "for $doc in db:open('" + db_name
+		return "for $doc in db:get('" + db_name
 				+ "') where ends-with(base-uri($doc), '_versions.xml') return base-uri($doc)";
 	}
 	
@@ -66,7 +66,7 @@ public class XMLDatabaseQuerys {
     public static String searchDocumentsQuery(String db_name, String path, String searchTerm, String filter) {
         String query;
         if (filter == null || filter.isEmpty()) {
-        	query = String.format(	"for $doc in db:open('%s')  where "
+        	query = String.format(	"for $doc in db:get('%s')  where "
 					+ "exists($doc//%s,'%s')])"
 					+ " return base-uri($doc) ", db_name,path,searchTerm
 					);
@@ -91,7 +91,7 @@ public class XMLDatabaseQuerys {
 //        // Entferne überflüssige Steuerzeichen aus mainDocumentName
 //        mainDocumentName = mainDocumentName.trim();
 //
-//        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+//        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
 //               "let $versions := $doc//VersionsContainer/Version/@ref " + // Referenzen der Versionsdokumente sammeln
 //               "return ( " +
 //               "  for $version in $versions " +
@@ -102,7 +102,7 @@ public class XMLDatabaseQuerys {
     
     public String deleteReferencedVersionsQuery(String db_name, String mainDocumentName) {
         mainDocumentName = mainDocumentName.trim();
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "let $versions := $doc//VersionsContainer/Version/@ref " +
                "return ( " +
                "  for $version in $versions " +
@@ -122,14 +122,14 @@ public class XMLDatabaseQuerys {
 
     public String getReferencedVersionsQuery(String db_name, String mainDocumentName) {
         mainDocumentName = mainDocumentName.trim();
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "return $doc//VersionsContainer/Version/@ref";
     }
     
     
     public String getAvailableVersionsQuery(String db_name, String mainDocumentName) {
         mainDocumentName = mainDocumentName.trim();
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "return $doc//VersionsContainer/Version/@ref";
     }
     
@@ -139,34 +139,34 @@ public class XMLDatabaseQuerys {
     
     
     public String createBranchQuery(String dbName, String mainDocumentName, String branchName) {
-        return "let $doc := db:open('" + dbName + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + dbName + "', '" + mainDocumentName + "') " +
                "return insert node <Branch name='" + branchName + "'/> into $doc";
     }
 
     
     public String addVersionToBranchQuery(String db_name, String mainDocumentName, String branchName, String newVersionName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "return insert node <Version ref='" + newVersionName + "'/> " +
                "into $doc//Branch[@name='" + branchName + "']";
     }
     
     public String getAllBranchesQuery(String db_name, String mainDocumentName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                 "return $doc//Branch/@name/string()";
     }
 
     public String getVersionsOfBranchQuery(String db_name, String mainDocumentName, String branchName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "return $doc//Branch[@name='" + branchName + "']/Version/@ref/string()";
     }
 
     public String deleteBranchQuery(String db_name, String mainDocumentName, String branchName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "return delete node $doc//Branch[@name='" + branchName + "']";
     }
 
     public String getHighestVersionInBranchQuery(String db_name, String mainDocumentName, String branchName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "let $prefix := if ('" + branchName + "' = 'main') then 'version_' else concat('" + branchName + "', '_') " +
                "let $versions := $doc//Branch[@name='" + branchName + "']/Version/@ref " +
                "let $numbers := for $v in $versions " +
@@ -176,7 +176,7 @@ public class XMLDatabaseQuerys {
 
 
     public String deleteBranchAndVersionsQuery(String db_name, String mainDocumentName, String branchName) {
-        return "let $doc := db:open('" + db_name + "', '" + mainDocumentName + "') " +
+        return "let $doc := db:get('" + db_name + "', '" + mainDocumentName + "') " +
                "let $versions := $doc//Branch[@name='" + branchName + "']/Version/@ref " +
                "return ( " +
                "  for $version in $versions " +

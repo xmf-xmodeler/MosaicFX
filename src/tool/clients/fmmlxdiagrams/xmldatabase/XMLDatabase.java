@@ -329,7 +329,7 @@ public class XMLDatabase {
 					String latestVersionDocumentName = projectName + "_version_" + highestVersion + ".xml";
 
 					// Queries for the latest version as an XML string and creates a File object
-					String xmlQuery = "db:open('" + this.db_name + "', '" + latestVersionDocumentName + "')";
+					String xmlQuery = "db:get('" + this.db_name + "', '" + latestVersionDocumentName + "')";
 					ClientQuery xmlString = session.query(xmlQuery);
 					File file = createFileFromString(xmlString.execute());
 
@@ -384,7 +384,7 @@ public class XMLDatabase {
 			String latestVersionDocumentName = projectName + "_version_" + highestVersion + ".xml";
 
 			// Query for the latest version as an XML string and create a File object
-			String xmlQuery = "db:open('" + this.db_name + "', '" + latestVersionDocumentName + "')";
+			String xmlQuery = "db:get('" + this.db_name + "', '" + latestVersionDocumentName + "')";
 			ClientQuery xmlString = session.query(xmlQuery);
 			file = createFileFromString(xmlString.execute());
 

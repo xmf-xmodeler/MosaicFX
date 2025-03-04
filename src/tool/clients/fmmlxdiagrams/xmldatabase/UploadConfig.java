@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.xmldatabase;
 
+import javax.swing.JOptionPane;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -83,12 +85,15 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
      */
 	public void setResult() 
 	{
-		PropertyManager manager = new PropertyManager();
-		manager.setProperty("hostname",this.hostnameTextfield.getText());
-		manager.setProperty("databaseName",this.databaseNameTextfield.getText());
-		manager.setProperty("port", this.portTextfield.getText());
-		manager.setProperty("user", this.userTextfield.getText());
-		manager.setProperty("password", this.passwordTextfield.getText());
+	    PropertyManager manager = new PropertyManager();
+	    manager.setProperty("hostname", this.hostnameTextfield.getText());
+	    manager.setProperty("databaseName", this.databaseNameTextfield.getText());
+	    manager.setProperty("port", this.portTextfield.getText());
+	    manager.setProperty("user", this.userTextfield.getText());
+	    manager.setProperty("password", this.passwordTextfield.getText());
+
+	    // Show success message
+	    JOptionPane.showMessageDialog(null, "Settings saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	/**
