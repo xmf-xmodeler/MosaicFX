@@ -2,6 +2,7 @@ package tool.helper.user_properties;
 
 import java.io.File;
 import java.util.Optional;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -25,8 +27,13 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
+	
+	private Boolean isInDidacticMode;
+	private String activeMode;
+	private String otherMode;
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();
@@ -34,6 +41,7 @@ public class PropertyManagerStage extends Stage {
 		setTitle("Preferences");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		setWidth(450);
+		setHeight(500);
 		setResizable(false);
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
@@ -54,6 +62,12 @@ public class PropertyManagerStage extends Stage {
 		buildXmlDatabaseTab(xmlDatabaseTab);
 		
 		// buildDebugGrid(debugTab);
+    
+    Tab userInterfaceTab = new Tab("Control Center Settings");
+		Tab didacticMLTab = createDidacticMlTab();
+		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
+		buildDirectoriesTab(directoriesTab);
+		buildUserInterfaceTab(userInterfaceTab);
 	}
 
 	private void buildXmlDatabaseTab(Tab xmlDatabaseTab) {
@@ -64,6 +78,65 @@ public class PropertyManagerStage extends Stage {
 		saveTabContentGrid.add(okButton, 0, 6);
 		xmlDatabaseTab.setContent(saveTabContentGrid);
 	}
+
+
+	private Tab createDidacticMlTab() {
+		Tab tab = new Tab();
+			
+		GridPane didacticModeGrid = new GridPane();
+		formatGrid(didacticModeGrid);
+		
+		isInDidacticMode = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()));
+		activeMode = (isInDidacticMode) ? "UML-MX" : "XModelerML";
+		otherMode = (isInDidacticMode) ? "XModelerML" : "UML-MX";
+		tab.setText("Switch to " + otherMode + " ");
+		
+		Label currentMode = new Label("You are currently using " + activeMode);// + " (didacticMode=" + isInDidacticMode.toString() + ")");
+		
+		//Button userStatisticsBtn = new Button("Reset user statistics");
+		//userStatisticsBtn.setOnAction(this::showDeleteStatsDialog);
+		Button toggleDidacticModeBtn = new Button("Switch to " + otherMode);
+		toggleDidacticModeBtn.setOnAction(this::toggleDidacticMode);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		didacticModeGrid.add(currentMode, 0, 1);
+		didacticModeGrid.add(separator, 0, 2);
+		didacticModeGrid.add(toggleDidacticModeBtn, 0, 4);
+		GridPane.setHalignment(toggleDidacticModeBtn, HPos.CENTER);
+		
+		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
+		
+		
+		tab.setContent(didacticModeGrid);
+		return tab;
+	}
+	
+	 private void showDeleteStatsDialog(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle("Delete statistics");
+	        alert.setHeaderText(null);
+	        alert.setContentText("If you confirm the deletion all information about finished Learning Units will be deleted.");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	UserDataProcessor.resetTestStatistics();
+	        }	        
+	    }
+	 
+	 private void toggleDidacticMode(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle("Change to " + otherMode);
+	        alert.setHeaderText(null);
+	        alert.setContentText("Confirm change to " + otherMode + ". Change will apply on restart");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	Boolean newModeBoolean = (isInDidacticMode)? false : true;
+	        	PropertyManager.setProperty(UserProperty.DIDACTIC_MODE.toString(), newModeBoolean.toString());
+	        }	        
+	    }
+
 
 	private void buildDirectoriesTab(Tab directoriesTab) {
 		String savedModlesPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
@@ -132,14 +205,14 @@ public class PropertyManagerStage extends Stage {
 		formatGrid(userInterfaceAppearanceGrid);
 
 		Label header = new Label(
-				"User Interface appearance (confirm changes on enter)" + "\n Changes are applied on restart!");
+				"Change settings of Control Center window (confirm changes on enter)" + "\n Changes are applied on restart!");
 		header.setStyle("-fx-font-weight: bold");
 
 		Label toolX = new Label("Screen_X: ");
 		TextField toolXField = new TextField(PropertyManager.getProperty("toolX"));
 		toolXField.setMaxWidth(80);
 		toolXField.setOnAction(e -> PropertyManager.setProperty("toolX", toolXField.getCharacters().toString()));
-
+		
 		Label toolY = new Label("Screen_Y: ");
 		TextField toolYField = new TextField(PropertyManager.getProperty("toolY"));
 		toolYField.setMaxWidth(80);
@@ -183,43 +256,10 @@ public class PropertyManagerStage extends Stage {
 		return userInterfaceAppearanceGrid;
 	}
 
+
 	private void formatGrid(GridPane grid) {
 		grid.setPadding(new Insets(5, 5, 5, 5));
 		grid.setVgap(5);
 		grid.setHgap(5);
 	}
-	/*
-	 * debugTab not running currently
-	 * 
-	 * private void buildDebugGrid(Tab debugTab) { Button btnCancelDebug = new
-	 * Button("Cancel"); btnCancelDebug.setOnAction(this::onCancelButtonClicked);
-	 * 
-	 * GridPane debugGrid = new GridPane(); debugGrid.setPadding(new
-	 * Insets(5,5,5,5)); debugGrid.setVgap(5); debugGrid.setHgap(5); Label debugInfo
-	 * = new Label("Degugging Options");
-	 * debugInfo.setStyle("-fx-font-weight: bold"); CheckBox
-	 * monitorClientCommunication = new CheckBox("MONITOR_CLIENT_COMMUNICATION");
-	 * monitorClientCommunication.setSelected(false); CheckBox monitorDaemonFiring =
-	 * new CheckBox("MONITOR_DAEMON_FIRING");
-	 * monitorDaemonFiring.setSelected(false); CheckBox monitorIgnoreSaveImage = new
-	 * CheckBox("IGNORE_SAVE_IMAGE"); monitorIgnoreSaveImage.setSelected(false);
-	 * CheckBox LogXmfOutput = new CheckBox("LOG_XMF_OUTPUT");
-	 * LogXmfOutput.setSelected(false); Label monitorCalls = new
-	 * Label("Monitor calls"); Button btnMonitorCalls = new Button("Open");
-	 * btnMonitorCalls.setOnAction(actionEvent->MenuClient.openCallMonitor()); Label
-	 * perfomanceMonitor = new Label("Performance monitor"); Button
-	 * btnPerfomanceMonitor = new Button("Open");
-	 * btnPerfomanceMonitor.setOnAction(actionEvent->MenuClient.
-	 * openPerformanceMonitor());
-	 * 
-	 * debugGrid.add(debugInfo, 0,0); debugGrid.add(monitorClientCommunication,0,
-	 * 1); debugGrid.add(monitorDaemonFiring, 0,2);
-	 * debugGrid.add(monitorIgnoreSaveImage, 0,3); debugGrid.add(LogXmfOutput, 0,4);
-	 * debugGrid.add(monitorCalls, 0,5); debugGrid.add(btnMonitorCalls, 1,5);
-	 * debugGrid.add(perfomanceMonitor, 0,6); debugGrid.add(btnPerfomanceMonitor,
-	 * 1,6); debugGrid.add(btnCancelDebug, 1, 7);
-	 * GridPane.setHalignment(btnCancelDebug, HPos.LEFT);
-	 * 
-	 * debugTab.setContent(debugGrid); debugTab.setDisable(true); }
-	 */
 }

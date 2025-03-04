@@ -67,13 +67,16 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
-		primitiveTypes.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.Primitive));
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
+		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+
+		if(!diagram.isUMLMode()) {
+			types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
+			types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+		}
 
 		// add enums to type list
 		diagramEnums = diagram.getEnums();
@@ -82,7 +85,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		}
 
-		types.add(new AddAttributeDialogDataType("Domainspecific", AddAttributeDialogMetaDataType.Domainspecific));
+		types.add(new AddAttributeDialogDataType("Domain-Specific", AddAttributeDialogMetaDataType.Domainspecific));
 
 		diagramObjects = diagram.getObjectsReadOnly();
 
@@ -90,7 +93,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		this.selectedObject = selectedObject;
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
 		layout();
 
 		dialogPane.setContent(flow);
@@ -173,6 +175,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 		}
 		// check whether entered type is valid
+		// TODO remove: leave that to XMF
 		if (!validTypes.contains(datatype)) {
 			errorLabel.setText(StringValue.ErrorMessage.selectCorrectType);
 			return false;
@@ -204,7 +207,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else {
+		}
+		else if(name.equals("name")){		//name already used by objects so extra error caught here
+			errorLabel.setText("The attribute name 'name' cannot be used. Try using a more specific name.");
+			return false;
+		}
+		else {
 			errorLabel.setText("");
 			return true;
 		}
@@ -216,7 +224,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
-		showNonPrimitive = new CheckBox("Show non primitive data types");
+		showNonPrimitive = new CheckBox("Show all types");
 		isIntrinsicLabel = new Label("intrinsic");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");
@@ -238,11 +246,14 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		typeComboBox.setEditable(true);
 
 		typeComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-			if (newValue.getName().toString().equals("Domainspecific")) {
+			if (newValue == null) {
+				return;
+			}
+			if (newValue.getName().toString().equals("Domain-Specific")) {
 
 				Platform.runLater(() -> {
 					DomainspecificDatatypesDialog dlg = new DomainspecificDatatypesDialog(diagram);
-					dlg.setTitle("Select domainspecific datatype");
+					dlg.setTitle("Select Domain-Specific datatype");
 					Optional<String> opt = dlg.showAndWait();
 
 					if (opt.isPresent()) {
@@ -295,28 +306,31 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		});
 
 		multiplicityButton = new Button();
-		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
+		multiplicityButton.setText("Change Multiplicity");//multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			showMultiplicityDialog();
 		});
 		displayMultiplicityLabel = new Label(multiplicity.toString());
-
-		classTextField.setPrefWidth(COLUMN_WIDTH);
-		showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
-		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
+		
 
 		isIntrinsicBox = new CheckBox();
 		isIntrinsicBox.setSelected(true);
 		isIncompleteBox = new CheckBox();
 		isOptionalBox = new CheckBox();
 
-		grid.add(nameLabel, 0, 0);
-		grid.add(classLabel, 0, 1);
 		if (!diagram.isUMLMode()) {
+			classTextField.setPrefWidth(COLUMN_WIDTH);
+			showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
+			levelComboBox.setPrefWidth(COLUMN_WIDTH);
+			typeComboBox.setPrefWidth(COLUMN_WIDTH);
+			multiplicityButton.setPrefWidth(COLUMN_WIDTH);
+			typeComboBox.setPrefWidth(COLUMN_WIDTH);
+			
+			grid.add(nameTextField, 1, 0);
+			grid.add(nameLabel, 0, 0);
+			grid.add(classLabel, 0, 1);
+			grid.add(classTextField, 1, 1);
 			grid.add(levelLabel, 0, 3);
-			grid.add(multiplicityLabel, 0, 5);
 			grid.add(isIntrinsicLabel, 0, 7);
 			grid.add(isIncompleteLabel, 0, 8);
 			grid.add(isOptionalLabel, 0, 9);
@@ -324,16 +338,42 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			grid.add(isIntrinsicBox, 1, 7);
 			grid.add(isIncompleteBox, 1, 8);
 			grid.add(isOptionalBox, 1, 9);
+			grid.add(multiplicityLabel, 0, 5);
 			grid.add(multiplicityButton, 1, 5);
 			grid.add(displayMultiplicityLabel, 1, 6);
+		} else {
+			displayMultiplicityLabel.setText(multiplicity.toStringUml());
+			classLabel.setText(StringValue.LabelAndHeaderTitle.aClass);
+
+			grid.setHgap(10);
+			
+			int widthUml = 310;
+			
+			nameTextField.setMaxWidth(widthUml);
+			classTextField.setMaxWidth(widthUml);
+			typeComboBox.setMaxWidth(180);//270
+			
+		/*	nameTextField.setMinWidth(widthUml);
+			classTextField.setMinWidth(widthUml);
+			typeComboBox.setMinWidth(widthUml*0.75);*/
+			
+			grid.add(nameLabel, 0, 0, 1, 1);
+			grid.add(nameTextField, 1, 0, 3, 1);
+			
+			grid.add(classLabel, 0, 1, 1, 1);
+			grid.add(classTextField, 1, 1, 3, 1);
+				
+			grid.add(typeLabel, 0, 2, 1, 1);
+			grid.add(typeComboBox, 1, 2, 2, 1);
+			grid.add(showNonPrimitive, 3, 2, 1, 1);
+			
+			grid.add(multiplicityLabel, 0, 3, 1, 1);
+			grid.add(displayMultiplicityLabel, 1, 3, 2, 1);
+			grid.add(multiplicityButton, 2, 3, 1, 1);
+			
+			
 		}
-		grid.add(typeLabel, 0, 4);
-
-		grid.add(nameTextField, 1, 0);
-		grid.add(classTextField, 1, 1);
-		grid.add(showNonPrimitive, 1, 2);
-		grid.add(typeComboBox, 1, 4);
-
+		
 		// Define an event handler for changes in the state of the checkbox
 		// showNonPrimitives
 		EventHandler<ActionEvent> changedCheckboxPrimitiveEvent = new EventHandler<ActionEvent>() {

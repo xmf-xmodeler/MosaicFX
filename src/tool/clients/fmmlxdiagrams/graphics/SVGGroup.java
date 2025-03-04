@@ -13,7 +13,7 @@ public class SVGGroup extends NodeGroup {
 	
 	public File file;
 	
-	public SVGGroup(File file,Affine affine) {
+	/*package*/ SVGGroup(File file, Affine affine) {
 		super(affine);
 		this.file = file;
 	}

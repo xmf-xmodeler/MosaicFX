@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
@@ -98,7 +99,6 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 			}
 			return dashes;
 		} catch (Exception e) {
-//			System.err.println("getLineDashes FAIL: " + e.getMessage());
 			return new double[] {10.,10.};
 		}
 	}
@@ -136,14 +136,33 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	@Override
 	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getTargetDecoration() { //TODO: Breakpoint here to check why TargetDecoration is causing problems
 		FmmlxAssociation assoc = getAssociation();
-		return assoc!=null?assoc.getTargetDecoration():tool.clients.fmmlxdiagrams.Edge.HeadStyle.NO_ARROW;
+		if(assoc == null) return HeadStyle.NONE;
+		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible() && "Root::Associations::DefaultAssociation".equals(assoc.getAssociationType().path)) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}		
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(assoc.getAssociationType().endDecoLink);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + assoc.getAssociationType().endDecoLink + " not found");
+		}
+		return assoc.isTargetVisible()?deco:HeadStyle.NONE;
 	}
 
 	@Override
 	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getSourceDecoration() {
 		FmmlxAssociation assoc = getAssociation();
-		return assoc!=null?assoc.getSourceDecoration():tool.clients.fmmlxdiagrams.Edge.HeadStyle.NO_ARROW;
-	}
+		if(assoc == null) return HeadStyle.NONE;
+		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible() && "Root::Associations::DefaultAssociation".equals(assoc.getAssociationType().path)) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}		
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(assoc.getAssociationType().startDecoLink);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + assoc.getAssociationType().startDecoLink + " not found");
+		}
+		return assoc.isSourceVisible()?deco:HeadStyle.NONE;	}
 	
 	public static FmmlxLink getFmmlxLink(FmmlxDiagram diagram, String source, String target, String name) {
 		String nameString = name + "#" + source + "#" + target;

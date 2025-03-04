@@ -44,7 +44,8 @@ public class AssociationContextMenu extends ContextMenu {
 				new SeparatorMenuItem(),
 				genSource2TargetGetterItem, genTarget2SourceGetterItem);
 		
-		if(XModeler.isAlphaMode()) {
+//		if(XModeler.isAlphaMode()) {
+		if(!XModeler.isUmlMode()) {
 			if(association.isDependent()) {
 				MenuItem removeDependencyItem = new MenuItem("Remove Dependency");
 				removeDependencyItem.setOnAction(e -> actions.removeAssociationDependency(association));
@@ -55,5 +56,6 @@ public class AssociationContextMenu extends ContextMenu {
 				getItems().add(addDependencyItem);
 			}
 		}
+//		}
 	}
 }

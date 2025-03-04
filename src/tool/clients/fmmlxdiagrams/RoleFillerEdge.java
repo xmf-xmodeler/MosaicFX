@@ -42,7 +42,7 @@ public class RoleFillerEdge extends Edge<FmmlxObject> {
 
 	@Override
 	public HeadStyle getTargetDecoration() {
-		return HeadStyle.NO_ARROW;
+		return HeadStyle.NONE;
 	}
 
 	@Override
@@ -53,5 +53,10 @@ public class RoleFillerEdge extends Edge<FmmlxObject> {
 	@Override
 	public String getName() {
 		return "doesNotMatter";
+	}
+	
+	@Override
+	protected double[] getLineDashes() {
+		return new double[] {10.,10.};
 	}
 }

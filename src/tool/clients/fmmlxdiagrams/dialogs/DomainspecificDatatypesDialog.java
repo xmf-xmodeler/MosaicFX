@@ -49,7 +49,7 @@ public class DomainspecificDatatypesDialog extends CustomDialog<String> {
 	}
 
 	private GridPane layout() {
-		lblSelectType = new Label("Select a domainspecific datatype!");
+		lblSelectType = new Label("Select a Domain-Specific datatype!");
 		lvSelectedClass = new ListView<String>();
 
 		classTypes = getClassTypes();

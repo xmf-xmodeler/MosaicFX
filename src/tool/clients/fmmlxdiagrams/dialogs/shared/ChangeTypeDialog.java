@@ -75,14 +75,17 @@ public class ChangeTypeDialog<Property
 		primitiveTypes.add(new AddAttributeDialogDataType("Float", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("String", AddAttributeDialogMetaDataType.Primitive));
 		primitiveTypes.add(new AddAttributeDialogDataType("Date", AddAttributeDialogMetaDataType.Primitive));
-		primitiveTypes.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.Primitive));
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
+		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
-		types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
-
+		
+		if(!diagram.isUMLMode()) {
+			types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
+			types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
+		}
+			
 		// add enums to type list
 		diagramEnums = diagram.getEnums();
 		for (FmmlxEnum e : diagramEnums) {
@@ -90,7 +93,7 @@ public class ChangeTypeDialog<Property
 
 		}
 
-		types.add(new AddAttributeDialogDataType("Domainspecific", AddAttributeDialogMetaDataType.Domainspecific));
+		types.add(new AddAttributeDialogDataType("Domain-Specific", AddAttributeDialogMetaDataType.Domainspecific));
 		diagramObjects = diagram.getObjectsReadOnly();
 
 		dialogPane = getDialogPane();
@@ -176,7 +179,7 @@ public class ChangeTypeDialog<Property
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 
-		showNonPrimitive = new CheckBox("Show non primitive data types");
+		showNonPrimitive = new CheckBox("Show all data types");
 
 		selectPropertyLabel = new Label("Select " + type.name());
 		selectPropertyComboBox = new ComboBox<Property>();
@@ -202,11 +205,11 @@ public class ChangeTypeDialog<Property
 			if (newValue == null)
 				return;
 
-			if (newValue.getName().toString().equals("Domainspecific")) {
+			if (newValue.getName().toString().equals("Domain-Specific")) {
 
 				Platform.runLater(() -> {
 					DomainspecificDatatypesDialog dlg = new DomainspecificDatatypesDialog(diagram);
-					dlg.setTitle("Select domainspecific datatype");
+					dlg.setTitle("Select Domain-Specific datatype");
 					Optional<String> opt = dlg.showAndWait();
 
 					if (opt.isPresent()) {

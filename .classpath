@@ -70,5 +70,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/BaseX107.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

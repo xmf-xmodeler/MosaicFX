@@ -1,17 +1,23 @@
 package tool.clients.fmmlxdiagrams;
 
+
 import java.util.List;
 
 import javafx.application.Platform;
-import javafx.geometry.Point2D;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
+import java.util.Iterator;
+import javafx.geometry.Point2D;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.xmldatabase.BranchManager;
 import tool.clients.fmmlxdiagrams.xmldatabase.DefaultBranchManager;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.persistence.XMLCreator;
+import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 
 /**
  * This class is used to handle all KeyInputs form the FmmlxDiagram that are
@@ -71,6 +77,10 @@ public class FmmlxDiagramControlKeyHandler {
             case S:
                 handleS(); // Handle Ctrl + S
                 break;
+            
+            case T:
+			        bringTaskViewerUpfront();
+			       break;
 
             default:
                 break;
@@ -86,6 +96,34 @@ public class FmmlxDiagramControlKeyHandler {
     private void handleS() {
         System.out.println("Ctrl + S pressed! Saving diagram...");
         new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
+    }
+  
+  	private void bringTaskViewerUpfront() {
+		if (!diagram.isInLearningUnitMode()) {
+			return;
+		}
+		try {
+			findTaskDescriptionStage().toFront();			
+		} catch (NullPointerException e) {
+			 System.err.println("Cant find TaskViewStage: " + e.getMessage());
+		}
+	}
+	
+	private Stage findTaskDescriptionStage() {
+		return TaskDescriptionViewer.mostRecentWindow;
+//		Iterator<Window> i = Window.impl_getWindows();
+//		
+//        while(i.hasNext()) {
+//        	Window window = i.next();
+//            if (window instanceof Stage) {
+//                Stage stage = (Stage) window;
+//                Object stageID = stage.getProperties().get("stageID");
+//                if ("TaskViewerStage".equals(stageID)) {
+//                    return stage;
+//                }
+//            }
+//        }
+//        return null;
     }
 
     /**

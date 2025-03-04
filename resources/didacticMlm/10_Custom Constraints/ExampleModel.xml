@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_CustomConstraints" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_CustomConstraints">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Flight" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="CheckedInLuggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="CarryOnLuggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="Luggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Booking" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Airport" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="FlightConnection" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="airport3" of="Root::ExampleModel_CustomConstraints::Airport" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="flightConnection2" of="Root::ExampleModel_CustomConstraints::FlightConnection" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="flight2" of="Root::ExampleModel_CustomConstraints::Flight" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="airport2" of="Root::ExampleModel_CustomConstraints::Airport" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="airport1" of="Root::ExampleModel_CustomConstraints::Airport" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="flightConnection1" of="Root::ExampleModel_CustomConstraints::FlightConnection" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="flight1" of="Root::ExampleModel_CustomConstraints::Flight" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="carryOnLuggage2" of="Root::ExampleModel_CustomConstraints::CarryOnLuggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="checkedInLuggage1" of="Root::ExampleModel_CustomConstraints::CheckedInLuggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="carryOnLuggage1" of="Root::ExampleModel_CustomConstraints::CarryOnLuggage" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="booking1" of="Root::ExampleModel_CustomConstraints::Booking" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleModel_CustomConstraints::Customer" package="Root::ExampleModel_CustomConstraints" singleton="false"/>
+        <changeParent class="Root::ExampleModel_CustomConstraints::CarryOnLuggage" new="Root::ExampleModel_CustomConstraints::Luggage" old="" package="Root::ExampleModel_CustomConstraints"/>
+        <changeParent class="Root::ExampleModel_CustomConstraints::CheckedInLuggage" new="Root::ExampleModel_CustomConstraints::Luggage" old="" package="Root::ExampleModel_CustomConstraints"/>
+        <addEnumeration name="travellingClass"/>
+        <addEnumerationValue enum_name="travellingClass" enum_value_name="Business"/>
+        <addEnumerationValue enum_name="travellingClass" enum_value_name="Economy"/>
+        <addEnumerationValue enum_name="travellingClass" enum_value_name="FirstClass"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Airport" level="0" multiplicity="Seq{1,1,true,false}" name="airportName" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Airport" level="0" multiplicity="Seq{1,1,true,false}" name="iataCode" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Booking" level="0" multiplicity="Seq{1,1,true,false}" name="bookingReference" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Booking" level="0" multiplicity="Seq{1,1,true,false}" name="travellingClass" package="Root::ExampleModel_CustomConstraints" type="Root::ExampleModel_CustomConstraints::travellingClass"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_CustomConstraints" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Flight" level="0" multiplicity="Seq{1,1,true,false}" name="flightDate" package="Root::ExampleModel_CustomConstraints" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::FlightConnection" level="0" multiplicity="Seq{1,1,true,false}" name="flightNumber" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Luggage" level="0" multiplicity="Seq{1,1,true,false}" name="luggageId" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_CustomConstraints::Luggage" level="0" multiplicity="Seq{1,1,true,false}" name="weightInKg" package="Root::ExampleModel_CustomConstraints" type="Root::XCore::Float"/>
+        <addOperation body="@Operation getAge[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  self.dateOfBirth.age()&#10;end" class="Root::ExampleModel_CustomConstraints::Customer" level="0" monitored="true" name="getAge" package="Root::ExampleModel_CustomConstraints" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addConstraint body="self.arrivalAirport &lt;&gt; self.departureAirport" class="Root::ExampleModel_CustomConstraints::FlightConnection" constName="arrivalAndDepartureDifferent" instLevel="0" package="Root::ExampleModel_CustomConstraints" reason="&quot;A flight connection must have different departure and arrival airports!&quot;"/>
+        <addConstraint body="self.getAge() &gt;= 18" class="Root::ExampleModel_CustomConstraints::Customer" constName="isOfAge" instLevel="0" package="Root::ExampleModel_CustomConstraints" reason="&quot;The customer is too young!&quot;"/>
+        <addConstraint body="self.weightInKg &lt; 18.0" class="Root::ExampleModel_CustomConstraints::Luggage" constName="weightConstraint" instLevel="0" package="Root::ExampleModel_CustomConstraints" reason="&quot;The weight of the luggage is too high!&quot;"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport1" package="Root::ExampleModel_CustomConstraints" slotName="airportName" valueToBeParsed="[75,111,101,108,110,45,66,111,110,110,32,65,105,114,112,111,114,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport1" package="Root::ExampleModel_CustomConstraints" slotName="iataCode" valueToBeParsed="[67,71,78].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport2" package="Root::ExampleModel_CustomConstraints" slotName="airportName" valueToBeParsed="[77,105,97,109,105,32,73,110,116,101,114,110,97,116,105,111,110,97,108,32,65,105,114,112,111,114,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport2" package="Root::ExampleModel_CustomConstraints" slotName="iataCode" valueToBeParsed="[77,73,65].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport3" package="Root::ExampleModel_CustomConstraints" slotName="airportName" valueToBeParsed="[83,99,104,105,112,104,111,108,32,65,105,114,112,111,114,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::airport3" package="Root::ExampleModel_CustomConstraints" slotName="iataCode" valueToBeParsed="[65,77,83].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::booking1" package="Root::ExampleModel_CustomConstraints" slotName="bookingReference" valueToBeParsed="[53,72,68,73,57,49].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::booking1" package="Root::ExampleModel_CustomConstraints" slotName="travellingClass" valueToBeParsed="Root::ExampleModel_CustomConstraints::travellingClass::Economy"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::carryOnLuggage1" package="Root::ExampleModel_CustomConstraints" slotName="luggageId" valueToBeParsed="[74,75,56,51,72].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::carryOnLuggage1" package="Root::ExampleModel_CustomConstraints" slotName="weightInKg" valueToBeParsed="8.4"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::carryOnLuggage2" package="Root::ExampleModel_CustomConstraints" slotName="luggageId" valueToBeParsed="[53,50,70,50,52,51].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::carryOnLuggage2" package="Root::ExampleModel_CustomConstraints" slotName="weightInKg" valueToBeParsed="12.5"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::checkedInLuggage1" package="Root::ExampleModel_CustomConstraints" slotName="luggageId" valueToBeParsed="[55,51,85,73,48].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::checkedInLuggage1" package="Root::ExampleModel_CustomConstraints" slotName="weightInKg" valueToBeParsed="21.2"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::customer1" package="Root::ExampleModel_CustomConstraints" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2008, 2, 12)"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::customer1" package="Root::ExampleModel_CustomConstraints" slotName="firstName" valueToBeParsed="[84,105,102,102,97,110,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::customer1" package="Root::ExampleModel_CustomConstraints" slotName="lastName" valueToBeParsed="[65,110,103,101,108,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::flight1" package="Root::ExampleModel_CustomConstraints" slotName="flightDate" valueToBeParsed="Auxiliary::Date::createDate(2026, 4, 21)"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::flight2" package="Root::ExampleModel_CustomConstraints" slotName="flightDate" valueToBeParsed="Auxiliary::Date::createDate(2025, 4, 7)"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::flightConnection1" package="Root::ExampleModel_CustomConstraints" slotName="flightNumber" valueToBeParsed="[76,72,57,51,49].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_CustomConstraints::flightConnection2" package="Root::ExampleModel_CustomConstraints" slotName="flightNumber" valueToBeParsed="[75,77,48,51,49,51].asString()"/>
+        <addAssociation accessSourceFromTargetName="booking" accessTargetFromSourceName="flight" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::Booking" classTarget="Root::ExampleModel_CustomConstraints::Flight" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="booking" accessTargetFromSourceName="luggage" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::Booking" classTarget="Root::ExampleModel_CustomConstraints::Luggage" fwName="includes" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,5,true,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="booking" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::Customer" classTarget="Root::ExampleModel_CustomConstraints::Booking" fwName="makes" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="flight" accessTargetFromSourceName="flightConnection" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::Flight" classTarget="Root::ExampleModel_CustomConstraints::FlightConnection" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="flightConnectionEnd" accessTargetFromSourceName="arrivalAirport" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::FlightConnection" classTarget="Root::ExampleModel_CustomConstraints::Airport" fwName="arrives_at" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="flightConnectionStart" accessTargetFromSourceName="departureAirport" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_CustomConstraints::FlightConnection" classTarget="Root::ExampleModel_CustomConstraints::Airport" fwName="departs_from" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_CustomConstraints" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::booking1" classTarget="Root::ExampleModel_CustomConstraints::carryOnLuggage1" name="luggage" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::booking1" classTarget="Root::ExampleModel_CustomConstraints::carryOnLuggage2" name="luggage" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::booking1" classTarget="Root::ExampleModel_CustomConstraints::checkedInLuggage1" name="luggage" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::booking1" classTarget="Root::ExampleModel_CustomConstraints::flight1" name="flight" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::customer1" classTarget="Root::ExampleModel_CustomConstraints::booking1" name="booking" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flight1" classTarget="Root::ExampleModel_CustomConstraints::flightConnection1" name="flightConnection" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flight2" classTarget="Root::ExampleModel_CustomConstraints::flightConnection2" name="flightConnection" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flightConnection1" classTarget="Root::ExampleModel_CustomConstraints::airport1" name="departureAirport" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flightConnection1" classTarget="Root::ExampleModel_CustomConstraints::airport2" name="arrivalAirport" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flightConnection2" classTarget="Root::ExampleModel_CustomConstraints::airport3" name="arrivalAirport" package="Root::ExampleModel_CustomConstraints"/>
+        <addLink classSource="Root::ExampleModel_CustomConstraints::flightConnection2" classTarget="Root::ExampleModel_CustomConstraints::airport3" name="departureAirport" package="Root::ExampleModel_CustomConstraints"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::checkedInLuggage1" xCoordinate="669" yCoordinate="1112"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::booking1" xCoordinate="387" yCoordinate="955"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::carryOnLuggage2" xCoordinate="664" yCoordinate="882"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::CarryOnLuggage" xCoordinate="651" yCoordinate="246"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::carryOnLuggage1" xCoordinate="930" yCoordinate="974"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::customer1" xCoordinate="-17" yCoordinate="1012"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::flight2" xCoordinate="295" yCoordinate="1655"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::flight1" xCoordinate="279" yCoordinate="1342"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::airport3" xCoordinate="980" yCoordinate="1656"/>
+                <Instance hidden="true" path="Root::ExampleModel_CustomConstraints::travellingClass" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::Customer" xCoordinate="10" yCoordinate="174"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::airport2" xCoordinate="924" yCoordinate="1459"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::airport1" xCoordinate="955" yCoordinate="1313"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::FlightConnection" xCoordinate="737" yCoordinate="509"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::Airport" xCoordinate="1091" yCoordinate="530"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::CheckedInLuggage" xCoordinate="1029" yCoordinate="244"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::Booking" xCoordinate="395" yCoordinate="122"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::flightConnection2" xCoordinate="631" yCoordinate="1670"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::flightConnection1" xCoordinate="583" yCoordinate="1426"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::Luggage" xCoordinate="839" yCoordinate="67"/>
+                <Instance hidden="false" path="Root::ExampleModel_CustomConstraints::Flight" xCoordinate="386" yCoordinate="490"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::carryOnLuggage1/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="749.2471" yCoordinate="1010.55273"/>
+                        <IntermediatePoint xCoordinate="749.2471" yCoordinate="1017.2422"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::flight1/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::flight" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="479.91016" yCoordinate="1071.4844"/>
+                        <IntermediatePoint xCoordinate="357.69263" yCoordinate="1071.4844"/>
+                        <IntermediatePoint xCoordinate="357.69263" yCoordinate="1305.3977"/>
+                        <IntermediatePoint xCoordinate="360.70264" yCoordinate="1305.3977"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" sourcePort="NORTH" targetPort="NORTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="835.56506" yCoordinate="484.0"/>
+                        <IntermediatePoint xCoordinate="997.79395" yCoordinate="484.0"/>
+                        <IntermediatePoint xCoordinate="997.79395" yCoordinate="500.0"/>
+                        <IntermediatePoint xCoordinate="1170.3545" yCoordinate="500.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" xCoordinate="-124.357086" yCoordinate="78.757225"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection1/Root::ExampleModel_CustomConstraints::airport1/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" sourcePort="NORTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="1396.0"/>
+                        <IntermediatePoint xCoordinate="862.7031" yCoordinate="1396.0"/>
+                        <IntermediatePoint xCoordinate="862.7031" yCoordinate="1356.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection1/Root::ExampleModel_CustomConstraints::airport1/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" xCoordinate="-142.02531" yCoordinate="-53.074875"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::Flight::flightConnection" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="644.79395" yCoordinate="525.43164"/>
+                        <IntermediatePoint xCoordinate="644.79395" yCoordinate="556.757"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::Flight::flightConnection" xCoordinate="-63.99296" yCoordinate="-35.973404"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::carryOnLuggage2/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="616.2471" yCoordinate="982.77637"/>
+                        <IntermediatePoint xCoordinate="616.2471" yCoordinate="925.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::carryOnLuggage2/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" xCoordinate="-44.850098" yCoordinate="-81.615845"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::Customer::booking" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="298.1538" yCoordinate="231.05273"/>
+                        <IntermediatePoint xCoordinate="298.1538" yCoordinate="167.9098"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::Customer::booking" xCoordinate="-64.55696" yCoordinate="-6.186139"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::customer1/Root::ExampleModel_CustomConstraints::booking1/AssociationMapping: Root::ExampleModel_CustomConstraints::Customer::booking" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="283.9314" yCoordinate="1066.0527"/>
+                        <IntermediatePoint xCoordinate="283.9314" yCoordinate="1010.55273"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::customer1/Root::ExampleModel_CustomConstraints::booking1/AssociationMapping: Root::ExampleModel_CustomConstraints::Customer::booking" xCoordinate="-23.784142" yCoordinate="-63.947628"/>
+                    </Labels>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_CustomConstraints::CarryOnLuggage/Root::ExampleModel_CustomConstraints::Luggage" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="772.53564" yCoordinate="220.24219"/>
+                        <IntermediatePoint xCoordinate="889.558" yCoordinate="220.24219"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_CustomConstraints::CheckedInLuggage/Root::ExampleModel_CustomConstraints::Luggage" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1150.5356" yCoordinate="223.74219"/>
+                        <IntermediatePoint xCoordinate="939.75397" yCoordinate="223.74219"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="710.6538" yCoordinate="168.24219"/>
+                        <IntermediatePoint xCoordinate="710.6538" yCoordinate="125.26482"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" xCoordinate="-12.911391" yCoordinate="-41.52258"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection2/Root::ExampleModel_CustomConstraints::airport3/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" sourcePort="NORTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="711.5371" yCoordinate="1640.0"/>
+                        <IntermediatePoint xCoordinate="897.21387" yCoordinate="1640.0"/>
+                        <IntermediatePoint xCoordinate="897.21387" yCoordinate="1626.0"/>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="1626.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection2/Root::ExampleModel_CustomConstraints::airport3/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::departureAirport" xCoordinate="-53.004658" yCoordinate="71.961754"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection2/Root::ExampleModel_CustomConstraints::airport3/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::arrivalAirport" sourcePort="SOUTH" targetPort="SOUTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="711.5371" yCoordinate="1789.4844"/>
+                        <IntermediatePoint xCoordinate="823.18225" yCoordinate="1789.4844"/>
+                        <IntermediatePoint xCoordinate="823.18225" yCoordinate="1772.4844"/>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="1772.4844"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::flightConnection2/Root::ExampleModel_CustomConstraints::airport3/AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::arrivalAirport" xCoordinate="-59.80013" yCoordinate="-53.754425"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::flight" sourcePort="SOUTH" targetPort="NORTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="504.7822" yCoordinate="236.86328"/>
+                        <IntermediatePoint xCoordinate="461.29395" yCoordinate="236.86328"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::flight" xCoordinate="10.872751" yCoordinate="-33.368015"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::arrivalAirport" sourcePort="SOUTH" targetPort="SOUTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="835.56506" yCoordinate="637.983"/>
+                        <IntermediatePoint xCoordinate="997.79395" yCoordinate="637.983"/>
+                        <IntermediatePoint xCoordinate="997.79395" yCoordinate="630.8633"/>
+                        <IntermediatePoint xCoordinate="1170.3545" yCoordinate="630.8633"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_CustomConstraints::FlightConnection::arrivalAirport" xCoordinate="1.3590939" yCoordinate="-90.44996"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::checkedInLuggage1/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="622.1907" yCoordinate="1038.3291"/>
+                        <IntermediatePoint xCoordinate="622.1907" yCoordinate="1155.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_CustomConstraints::booking1/Root::ExampleModel_CustomConstraints::checkedInLuggage1/AssociationMapping: Root::ExampleModel_CustomConstraints::Booking::luggage" xCoordinate="13.590939" yCoordinate="-27.93164"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Constraint "isOfAge" is violated if a customer is younger than 18.</NoteContent>
+                    <NotePosition>
+                        <XPosition>65.0</XPosition>
+                        <YPosition>354.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Constraint "weightConstraint" is violated if a luggage item weights more than 18kg. As any other class property, the constraint is inherited in all subclasses. This solution is suboptimal. Ideally, we would like to specify a maximum weight for each luggage class that serves as a maximum range for the constraint. That, however, is not possible in regular class diagrams. We would have to develop a new domain-specific language to address this issue.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1027.0</XPosition>
+                        <YPosition>56.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Constraint "arrivalAndDepartureDifferent" is violated if the same AIRPORT object serves as arrival and departure airport. This constraint helps ensure integrity while using a model circle.</NoteContent>
+                    <NotePosition>
+                        <XPosition>459.0</XPosition>
+                        <YPosition>638.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>If you change the dateOfBirth value so that Tiffany is older than 18, the constraint violation will disappear.</NoteContent>
+                    <NotePosition>
+                        <XPosition>-60.0</XPosition>
+                        <YPosition>1213.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>4</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>If the weightInKg is greater than 18, the constraint is violated. The same threshold applies to carry-on and checked-in luggage.</NoteContent>
+                    <NotePosition>
+                        <XPosition>934.0</XPosition>
+                        <YPosition>1116.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>5</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>The model circle allows that a flight connection departs from and arrives at the same airport. In these cases, our custom constraint is violated.</NoteContent>
+                    <NotePosition>
+                        <XPosition>388.0</XPosition>
+                        <YPosition>1814.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Object View" tx="215.06033" ty="-594.00946" xx="0.70710677"/>
+                <View name="Class View" tx="11.401968" ty="8.681319" xx="0.91700405"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

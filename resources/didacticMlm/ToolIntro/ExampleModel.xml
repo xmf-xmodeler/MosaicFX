@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_Introduction" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_Introduction">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Ticket" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="MovieShowing" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Movie" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="ticket2" of="Root::ExampleModel_Introduction::Ticket" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movie2" of="Root::ExampleModel_Introduction::Movie" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movie1" of="Root::ExampleModel_Introduction::Movie" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movieShowing2" of="Root::ExampleModel_Introduction::MovieShowing" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="movieShowing1" of="Root::ExampleModel_Introduction::MovieShowing" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="ticket1" of="Root::ExampleModel_Introduction::Ticket" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleModel_Introduction::Customer" package="Root::ExampleModel_Introduction" singleton="false"/>
+        <addEnumeration name="RatingEnum"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="G"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="PG_13"/>
+        <addEnumerationValue enum_name="RatingEnum" enum_value_name="R"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_Introduction" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Introduction" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastname" package="Root::ExampleModel_Introduction" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="durationInMinutes" package="Root::ExampleModel_Introduction" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="rating" package="Root::ExampleModel_Introduction" type="Root::ExampleModel_Introduction::RatingEnum"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Movie" level="0" multiplicity="Seq{1,1,true,false}" name="title" package="Root::ExampleModel_Introduction" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Introduction::MovieShowing" level="0" multiplicity="Seq{1,1,true,false}" name="showDate" package="Root::ExampleModel_Introduction" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Introduction::Ticket" level="0" multiplicity="Seq{1,1,true,false}" name="price" package="Root::ExampleModel_Introduction" type="Root::XCore::Float"/>
+        <addOperation body="@Operation getAge[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  self.dateOfBirth.age()&#10;end" class="Root::ExampleModel_Introduction::Customer" level="0" monitored="true" name="getAge" package="Root::ExampleModel_Introduction" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation requiredAgeToWatch[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  if rating = Root::ExampleModel_Introduction::RatingEnum.getEnumElement(&quot;PG_13&quot;)&#10;  then 13&#10;  elseif rating = Root::ExampleModel_Introduction::RatingEnum.getEnumElement(&quot;R&quot;)&#10;  then 17&#10;  else 0&#10;  end &#10;end" class="Root::ExampleModel_Introduction::Movie" level="0" monitored="true" name="requiredAgeToWatch" package="Root::ExampleModel_Introduction" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addConstraint body="self.customer.getAge() &gt;= self.movieShowing.movie.requiredAgeToWatch()" class="Root::ExampleModel_Introduction::Ticket" constName="mayWatchMovie" instLevel="0" package="Root::ExampleModel_Introduction" reason="&quot;Customer is too young to watch the movie.&quot;"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::customer1" package="Root::ExampleModel_Introduction" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2010, 6, 17)"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::customer1" package="Root::ExampleModel_Introduction" slotName="firstName" valueToBeParsed="[74,111,115,105,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::customer1" package="Root::ExampleModel_Introduction" slotName="lastname" valueToBeParsed="[68,111,117,103,104].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie1" package="Root::ExampleModel_Introduction" slotName="durationInMinutes" valueToBeParsed="122"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie1" package="Root::ExampleModel_Introduction" slotName="rating" valueToBeParsed="Root::ExampleModel_Introduction::RatingEnum::R"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie1" package="Root::ExampleModel_Introduction" slotName="title" valueToBeParsed="[74,111,107,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie2" package="Root::ExampleModel_Introduction" slotName="durationInMinutes" valueToBeParsed="195"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie2" package="Root::ExampleModel_Introduction" slotName="rating" valueToBeParsed="Root::ExampleModel_Introduction::RatingEnum::PG_13"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movie2" package="Root::ExampleModel_Introduction" slotName="title" valueToBeParsed="[84,105,116,97,110,105,99].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movieShowing1" package="Root::ExampleModel_Introduction" slotName="showDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 7)"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::movieShowing2" package="Root::ExampleModel_Introduction" slotName="showDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 6, 3)"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::ticket1" package="Root::ExampleModel_Introduction" slotName="price" valueToBeParsed="10.6"/>
+        <changeSlotValue class="Root::ExampleModel_Introduction::ticket2" package="Root::ExampleModel_Introduction" slotName="price" valueToBeParsed="8.5"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="ticket" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Introduction::Customer" classTarget="Root::ExampleModel_Introduction::Ticket" fwName="buys" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_Introduction" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="movie" accessTargetFromSourceName="movieShowing" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Introduction::Movie" classTarget="Root::ExampleModel_Introduction::MovieShowing" fwName="shown_in" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_Introduction" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="ticket" accessTargetFromSourceName="movieShowing" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Introduction::Ticket" classTarget="Root::ExampleModel_Introduction::MovieShowing" fwName="valid_for" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_Introduction" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_Introduction::customer1" classTarget="Root::ExampleModel_Introduction::ticket1" name="ticket" package="Root::ExampleModel_Introduction"/>
+        <addLink classSource="Root::ExampleModel_Introduction::customer1" classTarget="Root::ExampleModel_Introduction::ticket2" name="ticket" package="Root::ExampleModel_Introduction"/>
+        <addLink classSource="Root::ExampleModel_Introduction::movie1" classTarget="Root::ExampleModel_Introduction::movieShowing1" name="movieShowing" package="Root::ExampleModel_Introduction"/>
+        <addLink classSource="Root::ExampleModel_Introduction::movie2" classTarget="Root::ExampleModel_Introduction::movieShowing2" name="movieShowing" package="Root::ExampleModel_Introduction"/>
+        <addLink classSource="Root::ExampleModel_Introduction::ticket1" classTarget="Root::ExampleModel_Introduction::movieShowing2" name="movieShowing" package="Root::ExampleModel_Introduction"/>
+        <addLink classSource="Root::ExampleModel_Introduction::ticket2" classTarget="Root::ExampleModel_Introduction::movieShowing1" name="movieShowing" package="Root::ExampleModel_Introduction"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="true" path="Root::ExampleModel_Introduction::RatingEnum" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::Movie" xCoordinate="992" yCoordinate="150"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::movieShowing2" xCoordinate="760" yCoordinate="531"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::MovieShowing" xCoordinate="640" yCoordinate="145"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::movieShowing1" xCoordinate="814" yCoordinate="1024"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::Customer" xCoordinate="102" yCoordinate="183"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::Ticket" xCoordinate="338" yCoordinate="144"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::movie1" xCoordinate="1095" yCoordinate="934"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::ticket1" xCoordinate="335" yCoordinate="567"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::ticket2" xCoordinate="460" yCoordinate="980"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::customer1" xCoordinate="53" yCoordinate="813"/>
+                <Instance hidden="false" path="Root::ExampleModel_Introduction::movie2" xCoordinate="1094" yCoordinate="514"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationMapping: Root::ExampleModel_Introduction::Movie::movieShowing" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="827.07886" yCoordinate="195.81361"/>
+                        <IntermediatePoint xCoordinate="827.07886" yCoordinate="180.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_Introduction::Movie::movieShowing" xCoordinate="-26.285715" yCoordinate="-27.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Introduction::ticket2/Root::ExampleModel_Introduction::movieShowing1/AssociationMapping: Root::ExampleModel_Introduction::Ticket::movieShowing" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="704.69214" yCoordinate="1024.3584"/>
+                        <IntermediatePoint xCoordinate="704.69214" yCoordinate="1056.4316"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Introduction::ticket2/Root::ExampleModel_Introduction::movieShowing1/AssociationMapping: Root::ExampleModel_Introduction::Ticket::movieShowing" xCoordinate="-54.952297" yCoordinate="-60.256523"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Introduction::customer1/Root::ExampleModel_Introduction::ticket2/AssociationMapping: Root::ExampleModel_Introduction::Customer::ticket" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="325.5901" yCoordinate="901.4844"/>
+                        <IntermediatePoint xCoordinate="325.5901" yCoordinate="1024.3584"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Introduction::customer1/Root::ExampleModel_Introduction::ticket2/AssociationMapping: Root::ExampleModel_Introduction::Customer::ticket" xCoordinate="7.2730985" yCoordinate="-12.577322"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Class View" tx="-38.642612" ty="232.55215" xx="1.0"/>
+                <View name="Object View" tx="54.544594" ty="-343.9282" xx="0.8408964"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

@@ -36,6 +36,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		setTitle("Add constraint to " + object.getName());
 		init(object,diagram);
 		nameField.setText("enterConstraintNameHere");
+		if(diagram.isUMLMode()) {levelField.setDisable(true);}
 		levelField.setText((object.getLevel().getMinLevel() - 1) + "");
 		bodyBox.setBodyText("false");
 		reasonBox.setBodyText("\"This constraint always fails.\"");
@@ -45,6 +46,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
 		init(object,diagram);
 		nameField.setText(constraint.getName());
+		if(diagram.isUMLMode()) {levelField.setDisable(true);}
 		levelField.setText(constraint.getLevel()+"");
 		bodyBox.setBodyText(constraint.getBodyRaw());
 		reasonBox.setBodyText(constraint.getReasonRaw());
@@ -105,8 +107,15 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		HBox hBox1 = new HBox(5,
-				label1, nameField, label2, levelField);
+		
+		HBox hBox1 = null;
+		if(!diagram.isUMLMode()) {
+		hBox1 = new HBox(5,
+				label1, nameField, label2, levelField);}
+		else {
+		hBox1 = new HBox(5,
+				label1, nameField);}
+		
 		VBox mainBox = new VBox(5, 
 				hBox1, 
 				bodyBox.getBodyScrollPane(),

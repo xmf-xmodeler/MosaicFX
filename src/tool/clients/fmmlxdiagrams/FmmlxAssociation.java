@@ -286,12 +286,31 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+		//Root::Associations::DefaultAssociation used when chooser is disabled in AsscoiationDialog
+		if(diagram.umlMode && targetFromSourceVisible && sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(this.getAssociationType().endDeco);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + this.getAssociationType().endDeco + " not found");
+		}
+		return targetFromSourceVisible?deco:HeadStyle.NONE;
 	}
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
-		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
+			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
+		}
+		HeadStyle deco = HeadStyle.ARROW;
+		try{
+			deco = HeadStyle.valueOf(this.getAssociationType().startDeco);
+		} catch(Exception e) {
+			System.err.println("Deco Style " + this.getAssociationType().startDeco + " not found");
+		}
+		return sourceFromTargetVisible?deco:HeadStyle.NONE;
 	}
 
 	public boolean isSymmetric() {return symmetric;}
@@ -316,7 +335,6 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	}
 
 	public boolean isDependent() {
-		// TODO Auto-generated method stub
 		return !(parentAssociationId == null || "".equals(parentAssociationId));
 	}
 }

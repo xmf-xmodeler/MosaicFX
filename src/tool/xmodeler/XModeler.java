@@ -607,6 +607,8 @@ public class XModeler extends Application {
     }
     
     public static boolean isAlphaMode() {return "true".equals(PropertyManager.getProperty("alphaMode"));}
+    
+    public static boolean isUmlMode() {return "true".equals(PropertyManager.getProperty("didacticMode"));}
 }
 
 @SuppressWarnings("unchecked")

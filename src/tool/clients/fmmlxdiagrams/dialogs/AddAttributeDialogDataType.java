@@ -10,19 +10,29 @@ public class AddAttributeDialogDataType {
 
 	// name that is displayed
 	private String displayName;
-	
+
 	public String getDisplayName() {
 		return this.displayName;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public AddAttributeDialogDataType(String name, AddAttributeDialogMetaDataType displayName) {
 		this.name = name;
-		this.displayName = this.name + " [" + displayName.toString() + "]";
+		if (displayName == AddAttributeDialogMetaDataType.Primitive
+				|| displayName == AddAttributeDialogMetaDataType.NonPrimitive) {
+			this.displayName = name;
+		} else {
+			if (displayName == AddAttributeDialogMetaDataType.Domainspecific) {
+				this.displayName = this.name + " [Domain-Specific]";
+			} else {
+				this.displayName = this.name + " [" + displayName.toString() + "]";
+			}
+		}
 	}
+
 	public enum AddAttributeDialogMetaDataType {
 		Domainspecific, Primitive, Enum, NonPrimitive
 	}

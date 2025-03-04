@@ -38,12 +38,12 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 
 	@Override
 	public HeadStyle getTargetDecoration() {
-		return HeadStyle.FULL_TRIANGLE;
+		return HeadStyle.TRIANGLE;
 	}
 
 	@Override
 	public HeadStyle getSourceDecoration() {
-		return HeadStyle.NO_ARROW;
+		return HeadStyle.NONE;
 	}
 
 	@Override

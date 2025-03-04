@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleDiagram" version="4" xModelerVersion="">
+    <Imports/>
+    <Model name="Root::ExampleDiagram">
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Borrows" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="Student" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="BookArtifact" package="Root::ExampleDiagram" singleton="false"/>
+        <addMetaClass abstract="false" level="1" maxLevel="1" name="BookCopy" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student2" of="Root::ExampleDiagram::Student" package="Root::ExampleDiagram" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student1" of="Root::ExampleDiagram::Student" package="Root::ExampleDiagram" singleton="false"/>
+        <addAttribute class="Root::ExampleDiagram::BookArtifact" level="0" multiplicity="Seq{1,1,true,false}" name="author" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::BookArtifact" level="0" multiplicity="Seq{1,1,true,false}" name="titel" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::BookCopy" level="0" multiplicity="Seq{1,1,true,false}" name="artifact" package="Root::ExampleDiagram" type="Root::ExampleDiagram::BookArtifact"/>
+        <addAttribute class="Root::ExampleDiagram::BookCopy" level="0" multiplicity="Seq{1,1,true,false}" name="copyNumber" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleDiagram::Borrows" level="0" multiplicity="Seq{1,1,true,false}" name="borrowDate" package="Root::ExampleDiagram" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleDiagram::Borrows" level="0" multiplicity="Seq{1,1,true,false}" name="returnDate" package="Root::ExampleDiagram" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="borrowedBooks" package="Root::ExampleDiagram" type="Root::ExampleDiagram::BookCopy"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Student" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Student" level="0" multiplicity="Seq{1,1,true,false}" name="isEnrolled" package="Root::ExampleDiagram" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleDiagram::Student" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleDiagram" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleDiagram::Student" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::ExampleDiagram" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation Student(String : XCore::Element,String : XCore::Element,Integer : XCore::Element,Boolean : XCore::Element):XCore::Element&#10;  null&#10;end" class="Root::ExampleDiagram::Student" level="0" monitored="false" name="Student" package="Root::ExampleDiagram" paramNames="String,String,Integer,Boolean" paramTypes="Root::XCore::Element,Root::XCore::Element,Root::XCore::Element,Root::XCore::Element" type="Root::XCore::Element"/>
+        <addOperation body="@Operation getCopyNumber[monitor=false,getterKey=&quot;copyNumber&quot;]():Integer&#10;  self.copyNumber&#10;end" class="Root::ExampleDiagram::BookCopy" level="0" monitored="false" name="getCopyNumber" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getFirstName[monitor=false,getterKey=&quot;firstName&quot;]():String&#10;  self.firstName&#10;end" class="Root::ExampleDiagram::Customer" level="0" monitored="false" name="getFirstName" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getFirstName[monitor=false,getterKey=&quot;firstName&quot;]():String&#10;  self.firstName&#10;end" class="Root::ExampleDiagram::Student" level="0" monitored="false" name="getFirstName" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getIsEnrolled[monitor=false,getterKey=&quot;isEnrolled&quot;]():Boolean&#10;  self.isEnrolled&#10;end" class="Root::ExampleDiagram::Student" level="0" monitored="false" name="getIsEnrolled" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Boolean"/>
+        <addOperation body="@Operation getLastName[monitor=false,getterKey=&quot;lastName&quot;]():String&#10;  self.lastName&#10;end" class="Root::ExampleDiagram::Customer" level="0" monitored="false" name="getLastName" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getLastName[monitor=false,getterKey=&quot;lastName&quot;]():String&#10;  self.lastName&#10;end" class="Root::ExampleDiagram::Student" level="0" monitored="false" name="getLastName" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getMatriculationNumber[monitor=false,getterKey=&quot;matriculationNumber&quot;]():Integer&#10;  self.matriculationNumber&#10;end" class="Root::ExampleDiagram::Student" level="0" monitored="false" name="getMatriculationNumber" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getTitel[monitor=false,getterKey=&quot;titel&quot;]():String&#10;  self.titel&#10;end" class="Root::ExampleDiagram::BookArtifact" level="0" monitored="false" name="getTitel" package="Root::ExampleDiagram" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleDiagram::student1" package="Root::ExampleDiagram" slotName="firstName" valueToBeParsed="[74,111,104,110].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::student1" package="Root::ExampleDiagram" slotName="isEnrolled" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleDiagram::student1" package="Root::ExampleDiagram" slotName="lastName" valueToBeParsed="[83,109,105,116,104].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::student1" package="Root::ExampleDiagram" slotName="matriculationNumber" valueToBeParsed="123456"/>
+        <changeSlotValue class="Root::ExampleDiagram::student2" package="Root::ExampleDiagram" slotName="firstName" valueToBeParsed="[84,111,109].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::student2" package="Root::ExampleDiagram" slotName="isEnrolled" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleDiagram::student2" package="Root::ExampleDiagram" slotName="lastName" valueToBeParsed="[77,252,108,108,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleDiagram::student2" package="Root::ExampleDiagram" slotName="matriculationNumber" valueToBeParsed="654321"/>
+        <addAssociation accessSourceFromTargetName="bookcopyInstanceOf" accessTargetFromSourceName="bookcopyInstanceOf" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::BookCopy" classTarget="Root::ExampleDiagram::BookArtifact" fwName="InstanceOf" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="borrowslends" accessTargetFromSourceName="borrowslends" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Borrows" classTarget="Root::ExampleDiagram::BookCopy" fwName="lends" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="customerborrows" accessTargetFromSourceName="customerborrows" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleDiagram::Customer" classTarget="Root::ExampleDiagram::Borrows" fwName="borrows" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleDiagram" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="example" umlMode="true">
+            <Instances>
+                <Instance hidden="true" path="Root::ExampleDiagram::student1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Customer" xCoordinate="553" yCoordinate="400"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::BookArtifact" xCoordinate="367" yCoordinate="121"/>
+                <Instance hidden="true" path="Root::ExampleDiagram::student2" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::BookCopy" xCoordinate="802" yCoordinate="197"/>
+                <Instance hidden="false" path="Root::ExampleDiagram::Borrows" xCoordinate="1163" yCoordinate="450"/>
+                <Instance hidden="true" path="Root::ExampleDiagram::Student" xCoordinate="0" yCoordinate="0"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Customer::customerborrows" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="864.27637" yCoordinate="467.86328"/>
+                        <IntermediatePoint xCoordinate="864.27637" yCoordinate="511.3229"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Borrows::borrowslends" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1046.6666" yCoordinate="480.49478"/>
+                        <IntermediatePoint xCoordinate="1046.6666" yCoordinate="243.24219"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleDiagram::Customer::customerlends" sourcePort="EAST" targetPort="SOUTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="788.6667" yCoordinate="467.52994"/>
+                        <IntermediatePoint xCoordinate="788.6667" yCoordinate="319.48438"/>
+                        <IntermediatePoint xCoordinate="898.2622" yCoordinate="319.48438"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleDiagram::Customer::customerlends" xCoordinate="-37.333332" yCoordinate="-42.59831"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="1.3333334" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

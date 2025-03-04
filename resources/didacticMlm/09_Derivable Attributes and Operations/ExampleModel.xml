@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_DerivableAttributes" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_DerivableAttributes">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="User" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Song" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Artist" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer2" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer1" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen6" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen5" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen4" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen3" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen2" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="listen1" of="Root::ExampleModel_DerivableAttributes::Listen" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="user3" of="Root::ExampleModel_DerivableAttributes::User" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="user2" of="Root::ExampleModel_DerivableAttributes::User" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="user1" of="Root::ExampleModel_DerivableAttributes::User" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="song3" of="Root::ExampleModel_DerivableAttributes::Song" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="song2" of="Root::ExampleModel_DerivableAttributes::Song" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="song1" of="Root::ExampleModel_DerivableAttributes::Song" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="artist1" of="Root::ExampleModel_DerivableAttributes::Artist" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer12" of="Root::ExampleModel_DerivableAttributes::Customer1" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer21" of="Root::ExampleModel_DerivableAttributes::Customer2" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer11" of="Root::ExampleModel_DerivableAttributes::Customer1" package="Root::ExampleModel_DerivableAttributes" singleton="false"/>
+        <addEnumeration name="LoyaltyProgram"/>
+        <addEnumerationValue enum_name="LoyaltyProgram" enum_value_name="Gold"/>
+        <addEnumerationValue enum_name="LoyaltyProgram" enum_value_name="None"/>
+        <addEnumerationValue enum_name="LoyaltyProgram" enum_value_name="Silver"/>
+        <addEnumerationValue enum_name="LoyaltyProgram" enum_value_name="Titan"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Artist" level="0" multiplicity="Seq{1,1,true,false}" name="artistId" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Artist" level="0" multiplicity="Seq{1,1,true,false}" name="artistName" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Artist" level="0" multiplicity="Seq{1,1,true,false}" name="isBand" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" multiplicity="Seq{1,1,true,false}" name="customerId" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" multiplicity="Seq{1,1,true,false}" name="customerSince" package="Root::ExampleModel_DerivableAttributes" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_DerivableAttributes" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="age" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="customerId" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="customerYears" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Customer2" level="0" multiplicity="Seq{1,1,true,false}" name="loyaltyLevel" package="Root::ExampleModel_DerivableAttributes" type="Root::ExampleModel_DerivableAttributes::LoyaltyProgram"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Listen" level="0" multiplicity="Seq{1,1,true,false}" name="listenedOn" package="Root::ExampleModel_DerivableAttributes" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Listen" level="0" multiplicity="Seq{1,1,true,false}" name="listeningDurationInSeconds" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Song" level="0" multiplicity="Seq{1,1,true,false}" name="durationInSeconds" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Song" level="0" multiplicity="Seq{1,1,true,false}" name="releaseDate" package="Root::ExampleModel_DerivableAttributes" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::Song" level="0" multiplicity="Seq{1,1,true,false}" name="title" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DerivableAttributes::User" level="0" multiplicity="Seq{1,1,true,false}" name="userId" package="Root::ExampleModel_DerivableAttributes" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getAge[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  self.dateOfBirth.age()&#10;end" class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" monitored="true" name="getAge" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getCustomerYears[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  self.customerSince.age()&#10;end" class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" monitored="true" name="getCustomerYears" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getDurationDisplayString[monitor=true,delToClassAllowed=false]():XCore::String&#10;  (self.durationInSeconds / 60).floor() + &quot;:&quot; + self.durationInSeconds.mod(60)&#10;end" class="Root::ExampleModel_DerivableAttributes::Song" level="0" monitored="true" name="getDurationDisplayString" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getLoyaltyLevel[monitor=true,delToClassAllowed=false]():Root::ExampleModel_DerivableAttributes::LoyaltyProgram&#10;  if self.getCustomerYears() &gt; 50&#10;  then ExampleModel_DerivableAttributes::LoyaltyProgram::Titan&#10;  elseif self.getCustomerYears() &gt; 25&#10;  then ExampleModel_DerivableAttributes::LoyaltyProgram::Gold&#10;  elseif self.getCustomerYears() &gt; 10&#10;  then ExampleModel_DerivableAttributes::LoyaltyProgram::Silver&#10;  else ExampleModel_DerivableAttributes::LoyaltyProgram::None&#10;  end &#10;end" class="Root::ExampleModel_DerivableAttributes::Customer1" level="0" monitored="true" name="getLoyaltyLevel" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::ExampleModel_DerivableAttributes::LoyaltyProgram"/>
+        <addOperation body="@Operation getNumberOfListens[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  let sum = 0&#10;  in @For p in self.song do&#10;       sum := sum + p.getNumberOfListens()&#10;     end;&#10;     sum&#10;  end&#10;end" class="Root::ExampleModel_DerivableAttributes::Artist" level="0" monitored="true" name="getNumberOfListens" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getNumberOfListens[monitor=true,delToClassAllowed=false]():XCore::Integer&#10;  self.listen.size()&#10;end" class="Root::ExampleModel_DerivableAttributes::Song" level="0" monitored="true" name="getNumberOfListens" package="Root::ExampleModel_DerivableAttributes" paramNames="" paramTypes="" type="Root::XCore::Integer"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::artist1" package="Root::ExampleModel_DerivableAttributes" slotName="artistId" valueToBeParsed="421"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::artist1" package="Root::ExampleModel_DerivableAttributes" slotName="artistName" valueToBeParsed="[69,109,105,110,101,109].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::artist1" package="Root::ExampleModel_DerivableAttributes" slotName="isBand" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer11" package="Root::ExampleModel_DerivableAttributes" slotName="customerId" valueToBeParsed="8"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer11" package="Root::ExampleModel_DerivableAttributes" slotName="customerSince" valueToBeParsed="Auxiliary::Date::createDate(1969, 12, 8)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer11" package="Root::ExampleModel_DerivableAttributes" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(1957, 6, 18)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer11" package="Root::ExampleModel_DerivableAttributes" slotName="firstName" valueToBeParsed="[72,97,114,111,108,100].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer11" package="Root::ExampleModel_DerivableAttributes" slotName="lastName" valueToBeParsed="[69,97,115,116,109,97,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer12" package="Root::ExampleModel_DerivableAttributes" slotName="customerId" valueToBeParsed="8472"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer12" package="Root::ExampleModel_DerivableAttributes" slotName="customerSince" valueToBeParsed="Auxiliary::Date::createDate(2013, 12, 9)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer12" package="Root::ExampleModel_DerivableAttributes" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2001, 5, 13)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer12" package="Root::ExampleModel_DerivableAttributes" slotName="firstName" valueToBeParsed="[83,116,101,118,101,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer12" package="Root::ExampleModel_DerivableAttributes" slotName="lastName" valueToBeParsed="[65,108,116,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="age" valueToBeParsed="65"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="customerId" valueToBeParsed="8"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="customerYears" valueToBeParsed="49"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="firstName" valueToBeParsed="[72,97,114,111,108,100].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="lastName" valueToBeParsed="[69,97,115,116,109,97,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::customer21" package="Root::ExampleModel_DerivableAttributes" slotName="loyaltyLevel" valueToBeParsed="Root::ExampleModel_DerivableAttributes::LoyaltyProgram::Silver"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen1" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 11)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen1" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="110"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen2" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 11)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen2" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="276"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen3" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 26)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen3" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="20"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen4" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 12, 3)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen4" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="43"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen5" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 12, 2)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen5" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="226"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen6" package="Root::ExampleModel_DerivableAttributes" slotName="listenedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 30)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::listen6" package="Root::ExampleModel_DerivableAttributes" slotName="listeningDurationInSeconds" valueToBeParsed="253"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song1" package="Root::ExampleModel_DerivableAttributes" slotName="durationInSeconds" valueToBeParsed="226"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song1" package="Root::ExampleModel_DerivableAttributes" slotName="releaseDate" valueToBeParsed="Auxiliary::Date::createDate(2024, 5, 31)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song1" package="Root::ExampleModel_DerivableAttributes" slotName="title" valueToBeParsed="[72,111,117,100,105,110,105].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song2" package="Root::ExampleModel_DerivableAttributes" slotName="durationInSeconds" valueToBeParsed="280"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song2" package="Root::ExampleModel_DerivableAttributes" slotName="releaseDate" valueToBeParsed="Auxiliary::Date::createDate(2005, 12, 6)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song2" package="Root::ExampleModel_DerivableAttributes" slotName="title" valueToBeParsed="[87,104,101,110,32,73,39,109,32,71,111,110,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song3" package="Root::ExampleModel_DerivableAttributes" slotName="durationInSeconds" valueToBeParsed="254"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song3" package="Root::ExampleModel_DerivableAttributes" slotName="releaseDate" valueToBeParsed="Auxiliary::Date::createDate(2018, 9, 4)"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::song3" package="Root::ExampleModel_DerivableAttributes" slotName="title" valueToBeParsed="[75,105,108,108,115,104,111,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::user1" package="Root::ExampleModel_DerivableAttributes" slotName="userId" valueToBeParsed="634"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::user2" package="Root::ExampleModel_DerivableAttributes" slotName="userId" valueToBeParsed="32"/>
+        <changeSlotValue class="Root::ExampleModel_DerivableAttributes::user3" package="Root::ExampleModel_DerivableAttributes" slotName="userId" valueToBeParsed="75"/>
+        <addAssociation accessSourceFromTargetName="artist" accessTargetFromSourceName="song" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DerivableAttributes::Artist" classTarget="Root::ExampleModel_DerivableAttributes::Song" fwName="releases" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleModel_DerivableAttributes" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="listen" accessTargetFromSourceName="song" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DerivableAttributes::Listen" classTarget="Root::ExampleModel_DerivableAttributes::Song" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_DerivableAttributes" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="user" accessTargetFromSourceName="listen" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DerivableAttributes::User" classTarget="Root::ExampleModel_DerivableAttributes::Listen" fwName="listens_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_DerivableAttributes" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::artist1" classTarget="Root::ExampleModel_DerivableAttributes::song1" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::artist1" classTarget="Root::ExampleModel_DerivableAttributes::song2" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::artist1" classTarget="Root::ExampleModel_DerivableAttributes::song3" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen1" classTarget="Root::ExampleModel_DerivableAttributes::song1" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen2" classTarget="Root::ExampleModel_DerivableAttributes::song2" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen3" classTarget="Root::ExampleModel_DerivableAttributes::song3" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen4" classTarget="Root::ExampleModel_DerivableAttributes::song3" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen5" classTarget="Root::ExampleModel_DerivableAttributes::song1" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::listen6" classTarget="Root::ExampleModel_DerivableAttributes::song3" name="song" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user1" classTarget="Root::ExampleModel_DerivableAttributes::listen1" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user1" classTarget="Root::ExampleModel_DerivableAttributes::listen5" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user2" classTarget="Root::ExampleModel_DerivableAttributes::listen2" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user3" classTarget="Root::ExampleModel_DerivableAttributes::listen3" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user3" classTarget="Root::ExampleModel_DerivableAttributes::listen4" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+        <addLink classSource="Root::ExampleModel_DerivableAttributes::user3" classTarget="Root::ExampleModel_DerivableAttributes::listen6" name="listen" package="Root::ExampleModel_DerivableAttributes"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::customer11" xCoordinate="175" yCoordinate="341"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::customer21" xCoordinate="561" yCoordinate="359"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::song1" xCoordinate="1171" yCoordinate="955"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::song2" xCoordinate="1190" yCoordinate="1121"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::song3" xCoordinate="1170" yCoordinate="1302"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::Artist" xCoordinate="1143" yCoordinate="491"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::User" xCoordinate="2252" yCoordinate="577"/>
+                <Instance hidden="true" path="Root::ExampleModel_DerivableAttributes::LoyaltyProgram" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::user2" xCoordinate="1967" yCoordinate="948"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::user3" xCoordinate="1948" yCoordinate="1128"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::Song" xCoordinate="1481" yCoordinate="402"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::user1" xCoordinate="1885" yCoordinate="766"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen2" xCoordinate="1591" yCoordinate="1067"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen3" xCoordinate="1562" yCoordinate="1262"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::artist1" xCoordinate="904" yCoordinate="1103"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::Listen" xCoordinate="1865" yCoordinate="494"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen1" xCoordinate="1454" yCoordinate="721"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen6" xCoordinate="1570" yCoordinate="1423"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen4" xCoordinate="1932" yCoordinate="1572"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::Customer2" xCoordinate="505" yCoordinate="114"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::customer12" xCoordinate="-147" yCoordinate="350"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::listen5" xCoordinate="1523" yCoordinate="867"/>
+                <Instance hidden="false" path="Root::ExampleModel_DerivableAttributes::Customer1" xCoordinate="227" yCoordinate="107"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" sourcePort="NORTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="989.32355" yCoordinate="1076.1509"/>
+                        <IntermediatePoint xCoordinate="1104.5714" yCoordinate="1076.1509"/>
+                        <IntermediatePoint xCoordinate="1104.5714" yCoordinate="1032.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" xCoordinate="-133.71428" yCoordinate="-53.645924"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::listen1/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1438.0825" yCoordinate="776.1635"/>
+                        <IntermediatePoint xCoordinate="1438.0825" yCoordinate="1021.3633"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::listen1/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" xCoordinate="-57.060936" yCoordinate="-69.430504"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" sourcePort="NORTH" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1251.5745" yCoordinate="399.5794"/>
+                        <IntermediatePoint xCoordinate="1362.2858" yCoordinate="399.5794"/>
+                        <IntermediatePoint xCoordinate="1362.2858" yCoordinate="469.86328"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" xCoordinate="-129.14285" yCoordinate="-98.21736"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user2/Root::ExampleModel_DerivableAttributes::listen2/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1843.0591" yCoordinate="980.0173"/>
+                        <IntermediatePoint xCoordinate="1843.0591" yCoordinate="1122.5527"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user2/Root::ExampleModel_DerivableAttributes::listen2/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="4.446307" yCoordinate="-57.57369"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song3/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" sourcePort="SOUTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="989.32355" yCoordinate="1267.1055"/>
+                        <IntermediatePoint xCoordinate="964.5714" yCoordinate="1267.1055"/>
+                        <IntermediatePoint xCoordinate="964.5714" yCoordinate="1379.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song3/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" xCoordinate="-140.0" yCoordinate="65.782646"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen4/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="2014.6666" yCoordinate="1222.8633"/>
+                        <IntermediatePoint xCoordinate="2154.5317" yCoordinate="1222.8633"/>
+                        <IntermediatePoint xCoordinate="2154.5317" yCoordinate="1445.3115"/>
+                        <IntermediatePoint xCoordinate="2034.2568" yCoordinate="1445.3115"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen4/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="40.01676" yCoordinate="0.96935517"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="2190.8572" yCoordinate="612.71735"/>
+                        <IntermediatePoint xCoordinate="2190.8572" yCoordinate="539.8136"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="30.285713" yCoordinate="-84.50307"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::listen4/Root::ExampleModel_DerivableAttributes::song3/AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" sourcePort="WEST" targetPort="SOUTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1216.3608" yCoordinate="1627.5527"/>
+                        <IntermediatePoint xCoordinate="1216.3608" yCoordinate="1464.7266"/>
+                        <IntermediatePoint xCoordinate="1278.0469" yCoordinate="1464.7266"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1764.5714" yCoordinate="539.8136"/>
+                        <IntermediatePoint xCoordinate="1764.5714" yCoordinate="458.90988"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" xCoordinate="-4.571429" yCoordinate="-25.074497"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DerivableAttributes::User::play" sourcePort="NORTH" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1745.294" yCoordinate="860.0"/>
+                        <IntermediatePoint xCoordinate="1652.5714" yCoordinate="860.0"/>
+                        <IntermediatePoint xCoordinate="1652.5714" yCoordinate="805.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DerivableAttributes::User::play" xCoordinate="38.285713" yCoordinate="-35.36021"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen3/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1821.5591" yCoordinate="1160.4255"/>
+                        <IntermediatePoint xCoordinate="1821.5591" yCoordinate="1317.5527"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen3/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="8.151564" yCoordinate="-64.9842"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song2/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1159.1138" yCoordinate="1169.649"/>
+                        <IntermediatePoint xCoordinate="1159.1138" yCoordinate="1198.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::artist1/Root::ExampleModel_DerivableAttributes::song2/AssociationMapping: Root::ExampleModel_DerivableAttributes::Artist::song" xCoordinate="-38.857143" yCoordinate="-49.074497"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen6/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="SOUTH" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1981.3334" yCoordinate="1222.8633"/>
+                        <IntermediatePoint xCoordinate="1930.7343" yCoordinate="1222.8633"/>
+                        <IntermediatePoint xCoordinate="1930.7343" yCoordinate="1489.4729"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user3/Root::ExampleModel_DerivableAttributes::listen6/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="5.9284096" yCoordinate="141.02803"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user1/Root::ExampleModel_DerivableAttributes::listen1/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1738.5591" yCoordinate="798.0698"/>
+                        <IntermediatePoint xCoordinate="1738.5591" yCoordinate="776.1635"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user1/Root::ExampleModel_DerivableAttributes::listen5/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1780.0591" yCoordinate="809.2422"/>
+                        <IntermediatePoint xCoordinate="1780.0591" yCoordinate="909.9832"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::user1/Root::ExampleModel_DerivableAttributes::listen5/AssociationMapping: Root::ExampleModel_DerivableAttributes::User::listen" xCoordinate="27.418894" yCoordinate="-5.700105"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::listen5/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1452.5825" yCoordinate="909.9832"/>
+                        <IntermediatePoint xCoordinate="1452.5825" yCoordinate="1043.4844"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DerivableAttributes::listen5/Root::ExampleModel_DerivableAttributes::song1/AssociationMapping: Root::ExampleModel_DerivableAttributes::Listen::song" xCoordinate="9.633665" yCoordinate="-16.815872"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Example #1: Two versions of the same customer class. CUSTOMER-1 calculates the values of the derivable attributes age, customerYears, and loyalty level (loyalty level is assumed to depend on the number of customer years). We can easily see how instances of CUSTOMER-2 contain wrong slot values for Harold Eastman. This conceptual error cannot be detected automatically, but may lead to customer dissatisfaction.</NoteContent>
+                    <NotePosition>
+                        <XPosition>777.0</XPosition>
+                        <YPosition>253.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Example #2: Plays of songs and artists. This model captures when a user listens to a song. Three operations are added that automatically return the duration display time, the number of listens for each song, and the number of listens for each artist.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1759.0</XPosition>
+                        <YPosition>309.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>If you change the durationInSeconds values or add/remove LISTEN objects, the operation values will change.</NoteContent>
+                    <NotePosition>
+                        <XPosition>981.0</XPosition>
+                        <YPosition>866.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Customer Example" tx="215.23886" ty="12.480047" xx="0.91700405"/>
+                <View name="Music Object View" tx="-433.88998" ty="-444.32208" xx="0.70710677"/>
+                <View name="Music Class View" tx="-1028.6837" ty="-16.678541" xx="0.91700405"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

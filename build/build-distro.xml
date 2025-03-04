@@ -195,6 +195,7 @@
 				<include name="setting/**" />
 				<exclude name="**/.DS_Store" />
 				<include name="resources/**" />
+				<include name="data/prod/**" />
 				<include name="javafx/bin/*.dll" />
 				<include name="javafx/lib/*.jar" />
 				<include name="u_javafx/lib/*.jar" />

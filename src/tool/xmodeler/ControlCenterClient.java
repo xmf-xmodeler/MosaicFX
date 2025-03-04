@@ -117,7 +117,7 @@ public class ControlCenterClient {
 		dialog.setHeaderText("Enter a name for the new Project");
 		Optional<String> result = dialog.showAndWait();
 		String projectName = "";
-		if (result.isPresent()) {
+		if (result.isPresent()) {			
 			if(InputChecker.isValidIdentifier(result.get())) {
 				projectName = result.get();
 				Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
@@ -152,7 +152,7 @@ public class ControlCenterClient {
 		}
 	}
 	
-	public void removeProject(String projectPath) {
+	public static void removeProject(String projectPath) {
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("removeProject",1);
 		message.args[0] = new Value(projectPath);
 		WorkbenchClient.theClient().getHandler().raiseEvent(message);

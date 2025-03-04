@@ -11,7 +11,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 public class InheritanceEdgeContextMenu extends ContextMenu {
 
 	public InheritanceEdgeContextMenu(AbstractPackageViewer diagram, FmmlxObject sourceNode, FmmlxObject targetNode) {
-		MenuItem deleteInheritanceRelation = new MenuItem("Delete inheritance relation");
+		MenuItem deleteInheritanceRelation = new MenuItem("Delete Generalization/Specialization Relationship");
 		deleteInheritanceRelation.setOnAction( e -> deleteInheritanceRelation(diagram, sourceNode, targetNode));
 		getItems().add(deleteInheritanceRelation);
 	}

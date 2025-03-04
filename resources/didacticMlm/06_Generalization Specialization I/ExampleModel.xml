@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_Generalization" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_Generalization">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Room" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="OralExam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="WrittenExam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Thesis" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="ProjectPaper" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="TermPaper" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="StudentPaper" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="OnSiteExam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="Exam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Student" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="examResult5" of="Root::ExampleModel_Generalization::ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="examResult4" of="Root::ExampleModel_Generalization::ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="examResult3" of="Root::ExampleModel_Generalization::ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="examResult2" of="Root::ExampleModel_Generalization::ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="examResult1" of="Root::ExampleModel_Generalization::ExamResult" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="termPaper1" of="Root::ExampleModel_Generalization::TermPaper" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="projectPaper1" of="Root::ExampleModel_Generalization::ProjectPaper" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="thesis1" of="Root::ExampleModel_Generalization::Thesis" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student1" of="Root::ExampleModel_Generalization::Student" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="course5" of="Root::ExampleModel_Generalization::Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="course4" of="Root::ExampleModel_Generalization::Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="course3" of="Root::ExampleModel_Generalization::Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="course2" of="Root::ExampleModel_Generalization::Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="course1" of="Root::ExampleModel_Generalization::Course" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="oralExam1" of="Root::ExampleModel_Generalization::OralExam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="writtenExam1" of="Root::ExampleModel_Generalization::WrittenExam" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="room1" of="Root::ExampleModel_Generalization::Room" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="room2" of="Root::ExampleModel_Generalization::Room" package="Root::ExampleModel_Generalization" singleton="false"/>
+        <changeParent class="Root::ExampleModel_Generalization::OnSiteExam" new="Root::ExampleModel_Generalization::Exam" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::OralExam" new="Root::ExampleModel_Generalization::OnSiteExam" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::ProjectPaper" new="Root::ExampleModel_Generalization::StudentPaper" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::StudentPaper" new="Root::ExampleModel_Generalization::Exam" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::TermPaper" new="Root::ExampleModel_Generalization::StudentPaper" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::Thesis" new="Root::ExampleModel_Generalization::StudentPaper" old="" package="Root::ExampleModel_Generalization"/>
+        <changeParent class="Root::ExampleModel_Generalization::WrittenExam" new="Root::ExampleModel_Generalization::OnSiteExam" old="" package="Root::ExampleModel_Generalization"/>
+        <addEnumeration name="DegreeEnum"/>
+        <addEnumerationValue enum_name="DegreeEnum" enum_value_name="Bachelor"/>
+        <addEnumerationValue enum_name="DegreeEnum" enum_value_name="Master"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Course" level="0" multiplicity="Seq{1,1,true,false}" name="courseName" package="Root::ExampleModel_Generalization" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Course" level="0" multiplicity="Seq{1,1,true,false}" name="creditPoints" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Exam" level="0" multiplicity="Seq{1,1,true,false}" name="maxPoints" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::ExamResult" level="0" multiplicity="Seq{0,1,true,false}" name="grade" package="Root::ExampleModel_Generalization" type="Root::XCore::Float"/>
+        <addAttribute class="Root::ExampleModel_Generalization::ExamResult" level="0" multiplicity="Seq{1,1,true,false}" name="gradeRegisteredOn" package="Root::ExampleModel_Generalization" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Generalization::ExamResult" level="0" multiplicity="Seq{1,1,true,false}" name="isUngraded" package="Root::ExampleModel_Generalization" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_Generalization::OnSiteExam" level="0" multiplicity="Seq{1,1,true,false}" name="examDate" package="Root::ExampleModel_Generalization" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Generalization::OralExam" level="0" multiplicity="Seq{1,1,true,false}" name="preparationTimeInMinutes" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::ProjectPaper" level="0" multiplicity="Seq{1,1,true,false}" name="includesSoftwareProject" package="Root::ExampleModel_Generalization" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Room" level="0" multiplicity="Seq{1,1,true,false}" name="roomCode" package="Root::ExampleModel_Generalization" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Student" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Generalization" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Student" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_Generalization" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Student" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::StudentPaper" level="0" multiplicity="Seq{1,1,true,false}" name="submissionDeadline" package="Root::ExampleModel_Generalization" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Generalization::TermPaper" level="0" multiplicity="Seq{1,1,true,false}" name="expectedNumberOfWords" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::Thesis" level="0" multiplicity="Seq{1,1,true,false}" name="thesisType" package="Root::ExampleModel_Generalization" type="Root::ExampleModel_Generalization::DegreeEnum"/>
+        <addAttribute class="Root::ExampleModel_Generalization::WrittenExam" level="0" multiplicity="Seq{1,1,true,false}" name="durationInMinutes" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Generalization::WrittenExam" level="0" multiplicity="Seq{1,1,true,false}" name="readingTimeInMinutes" package="Root::ExampleModel_Generalization" type="Root::XCore::Integer"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course1" package="Root::ExampleModel_Generalization" slotName="courseName" valueToBeParsed="[66,97,115,105,99,115,32,111,102,32,83,111,102,116,119,97,114,101,32,77,111,100,101,108,105,110,103].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course1" package="Root::ExampleModel_Generalization" slotName="creditPoints" valueToBeParsed="6"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course2" package="Root::ExampleModel_Generalization" slotName="courseName" valueToBeParsed="[73,110,102,111,114,109,97,116,105,111,110,32,97,110,100,32,83,111,102,116,119,97,114,101,32,86,105,115,117,97,108,105,122,97,116,105,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course2" package="Root::ExampleModel_Generalization" slotName="creditPoints" valueToBeParsed="6"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course3" package="Root::ExampleModel_Generalization" slotName="courseName" valueToBeParsed="[66,97,99,104,101,108,111,114,32,84,104,101,115,105,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course3" package="Root::ExampleModel_Generalization" slotName="creditPoints" valueToBeParsed="12"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course4" package="Root::ExampleModel_Generalization" slotName="courseName" valueToBeParsed="[83,116,117,100,101,110,116,32,80,114,111,106,101,99,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course4" package="Root::ExampleModel_Generalization" slotName="creditPoints" valueToBeParsed="6"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course5" package="Root::ExampleModel_Generalization" slotName="courseName" valueToBeParsed="[83,101,109,105,110,97,114,32,66,117,115,105,110,101,115,115,32,73,110,102,111,114,109,97,116,105,99,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::course5" package="Root::ExampleModel_Generalization" slotName="creditPoints" valueToBeParsed="6"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult1" package="Root::ExampleModel_Generalization" slotName="grade" valueToBeParsed="2.3"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult1" package="Root::ExampleModel_Generalization" slotName="gradeRegisteredOn" valueToBeParsed="Auxiliary::Date::createDate(2022, 3, 9)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult1" package="Root::ExampleModel_Generalization" slotName="isUngraded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult2" package="Root::ExampleModel_Generalization" slotName="grade" valueToBeParsed="1.7"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult2" package="Root::ExampleModel_Generalization" slotName="gradeRegisteredOn" valueToBeParsed="Auxiliary::Date::createDate(2023, 7, 16)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult2" package="Root::ExampleModel_Generalization" slotName="isUngraded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult3" package="Root::ExampleModel_Generalization" slotName="grade" valueToBeParsed="2.0"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult3" package="Root::ExampleModel_Generalization" slotName="gradeRegisteredOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 12, 2)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult3" package="Root::ExampleModel_Generalization" slotName="isUngraded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult4" package="Root::ExampleModel_Generalization" slotName="grade" valueToBeParsed="1.0"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult4" package="Root::ExampleModel_Generalization" slotName="gradeRegisteredOn" valueToBeParsed="Auxiliary::Date::createDate(2022, 10, 16)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult4" package="Root::ExampleModel_Generalization" slotName="isUngraded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult5" package="Root::ExampleModel_Generalization" slotName="grade" valueToBeParsed="3.3"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult5" package="Root::ExampleModel_Generalization" slotName="gradeRegisteredOn" valueToBeParsed="Auxiliary::Date::createDate(2022, 9, 26)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::examResult5" package="Root::ExampleModel_Generalization" slotName="isUngraded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::oralExam1" package="Root::ExampleModel_Generalization" slotName="examDate" valueToBeParsed="Auxiliary::Date::createDate(2022, 8, 22)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::oralExam1" package="Root::ExampleModel_Generalization" slotName="maxPoints" valueToBeParsed="20"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::oralExam1" package="Root::ExampleModel_Generalization" slotName="preparationTimeInMinutes" valueToBeParsed="30"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::projectPaper1" package="Root::ExampleModel_Generalization" slotName="includesSoftwareProject" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::projectPaper1" package="Root::ExampleModel_Generalization" slotName="maxPoints" valueToBeParsed="100"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::projectPaper1" package="Root::ExampleModel_Generalization" slotName="submissionDeadline" valueToBeParsed="Auxiliary::Date::createDate(2023, 3, 31)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::room1" package="Root::ExampleModel_Generalization" slotName="roomCode" valueToBeParsed="[82,48,57,32,82,48,52,32,72,48,50].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::room2" package="Root::ExampleModel_Generalization" slotName="roomCode" valueToBeParsed="[82,49,52,32,82,48,48,32,72,48,48].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::student1" package="Root::ExampleModel_Generalization" slotName="firstName" valueToBeParsed="[68,97,118,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::student1" package="Root::ExampleModel_Generalization" slotName="lastName" valueToBeParsed="[75,108,101,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::student1" package="Root::ExampleModel_Generalization" slotName="matriculationNumber" valueToBeParsed="2283927"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::termPaper1" package="Root::ExampleModel_Generalization" slotName="expectedNumberOfWords" valueToBeParsed="7500"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::termPaper1" package="Root::ExampleModel_Generalization" slotName="maxPoints" valueToBeParsed="100"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::termPaper1" package="Root::ExampleModel_Generalization" slotName="submissionDeadline" valueToBeParsed="Auxiliary::Date::createDate(2022, 1, 19)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::thesis1" package="Root::ExampleModel_Generalization" slotName="maxPoints" valueToBeParsed="100"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::thesis1" package="Root::ExampleModel_Generalization" slotName="submissionDeadline" valueToBeParsed="Auxiliary::Date::createDate(2024, 8, 5)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::thesis1" package="Root::ExampleModel_Generalization" slotName="thesisType" valueToBeParsed="Root::ExampleModel_Generalization::DegreeEnum::Bachelor"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::writtenExam1" package="Root::ExampleModel_Generalization" slotName="durationInMinutes" valueToBeParsed="90"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::writtenExam1" package="Root::ExampleModel_Generalization" slotName="examDate" valueToBeParsed="Auxiliary::Date::createDate(2022, 9, 5)"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::writtenExam1" package="Root::ExampleModel_Generalization" slotName="maxPoints" valueToBeParsed="90"/>
+        <changeSlotValue class="Root::ExampleModel_Generalization::writtenExam1" package="Root::ExampleModel_Generalization" slotName="readingTimeInMinutes" valueToBeParsed="5"/>
+        <addAssociation accessSourceFromTargetName="exam" accessTargetFromSourceName="course" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Generalization::Exam" classTarget="Root::ExampleModel_Generalization::Course" fwName="related_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_Generalization" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="grade" accessTargetFromSourceName="exam" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Generalization::ExamResult" classTarget="Root::ExampleModel_Generalization::Exam" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_Generalization" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="onSiteExam" accessTargetFromSourceName="room" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Generalization::OnSiteExam" classTarget="Root::ExampleModel_Generalization::Room" fwName="located_in" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_Generalization" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="student" accessTargetFromSourceName="grade" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Generalization::Student" classTarget="Root::ExampleModel_Generalization::ExamResult" fwName="receives" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_Generalization" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_Generalization::examResult1" classTarget="Root::ExampleModel_Generalization::termPaper1" name="exam" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::examResult2" classTarget="Root::ExampleModel_Generalization::projectPaper1" name="exam" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::examResult3" classTarget="Root::ExampleModel_Generalization::thesis1" name="exam" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::examResult4" classTarget="Root::ExampleModel_Generalization::writtenExam1" name="exam" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::examResult5" classTarget="Root::ExampleModel_Generalization::oralExam1" name="exam" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::oralExam1" classTarget="Root::ExampleModel_Generalization::course2" name="course" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::oralExam1" classTarget="Root::ExampleModel_Generalization::room1" name="room" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::projectPaper1" classTarget="Root::ExampleModel_Generalization::course4" name="course" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::student1" classTarget="Root::ExampleModel_Generalization::examResult1" name="grade" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::student1" classTarget="Root::ExampleModel_Generalization::examResult2" name="grade" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::student1" classTarget="Root::ExampleModel_Generalization::examResult3" name="grade" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::student1" classTarget="Root::ExampleModel_Generalization::examResult4" name="grade" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::student1" classTarget="Root::ExampleModel_Generalization::examResult5" name="grade" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::termPaper1" classTarget="Root::ExampleModel_Generalization::course5" name="course" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::thesis1" classTarget="Root::ExampleModel_Generalization::course3" name="course" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::writtenExam1" classTarget="Root::ExampleModel_Generalization::course1" name="course" package="Root::ExampleModel_Generalization"/>
+        <addLink classSource="Root::ExampleModel_Generalization::writtenExam1" classTarget="Root::ExampleModel_Generalization::room2" name="room" package="Root::ExampleModel_Generalization"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::TermPaper" xCoordinate="237" yCoordinate="540"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::ExamResult" xCoordinate="561" yCoordinate="146"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::WrittenExam" xCoordinate="1218" yCoordinate="474"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::oralExam1" xCoordinate="1517" yCoordinate="2016"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::examResult1" xCoordinate="891" yCoordinate="924"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::projectPaper1" xCoordinate="1388" yCoordinate="1278"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::examResult3" xCoordinate="911" yCoordinate="1323"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::Course" xCoordinate="1290" yCoordinate="3"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::examResult2" xCoordinate="899" yCoordinate="1120"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::examResult5" xCoordinate="979" yCoordinate="1885"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::examResult4" xCoordinate="905" yCoordinate="1526"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::student1" xCoordinate="303" yCoordinate="1412"/>
+                <Instance hidden="true" path="Root::ExampleModel_Generalization::DegreeEnum" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::Thesis" xCoordinate="838" yCoordinate="528"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::thesis1" xCoordinate="1388" yCoordinate="1464"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::course4" xCoordinate="1978" yCoordinate="1205"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::OnSiteExam" xCoordinate="1312" yCoordinate="315"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::course3" xCoordinate="1941" yCoordinate="1412"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::course2" xCoordinate="2004" yCoordinate="2055"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::course1" xCoordinate="1930" yCoordinate="1699"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::Student" xCoordinate="208" yCoordinate="150"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::room1" xCoordinate="1881" yCoordinate="2300"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::OralExam" xCoordinate="1567" yCoordinate="496"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::room2" xCoordinate="1744" yCoordinate="1885"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::course5" xCoordinate="1890" yCoordinate="1020"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::ProjectPaper" xCoordinate="561" yCoordinate="688"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::Exam" xCoordinate="1034" yCoordinate="138"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::StudentPaper" xCoordinate="686" yCoordinate="342"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::Room" xCoordinate="1674" yCoordinate="201"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::termPaper1" xCoordinate="1303" yCoordinate="1033"/>
+                <Instance hidden="false" path="Root::ExampleModel_Generalization::writtenExam1" xCoordinate="1450" yCoordinate="1685"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::projectPaper1/Root::ExampleModel_Generalization::course4/AssociationMapping: Root::ExampleModel_Generalization::Exam::course" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1776.0452" yCoordinate="1331.9099"/>
+                        <IntermediatePoint xCoordinate="1776.0452" yCoordinate="1248.385"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_Generalization::Student::grade" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="457.33496" yCoordinate="185.43164"/>
+                        <IntermediatePoint xCoordinate="457.33496" yCoordinate="203.16847"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_Generalization::Student::grade" xCoordinate="-32.32292" yCoordinate="-27.101618"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult3/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="815.5329" yCoordinate="1466.0527"/>
+                        <IntermediatePoint xCoordinate="815.5329" yCoordinate="1400.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult3/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" xCoordinate="45.714287" yCoordinate="-8.503069"/>
+                    </Labels>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Generalization::StudentPaper/Root::ExampleModel_Generalization::Exam" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="800.9082" yCoordinate="280.8369"/>
+                        <IntermediatePoint xCoordinate="1084.499" yCoordinate="280.8369"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::oralExam1/Root::ExampleModel_Generalization::room1/AssociationMapping: Root::ExampleModel_Generalization::OnSiteExam::room" sourcePort="EAST" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1813.6459" yCoordinate="2087.6418"/>
+                        <IntermediatePoint xCoordinate="1813.6459" yCoordinate="2260.5647"/>
+                        <IntermediatePoint xCoordinate="1966.8986" yCoordinate="2260.5647"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::oralExam1/Root::ExampleModel_Generalization::room1/AssociationMapping: Root::ExampleModel_Generalization::OnSiteExam::room" xCoordinate="43.42857" yCoordinate="15.496931"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult2/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="696.55396" yCoordinate="1439.0264"/>
+                        <IntermediatePoint xCoordinate="696.55396" yCoordinate="1197.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult2/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" xCoordinate="22.857143" yCoordinate="-114.78878"/>
+                    </Labels>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Generalization::TermPaper/Root::ExampleModel_Generalization::StudentPaper" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="399.9051" yCoordinate="494.9177"/>
+                        <IntermediatePoint xCoordinate="745.8108" yCoordinate="494.9177"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult5/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" sourcePort="SOUTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="1550.1055"/>
+                        <IntermediatePoint xCoordinate="599.5329" yCoordinate="1550.1055"/>
+                        <IntermediatePoint xCoordinate="599.5329" yCoordinate="1962.1738"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult1/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" sourcePort="NORTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="1382.0"/>
+                        <IntermediatePoint xCoordinate="589.24713" yCoordinate="1382.0"/>
+                        <IntermediatePoint xCoordinate="589.24713" yCoordinate="978.05273"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::student1/Root::ExampleModel_Generalization::examResult1/AssociationMapping: Root::ExampleModel_Generalization::Student::grade" xCoordinate="-57.142857" yCoordinate="-281.64594"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::oralExam1/Root::ExampleModel_Generalization::course2/AssociationMapping: Root::ExampleModel_Generalization::Exam::course" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1878.4941" yCoordinate="2051.6067"/>
+                        <IntermediatePoint xCoordinate="1878.4941" yCoordinate="2098.2422"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::oralExam1/Root::ExampleModel_Generalization::course2/AssociationMapping: Root::ExampleModel_Generalization::Exam::course" xCoordinate="-106.28571" yCoordinate="-62.217354"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::writtenExam1/Root::ExampleModel_Generalization::room2/AssociationMapping: Root::ExampleModel_Generalization::OnSiteExam::room" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1536.7373" yCoordinate="1839.9932"/>
+                        <IntermediatePoint xCoordinate="1830.0414" yCoordinate="1839.9932"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::writtenExam1/Root::ExampleModel_Generalization::room2/AssociationMapping: Root::ExampleModel_Generalization::OnSiteExam::room" xCoordinate="6.8571405" yCoordinate="13.211217"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_Generalization::StudentExam::exam" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="775.41895" yCoordinate="203.16847"/>
+                        <IntermediatePoint xCoordinate="775.41895" yCoordinate="185.24219"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_Generalization::StudentExam::exam" xCoordinate="-24.44148" yCoordinate="-40.574272"/>
+                    </Labels>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Generalization::ProjectPaper/Root::ExampleModel_Generalization::StudentPaper" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="723.69476" yCoordinate="570.94165"/>
+                        <IntermediatePoint xCoordinate="805.6216" yCoordinate="570.94165"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_Generalization::Thesis/Root::ExampleModel_Generalization::StudentPaper" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1000.7632" yCoordinate="492.4251"/>
+                        <IntermediatePoint xCoordinate="865.4324" yCoordinate="492.4251"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Generalization::thesis1/Root::ExampleModel_Generalization::course3/AssociationMapping: Root::ExampleModel_Generalization::Exam::course" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1730.022" yCoordinate="1518.0527"/>
+                        <IntermediatePoint xCoordinate="1730.022" yCoordinate="1455.528"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Generalization::thesis1/Root::ExampleModel_Generalization::course3/AssociationMapping: Root::ExampleModel_Generalization::Exam::course" xCoordinate="-10.285714" yCoordinate="-27.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_Generalization::Exam::course" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1240.1052" yCoordinate="173.43164"/>
+                        <IntermediatePoint xCoordinate="1240.1052" yCoordinate="49.242188"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_Generalization::Exam::course" xCoordinate="-82.88783" yCoordinate="-45.208862"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>EXAM is still a deficient class. The same exam may be written multiple times. This would require a redundant specification of slot values for attributes such as "durationTimeInMinutes: Integer".</NoteContent>
+                    <NotePosition>
+                        <XPosition>827.0</XPosition>
+                        <YPosition>49.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>ROOM only contains only a single attribute to keep the diagram simpler. Typically, a more sophisticated solution is to be preferred.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1555.0</XPosition>
+                        <YPosition>141.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Inherited attributes are shown as grayed out in each class. Under "View -&gt; Hide inherited attributes" they can be made hidden in the diagram.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1104.0</XPosition>
+                        <YPosition>666.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>EXAM, ON-SITE-EXAM, and STUDENT-PAPER are abstract classes. No direct instances of these classes can be created. They are not available in the palette.</NoteContent>
+                    <NotePosition>
+                        <XPosition>977.0</XPosition>
+                        <YPosition>337.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>4</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Associations to other classes are also properties that are inherited. All (indirect) ON-SITE-EXAM objects must link a ROOM object. All (indirect) EXAM objects must link a COURSE object.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1607.0</XPosition>
+                        <YPosition>365.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Main View" tx="-108.840805" ty="77.3261" xx="0.70710677"/>
+                <View name="Object View" tx="-73.48072" ty="-449.13947" xx="0.5"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

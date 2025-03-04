@@ -5,7 +5,6 @@ import tool.clients.fmmlxdiagrams.*;
 import java.util.Map;
 import java.util.Vector;
 
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -23,9 +22,8 @@ import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
-import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
-import tool.xmodeler.ControlCenterClient;
 
 
 
@@ -113,6 +111,13 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2 - heightOffset, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+
+		if(object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT
+	    || object.isControlClass() == FmmlxObject.ControlClass.IMPLICIT) {
+			SVGGroup cogWheel = object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT?getCogWheelExplicitIcon():getCogWheelImplicitIcon();
+			cogWheel.setMyTransform(new Affine(1., 0., 3., 0., 1., 2.));
+			header.addNodeElement(cogWheel);
+		}		
 		
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(nameLabel);
@@ -165,7 +170,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, "- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, "- " + att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -173,7 +178,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attY += lineHeight;
 			String ownerName = att.getOwnerPath();
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION,"- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION,"- " + att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 			}
 		}
@@ -371,6 +376,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 
 	
 	private double calculateNeededWidth(FmmlxDiagram diagram, Map<DiagramDisplayProperty, Boolean> diagramDisplayProperties) {
+		int plusWidth = (int) FmmlxDiagram.calculateTextWidth("+ ");		//extra width for uml from the plus in front
 		double neededWidth = FmmlxDiagram.calculateTextWidth(object.getRelativeName()); 
 
 		try {
@@ -382,13 +388,13 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
 				String ownerName = att.getOwnerPath();
 				try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
@@ -396,7 +402,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for (FmmlxOperation o : object.getOwnOperations()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS)  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);		//last + for the added width from plus and minus signs
 				}
 			}	
 			for (FmmlxOperation o : object.getOtherOperations()) {
@@ -404,7 +410,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);//last + for the added width from plus and minus signs
 					}
 				}
 			}	
@@ -413,7 +419,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0) + plusWidth, neededWidth);
 					}
 				}
 			}
@@ -422,7 +428,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
 						try{owner = diagram.getObjectByPath(o.getOwner()).getName();} catch (Exception e) {}
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + owner + ")") + 4 * INST_LEVEL_WIDTH + plusWidth, neededWidth);
 					}
 				}
 			}

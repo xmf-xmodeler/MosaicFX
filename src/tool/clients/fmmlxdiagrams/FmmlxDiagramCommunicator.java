@@ -23,7 +23,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
@@ -31,17 +30,17 @@ import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.xmldatabase.BranchManager;
 import tool.clients.fmmlxdiagrams.xmldatabase.DefaultBranchManager;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.IconGenerator;
 import tool.helper.persistence.XMLInstanceStub;
 import tool.helper.persistence.XMLParser;
 import tool.logging.RequestLog;
 import tool.logging.RequestLogManager;
-import tool.xmodeler.tool_introduction.DiagramViewState;
-import tool.xmodeler.tool_introduction.TaskDescriptionViewer;
-import tool.xmodeler.tool_introduction.ToolIntroductionManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
+	public static final boolean USERLOGGINGONLY = true;
 	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
@@ -350,7 +349,11 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) System.err.println(": Sending synchron request " + xmfFunctionName + "(" + currentRequestID + ") handle " + targetHandle);
 		RequestLog log = new  RequestLog(currentRequestID, true, System.currentTimeMillis(), xmfFunctionName, targetHandle, newParameterList);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Send synchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Send synchron request {}", log);
+		}
+		
 		//copy all elements starting by parameterList[0] to new parameterList[1] 
 		System.arraycopy(parameterList, 0, newParameterList, 1, parameterList.length);
 		//add at position [0] of new parameterList a combined value of diagramID and requestID
@@ -387,7 +390,11 @@ public class FmmlxDiagramCommunicator {
 		returnMap.put(currentRequestID, returnCall);
 		RequestLog log = new RequestLog(currentRequestID, false, System.currentTimeMillis(), message, targetHandle, args2);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Start asynchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Start asynchron request {}", log);
+		}
+		
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 	
@@ -397,10 +404,25 @@ public class FmmlxDiagramCommunicator {
 				int n = message[0].values[1].intValue;
 				System.err.println(": Sending command" + n + ": " + command);
 				timeMap.put(n, System.currentTimeMillis());
+				
 			} catch (Exception e) {
 				
 			}
 		}
+
+		String messageContent = "";
+		for (Value value : message)
+		{
+			if(value != null)
+			{
+				messageContent += value.toString() + ", ";
+			}
+			
+		}
+		logger.debug(": Sending command: " + command + ": "+messageContent);
+
+		
+		
 		WorkbenchClient.theClient().send(handle, command, message);
 	}
 
@@ -423,8 +445,9 @@ public class FmmlxDiagramCommunicator {
 					parentListS.add((String) o);
 				}
 				String type = "FMMLX";
-//				Boolean isSingleton = false;
+				Boolean isControlClass = false;
 				try{ type = (String) responseObjectList.get(0); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
+				try{ isControlClass = (Boolean) responseObjectList.get(9); } catch(Exception e) {System.err.println("Warning: Pull new XMF version.");}
 				Integer maxLevel = (Integer) responseObjectList.get(3);
 				if(maxLevel == -1) maxLevel = null;
 				FmmlxObject object = new FmmlxObject(
@@ -436,6 +459,7 @@ public class FmmlxDiagramCommunicator {
 						parentListS,                         // parentsPath
 						(Boolean) responseObjectList.get(5), // isAbstract
 						(Boolean) responseObjectList.get(4), // isSingleton
+						isControlClass, 
 						(Integer) responseObjectList.get(6), // x-Position
 						(Integer) responseObjectList.get(7), // y-Position 
 						(Boolean) responseObjectList.get(8), // hidden
@@ -1858,6 +1882,16 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setClassAbstract", message);
     }
     
+
+    public void setClassControl(int diagramID, String className, boolean isControl) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(isControl)};
+        sendMessage("setClassControl", message);
+    }
+    
+    
     public void setClassSingleton(int diagramID, String className, boolean isSingleton) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -2230,6 +2264,7 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		String title = packagePath.substring(6) + "::" + name;
 		stage.setTitle(title);
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		diagram.setStage(stage);
 		
 		//LM, 17.11.2021, resize canvas on maximize
@@ -2241,7 +2276,7 @@ public class FmmlxDiagramCommunicator {
 		});
 		
 		stage.show();
-		if (diagram.getViewPane().isIntroductionMode()) {
+		if (diagram.getViewPane().isInToolIntroductionMode()) {
 			//finds task description pane and shows warning dialog before close
 			stage.setOnCloseRequest((e) -> {
 				if (ToolIntroductionManager.isInitialized()) {
@@ -2459,7 +2494,7 @@ public class FmmlxDiagramCommunicator {
 				return diagram;
 			}
 		}
-		System.err.println("Diagram " + id + "not found.");
+		//System.err.println("Diagram " + id + " not found.");
 		return null;
 	}
 	// -------------------- merge package ---------------------------- //
@@ -2736,13 +2771,21 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Try to wait for request " + requestID);
 		}
-		logger.debug("Try to wait for request " + requestID);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Try to wait for request " + requestID);
+		}
+		
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
 				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
-				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				if (!USERLOGGINGONLY)
+				{
+					logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				}
+				
 				return;
 			} else {
 				try {
@@ -2756,7 +2799,10 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Request " + requestID + " is returned");
 		}
+		if(!USERLOGGINGONLY)
+		{
 		logger.debug("Try to wait for request " + requestID);
+		}
 	}
 	
 	public void waitForNextRequestReturn() {
@@ -2813,12 +2859,74 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociationDependency", message);
 		
 	}
+	
+	@Deprecated
 	public void addAssociationDependency(int diagramID, FmmlxAssociation assoc, String dependsOnName) {
 		Value[] message = new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(assoc.sourceNode.ownPath),
 			new Value(assoc.getAccessNameStartToEnd()),
 			new Value(dependsOnName)};
+		sendMessage("addAssociationDependency3", message);
+	}
+	public void addAssociationDependency(int diagramID, String classPath0, String idAssoc0, String classPath1,
+			String idAssoc1) {
+	Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(classPath0),
+			new Value(idAssoc0),
+			new Value(classPath1),
+			new Value(idAssoc1)};
 		sendMessage("addAssociationDependency", message);
+	}
+	
+	/**
+	 * Exception used in searchDiagrams. If no diagram can be found for a search string this exception shows used values.
+	 */
+	public class NoDiagramFound extends Exception {
+	    public NoDiagramFound(String projectName, String diagramName, int maxIteration) {
+	        super(String.format("Attempt to find model failed. The top %d models have been checked. The search value was \"%s::%s\".", maxIteration, projectName, diagramName));
+	    }
+
+	    public NoDiagramFound(String message) {
+	        super(message);
+	    }
+	}
+	
+	/**
+	 * Returns diagram for specific name. !! Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id use 0 for first call. param necessary for recursion
+	 * @return FmmlxDiagram for projectName and DiagramName combination
+	 * @throws NoDiagramFound after maxNumber of iterations and no found diagram this exception is thrown
+	 */
+	public FmmlxDiagram searchDiagram(String projectName, String diagramName, int id) throws NoDiagramFound {
+		int maxIterations = 25;
+		FmmlxDiagram diagram = getMatchingFmmlxDiagram(projectName, diagramName, id);
+		if (diagram != null) {
+			return diagram;
+		}
+		id ++;
+		if (id <= maxIterations) {
+			return searchDiagram(projectName, diagramName, id);
+		}
+		throw new NoDiagramFound(projectName, diagramName, maxIterations);
+	}
+	
+	
+	/**
+	 * Searches backend for a diagram for a specific diagram id. Communicator only contains opened diagrams. You only can find them!
+	 * @param projectName
+	 * @param diagramName
+	 * @param id
+	 * @return null if diagram not matches specification and diagram if its matches
+	 */
+	public FmmlxDiagram getMatchingFmmlxDiagram(String projectName, String diagramName, int id) {
+		FmmlxDiagram diagram = getDiagram(id);
+		if (diagram != null && projectName.equals(diagram.getProjectName()) && diagramName.equals(diagram.getDiagramName())) {
+			return diagram;
+		}
+		return null;
 	}
 }

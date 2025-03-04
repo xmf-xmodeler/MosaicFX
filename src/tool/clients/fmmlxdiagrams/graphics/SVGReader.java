@@ -45,7 +45,13 @@ public class SVGReader {
 	public static SVGGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-		Document doc = f.createDocument(file.toURI().toString());
+		Document doc = null;
+		try{
+			doc = f.createDocument(file.toURI().toString());
+		} catch (Exception e) {
+//			System.err.println("Cannot load SVG File: " + file.toURI().toString());
+			throw new RuntimeException("Cannot load SVG File: " + file.toURI().toString(), e);
+		}
 		
 		UserAgent          userAgent;
 		DocumentLoader     loader;

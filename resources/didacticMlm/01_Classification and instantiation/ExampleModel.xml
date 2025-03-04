@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_Classification" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_Classification">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Student" package="Root::ExampleModel_Classification" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student2" of="Root::ExampleModel_Classification::Student" package="Root::ExampleModel_Classification" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="student1" of="Root::ExampleModel_Classification::Student" package="Root::ExampleModel_Classification" singleton="false"/>
+        <addAttribute class="Root::ExampleModel_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_Classification" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Classification" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="isCurrentlyEnrolled" package="Root::ExampleModel_Classification" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_Classification" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Classification::Student" level="0" multiplicity="Seq{1,1,true,false}" name="matriculationNumber" package="Root::ExampleModel_Classification" type="Root::XCore::Integer"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student1" package="Root::ExampleModel_Classification" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2003, 8, 18)"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student1" package="Root::ExampleModel_Classification" slotName="firstName" valueToBeParsed="[74,97,115,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student1" package="Root::ExampleModel_Classification" slotName="isCurrentlyEnrolled" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student1" package="Root::ExampleModel_Classification" slotName="lastName" valueToBeParsed="[82,117,98,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student1" package="Root::ExampleModel_Classification" slotName="matriculationNumber" valueToBeParsed="3220283"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student2" package="Root::ExampleModel_Classification" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(2005, 3, 14)"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student2" package="Root::ExampleModel_Classification" slotName="firstName" valueToBeParsed="[83,117,115,97,110,110,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student2" package="Root::ExampleModel_Classification" slotName="isCurrentlyEnrolled" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student2" package="Root::ExampleModel_Classification" slotName="lastName" valueToBeParsed="[74,111,114,100,121,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Classification::student2" package="Root::ExampleModel_Classification" slotName="matriculationNumber" valueToBeParsed="3419362"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_Classification::student1" xCoordinate="357" yCoordinate="447"/>
+                <Instance hidden="false" path="Root::ExampleModel_Classification::student2" xCoordinate="733" yCoordinate="449"/>
+                <Instance hidden="false" path="Root::ExampleModel_Classification::Student" xCoordinate="513" yCoordinate="185"/>
+            </Instances>
+            <Edges/>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>You can change slot values by double-clicking on them. If you enter an invalid value that violates the attribute data type an "UnboundVar" error appears.</NoteContent>
+                    <NotePosition>
+                        <XPosition>131.0</XPosition>
+                        <YPosition>354.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>All attributes are always ordered alphabetically.</NoteContent>
+                    <NotePosition>
+                        <XPosition>747.0</XPosition>
+                        <YPosition>150.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

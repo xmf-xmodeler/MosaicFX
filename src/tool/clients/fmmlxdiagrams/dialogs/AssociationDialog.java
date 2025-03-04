@@ -34,6 +34,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private FmmlxAssociation association;
 	private FmmlxObject source;	
 	private FmmlxObject target;
+	private AssociationType assocType;
 		
 	private ComboBox<FmmlxAssociation> selectAssociationComboBox;
 	
@@ -67,11 +68,14 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 	private List<Node> sourceNodes;
 	private List<Node> targetNodes;
 	
-	public AssociationDialog(AbstractPackageViewer diagram, FmmlxAssociation association, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, 
+			FmmlxAssociation association, 
+			boolean editMode) {
 		
 		this.diagram=diagram;
 		this.association = association;
 		this.editMode=editMode;
+		this.assocType = association.getAssociationType();
 		
 		this.source=association.getSourceNode();
 		this.target=association.getTargetNode();
@@ -92,12 +96,16 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		setResultConverter();
 	}
 
-	public AssociationDialog(AbstractPackageViewer diagram, FmmlxObject source, FmmlxObject target, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, 
+			FmmlxObject source, FmmlxObject target,
+			boolean editMode,
+			AssociationType assocType) {
 		
-		this.editMode=editMode;
-		this.diagram = diagram;
-		this.source = source;
-		this.target = target;
+		this.editMode  = editMode;
+		this.diagram   = diagram;
+		this.source    = source;
+		this.target    = target;
+		this.assocType = assocType;
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -179,12 +187,13 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		multTargetToSourceBox = new MultiplicityBox();
 		multSourceToTargetBox = new MultiplicityBox();
 		
-		sourceVisibleFromTargetBox = new CheckBox("sourceVisibleFromTarget");
-		targetVisibleFromSourceBox = new CheckBox("targetVisibleFromSource");
+		sourceVisibleFromTargetBox = new CheckBox("sourceNavigableFromTarget");
+		targetVisibleFromSourceBox = new CheckBox("targetNavigableFromSource");
 		sourceGetterField.setEditable(false);
 		sourceSetterField.setEditable(false);
 		targetVisibleFromSourceBox.setSelected(true);
 		targetVisibleFromSourceBox.setDisable(true);
+		sourceVisibleFromTargetBox.setSelected(true);
 		sourceVisibleFromTargetBox.selectedProperty().addListener((x0, x1, sourceVisible) -> {
 			sourceGetterField.setEditable(sourceVisible);
 			sourceSetterField.setEditable(sourceVisible);
@@ -244,7 +253,12 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		Vector<AssociationType> assocTypeItems = new Vector<>();
 		assocTypeItems.addAll(diagram.getAssociationTypes());
 		associationTypeBox = new ComboBox<>(FXCollections.observableList(assocTypeItems));
-		associationTypeBox.getSelectionModel().select(0);
+		if(assocType == null) {			
+			associationTypeBox.getSelectionModel().select(0);
+		} else {
+			associationTypeBox.getSelectionModel().select(assocType);
+		}
+		
 		labels = new ArrayList<>();
 		sourceNodes = new ArrayList<>();
 		targetNodes = new ArrayList<>();
@@ -299,17 +313,22 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			}
 		}
 		else {
+				
 				labels.add(new Label(LabelAndHeaderTitle.displayName));
 				labels.add(new Label(" "));
 				labels.add(new Label(" "));
 				labels.add(new Label(LabelAndHeaderTitle.type));
+				labels.add(new Label(LabelAndHeaderTitle.identifier));
 				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
-					
+				labels.add(new Label("Navigability"));
+				
 				sourceNodes.add(newDisplayName);
 				sourceNodes.add(new Label(" "));
 				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
 				sourceNodes.add(newTypeSource);
+				sourceNodes.add(newIdentifierSource);
 				sourceNodes.add(multTargetToSourceBox);
+				sourceNodes.add(sourceVisibleFromTargetBox);
 //				sourceNodes.add(symmetricBox);
 //				sourceNodes.add(transitiveBox);
 					
@@ -317,7 +336,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 				targetNodes.add(new Label(" "));
 				targetNodes.add(new Label (LabelAndHeaderTitle.end));
 				targetNodes.add(newTypeTarget);
+				targetNodes.add(newIdentifierTarget);
 				targetNodes.add(multSourceToTargetBox);
+				targetNodes.add(targetVisibleFromSourceBox);
+
 		}
 
 		
@@ -461,13 +483,15 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							0,
 							0,
 							newDisplayName.getText(),
-							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
-							source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
-							source.getName().toLowerCase() + newDisplayName.getText(),
+							associationTypeBox.getSelectionModel().getSelectedItem(),
+							newIdentifierSource.getText(),
+							newIdentifierTarget.getText(),
+							//source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations
+							//source.getName().toLowerCase() + newDisplayName.getText(),
 							multTargetToSourceBox.getMultiplicity(),
 							multSourceToTargetBox.getMultiplicity(),
-							true,	
-							true,	//both visibilities true as is default in UML
+							sourceVisibleFromTargetBox.isSelected(),
+							targetVisibleFromSourceBox.isSelected(),
 							false,
 							false,
 							sourceGetterField.getText().orElse(null),

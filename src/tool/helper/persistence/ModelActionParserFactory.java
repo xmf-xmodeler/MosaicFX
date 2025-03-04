@@ -13,6 +13,7 @@ import tool.helper.persistence.modelActionParser.AddInstanceParser;
 import tool.helper.persistence.modelActionParser.AddLinkParser;
 import tool.helper.persistence.modelActionParser.AddMetaClassParser;
 import tool.helper.persistence.modelActionParser.AddOperationParser;
+import tool.helper.persistence.modelActionParser.AssociationDependencyParser;
 import tool.helper.persistence.modelActionParser.ChangeParentParser;
 import tool.helper.persistence.modelActionParser.ChangeSlotValueParser;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
@@ -55,6 +56,8 @@ public class ModelActionParserFactory {
 			return new AddEnumerationValueParser(diagramId);
 		case "addConstraint":
 			return new AddConstraintParser(diagramId);
+		case "associationDependsOn":
+			return new AssociationDependencyParser(diagramId);
 		default:
 			throw new ParseException("XML Element name does not match Model Actions", 0);
 		}

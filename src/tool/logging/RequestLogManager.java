@@ -21,7 +21,8 @@ public class RequestLogManager {
 	
 	public void addLog(RequestLog log) {
 		//2023-09-08 TS restricts the size of the logList to 1000 Elements. Was inserted to restrict memory usage of the list.
-		if (logList.size() > 1000) {
+		//2024-12-04 PM increased to 10,000 for UML testing
+		if (logList.size() > 10000) {
 			logList.remove(0);
 		} 
 		logList.add(log);			
@@ -32,7 +33,11 @@ public class RequestLogManager {
 		log.setCallbackExecutionTime(System.currentTimeMillis());
 		log.setReturned();
 		log.setReturnedMessageVector(msgAsVec);
-		logger.debug("Request returned {}", log);
+		if(!FmmlxDiagramCommunicator.USERLOGGINGONLY)
+		{
+			logger.debug("Request returned {}", log);
+		}
+		
 	}
 
 	public RequestLog getLog(int requestId) {

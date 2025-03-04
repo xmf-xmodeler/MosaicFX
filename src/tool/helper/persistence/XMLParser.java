@@ -72,7 +72,7 @@ public class XMLParser {
 		PropertyManager.setProperty(UserProperty.RECENTLY_LOADED_MODEL_DIR.toString(),inputFile.get().getAbsolutePath());
 		return inputFile.get();
 	}
-	
+
 	public XMLParser(File inputFile) {
 		int importVersion = getVersion(inputFile);
 		if (importVersion != XMLCreator.getExportversion()) {
@@ -177,7 +177,7 @@ public class XMLParser {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Conflicting names");
 			alert.setHeaderText("The current session already contains a project with the name \"" + conflictingProject + "\"!");
-			alert.setContentText("Please change name of the project you would like to import or restart XModeler");
+			alert.setContentText("Please change name of the project you would like to import or restart the application");
 			alert.getButtonTypes().setAll(ButtonType.OK);
 			alert.showAndWait();}
 		);
