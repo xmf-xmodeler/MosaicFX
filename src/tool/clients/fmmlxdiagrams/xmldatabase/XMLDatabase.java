@@ -121,7 +121,8 @@ public class XMLDatabase {
 				showInfo("Version " + newVersionNumber + " für " + diagramName + " hinzugefügt.");
 
 			} catch (Exception e) {
-				showError("Failed to write to database");
+				showError("Failed to write to database\n"
+						 +"Error Message: " +e.getMessage());
 				e.printStackTrace();
 
 			}
