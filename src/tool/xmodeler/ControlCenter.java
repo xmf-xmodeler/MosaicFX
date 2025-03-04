@@ -52,6 +52,12 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
+import tool.clients.fmmlxdiagrams.xmldatabase.VersionSelectionUI;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsole;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseConsoleTabs;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabaseDeleteUI;
 import tool.helper.HowToDialog;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
@@ -156,6 +162,29 @@ public class ControlCenter extends Stage {
 			Menu helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
+			
+			Menu DatabaseMenu = new Menu("Database");
+			getMenus().add(DatabaseMenu);
+			buildDatabaseMenu(DatabaseMenu);
+			
+			
+		}
+		
+		private void buildDatabaseMenu(Menu DatabaseMenu)
+		{
+			MenuItem getProjectsFromDB = new MenuItem("Get Projects from Database");
+			getProjectsFromDB.setOnAction(e->getProjectsFromDB());
+			
+			MenuItem versionSelection = new MenuItem("Version Selection");
+			versionSelection.setOnAction(e->versionSelection());
+			
+			MenuItem dbConsole = new MenuItem("Database Console");
+			dbConsole.setOnAction(e-> dBConsole());
+			
+			MenuItem deleteProject = new MenuItem("Delete Project");
+			deleteProject.setOnAction(e -> deleteProjectFormDB());
+			
+			DatabaseMenu.getItems().addAll(getProjectsFromDB,versionSelection,dbConsole,deleteProject);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -178,6 +207,65 @@ public class ControlCenter extends Stage {
 			aboutItem.setOnAction(e-> callAboutStage());
 							
 			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem, getOnlineTutorial,getSourceCodeItem, getBluebook, aboutItem);
+		}
+		
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void getProjectsFromDB()
+		{
+			XMLDatabase database = new XMLDatabase();
+			try 
+			{
+				database.getDiagramsFromDB();
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void dBConsole()
+		{
+			XMLDatabaseConsole console = new XMLDatabaseConsole();
+			XMLDatabaseConsoleTabs tabs = new XMLDatabaseConsoleTabs();
+			try
+			{
+				tabs.start();
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void deleteProjectFormDB()
+		{
+		    try {
+		       
+		        XMLDatabaseDeleteUI deleteUI = new XMLDatabaseDeleteUI();
+		        deleteUI.start();
+		    } catch (Exception e) {
+		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+		    }
+		    
+	    }
+		
+		/**
+		 * @author Nicolas Engel
+		 */
+		private void versionSelection()
+		{
+			try {
+			       
+		        VersionSelectionUI versionUI = new VersionSelectionUI();
+		        versionUI.start();
+		    } catch (Exception e) {
+		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+		    }
 		}
 		
 		private void openWebpage(String url) {
@@ -256,6 +344,16 @@ public class ControlCenter extends Stage {
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
 		
+//		Button renameProject = new Button("Rename Project");
+//		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(renameProject, 2, 5);
+//		GridPane.setHalignment(renameProject, HPos.LEFT);
+		
+//		Button removeProject = new Button("Delete Project");
+//		removeProject.setOnAction((event) -> {controlCenterClient.removeProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
+//		grid.add(removeProject, 2, 6);
+//		GridPane.setHalignment(removeProject, HPos.LEFT);
+
 		Button refreshAll = new Button("refresh");
 		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);

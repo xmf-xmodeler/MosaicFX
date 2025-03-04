@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -58,6 +60,7 @@ import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
@@ -66,6 +69,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -77,7 +81,8 @@ import tool.xmodeler.XModeler;
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
-
+	private XMLDatabase db = new XMLDatabase();
+	
 	public AbstractPackageViewer getDiagram() {
 		return diagram;
 	}
@@ -1169,6 +1174,50 @@ public class DiagramActions {
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
+	/**
+	 * @author Nicolas Engel
+	 */
+	public void exportToDB()
+	{
+		Platform.runLater(() -> {
+			try {
+				List<String> documentNames =  db.getProjectDocumentNames();
+				
+				
+//				if (db.firstTime)
+//				{
+					RenameProjektDialog rpd = new RenameProjektDialog();
+					Platform.runLater(() -> {
+					rpd.start(diagram,db,documentNames);
+					});
+					
+//					db.firstTime = false;
+//					
+//				}
+//				else 
+//				{
+//					db.writeToDB((FmmlxDiagram)this.diagram);
+//				}
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+	}
+	/**
+	 * @author Nicolas Engel
+	 */
+//	public void renameProjekt()
+//	{
+//		Platform.runLater(()-> {
+//			RenameProjektDialog rpd = new RenameProjektDialog();
+//			rpd.start(diagram);
+//		});
+//	}
 
 	public void exportSvg() {
 		Platform.runLater(() ->{

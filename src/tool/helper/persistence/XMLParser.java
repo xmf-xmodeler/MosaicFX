@@ -88,6 +88,8 @@ public class XMLParser {
 		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
+	
+	
 	private int getVersion(File inputFile) {
 		String importVersion = null;
 		Element rootTemp = getRoot(inputFile);		
@@ -133,6 +135,7 @@ public class XMLParser {
 
 				for (int i = 0; i < diagramList.getLength(); i++) {
 					Node node = diagramList.item(i);
+					System.err.println(node.getNodeName());
 					if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.DIAGRAM.getName()) ) {
 						buildDiagram((Element)node);
 					}
