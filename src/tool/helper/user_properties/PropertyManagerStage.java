@@ -43,7 +43,7 @@ public class PropertyManagerStage extends Stage {
 		Scene scene = new Scene(root);
 		setTitle("Preferences");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
-		setWidth(580);
+		setWidth(700);
 		setHeight(350);
 		setResizable(false);
 		setScene(scene);
@@ -54,9 +54,9 @@ public class PropertyManagerStage extends Stage {
 	private void addTabs(VBox root) {
 		TabPane tabPane = new TabPane();
 		root.getChildren().add(tabPane);
-		Tab directoriesTab = new Tab("Directories");
+		Tab directoriesTab = new Tab("Model Directory");
 		Tab userInterfaceTab = new Tab("Control Center Settings");
-		Tab xmlDatabaseTab = new Tab("XML Database");
+		Tab xmlDatabaseTab = new Tab("BaseX Connection Data");
 		// debugTab not running currently
 		// Tab debugTab = new Tab("Debugging");
 		//tabPane.getTabs().addAll(directoriesTab, userInterfaceTab,xmlDatabaseTab /* ,debugTab */);
@@ -76,7 +76,7 @@ public class PropertyManagerStage extends Stage {
 		
 		UploadConfig uc = new UploadConfig();
 		GridPane saveTabContentGrid = uc.gridPane;
-		Button okButton = JavaFxButtonAuxilary.createButton("OK", e ->uc.setResult(this));
+		Button okButton = JavaFxButtonAuxilary.createButton("Update BaseX Connection Data", e ->uc.setResult(this));
 		saveTabContentGrid.add(okButton, 0, 6);
 		xmlDatabaseTab.setContent(saveTabContentGrid);
 	}

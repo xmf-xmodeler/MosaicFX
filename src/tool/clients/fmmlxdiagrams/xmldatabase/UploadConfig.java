@@ -136,7 +136,7 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 
 	    // Show success message
 	    
-	    Alert alert = new Alert(AlertType.CONFIRMATION);
+	    Alert alert = new Alert(AlertType.INFORMATION);
 	    alert.setContentText("The following connection data has been saved:\n"
 	    		+ "Host: " +  hostname +"\n"
 	    		+ "Database name: " + dbName + "\n"
