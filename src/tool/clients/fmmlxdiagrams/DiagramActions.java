@@ -1199,11 +1199,8 @@ public class DiagramActions {
 //					db.writeToDB((FmmlxDiagram)this.diagram);
 //				}
 				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
+			}  catch (Exception e) {
+				db.showAlertDialog();
 				e.printStackTrace();
 			}
 		});

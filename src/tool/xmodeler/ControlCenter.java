@@ -427,7 +427,7 @@ public class ControlCenter extends Stage {
 		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
 
-		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, getDiagramNameSuggestion("UmlDiagram"))); 
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, getDiagramNameSuggestion("UMLppDiagram"))); 
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
