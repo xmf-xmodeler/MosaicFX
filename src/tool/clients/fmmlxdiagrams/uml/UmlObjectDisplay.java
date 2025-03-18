@@ -287,8 +287,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				NodeLabel.Action editConstraintAction = () -> diagram.getActions().editConstraint(object,con);
 				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, editConstraintAction, con.getName());
 				coinstraintsBox.addNodeElement(constraintLabel);
-				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.getLevel() + "");
-				coinstraintsBox.addNodeElement(constraintLevelLabel);
+				//NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.getLevel() + "");
+				//coinstraintsBox.addNodeElement(constraintLevelLabel);
 			}
 		}
 		currentY = yAfterConstraintBox;
