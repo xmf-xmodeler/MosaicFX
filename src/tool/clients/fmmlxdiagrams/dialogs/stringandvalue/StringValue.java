@@ -86,6 +86,7 @@ public class StringValue {
 		public static final String maximum = "Maximum";
 		public static final String upperLimit = "Upper limit";
 		public static final String instLevel = "InstLevel";
+		public static final String instLevelLong = "Instantiation Level";
 		public static final String displayName = "Display Name";
 		public static final String identifier = "Identifier";
 		public static final String multiplicity = "Multiplicity";

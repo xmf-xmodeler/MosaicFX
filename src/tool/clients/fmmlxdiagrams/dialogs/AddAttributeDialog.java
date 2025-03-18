@@ -73,10 +73,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
 
-		if(!diagram.isUMLMode()) {
+		/*if(!diagram.isUMLMode()) {
 			types.add(new AddAttributeDialogDataType("Complex", AddAttributeDialogMetaDataType.NonPrimitive));
 			types.add(new AddAttributeDialogDataType("AuxiliaryClass", AddAttributeDialogMetaDataType.NonPrimitive));
-		}
+		}*/
 
 		// add enums to type list
 		diagramEnums = diagram.getEnums();
@@ -116,8 +116,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 				if (!diagram.isUMLMode()) {
 					return new Result(selectedObject.getPath(), nameTextField.getText(), levelComboBox.getLevel(),
-							datatype, multiplicity, isIntrinsicBox.isSelected(), isIncompleteBox.isSelected(),
-							isOptionalBox.isSelected());
+							datatype, multiplicity,true, false, false); //set all checkboxes to false per default 
+							//isIntrinsicBox.isSelected(), isIncompleteBox.isSelected(),	isOptionalBox.isSelected());
 				} else {
 					return new Result(selectedObject.getPath(), nameTextField.getText(), new Level(0, 0), datatype,
 							multiplicity, true, false, false);
@@ -221,7 +221,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 	private void layout() {
 		nameLabel = new Label(StringValue.LabelAndHeaderTitle.name);
 		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
-		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
+		levelLabel = new Label(StringValue.LabelAndHeaderTitle.instLevelLong);
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
 		showNonPrimitive = new CheckBox("Show all types");
@@ -317,30 +317,71 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		isIntrinsicBox.setSelected(true);
 		isIncompleteBox = new CheckBox();
 		isOptionalBox = new CheckBox();
+		
+		
 
-		if (!diagram.isUMLMode()) {
+		if (!diagram.isUMLMode()) {		
+			displayMultiplicityLabel.setText(multiplicity.toStringUml());
+			classLabel.setText(StringValue.LabelAndHeaderTitle.aClass);
+
+			grid.setHgap(10);
+			
+			int widthUml = 310;
+			
+			nameTextField.setMaxWidth(widthUml);
+			classTextField.setMaxWidth(widthUml);
+			typeComboBox.setMaxWidth(180);
+			
+			grid.add(nameLabel, 0, 0, 1, 1);
+			grid.add(nameTextField, 1, 0, 3, 1);
+			
+			grid.add(levelLabel, 0, 1, 1, 1);
+			grid.add(levelComboBox, 1, 1, 3, 1);
+			
+			grid.add(classLabel, 0, 2, 1, 1);
+			grid.add(classTextField, 1, 2, 3, 1);
+				
+			grid.add(typeLabel, 0, 3, 1, 1);
+			grid.add(typeComboBox, 1, 3, 2, 1);
+			grid.add(showNonPrimitive, 3, 3, 1, 1);
+			
+			grid.add(multiplicityLabel, 0, 4, 1, 1);
+			grid.add(displayMultiplicityLabel, 1, 4, 2, 1);
+			grid.add(multiplicityButton, 2, 4, 1, 1);
+			
+			
+			/* OLD LAYOUT
+			 * 
+			 * 
 			classTextField.setPrefWidth(COLUMN_WIDTH);
 			showNonPrimitive.setPrefWidth(COLUMN_WIDTH);
 			levelComboBox.setPrefWidth(COLUMN_WIDTH);
 			typeComboBox.setPrefWidth(COLUMN_WIDTH);
 			multiplicityButton.setPrefWidth(COLUMN_WIDTH);
-			typeComboBox.setPrefWidth(COLUMN_WIDTH);
-			
+			typeComboBox.setPrefWidth(COLUMN_WIDTH);			
 			grid.add(nameTextField, 1, 0);
 			grid.add(nameLabel, 0, 0);
+			
 			grid.add(classLabel, 0, 1);
 			grid.add(classTextField, 1, 1);
+			
 			grid.add(levelLabel, 0, 3);
-			grid.add(isIntrinsicLabel, 0, 7);
-			grid.add(isIncompleteLabel, 0, 8);
-			grid.add(isOptionalLabel, 0, 9);
 			grid.add(levelComboBox, 1, 3);
-			grid.add(isIntrinsicBox, 1, 7);
-			grid.add(isIncompleteBox, 1, 8);
-			grid.add(isOptionalBox, 1, 9);
+			
+			grid.add(typeLabel, 0, 2, 1, 1);
+			grid.add(typeComboBox, 1, 2, 2, 1);
+			grid.add(showNonPrimitive, 3, 2, 1, 1);
+			
+			//grid.add(isIntrinsicLabel, 0, 7);
+			//grid.add(isIncompleteLabel, 0, 8);
+			//grid.add(isOptionalLabel, 0, 9);
+			
+			//grid.add(isIntrinsicBox, 1, 7);
+			//grid.add(isIncompleteBox, 1, 8);
+			//grid.add(isOptionalBox, 1, 9);
 			grid.add(multiplicityLabel, 0, 5);
 			grid.add(multiplicityButton, 1, 5);
-			grid.add(displayMultiplicityLabel, 1, 6);
+			grid.add(displayMultiplicityLabel, 1, 6);*/
 		} else {
 			displayMultiplicityLabel.setText(multiplicity.toStringUml());
 			classLabel.setText(StringValue.LabelAndHeaderTitle.aClass);
