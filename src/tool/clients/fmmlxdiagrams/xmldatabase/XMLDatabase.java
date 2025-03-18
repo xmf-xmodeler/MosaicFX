@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
@@ -19,6 +20,7 @@ import org.basex.core.cmd.Open;
 import org.w3c.dom.Document;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import tool.clients.diagrams.DiagramClient;
@@ -45,6 +47,9 @@ public class XMLDatabase {
 	protected String password;
 	protected String db_name;
 	public boolean firstTime = true;
+	private String errorMessage = "Connection to Database could not be established. "
+			+ "\nPlease ensure that you're database is up and running."
+			+ "\nFor more help please visit le4mm.org.";
 
 	/**
 	 * Uses the ReturnCall to get an XML representation of the model. The XML
@@ -62,6 +67,36 @@ public class XMLDatabase {
 		this.db_name = PropertyManager.getProperty("databaseName");
 		this.querys = new XMLDatabaseQuerys();
 
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	
+	public void showAlertDialog() {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setContentText(getErrorMessage());
+		alert.setTitle("Connection to Database failed");
+        alert.setHeaderText(null);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        Optional<ButtonType> result = alert.showAndWait();
+	}
+	
+	public void showSuccessDialog() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setContentText("Connection to Database <" + this.db_name + "> (" + this.hostname + ":" + this.port + ") successful.");
+        alert.setHeaderText(null);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        Optional<ButtonType> result = alert.showAndWait();
+	}
+	
+	public Boolean isConnected() {
+		try (ClientSession session = new ClientSession(hostname, port, user, password)) {
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**

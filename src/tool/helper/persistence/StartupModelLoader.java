@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.helper.user_properties.PropertyManager;
@@ -21,10 +25,12 @@ public class StartupModelLoader {
 			Platform.runLater(() -> {
 				String savedModelsPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());
 				if (savedModelsPath == null) {
+					showErrorMessage("No model directory saved");
 					return;
 				}
 				Path dir = Paths.get(savedModelsPath);
 				if (!dir.toFile().exists()) {
+					showErrorMessage("Saved path could not be found. Path to directory is now deleted");
 					PropertyManager.deleteProperty(UserProperty.MODELS_DIR.toString());
 					return;
 				}
@@ -35,6 +41,15 @@ public class StartupModelLoader {
 			});
 		};
 		FmmlxDiagramCommunicator.getCommunicatorWhenReady(onCommunicatorAvailable);
+	}
+	
+	private void showErrorMessage(String customMessage) {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setContentText("Model directory could not be loaded.\nError: "+customMessage);
+		alert.setTitle("Loading of Model Directory Failed");
+        alert.setHeaderText(null);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        Optional<ButtonType> result = alert.showAndWait();
 	}
 	
 	// FH 04.03.2024

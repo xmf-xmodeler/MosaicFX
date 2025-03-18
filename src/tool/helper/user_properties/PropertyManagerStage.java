@@ -27,6 +27,7 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.xmodeler.ControlCenter;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
@@ -34,14 +35,16 @@ public class PropertyManagerStage extends Stage {
 	private Boolean isInDidacticMode;
 	private String activeMode;
 	private String otherMode;
+	
+	private Boolean isInAlphaMode;
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();
 		Scene scene = new Scene(root);
 		setTitle("Preferences");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
-		setWidth(450);
-		setHeight(500);
+		setWidth(580);
+		setHeight(350);
 		setResizable(false);
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
@@ -56,7 +59,7 @@ public class PropertyManagerStage extends Stage {
 		Tab xmlDatabaseTab = new Tab("XML Database");
 		// debugTab not running currently
 		// Tab debugTab = new Tab("Debugging");
-		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab,xmlDatabaseTab /* ,debugTab */);
+		//tabPane.getTabs().addAll(directoriesTab, userInterfaceTab,xmlDatabaseTab /* ,debugTab */);
 		buildDirectoriesTab(directoriesTab);
 		buildUserInterfaceTab(userInterfaceTab);
 		buildXmlDatabaseTab(xmlDatabaseTab);
@@ -65,16 +68,15 @@ public class PropertyManagerStage extends Stage {
     
     
 		Tab didacticMLTab = createDidacticMlTab();
-		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
-		buildDirectoriesTab(directoriesTab);
-		buildUserInterfaceTab(userInterfaceTab);
+		Tab alphaModeTab = activateAlphaModeTab();
+		tabPane.getTabs().addAll(xmlDatabaseTab, directoriesTab, userInterfaceTab, didacticMLTab, alphaModeTab);
 	}
 
 	private void buildXmlDatabaseTab(Tab xmlDatabaseTab) {
 		
 		UploadConfig uc = new UploadConfig();
 		GridPane saveTabContentGrid = uc.gridPane;
-		Button okButton = JavaFxButtonAuxilary.createButton("OK", e ->uc.setResult());
+		Button okButton = JavaFxButtonAuxilary.createButton("OK", e ->uc.setResult(this));
 		saveTabContentGrid.add(okButton, 0, 6);
 		xmlDatabaseTab.setContent(saveTabContentGrid);
 	}
@@ -112,6 +114,36 @@ public class PropertyManagerStage extends Stage {
 		return tab;
 	}
 	
+	private Tab activateAlphaModeTab() {
+		Tab tab = new Tab();
+			
+		GridPane alphaModeGrid = new GridPane();
+		formatGrid(alphaModeGrid);
+		
+		isInAlphaMode = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.ALPHA_MODE.toString()));
+		String displayText = ((isInAlphaMode) ? "Deactivate Alpha Mode" : "Activate Alpha Mode");
+		
+		tab.setText(displayText);
+		
+		Label currentMode = new Label("Alpha Mode is currently " + ((isInAlphaMode) ? "activated" : "deactivated") );
+		
+		Button toggleAlphaModeBtn = new Button(displayText);
+		toggleAlphaModeBtn.setOnAction(this::toggleAlphaMode);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		alphaModeGrid.add(currentMode, 0, 1);
+		alphaModeGrid.add(separator, 0, 2);
+		alphaModeGrid.add(toggleAlphaModeBtn, 0, 4);
+		GridPane.setHalignment(toggleAlphaModeBtn, HPos.CENTER);
+		
+		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
+		
+		
+		tab.setContent(alphaModeGrid);
+		return tab;
+	}
+	
 	 private void showDeleteStatsDialog(javafx.event.ActionEvent event) {
 	        Alert alert = new Alert(AlertType.WARNING);
 	        alert.setTitle("Delete statistics");
@@ -137,6 +169,18 @@ public class PropertyManagerStage extends Stage {
 	        }	        
 	    }
 
+	 private void toggleAlphaMode(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle((isInAlphaMode) ? "Deactivate Alpha Mode" : "Activate Alpha Mode");
+	        alert.setHeaderText(null);
+	        alert.setContentText("Confirm change. Change will apply on restart");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	Boolean newModeBoolean = (isInAlphaMode)? false : true;
+	        	PropertyManager.setProperty(UserProperty.ALPHA_MODE.toString(), newModeBoolean.toString());
+	        }	        
+	    }
 
 	private void buildDirectoriesTab(Tab directoriesTab) {
 		String savedModlesPath = PropertyManager.getProperty(UserProperty.MODELS_DIR.toString());

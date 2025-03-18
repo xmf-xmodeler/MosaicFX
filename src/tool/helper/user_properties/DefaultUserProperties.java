@@ -11,5 +11,7 @@ public class DefaultUserProperties extends Properties {
 		put(UserProperty.TOOL_Y.toString(), "300");
 		put(UserProperty.LOAD_MODELS_BY_STARTUP.toString(),"false");
 		put(UserProperty.APPLICATION_CLOSING_WARNING.toString(), "true");
+		put(UserProperty.DIDACTIC_MODE.toString(), "false");
+		put(UserProperty.ALPHA_MODE.toString(), "false");
 	}
 }

@@ -1,16 +1,25 @@
 package tool.clients.fmmlxdiagrams.xmldatabase;
 
+import java.util.Optional;
+
 import javax.swing.JOptionPane;
 
+import org.apache.logging.log4j.core.config.Property;
+
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.PropertyManagerStage;
+import tool.xmodeler.ControlCenter;
 
 /**
  * 
@@ -21,11 +30,11 @@ import tool.helper.user_properties.PropertyManager;
  */
 public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	
-	private Label hostname = new Label("hostname");
-	private Label databaseName = new Label("database name");
-	private Label port = new Label ("port");
-	private Label userLabel = new Label("user");
-	private Label passwordLabel = new Label("password");
+	private Label hostname = new Label("Hostname");
+	private Label databaseName = new Label("Database name");
+	private Label port = new Label ("Port");
+	private Label userLabel = new Label("User");
+	private Label passwordLabel = new Label("Password");
 
 	
 	private TextField hostnameTextfield = new TextField();
@@ -33,6 +42,8 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	private TextField portTextfield	= new TextField();
 	private TextField userTextfield = new TextField();
 	private TextField passwordTextfield = new TextField();
+	
+	private Button checkConnectionBtn = new Button("Check Database Connection");
 	
 	public GridPane gridPane = new GridPane();
 
@@ -62,7 +73,7 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	private void layout() {
 	    Label[] labels = {hostname, databaseName, port, userLabel, passwordLabel};
 	    TextField[] textFields = {hostnameTextfield, databaseNameTextfield, portTextfield, userTextfield, passwordTextfield};
-	    String[] properties = {"hostname", "databaseName", "port", "user", ""}; // Empty string for the password field since it's not set from properties
+	    String[] properties = {"hostname", "databaseName", "port", "user", "password"}; // Empty string for the password field since it's not set from properties
 	    
 	    this.gridPane.setPadding(new Insets(10, 10, 10, 10));
 	    this.gridPane.setHgap(10); // Optional: Horizontal gap between columns
@@ -77,23 +88,66 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	            textFields[i].setText(PropertyManager.getProperty(properties[i]));
 	        }
 	    }
+	    
+	    checkConnectionBtn.setOnAction(this::connectionMessage);
+	    this.gridPane.add(checkConnectionBtn, 0, labels.length+2); //+1 reserved for OK button
+	}
+	
+	private void connectionMessage(ActionEvent e) {
+		XMLDatabase db = new XMLDatabase();
+		Alert alert;
+		PropertyManager properties = new PropertyManager();
+		
+		if(db.isConnected()) {
+			alert = new Alert(AlertType.CONFIRMATION);
+	        alert.setContentText("Connection to Database <" + properties.getProperty("databaseName").toString() +  "> successful.");
+		} else {
+			alert = new Alert(AlertType.ERROR);
+	        alert.setContentText(db.getErrorMessage());
+		}
+		
+        alert.setTitle("Check connection to BaseX Database");
+        alert.setHeaderText(null);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        Optional<ButtonType> result = alert.showAndWait();
 	}
 	
 	/**
      * Saves the connection data entered by the user into the property manager.
      * This method retrieves the text from each text field and stores it using the property manager.
      */
-	public void setResult() 
+	public void setResult(PropertyManagerStage pms) 
 	{
+		String hostname = this.hostnameTextfield.getText();
+		String dbName = this.databaseNameTextfield.getText();
+		String port = this.portTextfield.getText();
+		String user = this.userTextfield.getText();
+		String pw = this.passwordTextfield.getText();
+
+				
 	    PropertyManager manager = new PropertyManager();
-	    manager.setProperty("hostname", this.hostnameTextfield.getText());
-	    manager.setProperty("databaseName", this.databaseNameTextfield.getText());
-	    manager.setProperty("port", this.portTextfield.getText());
-	    manager.setProperty("user", this.userTextfield.getText());
-	    manager.setProperty("password", this.passwordTextfield.getText());
+	    manager.setProperty("hostname", hostname);
+	    manager.setProperty("databaseName", dbName);
+	    manager.setProperty("port", port);
+	    manager.setProperty("user", user);
+	    manager.setProperty("password", pw);
+	    
+	    ((ControlCenter) pms.getWindows().get(0)).toggleDatabaseVisbility();
 
 	    // Show success message
-	    JOptionPane.showMessageDialog(null, "Settings saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+	    
+	    Alert alert = new Alert(AlertType.CONFIRMATION);
+	    alert.setContentText("The following connection data has been saved:\n"
+	    		+ "Host: " +  hostname +"\n"
+	    		+ "Database name: " + dbName + "\n"
+	    		+ "Port number: " + port + "\n"
+	    		+ "User name: " + user + "\n"
+	    		+ "Password: " + pw + "\n");
+		alert.setTitle("New connection data saved");
+        alert.setHeaderText(null);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        Optional<ButtonType> result = alert.showAndWait();
+	    
 	}
 	
 	/**

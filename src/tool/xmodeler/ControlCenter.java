@@ -74,7 +74,7 @@ public class ControlCenter extends Stage {
 	private final ListView<String> projectLV = new ListView<String>();
 	private final ListView<String> modelLV = new ListView<String>();
 	private final ListView<String> diagramLV = new ListView<String>();
-	private MenuBar menuBar;
+	private ControlCenterMenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
 	
 	private int toolWidth = Integer.valueOf(PropertyManager.getProperty("toolWidth"));
@@ -85,7 +85,7 @@ public class ControlCenter extends Stage {
 	}
 
 	public ControlCenter() {
-		setTitle("XModeler ML Control Center");
+		setTitle("XModelerML Control Center");
 		setResizable(false);
 		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
 			setTitle("UML-MX\u00a9 Control Center");
@@ -128,6 +128,10 @@ public class ControlCenter extends Stage {
 				
 	}
 	
+	public void toggleDatabaseVisbility() {
+		this.menuBar.toggleDbMenu();
+	}
+	
 	private Button buildLearningUnitsButton() {
 		Button b = new Button();
 		b.setText("Open UML++ Learning Units");
@@ -156,22 +160,35 @@ public class ControlCenter extends Stage {
 		}
 	}
 
-	private final class ControlCenterMenuBar extends MenuBar{
+	protected final class ControlCenterMenuBar extends MenuBar{
+		
+		Menu helpMenu;
+		Menu DatabaseMenu;
 		
 		public ControlCenterMenuBar() {
-			Menu helpMenu = new Menu("Help");
+			helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
 			
-			Menu DatabaseMenu = new Menu("Database");
+			DatabaseMenu = new Menu("Database");
 			getMenus().add(DatabaseMenu);
 			buildDatabaseMenu(DatabaseMenu);
 			
+			//only show DB Menu item when connection is entered
 			
+			toggleDbMenu();
+		}
+		
+		public void toggleDbMenu() {
+			if (PropertyManager.dbConnectionEntered())
+				DatabaseMenu.setDisable(false);
+			else 
+				DatabaseMenu.setDisable(true);
 		}
 		
 		private void buildDatabaseMenu(Menu DatabaseMenu)
 		{
+			
 			MenuItem getProjectsFromDB = new MenuItem("Get Projects from Database");
 			getProjectsFromDB.setOnAction(e->getProjectsFromDB());
 			
@@ -181,10 +198,13 @@ public class ControlCenter extends Stage {
 			MenuItem dbConsole = new MenuItem("Database Console");
 			dbConsole.setOnAction(e-> dBConsole());
 			
-			MenuItem deleteProject = new MenuItem("Delete Project");
+			MenuItem deleteProject = new MenuItem("Delete Project in Database");
 			deleteProject.setOnAction(e -> deleteProjectFormDB());
 			
-			DatabaseMenu.getItems().addAll(getProjectsFromDB,versionSelection,dbConsole,deleteProject);
+			MenuItem checkConnection = new MenuItem("Check DB Connection");
+			checkConnection.setOnAction(e -> checkDBconnection());
+			
+			DatabaseMenu.getItems().addAll(getProjectsFromDB,versionSelection,dbConsole,deleteProject, checkConnection);
 		}
 
 		private void buildHelpMenu(Menu helpMenu) {
@@ -209,18 +229,32 @@ public class ControlCenter extends Stage {
 			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem, getOnlineTutorial,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
+		private void checkDBconnection() {
+			XMLDatabase db = new XMLDatabase();
+			if (db.isConnected())
+				db.showSuccessDialog();
+			else
+				db.showAlertDialog();
+		}
+		
 		/**
 		 * @author Nicolas Engel
 		 */
 		private void getProjectsFromDB()
 		{
 			XMLDatabase database = new XMLDatabase();
-			try 
-			{
-				database.getDiagramsFromDB();
-			}
-			catch (Exception e) {
-				// TODO: handle exception
+			
+			if(database.isConnected()) {
+				try 
+				{
+					database.getDiagramsFromDB();
+					
+				}
+				catch (Exception e) {
+					
+				}
+			} else {
+				database.showAlertDialog();
 			}
 		}
 
@@ -229,14 +263,22 @@ public class ControlCenter extends Stage {
 		 */
 		private void dBConsole()
 		{
-			XMLDatabaseConsole console = new XMLDatabaseConsole();
-			XMLDatabaseConsoleTabs tabs = new XMLDatabaseConsoleTabs();
-			try
-			{
-				tabs.start();
-			}
-			catch (Exception e) {
-				// TODO: handle exception
+			
+			XMLDatabase db = new XMLDatabase();
+			
+			if(db.isConnected()) {
+			
+				XMLDatabaseConsole console = new XMLDatabaseConsole();
+				XMLDatabaseConsoleTabs tabs = new XMLDatabaseConsoleTabs();
+				try
+				{
+					tabs.start();
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+				}
+			} else {
+				db.showAlertDialog();
 			}
 		}
 		/**
@@ -244,13 +286,19 @@ public class ControlCenter extends Stage {
 		 */
 		private void deleteProjectFormDB()
 		{
-		    try {
-		       
-		        XMLDatabaseDeleteUI deleteUI = new XMLDatabaseDeleteUI();
-		        deleteUI.start();
-		    } catch (Exception e) {
-		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
-		    }
+			XMLDatabase db = new XMLDatabase();
+			
+			if(db.isConnected()) {
+			    try {
+			       
+			        XMLDatabaseDeleteUI deleteUI = new XMLDatabaseDeleteUI();
+			        deleteUI.start();
+			    } catch (Exception e) {
+			        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+			    }
+			} else {
+				db.showAlertDialog();
+			}
 		    
 	    }
 		
@@ -259,13 +307,18 @@ public class ControlCenter extends Stage {
 		 */
 		private void versionSelection()
 		{
-			try {
-			       
-		        VersionSelectionUI versionUI = new VersionSelectionUI();
-		        versionUI.start();
-		    } catch (Exception e) {
-		        System.err.println(e.getStackTrace());// Handle exceptions appropriately
-		    }
+			XMLDatabase db = new XMLDatabase();
+			if(db.isConnected()) {
+				try {
+				       
+			        VersionSelectionUI versionUI = new VersionSelectionUI();
+			        versionUI.start();
+			    } catch (Exception e) {
+			        System.err.println(e.getStackTrace());// Handle exceptions appropriately
+			    }
+			} else {
+				db.showAlertDialog();
+			}
 		}
 		
 		private void openWebpage(String url) {
@@ -330,7 +383,7 @@ public class ControlCenter extends Stage {
 		}
 	}
 		
-
+	
 	private GridPane buildGridPane() {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
@@ -342,7 +395,7 @@ public class ControlCenter extends Stage {
 		Button newProject = new Button("Create Project");
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});
 		grid.add(newProject, 2, 1);
-		GridPane.setHalignment(newProject, HPos.CENTER);
+		GridPane.setHalignment(newProject, HPos.RIGHT);
 		
 //		Button renameProject = new Button("Rename Project");
 //		renameProject.setOnAction((event) -> {controlCenterClient.renameProject(modelLV.getSelectionModel().getSelectedItem());controlCenterClient.getAllProjects();});
@@ -354,9 +407,13 @@ public class ControlCenter extends Stage {
 //		grid.add(removeProject, 2, 6);
 //		GridPane.setHalignment(removeProject, HPos.LEFT);
 
-		Button refreshAll = new Button("refresh");
-		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
-		GridPane.setHalignment(refreshAll, HPos.RIGHT);
+		//Button refreshAll = new Button("refresh");
+		//refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
+		Button refreshAll = JavaFxButtonAuxilary.createButtonWithPicture(null, (event) -> controlCenterClient.getAllProjects(),
+				"resources/png/update.12.png");
+		refreshAll.setMaxHeight(1);
+		
+		GridPane.setHalignment(refreshAll, HPos.CENTER);
 		
 		Label modelLabel = new Label("Models");	//Button added later because of DidacticMode check
 		
@@ -370,14 +427,14 @@ public class ControlCenter extends Stage {
 		Button newDiagram2 = new Button("Create UML++ Diagram");		//reactivated by Tom for uml concrete syntax implementation, also some buttons deactivated for simplicity for dumb users
 		newDiagram2.setDisable(true);
 
-		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, "UMLDiagram")); 
+		newDiagram2.setOnAction(e -> callNewDiagramDialog(true, getDiagramNameSuggestion("UmlDiagram"))); 
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 				);
-		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion())); 
+		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion("FmmlxDiagram"))); 
 		
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
 		
@@ -400,7 +457,7 @@ public class ControlCenter extends Stage {
 
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
 		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());
-		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Model Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
+		Button loadModelDir = JavaFxButtonAuxilary.createButton("Load Directory", (e) -> {new StartupModelLoader().loadModelsFromSavedModelsPath();});
 		
 		Button howToStart = new Button("How to...");
 			howToStart.setOnAction(e -> {
@@ -408,41 +465,47 @@ public class ControlCenter extends Stage {
 				d.showAndWait();
 			});
 			
+			
 		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {		
-		newDiagram2.disableProperty().bind(
-				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
-		grid.add(refreshAll, 2, 1);
-		grid.add(concreteSyntaxWizardStart, 3, 4);
-		grid.add(loadModelDir, 2, 4);
-		grid.add(modelLabel, 3, 1);
-		grid.add(modelLV, 3, 2);
-		grid.add(newModel, 3, 1);
-		grid.add(howToStart, 4, 4);
-		grid.add(newDiagram, 4, 1);			
+			newDiagram2.disableProperty().bind(
+					Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+					);
+			grid.add(refreshAll, 2, 1);
+			grid.add(concreteSyntaxWizardStart, 2, 4);
+			GridPane.setHalignment(concreteSyntaxWizardStart, HPos.RIGHT);
+			grid.add(loadModelDir, 2, 4);
+			GridPane.setHalignment(loadModelDir, HPos.LEFT);
+			//grid.add(modelLabel, 3, 1);
+			//grid.add(modelLV, 3, 2);
+			//grid.add(newModel, 3, 1); //model pane removed because not used
+			toolWidth = toolWidth - 237; //adjustment of window width due to removed model pane
+			//grid.add(howToStart, 4, 4); //removed for now because not used
+			grid.add(newDiagram, 4, 1);			
+			grid.add(newDiagram2, 4, 4);
 		}
 		else {
-		projectTree.setOnMouseClicked(e->{
-			if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
-			newDiagram2.setDisable(true);
-			} else {
-				newDiagram2.setDisable(false);
-			}
-		});
-		projectLabel.setText("Models");
-		grid.add(newDiagram2, 4, 1);
-		toolWidth = toolWidth - 237;
-		Button learningUnits = this.buildLearningUnitsButton();
-		grid.add(learningUnits, 2, 4);
+			projectTree.setOnMouseClicked(e->{
+				if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
+				newDiagram2.setDisable(true);
+				} else {
+					newDiagram2.setDisable(false);
+				}
+			});
+			grid.add(newDiagram2, 4, 1);
+			toolWidth = toolWidth - 237;
+			Button learningUnits = this.buildLearningUnitsButton();
+			grid.add(learningUnits, 2, 4);
 		}
+		projectLabel.setText("Models");
 		
+
 		return grid;
 	}
 
-	private String getDiagramNameSuggestion() {
+	private String getDiagramNameSuggestion(String prefix) {
 		int i = 1;
-		while(diagramLV.getItems().contains("diagram" + i)) i++;
-		return "diagram" + i;
+		while(diagramLV.getItems().contains(prefix + "_" + i)) i++;
+		return prefix + "_" + i;
 	}
 
 	private void handleClickOnDiagramListView(MouseEvent me) {
@@ -541,7 +604,7 @@ public class ControlCenter extends Stage {
 							setGraphic(null);
 						}
 					}
-					if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()))) && item!=null) {	//Changes name of projects to models for didactit mode
+					if(item!=null) {	//Changes name of projects to models, if only for didactic mode add Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))
 						if(item.equals("Projects")) {
 							setText("Models");
 						}
@@ -584,11 +647,11 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
-		this.removeNoneProjectEntries();
+		this.removeNoneProjectEntries(false);
 });	}
 	
-	private void removeNoneProjectEntries() {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.
-		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+	private void removeNoneProjectEntries(Boolean showSystemProjects) {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.
+		if(!showSystemProjects) {
 			for(int i = 0; i<projectTree.getRoot().getChildren().get(0).getChildren().size(); i++) {
 				if(!projectTree.getRoot().getChildren().get(0).getChildren().get(i).toString().contains("MyProjects")) {
 					projectTree.getRoot().getChildren().get(0).getChildren().remove(i);

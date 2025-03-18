@@ -94,6 +94,18 @@ public class PropertyManager {
 		storeProperties();
 	}
 
+	public static Boolean dbConnectionEntered() {
+		return stringNotNullOrEmpty(properties.getProperty("hostname")) && 
+				stringNotNullOrEmpty(properties.getProperty("port")) &&
+				stringNotNullOrEmpty(properties.getProperty("user")) &&
+				stringNotNullOrEmpty(properties.getProperty("password")) &&
+				stringNotNullOrEmpty(properties.getProperty("databaseName"));
+	}
+	
+	private static Boolean stringNotNullOrEmpty(String input) {
+		return input != null && !input.trim().isEmpty();
+	}
+	
 	public void showPropertyManagerStage() {
 		new PropertyManagerStage().show();
 	}
