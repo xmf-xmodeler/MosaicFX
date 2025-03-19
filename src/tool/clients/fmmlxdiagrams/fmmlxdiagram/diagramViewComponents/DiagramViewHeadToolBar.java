@@ -395,9 +395,6 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildModelMenu(Menu modelMenu) {
 		 JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new
 		 XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
-		 /**
-		 * @author Nicolas Engel
-		 */
 		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save to Database", e -> diagramActions.exportToDB());
 //		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Rename Project", e -> diagramActions.renameProjekt());
 

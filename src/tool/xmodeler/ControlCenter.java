@@ -431,9 +431,9 @@ public class ControlCenter extends Stage {
 		GridPane.setHalignment(newDiagram2, HPos.RIGHT);
 		Button newDiagram = new Button("Create FMMLx Diagram");
 		newDiagram.setDisable(true);
-		newDiagram.disableProperty().bind(
+		/*newDiagram.disableProperty().bind(
 				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-				);
+				);*/
 		newDiagram.setOnAction(e -> callNewDiagramDialog(false, getDiagramNameSuggestion("FmmlxDiagram"))); 
 		
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
@@ -467,9 +467,9 @@ public class ControlCenter extends Stage {
 			
 			
 		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {		
-			newDiagram2.disableProperty().bind(
+			/*newDiagram2.disableProperty().bind(
 					Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-					);
+					);*/
 			grid.add(refreshAll, 2, 1);
 			grid.add(concreteSyntaxWizardStart, 2, 4);
 			GridPane.setHalignment(concreteSyntaxWizardStart, HPos.RIGHT);
@@ -482,6 +482,17 @@ public class ControlCenter extends Stage {
 			//grid.add(howToStart, 4, 4); //removed for now because not used
 			grid.add(newDiagram, 4, 1);			
 			grid.add(newDiagram2, 4, 4);
+			
+			projectTree.setOnMouseClicked(e->{
+				if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
+				newDiagram2.setDisable(true);
+				newDiagram.setDisable(true);
+				} else {
+					newDiagram2.setDisable(false);
+					newDiagram.setDisable(false);
+				}
+			});
+			
 		}
 		else {
 			projectTree.setOnMouseClicked(e->{

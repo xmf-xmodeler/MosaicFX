@@ -95,21 +95,13 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	
 	private void connectionMessage(ActionEvent e) {
 		XMLDatabase db = new XMLDatabase();
-		Alert alert;
-		PropertyManager properties = new PropertyManager();
 		
 		if(db.isConnected()) {
-			alert = new Alert(AlertType.CONFIRMATION);
-	        alert.setContentText("Connection to Database <" + properties.getProperty("databaseName").toString() +  "> successful.");
+			db.showSuccessDialog();
 		} else {
-			alert = new Alert(AlertType.ERROR);
-	        alert.setContentText(db.getErrorMessage());
+			db.showAlertDialog();
 		}
 		
-        alert.setTitle("Check connection to BaseX Database");
-        alert.setHeaderText(null);
-        alert.getButtonTypes().setAll(ButtonType.OK);
-        Optional<ButtonType> result = alert.showAndWait();
 	}
 	
 	/**
