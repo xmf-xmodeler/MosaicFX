@@ -216,6 +216,8 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildViewMenu(Menu viewMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Hide/Unhide Elements...",
 				e -> diagramActions.showUnhideElementsDialog());
+		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Diagram Statistics", e -> diagramActions.showDiagramStatistics());
+		
 		viewMenu.getItems().add(new SeparatorMenuItem());
 
 		class ToggleMenuItem extends MenuItem {

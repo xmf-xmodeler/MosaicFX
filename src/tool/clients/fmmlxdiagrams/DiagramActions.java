@@ -55,6 +55,7 @@ import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeTargetDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.DiagramStatisticsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
@@ -1374,6 +1375,11 @@ public class DiagramActions {
 	}
 	public void showUnhideElementsDialog() {
 		new UnhideElementsDialog(diagram).showDialog();
+	}
+	
+
+	public void showDiagramStatistics() {
+		new DiagramStatisticsDialog(diagram).show();
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramCanvas view) {
