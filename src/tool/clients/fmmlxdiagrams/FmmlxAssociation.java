@@ -291,7 +291,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		}
 		HeadStyle deco = HeadStyle.ARROW;
 		try{
-			deco = HeadStyle.valueOf(this.getAssociationType().endDeco);
+			deco = HeadStyle.valueOf(this.getAssociationType().endDeco.toUpperCase());
 		} catch(Exception e) {
 			System.err.println("Deco Style " + this.getAssociationType().endDeco + " not found");
 		}
@@ -305,7 +305,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		}
 		HeadStyle deco = HeadStyle.ARROW;
 		try{
-			deco = HeadStyle.valueOf(this.getAssociationType().startDeco);
+			deco = HeadStyle.valueOf(this.getAssociationType().startDeco.toUpperCase());
 		} catch(Exception e) {
 			System.err.println("Deco Style " + this.getAssociationType().startDeco + " not found");
 		}

@@ -733,7 +733,7 @@ public class DiagramActions {
 				switch (result.type) {
 					case Attribute:
 						diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(), result.property.getName(),
-								result.oldType, result.newType);
+								result.oldType, result.newType, result.code);
 						break;
 					case Operation:
 						diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(), result.property.getName(),

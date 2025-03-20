@@ -214,6 +214,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 	private Menu createAttributeSubMenu() {
 		Menu attributeMenu = new Menu("Attribute");
+		FmmlxAttribute selectedAttribute = activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null;
 
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addAttributeDialog(object));
@@ -227,16 +228,16 @@ public class ObjectContextMenu extends ContextMenu {
 		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		
 		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, null, object.getOwnAttributes()));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, selectedAttribute, object.getOwnAttributes()));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 		MenuItem changeMulItem = new MenuItem("Change multiplicity");
 		changeMulItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 
 		MenuItem genGetterItem = new MenuItem("Generate Getter");
-		genGetterItem.setOnAction(e -> actions.generateGetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+		genGetterItem.setOnAction(e -> actions.generateGetter(object, selectedAttribute));
 		MenuItem genSetterItem = new MenuItem("Generate Setter");
-		genSetterItem.setOnAction(e -> actions.generateSetter(object, activeProperty instanceof FmmlxAttribute ? (FmmlxAttribute) activeProperty : null));
+		genSetterItem.setOnAction(e -> actions.generateSetter(object, selectedAttribute));
 
 
 		if(!diagram.isUMLMode()) {

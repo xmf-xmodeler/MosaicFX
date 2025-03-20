@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.StringConverter;
@@ -18,8 +17,6 @@ import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialogDataType.AddAttribut
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
-
-import org.apache.batik.apps.svgbrowser.JSVGViewerFrame.NewWindowAction;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> {
 

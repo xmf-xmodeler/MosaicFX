@@ -1456,13 +1456,14 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAttributeOwner", message);
 	}
 
-	public void changeAttributeType(int diagramID, String objectName, String attributeName, String oldType, String newType) {
+	public void changeAttributeType(int diagramID, String objectName, String attributeName, String oldType, String newType, String converter) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attributeName),
 				new Value(oldType),
-				new Value(newType)};
+				new Value(newType),
+				new Value(converter)};
 		sendMessage("changeAttributeType", message);
 	}
 
