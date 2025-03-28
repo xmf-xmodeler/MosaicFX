@@ -632,6 +632,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public javafx.scene.Node getConcreteSyntaxIcon(int size) {
 		if(!(diagram instanceof FmmlxDiagram)) return null;
+		if(!((FmmlxDiagram)diagram).getDiagramViewToolBarModel().getPropertieValue(DiagramDisplayProperty.CONCRETESYNTAX)) return null;
 		ConcreteSyntax myConcreteSyntax = findMyConcreteSyntax((FmmlxDiagram)diagram, 1);
 		if(myConcreteSyntax == null) return null;
 		return new ConcreteSyntaxIcon(myConcreteSyntax, size);

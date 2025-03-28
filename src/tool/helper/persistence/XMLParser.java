@@ -35,7 +35,7 @@ import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 
 /**
- * This class is used to send data that is contained in a XML-represenation of an model to the backend. So later the model and its diagrams could be displayed in the java-frontend
+ * This class is used to send data that is contained in a XML-representation of an model to the backend. So later the model and its diagrams could be displayed in the java-frontend
  */
 public class XMLParser {
 	private FmmlxDiagramCommunicator communicator = FmmlxDiagramCommunicator.getCommunicator();
@@ -196,14 +196,28 @@ public class XMLParser {
 			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.PACKAGE_IMPORT.getName()) ) {
 				//add your needed action for an import here
 				System.err.println(node.getTextContent());
+				
 			}
 		}
 	}
 
 	private void sendModelDataToXMF(Integer diagramId) {
+		Element imports = XMLUtil.getChildElement(root, XMLTags.IMPORTS.getName());
 		Element model = XMLUtil.getChildElement(root, XMLTags.MODEL.getName());
+		
+		NodeList importList = imports.getChildNodes();
+		Vector<String> importListString = new Vector<>();
+		for(int i = 0; i < importList.getLength(); i++) {
+			if (importList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element importElement = (Element) importList.item(i);
+				String importedModel = importElement.getTextContent();
+				importListString.add(importedModel);
+			}
+		}
+		communicator.setImports(diagramId, importListString);
+		
 		NodeList logList = model.getChildNodes();
-		for (int i = 0; i < logList.getLength(); i++) {
+		for(int i = 0; i < logList.getLength(); i++) {
 			if (logList.item(i).getNodeType() == Node.ELEMENT_NODE) {
 				Element modelElement = (Element) logList.item(i);
 				// Every request is added to a sorted list on XMF side. Because the request are processed in a ordered way it is ensured, that the first operations are finished before the next one it started. So there should be no error because one Object is waiting for another to be created.

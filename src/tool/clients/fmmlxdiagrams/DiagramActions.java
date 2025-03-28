@@ -534,7 +534,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialog.Result result = cod.get();
-				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName, result.newOf.getName());
+				diagram.getComm().changeOf(diagram.getID(), result.object.getPath(), result.oldOfName, result.newOfPath);
 				diagram.updateDiagram();
 			}
 		});
@@ -738,7 +738,7 @@ public class DiagramActions {
 				switch (result.type) {
 					case Attribute:
 						diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(), result.property.getName(),
-								result.oldType, result.newType);
+								result.oldType, result.newType, result.code);
 						break;
 					case Operation:
 						diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(), result.property.getName(),
