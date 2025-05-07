@@ -245,7 +245,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 					opsY += lineHeight;
@@ -271,7 +271,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}			
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
@@ -436,14 +436,14 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegatedOperations()) {
+		for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter() ){
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+		for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
@@ -502,7 +502,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}	
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
@@ -511,7 +511,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();

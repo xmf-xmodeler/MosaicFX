@@ -103,15 +103,20 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return  associationForLinks;
 	}
 	
-	public Vector<FmmlxOperation> getDelegatedOperations() {		
+	public Vector<FmmlxOperation> getDelegatedOperations(Vector<FmmlxObject> alreadyChecked) {
+		if(alreadyChecked.contains(this)) {
+			return new Vector<>();
+		}
+		alreadyChecked.add(this);
+		
 		Vector<FmmlxOperation> delegatedOperations = new Vector<>();
 		FmmlxObject delegatesTo = getDelegatesTo(false);
 		if(delegatesTo != null) {
-			delegatedOperations.addAll(delegatesTo.getAllOperations());
+			delegatedOperations.addAll(delegatesTo.getAllOperations(alreadyChecked));
 		}
 
 		for(FmmlxObject ancestor : getAllAncestors()) {
-			Vector<FmmlxOperation> opsFromAncestors = ancestor.getDelegatedOperations();
+			Vector<FmmlxOperation> opsFromAncestors = ancestor.getDelegatedOperations(alreadyChecked);
 			for(FmmlxOperation o : opsFromAncestors) {
 
 				if(o.getLevel() < level.getMinLevel() &&! delegatedOperations.contains(o)) delegatedOperations.add(o);
@@ -120,13 +125,18 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return delegatedOperations;
 	}
 	
-	public Vector<FmmlxOperation> getDelegateToClassOperations() {
+	public Vector<FmmlxOperation> getDelegateToClassOperations(Vector<FmmlxObject> alreadyChecked) {
+		if(alreadyChecked.contains(this)) {
+			return new Vector<>();
+		}
+		alreadyChecked.add(this);
+		
 		Vector<FmmlxOperation> delelegateToClassOperations = new Vector<>();
 		try {
 			FmmlxObject of = diagram.getObjectByPath(ofPath);
 			Vector<FmmlxOperation> ofOps = new Vector<>(of.ownOperations);
 			ofOps.addAll(of.otherOperations);
-			ofOps.addAll(of.getDelegatedOperations());
+			ofOps.addAll(of.getDelegatedOperations(alreadyChecked));
 			
 			for(FmmlxOperation o : ofOps) {
 				if(o.isDelegateToClassAllowed() && o.getLevel() == this.level.getMinLevel()) {
@@ -167,15 +177,19 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return null;
 	}
 
-	public Vector<FmmlxOperation> getAllOperations() {
+	public Vector<FmmlxOperation> getAllOperations(Vector<FmmlxObject> alreadyChecked) {
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.addAll(ownOperations);
 		result.addAll(otherOperations);
-		result.addAll(getDelegatedOperations());
-		result.addAll(getDelegateToClassOperations());
+		result.addAll(getDelegatedOperations(alreadyChecked));
+		result.addAll(getDelegateToClassOperations(alreadyChecked));
 		return result;
 	}
-
+	
+	public Vector<FmmlxOperation> getAllOperations() {
+		return getAllOperations(new Vector<>());
+	}	
+	
 	public Vector<FmmlxOperationValue> getOperationValues() {
 		Vector<FmmlxOperationValue> result = new Vector<>();
 		result.addAll(operationValues);
@@ -244,7 +258,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			Vector<FmmlxOperation> ops = new Vector<>();
 			ops.addAll(ancestor.getAllOperations());
-			ops.addAll(ancestor.getDelegatedOperations());
+			ops.addAll(ancestor.getDelegatedOperations(new Vector<>()));
 			for (FmmlxOperation operation : ops) {
 				if (operation.getLevel() == this.level.getMinLevel() && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
 					monitorNames.add(operation.getName());
@@ -259,7 +273,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			Vector<FmmlxOperation> ops = new Vector<>();
 			ops.addAll(ancestor.getAllOperations());
-			ops.addAll(ancestor.getDelegatedOperations());
+			ops.addAll(ancestor.getDelegatedOperations(new Vector<>()));
 			for (FmmlxOperation operation : ops) {
 				if (operation.getLevel() == this.level.getMinLevel() && !availableNames.contains(operation.getName()) && operation.getParamNames().size() == 0) {
 					availableNames.add(operation.getName());
