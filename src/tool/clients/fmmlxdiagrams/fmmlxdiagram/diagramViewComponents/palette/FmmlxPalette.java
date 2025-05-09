@@ -200,7 +200,7 @@ public class FmmlxPalette {
 			Collections.sort(levelList, Collections.reverseOrder());
 			HashMap<Integer, TreeItem<AbstractTreeType>> levels = new HashMap<>();
 			for (int i : levelList) {
-				if(i!=0) {
+				if(i>0) {
 					if(!fmmlxDiagram.isUMLMode() || i!=-1) {
 					TreeItem<AbstractTreeType> levelGroup;
 					if(!fmmlxDiagram.isUMLMode()) {

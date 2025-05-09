@@ -85,9 +85,9 @@ public class ControlCenter extends Stage {
 	}
 
 	public ControlCenter() {
-		setTitle("XModelerML Control Center");
+		setTitle("XModelerML\u00a9 Control Center");
 		setResizable(false);
-		if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+		if(PropertyManager.isInDidacticMode()) {
 			setTitle("UML-MX\u00a9 Control Center");
 			//169 is the unicode number of the copyright symbol
 		}
@@ -174,9 +174,9 @@ public class ControlCenter extends Stage {
 			getMenus().add(DatabaseMenu);
 			buildDatabaseMenu(DatabaseMenu);
 			
-			//only show DB Menu item when connection is entered
+			//only show DB Menu item when connection is entered, removed on 2025-03-28
 			
-			toggleDbMenu();
+			//toggleDbMenu();
 		}
 		
 		public void toggleDbMenu() {
@@ -189,19 +189,19 @@ public class ControlCenter extends Stage {
 		private void buildDatabaseMenu(Menu DatabaseMenu)
 		{
 			
-			MenuItem getProjectsFromDB = new MenuItem("Get Projects from Database");
+			MenuItem getProjectsFromDB = new MenuItem("Load All Models");
 			getProjectsFromDB.setOnAction(e->getProjectsFromDB());
 			
-			MenuItem versionSelection = new MenuItem("Version Selection");
+			MenuItem versionSelection = new MenuItem("Load Selected Models/Versions");
 			versionSelection.setOnAction(e->versionSelection());
 			
-			MenuItem dbConsole = new MenuItem("Database Console");
+			MenuItem dbConsole = new MenuItem("Query Models");
 			dbConsole.setOnAction(e-> dBConsole());
 			
-			MenuItem deleteProject = new MenuItem("Delete Project in Database");
+			MenuItem deleteProject = new MenuItem("Delete Model");
 			deleteProject.setOnAction(e -> deleteProjectFormDB());
 			
-			MenuItem checkConnection = new MenuItem("Check DB Connection");
+			MenuItem checkConnection = new MenuItem("Check Connection");
 			checkConnection.setOnAction(e -> checkDBconnection());
 			
 			DatabaseMenu.getItems().addAll(getProjectsFromDB,versionSelection,dbConsole,deleteProject, checkConnection);
@@ -237,9 +237,7 @@ public class ControlCenter extends Stage {
 				db.showAlertDialog();
 		}
 		
-		/**
-		 * @author Nicolas Engel
-		 */
+
 		private void getProjectsFromDB()
 		{
 			XMLDatabase database = new XMLDatabase();
@@ -258,9 +256,7 @@ public class ControlCenter extends Stage {
 			}
 		}
 
-		/**
-		 * @author Nicolas Engel
-		 */
+
 		private void dBConsole()
 		{
 			
@@ -281,9 +277,7 @@ public class ControlCenter extends Stage {
 				db.showAlertDialog();
 			}
 		}
-		/**
-		 * @author Nicolas Engel
-		 */
+
 		private void deleteProjectFormDB()
 		{
 			XMLDatabase db = new XMLDatabase();
@@ -302,9 +296,7 @@ public class ControlCenter extends Stage {
 		    
 	    }
 		
-		/**
-		 * @author Nicolas Engel
-		 */
+
 		private void versionSelection()
 		{
 			XMLDatabase db = new XMLDatabase();
@@ -346,8 +338,8 @@ public class ControlCenter extends Stage {
 		
 		private void callAboutStage() {
 			Stage stage = new Stage();
-			stage.setTitle("About XModelerML");
-			if(Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {
+			stage.setTitle("About XModelerML\u00a9");
+			if(PropertyManager.isInDidacticMode()) {
 				stage.setTitle("About UML-MX\u00a9");
 				//169 is the unicode number of the copyright symbol
 			}
@@ -466,7 +458,7 @@ public class ControlCenter extends Stage {
 			});
 			
 			
-		if(!Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString())))) {		
+		if(!PropertyManager.isInDidacticMode()) {		
 			/*newDiagram2.disableProperty().bind(
 					Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
 					);*/
@@ -475,13 +467,17 @@ public class ControlCenter extends Stage {
 			GridPane.setHalignment(concreteSyntaxWizardStart, HPos.RIGHT);
 			grid.add(loadModelDir, 2, 4);
 			GridPane.setHalignment(loadModelDir, HPos.LEFT);
-			//grid.add(modelLabel, 3, 1);
-			//grid.add(modelLV, 3, 2);
-			//grid.add(newModel, 3, 1); //model pane removed because not used
-			toolWidth = toolWidth - 237; //adjustment of window width due to removed model pane
-			//grid.add(howToStart, 4, 4); //removed for now because not used
 			grid.add(newDiagram, 4, 1);			
 			grid.add(newDiagram2, 4, 4);
+			
+			if(PropertyManager.isInAlphaMode()) {
+				grid.add(modelLabel, 3, 1);
+				grid.add(modelLV, 3, 2);
+				grid.add(newModel, 3, 1); //model pane removed because not used
+				grid.add(howToStart, 4, 4); //removed for now because not used
+			} else {
+				toolWidth = toolWidth - 237; //adjustment of window width due to removed model pane
+			}
 			
 			projectTree.setOnMouseClicked(e->{
 				if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
@@ -658,7 +654,13 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
-		this.removeNoneProjectEntries(false);
+		
+		if (PropertyManager.isInAlphaMode()) {
+			this.removeNoneProjectEntries(true); }
+			else {
+				this.removeNoneProjectEntries(false);
+			}
+		
 });	}
 	
 	private void removeNoneProjectEntries(Boolean showSystemProjects) {		//removes Child nodes which are not Projects from the models tree e.g. compiler etc.

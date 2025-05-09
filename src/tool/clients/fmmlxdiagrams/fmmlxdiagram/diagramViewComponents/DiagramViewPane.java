@@ -211,24 +211,24 @@ public class DiagramViewPane extends SplitPane {
 			}
 
 		});
-//		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-//			@Override
-//			public void handle(KeyEvent e) {
-//				pressedKeys.add(e.getCode());
-////				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.A)) {
-////					diagram.selectAll();
-////				}
-////				/*
-////				 * added !getPressedKeys().contains(KeyCode.SHIFT)
-////				 */
+		tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				pressedKeys.add(e.getCode());
+				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.A)) {
+					diagram.selectAll();
+					}
+				/*
+				 * added !getPressedKeys().contains(KeyCode.SHIFT)
+				 */
 ////				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S) && !getPressedKeys().contains(KeyCode.SHIFT)) {
 ////					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
 ////				}
-//				if (getPressedKeys().contains(KeyCode.F5)) {
-//					diagram.getComm().triggerUpdate();
-//				}
-//			}
-//		});
+				if (getPressedKeys().contains(KeyCode.F5)) {
+					diagram.getComm().triggerUpdate();
+				}
+			}
+	});
 		tabPane.getSelectionModel().selectedItemProperty().addListener((foo, goo, newTabItem) -> {
 			if (newTabItem.getContent() == null) {
 				// pane with star selected

@@ -48,7 +48,7 @@ public class XMLDatabase {
 	protected String db_name;
 	public boolean firstTime = true;
 	private String errorMessage = "Connection to Database could not be established. "
-			+ "\nPlease ensure that you're database is up and running."
+			+ "\nPlease ensure that your database is up and running."
 			+ "\nFor more help please visit le4mm.org.";
 
 	/**
@@ -59,7 +59,12 @@ public class XMLDatabase {
 	 */
 	public XMLDatabase() {
 		this.hostname = PropertyManager.getProperty("hostname");
-		this.port = Integer.valueOf(PropertyManager.getProperty("port"));
+		try {
+			this.port = Integer.valueOf(PropertyManager.getProperty("port")); //may be the case that property is empty, leads to error
+		}
+		catch (Exception e) {
+			this.port = 0;	
+		}
 		this.user = PropertyManager.getProperty("user");
 		this.password = PropertyManager.getProperty("password");
 		this.diagram = diagram;
@@ -189,17 +194,25 @@ public class XMLDatabase {
 	 * 			false otherwise.
 	 */
 	protected boolean isInternetAvailable() {
-		try {
-			final URL url = new URL("https://www.google.com");
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("HEAD");
-			con.setConnectTimeout(5000); // 5 Sekunden Timeout
-			con.setReadTimeout(5000); // 5 Sekunden Timeout
-			int status = con.getResponseCode();
-			return (status == HttpURLConnection.HTTP_OK);
-		} catch (Exception e) {
-			showError("Unable to connect to the internet. Please check your network connection and try again.");
-			return false;
+		//PM 2025/03/28: Internet connectivity check restricted to non-localhost hosts
+		
+		if (this.hostname.equalsIgnoreCase("localhost")) {
+			return true;
+		}
+		
+		else {
+			try {
+				final URL url = new URL("https://www.google.com");
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("HEAD");
+				con.setConnectTimeout(5000); // 5 Sekunden Timeout
+				con.setReadTimeout(5000); // 5 Sekunden Timeout
+				int status = con.getResponseCode();
+				return (status == HttpURLConnection.HTTP_OK);
+			} catch (Exception e) {
+				showError("Unable to connect to the internet. Please check your network connection and try again.");
+				return false;
+			}
 		}
 	}
 

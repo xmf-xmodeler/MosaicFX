@@ -118,13 +118,19 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 
 				
 	    PropertyManager manager = new PropertyManager();
+	    
+	    //may lead to error when opening XModeler for the very first time if no user.properties file is present
 	    manager.setProperty("hostname", hostname);
 	    manager.setProperty("databaseName", dbName);
 	    manager.setProperty("port", port);
 	    manager.setProperty("user", user);
 	    manager.setProperty("password", pw);
 	    
-	    ((ControlCenter) pms.getWindows().get(0)).toggleDatabaseVisbility();
+	    /*try {
+	    	((ControlCenter) pms.getWindows().get(0)).toggleDatabaseVisbility();
+	    } catch (Exception e) {
+	    	
+	    }*/ //PM 2025-03-28: removed because does not work after build, tab "Database" now always shown
 
 	    // Show success message
 	    
@@ -134,7 +140,8 @@ public class UploadConfig extends CustomDialog<UploadConfig.Result>{
 	    		+ "Database name: " + dbName + "\n"
 	    		+ "Port number: " + port + "\n"
 	    		+ "User name: " + user + "\n"
-	    		+ "Password: " + pw + "\n");
+	    		+ "Password: " + pw + "\n\n"
+	    				+ "Utilization of the database may require restarting the tool");
 		alert.setTitle("New connection data saved");
         alert.setHeaderText(null);
         alert.getButtonTypes().setAll(ButtonType.OK);
