@@ -85,7 +85,7 @@ public class ControlCenter extends Stage {
 	}
 
 	public ControlCenter() {
-		setTitle("My Test title");//("XModelerML\u00a9 Control Center");
+		setTitle("XModelerML\u00a9 Control Center");
 		setResizable(false);
 		if(PropertyManager.isInDidacticMode()) {
 			setTitle("UML-MX\u00a9 Control Center");
