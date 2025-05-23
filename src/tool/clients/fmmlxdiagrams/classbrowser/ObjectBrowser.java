@@ -557,5 +557,4 @@ public class ObjectBrowser {
 	{	
 		stage.show();
 	}
-	
-}
+	}
