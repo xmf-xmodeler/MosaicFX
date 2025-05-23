@@ -1,3 +1,30 @@
 {
-"learningUnits": []
+  "learningUnits": [
+    {
+      "learningUnitName": "Classification and Instantiation",
+      "finishedSelfAssessmentTests": [
+        "Classification and Instantiation 1"
+      ]
+    },
+    {
+      "learningUnitName": "Generalization/Specialization I: Inheritance and Abstract Classes",
+      "finishedSelfAssessmentTests": [
+        "Generalization and Specialization 1"
+      ]
+    },
+    {
+      "learningUnitName": "Derivable Attributes and Operations",
+      "finishedSelfAssessmentTests": [
+        "Deficient Attributes",
+        "Identify Derivable Attributes 1",
+        "Identify Derivable Attributes - Movie Tickets"
+      ]
+    },
+    {
+      "learningUnitName": "Generalization/Specialization: Inheritance and Abstract Classes",
+      "finishedSelfAssessmentTests": [
+        "Construct Vehicle Generalization"
+      ]
+    }
+  ]
 }

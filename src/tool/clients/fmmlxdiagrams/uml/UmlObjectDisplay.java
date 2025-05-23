@@ -170,7 +170,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, "- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.BLACK, null, att, changeAttNameAction, "- " + att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -178,7 +178,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 			attY += lineHeight;
 			String ownerName = att.getOwnerPath();
 			try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION,"- " + att.getName() + ": " + att.getTypeShort() /*+"["+ att.getMultiplicity() + "]"*/);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, attY, Color.GRAY, null, att, NO_ACTION,"- " + att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 			}
 		}
@@ -287,8 +287,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				NodeLabel.Action editConstraintAction = () -> diagram.getActions().editConstraint(object,con);
 				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, editConstraintAction, con.getName());
 				coinstraintsBox.addNodeElement(constraintLabel);
-				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.getLevel() + "");
-				coinstraintsBox.addNodeElement(constraintLevelLabel);
+				//NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.getLevel() + "");
+				//coinstraintsBox.addNodeElement(constraintLevelLabel);
 			}
 		}
 		currentY = yAfterConstraintBox;
@@ -388,13 +388,13 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : object.getOwnAttributes()) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDATTRIBUTES)) {
 				String ownerName = att.getOwnerPath();
 				try{ownerName = diagram.getObjectByPath(att.getOwnerPath()).getName();} catch (Exception e) {}
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.getName() + ": " + att.getTypeShort() +" ["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations

@@ -7,17 +7,17 @@ import tool.xmodeler.didactic_ml.self_assesment_test_managers.SelfAssessmentTest
 
 public enum LearningUnit {
 	
-	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true),
-	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "01_Classification and Instantiation", 1, true),
-	OBJECT_REFERENCES("References between Objects: Associations and Links", "02_References between objects", 2, true),
-	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","03_Multiplicity of attributes", 3, true),
-	DEFICIENT_CLASSES("Deficient Classes","04_Deficient Classes", 4, true),
-	ATTRIBUTE_TYPES("Types for Attributes","05_Types for attributes", 5, true),
-	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization: Inheritance and Abstract Classes","06_Generalization Specialization I", 6, true),
-	GENERALIZATION_SPECIALIZATION_II("Pitfalls of Specialization and Delegation","07_Generalization Specialization II", 7, true),
-	CIRCLES("Model Circles","08_Model Circles", 8, true),
-	DERIVED_CONCEPTS("Derivable Attributes and Operations","09_Derivable Attributes and Operations", 9, true),
-	CONSTRAINTS("Custom Constraints with XOCL","10_Custom Constraints", 10, true);
+	TOOL_INTRO("UML++ Introduction", "ToolIntro", 0, true, "Introduction"),
+	CLASSIFICATION_INSTANTIATION("Classification and Instantiation", "01_Classification and Instantiation", 1, true, "Classification"),
+	OBJECT_REFERENCES("References between Objects: Associations and Links", "02_References between objects", 2, true, "Associations"),
+	ATTRIBUTE_MULTIPLICITY("Multiplicity of Attributes","03_Multiplicity of attributes", 3, true, "AttributeMultiplicity"),
+	DEFICIENT_CLASSES("Deficient Classes","04_Deficient Classes", 4, true, "DeficientClasses"),
+	ATTRIBUTE_TYPES("Types for Attributes","05_Types for attributes", 5, true, "DataTypes"),
+	GENERALIZATION_SPECIALIZATION_I("Generalization/Specialization: Inheritance and Abstract Classes","06_Generalization Specialization I", 6, true, "Generalization"),
+	GENERALIZATION_SPECIALIZATION_II("Pitfalls of Specialization and Delegation","07_Generalization Specialization II", 7, true, "Delegation"),
+	CIRCLES("Model Circles","08_Model Circles", 8, true, "ModelCircles"),
+	DERIVED_CONCEPTS("Derivable Attributes and Operations","09_Derivable Attributes and Operations", 9, true, "DerivableAttributes"),
+	CONSTRAINTS("Custom Constraints with XOCL","10_Custom Constraints", 10, true, "CustomConstraints");
 
 	
 	private final String prettyName;
@@ -31,12 +31,24 @@ public enum LearningUnit {
 	 * Defines the folder name where the resources for this learningUnit are defined.
 	 */
 	private final String pathName;
+	private final String exampleModelName;
+	private Boolean exampleModelOpened;
 	
-	LearningUnit(String prettyName, String pathName, int id, boolean implemented) {
+	LearningUnit(String prettyName, String pathName, int id, boolean implemented, String keyword) {
 		this.prettyName = prettyName;
 		this.pathName = pathName;
 		this.id = id;
 		this.implemented = implemented;
+		this.exampleModelName = "ExampleModel_" + keyword; //exampleModelName built from keyword
+		this.exampleModelOpened = false;
+	}
+	
+	public Boolean getExampleModelOpened() {
+		return exampleModelOpened;
+	}
+	
+	public void setExampleModelOpened(Boolean exampleModelOpened) {
+		this.exampleModelOpened = exampleModelOpened;
 	}
 
 	public String getPrettyName() {
@@ -63,7 +75,7 @@ public enum LearningUnit {
 		List<SelfAssessmentTest> relatedTests = SelfAssessmentTest.getRelatedTests(this);
 		if (relatedTests.isEmpty())
 		{
-			return false;
+			return true; //return true if no exercise available
 		}
 		for (SelfAssessmentTest selfAssessmentTest : relatedTests) {
 			if (!UserDataProcessor.userHasFinishedTest(selfAssessmentTest)) {
@@ -71,5 +83,9 @@ public enum LearningUnit {
 			}
 		}
 		return true;
+	}
+
+	public String getExampleModelName() {
+		return exampleModelName;
 	}
 }

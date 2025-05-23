@@ -184,26 +184,37 @@ public class FmmlxPalette {
 			
 			elements.getChildren().add(metaClass);
 			
+			int umlMaxLevel = 1;
+			
 			Vector<FmmlxObject> objects = fmmlxDiagram.getObjectsReadOnly();
 			ArrayList<Integer> levelList = new ArrayList<Integer>();
 			for (FmmlxObject o : objects) {
-				levelList.add(o.getLevel().getMinLevel());
+				if(!fmmlxDiagram.isUMLMode())
+					levelList.add(o.getLevel().getMinLevel());
+				else
+					if((o.getLevel().getMinLevel()==1 || o.getLevel().getMinLevel()==0))
+						levelList.add(o.getLevel().getMinLevel());
 			}
 			Set<Integer> levelSet = new LinkedHashSet<Integer>(levelList);
 			levelList = new ArrayList<Integer>(levelSet);
 			Collections.sort(levelList, Collections.reverseOrder());
 			HashMap<Integer, TreeItem<AbstractTreeType>> levels = new HashMap<>();
 			for (int i : levelList) {
-				if(i!=0) {
+				if(i>0) {
 					if(!fmmlxDiagram.isUMLMode() || i!=-1) {
 					TreeItem<AbstractTreeType> levelGroup;
 					if(!fmmlxDiagram.isUMLMode()) {
 					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
 					}
 					else {
-					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Classes"));
+						levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Classes"));
 					}
-					levels.put(i, levelGroup);
+					if(!fmmlxDiagram.isUMLMode()) {
+						levels.put(i, levelGroup);
+					} else {
+						if (i<=1)
+							levels.put(i, levelGroup);
+					}
 					levelGroup.setExpanded(true);
 					elements.getChildren().add(levelGroup);
 					}
@@ -216,7 +227,11 @@ public class FmmlxPalette {
 					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(
 							new InstanceTool(o, 
 									p -> fmmlxDiagram.setNodeCreationType(new NodeCreationType.CreateObject(o))));
-					levelGroup.getChildren().add(classItem);
+					if(!fmmlxDiagram.isUMLMode())
+						levelGroup.getChildren().add(classItem);
+					else
+						if (o.getLevel().getMinLevel()==1)
+							levelGroup.getChildren().add(classItem);
 				}
 			}
 			levelSet.clear();

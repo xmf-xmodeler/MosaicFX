@@ -86,6 +86,7 @@ public class StringValue {
 		public static final String maximum = "Maximum";
 		public static final String upperLimit = "Upper limit";
 		public static final String instLevel = "InstLevel";
+		public static final String instLevelLong = "Instantiation Level";
 		public static final String displayName = "Display Name";
 		public static final String identifier = "Identifier";
 		public static final String multiplicity = "Multiplicity";
@@ -124,7 +125,7 @@ public class StringValue {
 		public static final String changeAssociationType = "Change Association Type";
 		public static final String changeParent = "Change Parent";
 		public static final String changeMultiplicity = "Change Multiplicity";
-		public static final String changeOperationsBody = "Change Body";
+		public static final String changeOperationsBody = "Change Operation"; //Change Body changed to change operation, body never changed on its own
 		public static final String changeAssociationTarget = "Change Association Target";
 		public static final String changeSlotValue = "Change Slot Value";
 

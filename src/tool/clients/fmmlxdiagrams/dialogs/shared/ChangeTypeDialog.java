@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
@@ -17,9 +18,12 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialogDataType;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.DomainspecificDatatypesDialog;
+import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialogDataType.AddAttributeDialogMetaDataType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
@@ -35,6 +39,10 @@ public class ChangeTypeDialog<Property
 	private FmmlxObject object;
 	private final PropertyType type;
 	private DialogPane dialogPane;
+	private Multiplicity multiplicity = Multiplicity.MANDATORY;
+	private Label multiplicityLabel;
+	private Label displayMultiplicityLabel;
+	private CodeBoxPair codeBoxPair;
 
 	// For all
 	private Label classLabel;
@@ -57,14 +65,19 @@ public class ChangeTypeDialog<Property
 	private ComboBox<Property> selectPropertyComboBox;
 	private Vector<Property> propertyItems;
 	private Property selectedItem;
+	
+
+	private Button multiplicityButton;
 
 	public ChangeTypeDialog(FmmlxObject object, PropertyType type, Vector<Property> propertyItems,
 			Property selectedItem, AbstractPackageViewer diagram) {
 		this.object = object;
 		this.type = type;
 		this.selectedItem = selectedItem;
+		System.err.println("selectedItem: " + selectedItem);
 		this.propertyItems = propertyItems;
 		this.diagram = diagram;
+		
 
 		// fill types
 		primitiveTypes = new Vector<AddAttributeDialogDataType>();
@@ -78,7 +91,7 @@ public class ChangeTypeDialog<Property
 
 		types = new Vector<AddAttributeDialogDataType>(primitiveTypes);
 
-		types.add(new AddAttributeDialogDataType("Monetary Value", AddAttributeDialogMetaDataType.NonPrimitive));
+		types.add(new AddAttributeDialogDataType("MonetaryValue", AddAttributeDialogMetaDataType.NonPrimitive));
 		types.add(new AddAttributeDialogDataType("Currency", AddAttributeDialogMetaDataType.NonPrimitive));
 		
 		if(!diagram.isUMLMode()) {
@@ -99,6 +112,12 @@ public class ChangeTypeDialog<Property
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(type);
+		
+		typeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> 
+		  generateDefaultOperation(
+				  currentTypeTextField.getText(),
+				  newVal.getName()));
+		
 		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -111,14 +130,46 @@ public class ChangeTypeDialog<Property
 		setResult();
 	}
 
+	private void generateDefaultOperation(String oldType, String newType) {
+		String converter = null;
+		
+		if("String".equals(newType)) converter = "oldVal.toString()";
+
+		else if("Float".equals(oldType) && "Integer".equals(newType)) converter = "oldVal.round()";
+		else if("String".equals(oldType) && "Integer".equals(newType)) converter = "oldVal.asInt()";
+		else if("Boolean".equals(oldType) && "Integer".equals(newType)) converter = "if oldVal then 1 else 0 end";
+
+		else if("Integer".equals(oldType) && "Float".equals(newType)) converter = "oldVal * 1.0";
+		else if("String".equals(oldType) && "Float".equals(newType)) converter = "oldVal.asFloat()";
+		else if("Boolean".equals(oldType) && "Float".equals(newType)) converter = "if oldVal then 1.0 else 0.0 end";
+
+		else if("Integer".equals(oldType) && "Boolean".equals(newType)) converter = "oldVal > 0";
+		else if("String".equals(oldType) && "Boolean".equals(newType)) converter = "oldVal = \"true\"";
+		else if("Float".equals(oldType) && "Boolean".equals(newType)) converter = "oldVal > 0.0";
+
+		else converter = "oldVal"; // default, keep as it is
+		
+		String text = "@Operation convert(oldVal)\n"
+				+ "  try\n"
+				+ "    " + converter + "\n"
+				+ "  catch(ex)\n"
+				+ "    oldVal\n" // if fail, keep as it is
+				+ "  end\n"
+				+ "end";
+		
+		codeBoxPair.bodyCodeBox.setText(text);
+	}
+
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 
 				String datatype = typeComboBox.getConverter().fromString(typeComboBox.getEditor().getText()).getName();
+				String code = null;
+				try{code = codeBoxPair.getBodyText();} catch (Exception e) {} 
 
 				return new Result(type, object, selectPropertyComboBox.getSelectionModel().getSelectedItem(),
-						currentTypeTextField.getText(), datatype);
+						currentTypeTextField.getText(), datatype, code);
 			}
 			return null;
 		});
@@ -174,6 +225,12 @@ public class ChangeTypeDialog<Property
 	}
 
 	private void layoutContent(PropertyType type) {
+
+		codeBoxPair = new CodeBoxPair(diagram,
+				e->{},//e->{getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());},
+				false);	
+		
+		
 		classLabel = new Label("Class");
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
@@ -226,6 +283,15 @@ public class ChangeTypeDialog<Property
 				});
 			}
 		});
+		
+
+		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
+		multiplicityButton = new Button();
+		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
+		multiplicityButton.setOnAction(e -> {
+			showMultiplicityDialog();
+		});
+		displayMultiplicityLabel = new Label(multiplicity.toString());
 
 		typeComboBox.setConverter(new StringConverter<AddAttributeDialogDataType>() {
 
@@ -243,7 +309,7 @@ public class ChangeTypeDialog<Property
 				AddAttributeDialogDataType type = typeComboBox.getItems().stream()
 						.filter(dn -> dn.getDisplayName().equals(string)).findFirst().orElse(null);
 
-				// if type is null check the input via the name, e.g. user inouts "Integer"
+				// if type is null check the input via the name, e.g. user inputs "Integer"
 				if (type == null) {
 					type = typeComboBox.getItems().stream().filter(dn -> dn.getName().equals(string)).findFirst()
 							.orElse(null);
@@ -270,7 +336,20 @@ public class ChangeTypeDialog<Property
 		grid.add(showNonPrimitive, 0, 3, 2, 1);
 		grid.add(newTypeLabel, 0, 4);
 		grid.add(typeComboBox, 1, 4);
-		switch (type) {
+		grid.add(multiplicityLabel, 0, 5);
+		grid.add(multiplicityButton, 1, 5);
+		grid.add(displayMultiplicityLabel, 1, 6);
+		grid.add(new Label("Conversion Operation"), 0, 7, 2, 1);
+		grid.add(codeBoxPair.getBodyScrollPane(), 0, 8, 2, 1);
+		GridPane.setFillHeight(codeBoxPair.getBodyScrollPane(), true);
+		grid.add(new Label("Syntax Check"), 0, 9, 2, 1);
+		codeBoxPair.getBodyScrollPane().setMinHeight(200.);
+		grid.add(codeBoxPair.getErrorTextArea(), 0, 10, 2, 1);
+		GridPane.setFillHeight(codeBoxPair.getBodyScrollPane(), false);
+		codeBoxPair.getErrorTextArea().setMaxHeight(100.);
+		
+	    
+	    switch (type) {
 		case Attribute:
 			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeType);
 			break;
@@ -313,6 +392,17 @@ public class ChangeTypeDialog<Property
 			selectPropertyComboBox.getSelectionModel().select(selectedItem);
 		}
 	}
+	
+	private void showMultiplicityDialog() {
+		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
+		Optional<Multiplicity> opt = dlg.showAndWait();
+
+		if (opt.isPresent()) {
+			multiplicity = opt.get();
+
+			displayMultiplicityLabel.setText(multiplicity.toString());
+		}
+	}
 
 	public void setSelected(Property selectedProperty) {
 		selectPropertyComboBox.getSelectionModel().select(selectedProperty);
@@ -324,13 +414,15 @@ public class ChangeTypeDialog<Property
 		public final Property property;
 		public final String oldType;
 		public final String newType;
+		public final String code;
 
-		public Result(PropertyType type, FmmlxObject object, Property property, String oldType, String newType) {
+		public Result(PropertyType type, FmmlxObject object, Property property, String oldType, String newType, String code) {
 			this.type = type;
 			this.object = object;
 			this.property = property;
 			this.oldType = oldType;
 			this.newType = newType;
+			this.code = code;
 		}
 	}
 }

@@ -2,6 +2,7 @@ package tool.xmodeler.didactic_ml.sucess_conditions;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.xmodeler.didactic_ml.backend_aux.DiagramConditionChecks;
+import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.SelfAssessmentTestTasks;
 
 public class GeneralizationSpecializationConditions extends SuccessCondition {
@@ -13,7 +14,7 @@ public class GeneralizationSpecializationConditions extends SuccessCondition {
 	FmmlxObject vehicle;
 	
 	@Override
-	public boolean checkSuccessCondition() {
+	public boolean checkSuccessCondition(TaskDescriptionViewer taskViewer) {
 		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 1:
 			return true;	//Just press the button

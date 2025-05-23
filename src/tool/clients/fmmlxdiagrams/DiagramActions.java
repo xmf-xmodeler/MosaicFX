@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -53,11 +55,13 @@ import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeTargetDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
+import tool.clients.fmmlxdiagrams.dialogs.DiagramStatisticsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.NoteCreationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
@@ -66,6 +70,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram.DiagramCanvas;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -77,7 +82,8 @@ import tool.xmodeler.XModeler;
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
-
+	private XMLDatabase db = new XMLDatabase();
+	
 	public AbstractPackageViewer getDiagram() {
 		return diagram;
 	}
@@ -467,7 +473,6 @@ public class DiagramActions {
 	}
 		
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
-
 		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
@@ -733,7 +738,7 @@ public class DiagramActions {
 				switch (result.type) {
 					case Attribute:
 						diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(), result.property.getName(),
-								result.oldType, result.newType);
+								result.oldType, result.newType, result.code);
 						break;
 					case Operation:
 						diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(), result.property.getName(),
@@ -1170,6 +1175,47 @@ public class DiagramActions {
 		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
+	/**
+	 * @author Nicolas Engel
+	 */
+	public void exportToDB()
+	{
+		Platform.runLater(() -> {
+			try {
+				List<String> documentNames =  db.getProjectDocumentNames();
+				
+				
+//				if (db.firstTime)
+//				{
+					RenameProjektDialog rpd = new RenameProjektDialog();
+					Platform.runLater(() -> {
+					rpd.start(diagram,db,documentNames);
+					});
+					
+//					db.firstTime = false;
+//					
+//				}
+//				else 
+//				{
+//					db.writeToDB((FmmlxDiagram)this.diagram);
+//				}
+				
+			}  catch (Exception e) {
+				db.showAlertDialog();
+				e.printStackTrace();
+			}
+		});
+	}
+	/**
+	 * @author Nicolas Engel
+	 */
+//	public void renameProjekt()
+//	{
+//		Platform.runLater(()-> {
+//			RenameProjektDialog rpd = new RenameProjektDialog();
+//			rpd.start(diagram);
+//		});
+//	}
 
 	public void exportSvg() {
 		Platform.runLater(() ->{
@@ -1329,6 +1375,11 @@ public class DiagramActions {
 	}
 	public void showUnhideElementsDialog() {
 		new UnhideElementsDialog(diagram).showDialog();
+	}
+	
+
+	public void showDiagramStatistics() {
+		new DiagramStatisticsDialog(diagram).show();
 	}
 
 	public void openInstanceWizard(FmmlxObject theClass, DiagramCanvas view) {

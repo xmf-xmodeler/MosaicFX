@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic 3</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content">
+        <h2>Success!</h2>
+        
+        <p>You correctly identified all five derivable attributes. Good job! Here is an explanation for all derivable attributes:</p>
+        
+        <ol>
+        	<li><code>age: Integer</code> in class <code>Customer</code>: The age can be calculated on the basis of the date of birth of a customer.</li>
+        	<li><code>numberOfTickets: Integer</code> in class <code>Reservation</code>: The number of tickets within a reservation correspond to the number of linked <code>Ticket</code> objects.</li>
+        	<li><code>totalPriceOfReservation: Float</code> in class <code>Reservation</code>: The total price corresponds to the sum of all linked ticket prices.</li>
+        	<li><code>isAvailable: Boolean</code> in class <code>Ticket</code>: A ticket for a seat is available if it is not yet reserved, i.e., not linked to a <code>Reservation</code> object.</li>
+        	<li><code>availableSeats: Integer</code> in class <code>MovieShow</code>: We can determine the number of available seats by retrieving the number of seats from the indirectly linked <code>Hall</code> object.</li>
+        	        
+        </ol>
+        
+        <p>Good job you found all the deficient classes. When you look at them you might be able to see which issues may arise 
+        from having these attributes.
+        The issues of <code>age</code> are obvious. Since, it depends on the date of birth and changes every year one would 
+        have to constantly check if it needs to be updated.
+        Especially, problematic is the <code>price</code> attribute in <code>Reservation</code> because the price needs 
+        to be calculated individually depending on the number
+        of tickets, their price, and the extra cost. </p>
+    </div>
+</body>
+</html>

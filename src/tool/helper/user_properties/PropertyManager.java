@@ -5,11 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import tool.clients.menus.MenuClient;
 
 public class PropertyManager {
@@ -49,6 +53,14 @@ public class PropertyManager {
 
 	public PropertyManager() {
 		loadProperties();
+	}
+	
+	public static Boolean isInAlphaMode() {
+		return properties.getProperty(UserProperty.ALPHA_MODE.toString()).equalsIgnoreCase("true") ? true : false;
+	}
+	
+	public static Boolean isInDidacticMode() {
+		return properties.getProperty(UserProperty.DIDACTIC_MODE.toString()).equalsIgnoreCase("true") ? true : false;
 	}
 
 	private void loadProperties() {
@@ -94,6 +106,18 @@ public class PropertyManager {
 		storeProperties();
 	}
 
+	public static Boolean dbConnectionEntered() {
+		return stringNotNullOrEmpty(properties.getProperty("hostname")) && 
+				stringNotNullOrEmpty(properties.getProperty("port")) &&
+				stringNotNullOrEmpty(properties.getProperty("user")) &&
+				stringNotNullOrEmpty(properties.getProperty("password")) &&
+				stringNotNullOrEmpty(properties.getProperty("databaseName"));
+	}
+	
+	private static Boolean stringNotNullOrEmpty(String input) {
+		return input != null && !input.trim().isEmpty();
+	}
+	
 	public void showPropertyManagerStage() {
 		new PropertyManagerStage().show();
 	}

@@ -11,14 +11,14 @@
         <h1>LU2 - Associations and Links</h1>
         <h2>Theoretical Background</h2>
         <p><i>Associations</i> serve to connect classes. 
-		An association must always have exactly one source class and exactly one target class. 
+		An association in UML++ must always have exactly one source class and exactly one target class. 
         Typically, the source and target class will be different. If the target class is also the source class, 
-        the class is called <i>self-referential</i> (see <lu>LU8</lu> for more on this special case).  
+        the class is called <i>self-referential</i> (see <lu>8</lu> for more on this special case).  
         Each association has a name. 
 		The distinction between source and target of an association determines its reading direction. 
 		
         <u>Example</u>: We have two classes, <code>Student</code> and <code>Teacher</code>, and an 
-		assocation <code>teaches</code> between them. If <code>Student</code> is the source class and <code>Teacher</code> 
+		association <code>teaches</code> between them. If <code>Student</code> is the source class and <code>Teacher</code> 
 		the target class, the model expresses that a student teaches a teacher. 
         The reading direction is indicated by the black arrow next to the association name.</p>
         
@@ -44,14 +44,17 @@
 		languages like Java or C#, an association will be implemented as an attribute. 
 		But there is an important conceptual difference between both. 
 		Associations serve as <i>references</i> between classes, 
-		links as <i>references</i> between objects. Only objects posses their own identity; slots do not. 
-		Slots require initialization for each new object that is being created.  
+		links as <i>references</i> between objects. An object may be linked to many other objects.
+		Attributes and slots, on the other end, are <i>encapsulated</i> and should not be referenced by other objects.
+		Objects should possess their own identity; slots do not.
+		
+		<!--  Only objects posses their own identity; slots do not. --> 
 		</p>
 		<p><u>Example</u>: Customers must specify exactly one location where they live. 
 		The location is determined by a single String value. 
 		Should the location be modeled as an attribute of customer 
 		or as a separate class <code>Customer</code> is associated with? In the first case (location as attribute), 
-		we must enter a new location for each customer. But locations posses their own identity; many customers may 
+		we must enter a new location for each customer. But locations possess their own identity; many customers may 
 		live at the same location. 
 		If the name of one location changes, the change should affect every customer that lives there. 
 		If location were an attribute of customer, we would have to change all affected customer objects. 
@@ -63,7 +66,7 @@
 		But it should still be modeled as an attribute since price objects do not possess their own identity &ndash; 
 		if one product's price changes from 4.99€ to 2.99€, 
 		I don’t to want to change the price value of all 4.99€-priced products. 
-		In such a case, we would use a <i>domain-specific type</i> for the price attribute (see <lu>LU5</lu>).
+		In such a case, we would use a <i>domain-specific type</i> for the price attribute (see <lu>5</lu>).
 		</p>
 		<p>
 		At last, the navigability of an association must be defined. References between classes may be bidirectional, 

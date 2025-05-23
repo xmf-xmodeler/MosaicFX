@@ -137,7 +137,7 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getTargetDecoration() { //TODO: Breakpoint here to check why TargetDecoration is causing problems
 		FmmlxAssociation assoc = getAssociation();
 		if(assoc == null) return HeadStyle.NONE;
-		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible()) {
+		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible() && "Root::Associations::DefaultAssociation".equals(assoc.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}		
 		HeadStyle deco = HeadStyle.ARROW;
@@ -153,7 +153,7 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getSourceDecoration() {
 		FmmlxAssociation assoc = getAssociation();
 		if(assoc == null) return HeadStyle.NONE;
-		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible()) {
+		if(diagram.umlMode && assoc.isTargetVisible() & assoc.isSourceVisible() && "Root::Associations::DefaultAssociation".equals(assoc.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}		
 		HeadStyle deco = HeadStyle.ARROW;

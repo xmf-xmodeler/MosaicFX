@@ -1,12 +1,21 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Iterator;
 
+import java.util.List;
+
+import javafx.application.Platform;
+import javafx.scene.input.KeyEvent;
+import tool.clients.fmmlxdiagrams.dialogs.RenameProjektDialog;
+import java.util.Iterator;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.xmldatabase.BranchManager;
+import tool.clients.fmmlxdiagrams.xmldatabase.DefaultBranchManager;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.persistence.XMLCreator;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;
 
@@ -17,45 +26,79 @@ import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptio
  */
 public class FmmlxDiagramControlKeyHandler {
 
-	private final FmmlxDiagram diagram;
+    private final FmmlxDiagram diagram;
 
-	public FmmlxDiagramControlKeyHandler(FmmlxDiagram fmmlxDiagram) {
-		this.diagram = fmmlxDiagram;
-	}
+    public FmmlxDiagramControlKeyHandler(FmmlxDiagram fmmlxDiagram) {
+        this.diagram = fmmlxDiagram;
+    }
 
-	public void handle(KeyCode code) {
+    /**
+     * Handles the KeyEvent and checks for combinations with Control and Shift keys.
+     *
+     * @param event The KeyEvent to process.
+     */
+    public void handle(KeyEvent event) {
+        // Check if the Control key is pressed
+        if (!event.isControlDown()) {
+            return; // Exit if Ctrl is not pressed
+        }
 
-		switch (code) {
-		case M:
-			handleM();
-			break;
+        // Get the pressed KeyCode
+        KeyCode code = event.getCode();
 
-		case R:
-			handleR();
-			break;
+        // Check for Ctrl + Shift + S first
+        if (code == KeyCode.S && event.isShiftDown()) {
+            handleCtrlShiftS(); // Handle Ctrl + Shift + S
+            return; // Stop further processing
+        }
+        else
+        {
+        	
+        
 
-		case F:
-			handleF();
-			break;
+        // Handle other Ctrl + Key combinations
+        switch (code) {
+            case M:
+                handleM();
+                break;
 
-		case A:
-			handleA();
-			break;
+            case R:
+                handleR();
+                break;
 
-		case S:
-			handleS();
-			break;
-			
-		case T:
-			bringTaskViewerUpfront();
-			break;
-			
-		default:
-			break;
-		}
-	}
+            case F:
+                handleF();
+                break;
 
-	private void bringTaskViewerUpfront() {
+            case A:
+                handleA();
+                break;
+
+            case S:
+                handleS(); // Handle Ctrl + S
+                break;
+            
+            case T:
+			        bringTaskViewerUpfront();
+			       break;
+
+            default:
+                break;
+        }
+        }
+    }
+
+
+    /**
+     * @author Nicolas Engel
+     * Handles the "Ctrl + S" key combination.
+     */
+    private void handleS() {
+        System.out.println("Ctrl + S pressed! Saving diagram...");
+        new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
+    }
+  
+  	private void bringTaskViewerUpfront() {
 		if (!diagram.isInLearningUnitMode()) {
 			return;
 		}
@@ -83,29 +126,87 @@ public class FmmlxDiagramControlKeyHandler {
 //        return null;
     }
 
-	private void handleS() {
-		new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(),diagram);
-	}
+    /**
+     * Handles the "Ctrl + Shift + S" key combination.
+     */
+    private void handleCtrlShiftS() {
+    	XMLDatabase db = new XMLDatabase();
+    	try {
+			List<String> documentNames =  db.getProjectDocumentNames();
+			String diagramName = diagram.getPackagePath().substring(6) + "_versions.xml";
+			diagramName.trim();
+			if (diagramName != null && documentNames.contains(diagramName))
+			{
+				BranchManager manager = new BranchManager();
+				if (DefaultBranchManager.getInstance().getDefaultBranch() == "main")
+				{
+					manager.writeToDB(diagram);
+					return;
+				}
+				
+				List<String> branches = manager.getAllBranches(diagramName);
+				branches.replaceAll(String::trim);
+				if(branches.contains(DefaultBranchManager.getInstance().getDefaultBranch()))
+				{
+					manager.addDiagramToBranch(diagram, diagramName, DefaultBranchManager.getInstance().getDefaultBranch());
+				}
+				else {
+					RenameProjektDialog rpd = new RenameProjektDialog();
+					Platform.runLater(() -> {
+					rpd.start(diagram,db,documentNames);
+					});
+				}
+				
+				
+				
+			}
+			else
+			{
+				RenameProjektDialog rpd = new RenameProjektDialog();
+				Platform.runLater(() -> {
+				rpd.start(diagram,db,documentNames);
+				});
+			}
+		        
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+        
+    }
 
-	private void handleA() {
-		diagram.selectAll();
-	}
+    /**
+     * Handles the "Ctrl + A" key combination.
+     */
+    private void handleA() {
+        diagram.selectAll();
+    }
 
-	private void handleF() {
-		diagram.actions.centerViewOnObject();
-	}
+    /**
+     * Handles the "Ctrl + F" key combination.
+     */
+    private void handleF() {
+        diagram.actions.centerViewOnObject();
+    }
 
-	private void handleR() {
-		diagram.getActiveDiagramViewPane().canvasTransform.prependRotation(10,
-				new Point2D(diagram.getActiveDiagramViewPane().canvas.getWidth() / 2,
-						diagram.getActiveDiagramViewPane().canvas.getHeight() / 2));
-		diagram.redraw();
-	}
+    /**
+     * Handles the "Ctrl + R" key combination.
+     */
+    private void handleR() {
+        diagram.getActiveDiagramViewPane().canvasTransform.prependRotation(10,
+                new Point2D(diagram.getActiveDiagramViewPane().canvas.getWidth() / 2,
+                        diagram.getActiveDiagramViewPane().canvas.getHeight() / 2));
+        diagram.redraw();
+    }
 
-	private void handleM() {
-		diagram.getActiveDiagramViewPane().canvasTransform.prependScale(-1, 1,
-				new Point2D(diagram.getActiveDiagramViewPane().canvas.getWidth() / 2,
-						diagram.getActiveDiagramViewPane().canvas.getHeight() / 2));
-		diagram.redraw();
-	}
+    /**
+     * Handles the "Ctrl + M" key combination.
+     */
+    private void handleM() {
+        diagram.getActiveDiagramViewPane().canvasTransform.prependScale(-1, 1,
+                new Point2D(diagram.getActiveDiagramViewPane().canvas.getWidth() / 2,
+                        diagram.getActiveDiagramViewPane().canvas.getHeight() / 2));
+        diagram.redraw();
+    }
 }

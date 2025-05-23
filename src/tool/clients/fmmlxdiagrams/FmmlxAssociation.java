@@ -286,12 +286,13 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+		//Root::Associations::DefaultAssociation used when chooser is disabled in AsscoiationDialog
+		if(diagram.umlMode && targetFromSourceVisible && sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}
 		HeadStyle deco = HeadStyle.ARROW;
 		try{
-			deco = HeadStyle.valueOf(this.getAssociationType().endDeco);
+			deco = HeadStyle.valueOf(this.getAssociationType().endDeco.toUpperCase());
 		} catch(Exception e) {
 			System.err.println("Deco Style UML" + this.getAssociationType().endDeco + " not found");
 		}
@@ -300,12 +301,12 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	@Override
 	public HeadStyle getSourceDecoration() {
-		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible) {
+		if(diagram.umlMode && targetFromSourceVisible & sourceFromTargetVisible && "Root::Associations::DefaultAssociation".equals(this.getAssociationType().path)) {
 			return HeadStyle.NONE;	//No Arrows for Bidirectional associations
 		}
 		HeadStyle deco = HeadStyle.ARROW;
 		try{
-			deco = HeadStyle.valueOf(this.getAssociationType().startDeco);
+			deco = HeadStyle.valueOf(this.getAssociationType().startDeco.toUpperCase());
 		} catch(Exception e) {
 			System.err.println("Deco Style UML" + this.getAssociationType().startDeco + " not found");
 		}

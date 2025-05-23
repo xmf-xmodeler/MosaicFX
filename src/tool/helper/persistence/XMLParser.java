@@ -88,6 +88,8 @@ public class XMLParser {
 		projectPath = root.getAttribute(XMLAttributes.PATH.getName());     
 	}
 	
+	
+	
 	private int getVersion(File inputFile) {
 		String importVersion = null;
 		Element rootTemp = getRoot(inputFile);		
@@ -133,6 +135,7 @@ public class XMLParser {
 
 				for (int i = 0; i < diagramList.getLength(); i++) {
 					Node node = diagramList.item(i);
+					System.err.println(node.getNodeName());
 					if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XMLTags.DIAGRAM.getName()) ) {
 						buildDiagram((Element)node);
 					}
@@ -174,7 +177,7 @@ public class XMLParser {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Conflicting names");
 			alert.setHeaderText("The current session already contains a project with the name \"" + conflictingProject + "\"!");
-			alert.setContentText("Please change name of the project you would like to import or restart XModeler");
+			alert.setContentText("Please change name of the project you would like to import or restart the application");
 			alert.getButtonTypes().setAll(ButtonType.OK);
 			alert.showAndWait();}
 		);

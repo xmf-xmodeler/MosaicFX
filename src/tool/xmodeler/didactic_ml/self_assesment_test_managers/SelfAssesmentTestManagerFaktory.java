@@ -2,6 +2,7 @@ package tool.xmodeler.didactic_ml.self_assesment_test_managers;
 
 import tool.xmodeler.didactic_ml.frontend.learning_unit_chooser.LearningUnit;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.classification_instantioation.ClassificationInstantiationManager;
+import tool.xmodeler.didactic_ml.self_assesment_test_managers.deficient_attributes.DeficientAttributesManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.genSpec1.GeneralizationSpecializationIManager;
 import tool.xmodeler.didactic_ml.self_assesment_test_managers.tool_intro.ToolIntroductionManager;
 
@@ -24,11 +25,13 @@ public class SelfAssesmentTestManagerFaktory {
 			case TOOL_INTRO:
 				return (Manager) ToolIntroductionManager.class.cast(instance);
 	
-			case CLASSIFICATION_INSTANTIATION:
-				return (Manager) ClassificationInstantiationManager.class.cast(instance);
+			/*case CLASSIFICATION_INSTANTIATION:
+				return (Manager) ClassificationInstantiationManager.class.cast(instance);*/
 				
 			case GENERALIZATION_SPECIALIZATION_I:
 				return (Manager) GeneralizationSpecializationIManager.class.cast(instance);
+			case DEFICIENT_ATTRIBUTES:
+				return (Manager) DeficientAttributesManager.class.cast(instance);
 	
 			default:
 				throw new RuntimeException("LearningUnitManager instance needs to be first intialized.");

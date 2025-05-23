@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_Associations" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_Associations">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Garage" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Address" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="address1" of="Root::ExampleModel_Associations::Address" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="address2" of="Root::ExampleModel_Associations::Address" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="garage1" of="Root::ExampleModel_Associations::Garage" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="garage2" of="Root::ExampleModel_Associations::Garage" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="car1" of="Root::ExampleModel_Associations::Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="car2" of="Root::ExampleModel_Associations::Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="car3" of="Root::ExampleModel_Associations::Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="car4" of="Root::ExampleModel_Associations::Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="car5" of="Root::ExampleModel_Associations::Car" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleModel_Associations::Customer" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer2" of="Root::ExampleModel_Associations::Customer" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="garage3" of="Root::ExampleModel_Associations::Garage" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="address3" of="Root::ExampleModel_Associations::Address" package="Root::ExampleModel_Associations" singleton="false"/>
+        <addAttribute class="Root::ExampleModel_Associations::Address" level="0" multiplicity="Seq{1,1,true,false}" name="city" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Address" level="0" multiplicity="Seq{1,1,true,false}" name="streetName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Address" level="0" multiplicity="Seq{1,1,true,false}" name="streetNumber" package="Root::ExampleModel_Associations" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Associations::Car" level="0" multiplicity="Seq{1,1,true,false}" name="brandName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Car" level="0" multiplicity="Seq{1,1,true,false}" name="constructionYear" package="Root::ExampleModel_Associations" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Associations::Car" level="0" multiplicity="Seq{1,1,true,false}" name="modelName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Car" level="0" multiplicity="Seq{1,1,true,false}" name="price" package="Root::ExampleModel_Associations" type="Root::XCore::Float"/>
+        <addAttribute class="Root::ExampleModel_Associations::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="customerId" package="Root::ExampleModel_Associations" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_Associations::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="dateOfBirth" package="Root::ExampleModel_Associations" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_Associations::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Garage" level="0" multiplicity="Seq{1,1,true,false}" name="garageName" package="Root::ExampleModel_Associations" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_Associations::Garage" level="0" multiplicity="Seq{1,1,true,false}" name="noOfLevels" package="Root::ExampleModel_Associations" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getBoughtCars[monitor=true]():Set(Root::ExampleModel_Associations::Car)&#10;  self.car&#10;end" class="Root::ExampleModel_Associations::Customer" level="0" monitored="true" name="getBoughtCars" package="Root::ExampleModel_Associations" paramNames="" paramTypes="" type="Set(Car)"/>
+        <addOperation body="@Operation getDisplayName[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.constructionYear + &quot; &quot; + self.brandName + &quot; &quot; + self.modelName&#10;end" class="Root::ExampleModel_Associations::Car" level="0" monitored="true" name="getDisplayName" package="Root::ExampleModel_Associations" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getParkedCars[monitor=true]():Set(Root::ExampleModel_Associations::Car)&#10;  self.car&#10;end" class="Root::ExampleModel_Associations::Garage" level="0" monitored="true" name="getParkedCars" package="Root::ExampleModel_Associations" paramNames="" paramTypes="" type="Set(Car)"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address1" package="Root::ExampleModel_Associations" slotName="city" valueToBeParsed="[66,114,105,100,103,101,112,111,114,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address1" package="Root::ExampleModel_Associations" slotName="streetName" valueToBeParsed="[74,111,104,110,115,111,110,32,65,118,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address1" package="Root::ExampleModel_Associations" slotName="streetNumber" valueToBeParsed="1220"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address2" package="Root::ExampleModel_Associations" slotName="city" valueToBeParsed="[68,97,108,108,97,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address2" package="Root::ExampleModel_Associations" slotName="streetName" valueToBeParsed="[67,104,117,114,99,104,32,82,100].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address2" package="Root::ExampleModel_Associations" slotName="streetNumber" valueToBeParsed="10505"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address3" package="Root::ExampleModel_Associations" slotName="city" valueToBeParsed="[66,108,111,111,109,105,110,103,116,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address3" package="Root::ExampleModel_Associations" slotName="streetName" valueToBeParsed="[80,114,111,118,105,100,101,110,99,101,32,68,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::address3" package="Root::ExampleModel_Associations" slotName="streetNumber" valueToBeParsed="3260"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car1" package="Root::ExampleModel_Associations" slotName="brandName" valueToBeParsed="[82,101,110,97,117,108,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car1" package="Root::ExampleModel_Associations" slotName="constructionYear" valueToBeParsed="1997"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car1" package="Root::ExampleModel_Associations" slotName="modelName" valueToBeParsed="[76,97,103,117,110,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car1" package="Root::ExampleModel_Associations" slotName="price" valueToBeParsed="749.99"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car2" package="Root::ExampleModel_Associations" slotName="brandName" valueToBeParsed="[70,111,114,100].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car2" package="Root::ExampleModel_Associations" slotName="constructionYear" valueToBeParsed="2005"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car2" package="Root::ExampleModel_Associations" slotName="modelName" valueToBeParsed="[77,117,115,116,97,110,103].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car2" package="Root::ExampleModel_Associations" slotName="price" valueToBeParsed="17999.99"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car3" package="Root::ExampleModel_Associations" slotName="brandName" valueToBeParsed="[79,112,101,108].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car3" package="Root::ExampleModel_Associations" slotName="constructionYear" valueToBeParsed="2004"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car3" package="Root::ExampleModel_Associations" slotName="modelName" valueToBeParsed="[65,115,116,114,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car3" package="Root::ExampleModel_Associations" slotName="price" valueToBeParsed="5299.99"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car4" package="Root::ExampleModel_Associations" slotName="brandName" valueToBeParsed="[74,97,103,117,97,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car4" package="Root::ExampleModel_Associations" slotName="constructionYear" valueToBeParsed="2016"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car4" package="Root::ExampleModel_Associations" slotName="modelName" valueToBeParsed="[70,45,84,121,112,101,32,83,86,82].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car4" package="Root::ExampleModel_Associations" slotName="price" valueToBeParsed="37999.99"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car5" package="Root::ExampleModel_Associations" slotName="brandName" valueToBeParsed="[78,105,115,115,97,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car5" package="Root::ExampleModel_Associations" slotName="constructionYear" valueToBeParsed="2106"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car5" package="Root::ExampleModel_Associations" slotName="modelName" valueToBeParsed="[65,108,116,105,109,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::car5" package="Root::ExampleModel_Associations" slotName="price" valueToBeParsed="11999.99"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer1" package="Root::ExampleModel_Associations" slotName="customerId" valueToBeParsed="89413"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer1" package="Root::ExampleModel_Associations" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(1980, 10, 9)"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer1" package="Root::ExampleModel_Associations" slotName="firstName" valueToBeParsed="[67,105,97,114,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer1" package="Root::ExampleModel_Associations" slotName="lastName" valueToBeParsed="[70,114,97,109,105].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer2" package="Root::ExampleModel_Associations" slotName="customerId" valueToBeParsed="31436"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer2" package="Root::ExampleModel_Associations" slotName="dateOfBirth" valueToBeParsed="Auxiliary::Date::createDate(1990, 3, 5)"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer2" package="Root::ExampleModel_Associations" slotName="firstName" valueToBeParsed="[65,115,104,116,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::customer2" package="Root::ExampleModel_Associations" slotName="lastName" valueToBeParsed="[67,114,101,109,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage1" package="Root::ExampleModel_Associations" slotName="garageName" valueToBeParsed="[82,101,100,32,71,97,114,97,103,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage1" package="Root::ExampleModel_Associations" slotName="noOfLevels" valueToBeParsed="4"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage2" package="Root::ExampleModel_Associations" slotName="garageName" valueToBeParsed="[79,114,97,110,103,101,32,71,97,114,97,103,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage2" package="Root::ExampleModel_Associations" slotName="noOfLevels" valueToBeParsed="12"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage3" package="Root::ExampleModel_Associations" slotName="garageName" valueToBeParsed="[71,114,101,101,110,32,71,97,114,97,103,101].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_Associations::garage3" package="Root::ExampleModel_Associations" slotName="noOfLevels" valueToBeParsed="3"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="car" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Associations::Customer" classTarget="Root::ExampleModel_Associations::Car" fwName="buys" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{0,1,true,false}" package="Root::ExampleModel_Associations" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="garage" accessTargetFromSourceName="address" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Associations::Garage" classTarget="Root::ExampleModel_Associations::Address" fwName="located_in" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,1,true,false}" package="Root::ExampleModel_Associations" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="garage" accessTargetFromSourceName="car" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_Associations::Garage" classTarget="Root::ExampleModel_Associations::Car" fwName="holds" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,50,true,false}" multTargetToSource="Seq{0,1,true,false}" package="Root::ExampleModel_Associations" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_Associations::customer1" classTarget="Root::ExampleModel_Associations::car4" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::customer1" classTarget="Root::ExampleModel_Associations::car5" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::customer2" classTarget="Root::ExampleModel_Associations::car1" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage1" classTarget="Root::ExampleModel_Associations::address1" name="address" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage1" classTarget="Root::ExampleModel_Associations::car1" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage1" classTarget="Root::ExampleModel_Associations::car3" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage1" classTarget="Root::ExampleModel_Associations::car5" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage2" classTarget="Root::ExampleModel_Associations::address2" name="address" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage2" classTarget="Root::ExampleModel_Associations::car2" name="car" package="Root::ExampleModel_Associations"/>
+        <addLink classSource="Root::ExampleModel_Associations::garage2" classTarget="Root::ExampleModel_Associations::car4" name="car" package="Root::ExampleModel_Associations"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::customer2" xCoordinate="1440" yCoordinate="870"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::Garage" xCoordinate="347" yCoordinate="92"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::customer1" xCoordinate="1398" yCoordinate="1465"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::Car" xCoordinate="624" yCoordinate="186"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::car5" xCoordinate="1026" yCoordinate="1056"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::car4" xCoordinate="699" yCoordinate="1434"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::car3" xCoordinate="931" yCoordinate="848"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::car2" xCoordinate="738" yCoordinate="1196"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::car1" xCoordinate="987" yCoordinate="665"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::garage3" xCoordinate="232" yCoordinate="1412"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::Customer" xCoordinate="937" yCoordinate="292"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::address2" xCoordinate="-4" yCoordinate="1195"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::address3" xCoordinate="-53" yCoordinate="1494"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::Address" xCoordinate="99" yCoordinate="177"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::garage2" xCoordinate="296" yCoordinate="1188"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::garage1" xCoordinate="384" yCoordinate="826"/>
+                <Instance hidden="false" path="Root::ExampleModel_Associations::address1" xCoordinate="18" yCoordinate="953"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::car2/AssociationMapping: Root::ExampleModel_Associations::Garage::car" sourcePort="EAST" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="609.14404" yCoordinate="1224.8162"/>
+                        <IntermediatePoint xCoordinate="609.14404" yCoordinate="1172.414"/>
+                        <IntermediatePoint xCoordinate="866.3622" yCoordinate="1172.414"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::car2/AssociationMapping: Root::ExampleModel_Associations::Garage::car" xCoordinate="-9.693896" yCoordinate="-111.65166"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::car4/AssociationMapping: Root::ExampleModel_Associations::Garage::car" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="634.938" yCoordinate="1261.8513"/>
+                        <IntermediatePoint xCoordinate="634.938" yCoordinate="1511.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::car4/AssociationMapping: Root::ExampleModel_Associations::Garage::car" xCoordinate="2.1431723" yCoordinate="5.1742444"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car1/AssociationMapping: Root::ExampleModel_Associations::Garage::car" sourcePort="NORTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="567.6486" yCoordinate="810.15607"/>
+                        <IntermediatePoint xCoordinate="789.6206" yCoordinate="810.15607"/>
+                        <IntermediatePoint xCoordinate="789.6206" yCoordinate="742.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car1/AssociationMapping: Root::ExampleModel_Associations::Garage::car" xCoordinate="-116.34503" yCoordinate="-82.769424"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::customer2/Root::ExampleModel_Associations::car1/AssociationMapping: Root::ExampleModel_Associations::Customer::car" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1325.6145" yCoordinate="934.8633"/>
+                        <IntermediatePoint xCoordinate="1325.6145" yCoordinate="742.6024"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::customer2/Root::ExampleModel_Associations::car1/AssociationMapping: Root::ExampleModel_Associations::Customer::car" xCoordinate="36.131794" yCoordinate="-94.90765"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_Associations::Customer::car" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="886.3982" yCoordinate="359.70737"/>
+                        <IntermediatePoint xCoordinate="886.3982" yCoordinate="253.86328"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_Associations::Customer::car" xCoordinate="9.62337" yCoordinate="-74.931564"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::address1/AssociationMapping: Root::ExampleModel_Associations::Garage::address" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="356.063" yCoordinate="881.96454"/>
+                        <IntermediatePoint xCoordinate="356.063" yCoordinate="1007.05273"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::address1/AssociationMapping: Root::ExampleModel_Associations::Garage::address" xCoordinate="-92.532646" yCoordinate="-43.79438"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car3/AssociationMapping: Root::ExampleModel_Associations::Garage::car" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="891.3856" yCoordinate="881.96454"/>
+                        <IntermediatePoint xCoordinate="891.3856" yCoordinate="925.22394"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car3/AssociationMapping: Root::ExampleModel_Associations::Garage::car" xCoordinate="-18.505547" yCoordinate="-51.284874"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car5/AssociationMapping: Root::ExampleModel_Associations::Garage::car" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="567.6486" yCoordinate="990.4844"/>
+                        <IntermediatePoint xCoordinate="760.9586" yCoordinate="990.4844"/>
+                        <IntermediatePoint xCoordinate="760.9586" yCoordinate="1025.4695"/>
+                        <IntermediatePoint xCoordinate="1153.3849" yCoordinate="1025.4695"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage1/Root::ExampleModel_Associations::car5/AssociationMapping: Root::ExampleModel_Associations::Garage::car" xCoordinate="-88.12633" yCoordinate="24.944157"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::customer1/Root::ExampleModel_Associations::car4/AssociationMapping: Root::ExampleModel_Associations::Customer::car" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1058.7903" yCoordinate="1567.8984"/>
+                        <IntermediatePoint xCoordinate="1058.7903" yCoordinate="1511.1738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::customer1/Root::ExampleModel_Associations::car4/AssociationMapping: Root::ExampleModel_Associations::Customer::car" xCoordinate="-93.50846" yCoordinate="11.063369"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::address2/AssociationMapping: Root::ExampleModel_Associations::Garage::address" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="289.94604" yCoordinate="1243.3337"/>
+                        <IntermediatePoint xCoordinate="289.94604" yCoordinate="1249.0527"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::garage2/Root::ExampleModel_Associations::address2/AssociationMapping: Root::ExampleModel_Associations::Garage::address" xCoordinate="-83.72002" yCoordinate="-42.913116"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_Associations::customer1/Root::ExampleModel_Associations::car5/AssociationMapping: Root::ExampleModel_Associations::Customer::car" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1365.5052" yCoordinate="1516.4492"/>
+                        <IntermediatePoint xCoordinate="1365.5052" yCoordinate="1133.5245"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_Associations::customer1/Root::ExampleModel_Associations::car5/AssociationMapping: Root::ExampleModel_Associations::Customer::car" xCoordinate="39.52365" yCoordinate="-19.0332"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>"1" stands for the multiplicity 1..1, expressing "at least one object must be linked, at most one object must be linked" which is equal to "exactly one object must be linked".</NoteContent>
+                    <NotePosition>
+                        <XPosition>114.0</XPosition>
+                        <YPosition>337.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Navigability of CAR: Instances of GARAGE and CUSTOMER can access CAR objects, but CAR objects cannot access GARAGE and CUSTOMER objects.</NoteContent>
+                    <NotePosition>
+                        <XPosition>706.0</XPosition>
+                        <YPosition>90.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Newly instantiated GARAGE objects will violate their association multiplicity. The error message disappers if it is linked to an address object (e.g., address3).</NoteContent>
+                    <NotePosition>
+                        <XPosition>248.0</XPosition>
+                        <YPosition>1584.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Navigability of CAR objects: CUSTOMER objects can access all linked CAR objects and return them as a set. CAR objects cannot access CUSTOMER objects.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1067.0</XPosition>
+                        <YPosition>1628.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Main View" tx="-24.551353" ty="99.33816" xx="1.0905077"/>
+                <View name="Object View" tx="79.722206" ty="-407.7832" xx="0.6484198"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

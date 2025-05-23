@@ -187,8 +187,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 		multTargetToSourceBox = new MultiplicityBox();
 		multSourceToTargetBox = new MultiplicityBox();
 		
-		sourceVisibleFromTargetBox = new CheckBox("sourceVisibleFromTarget");
-		targetVisibleFromSourceBox = new CheckBox("targetVisibleFromSource");
+		sourceVisibleFromTargetBox = new CheckBox("sourceNavigableFromTarget");
+		targetVisibleFromSourceBox = new CheckBox("targetNavigableFromSource");
 		sourceGetterField.setEditable(false);
 		sourceSetterField.setEditable(false);
         targetVisibleFromSourceBox.setSelected(true);
@@ -319,13 +319,15 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 			}
 		}
 		else {
+				
 				labels.add(new Label(LabelAndHeaderTitle.displayName));
 				labels.add(new Label(" "));
 				labels.add(new Label(" "));
 				labels.add(new Label(LabelAndHeaderTitle.type));
 				labels.add(new Label(LabelAndHeaderTitle.identifier));
 				labels.add(new Label(LabelAndHeaderTitle.multiplicity));
-					
+				labels.add(new Label("Navigability"));
+				
 				sourceNodes.add(newDisplayName);
 				sourceNodes.add(new Label(" "));
 				sourceNodes.add(new Label(LabelAndHeaderTitle.start));
@@ -487,7 +489,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialog.Result> {
 							0,
 							0,
 							newDisplayName.getText(),
-							diagram.getAssociationTypes().get(0),	//should be defaultAssociation i hope
+							associationTypeBox.getSelectionModel().getSelectedItem(),
 							newIdentifierSource.getText(),
 							newIdentifierTarget.getText(),
 							//source.getName().toLowerCase() + newDisplayName.getText(),	//adding display name to prevent errors when a class has mutliple associations

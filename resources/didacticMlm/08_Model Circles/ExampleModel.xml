@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_ModelCircles" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_ModelCircles">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Employee" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Order" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="OrderItem" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Product" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee3" of="Root::ExampleModel_ModelCircles::Employee" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee2" of="Root::ExampleModel_ModelCircles::Employee" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="employee1" of="Root::ExampleModel_ModelCircles::Employee" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleModel_ModelCircles::Customer" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="order1" of="Root::ExampleModel_ModelCircles::Order" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="orderItem1" of="Root::ExampleModel_ModelCircles::OrderItem" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="product1" of="Root::ExampleModel_ModelCircles::Product" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer2" of="Root::ExampleModel_ModelCircles::Customer" package="Root::ExampleModel_ModelCircles" singleton="false"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="customerId" package="Root::ExampleModel_ModelCircles" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_ModelCircles" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_ModelCircles" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Employee" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_ModelCircles" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Employee" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_ModelCircles" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Order" level="0" multiplicity="Seq{1,1,true,false}" name="placedOn" package="Root::ExampleModel_ModelCircles" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::OrderItem" level="0" multiplicity="Seq{1,1,true,false}" name="numberOfProducts" package="Root::ExampleModel_ModelCircles" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Product" level="0" multiplicity="Seq{1,1,true,false}" name="price" package="Root::ExampleModel_ModelCircles" type="Root::Auxiliary::MonetaryValue"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Product" level="0" multiplicity="Seq{1,1,true,false}" name="productId" package="Root::ExampleModel_ModelCircles" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_ModelCircles::Product" level="0" multiplicity="Seq{1,1,true,false}" name="productName" package="Root::ExampleModel_ModelCircles" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer1" package="Root::ExampleModel_ModelCircles" slotName="customerId" valueToBeParsed="6353"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer1" package="Root::ExampleModel_ModelCircles" slotName="firstName" valueToBeParsed="[74,111,104,97,110,110,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer1" package="Root::ExampleModel_ModelCircles" slotName="lastName" valueToBeParsed="[66,97,117,101,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer2" package="Root::ExampleModel_ModelCircles" slotName="customerId" valueToBeParsed="9124"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer2" package="Root::ExampleModel_ModelCircles" slotName="firstName" valueToBeParsed="[83,111,112,104,105,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::customer2" package="Root::ExampleModel_ModelCircles" slotName="lastName" valueToBeParsed="[68,111,110,110,101,108,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee1" package="Root::ExampleModel_ModelCircles" slotName="firstName" valueToBeParsed="[74,101,102,102,114,101,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee1" package="Root::ExampleModel_ModelCircles" slotName="lastName" valueToBeParsed="[76,101,119,105,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee2" package="Root::ExampleModel_ModelCircles" slotName="firstName" valueToBeParsed="[66,101,116,116,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee2" package="Root::ExampleModel_ModelCircles" slotName="lastName" valueToBeParsed="[67,114,105,115,116,97,108].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee3" package="Root::ExampleModel_ModelCircles" slotName="firstName" valueToBeParsed="[78,111,114,109,97].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::employee3" package="Root::ExampleModel_ModelCircles" slotName="lastName" valueToBeParsed="[74,111,104,110,115,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::order1" package="Root::ExampleModel_ModelCircles" slotName="placedOn" valueToBeParsed="Auxiliary::Date::createDate(2024, 11, 11)"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::orderItem1" package="Root::ExampleModel_ModelCircles" slotName="numberOfProducts" valueToBeParsed="5"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::product1" package="Root::ExampleModel_ModelCircles" slotName="price" valueToBeParsed="Auxiliary::MonetaryValue(119.99, Auxiliary::Currency(&quot;EUR&quot;, &quot;EUR&quot;, 1.0))"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::product1" package="Root::ExampleModel_ModelCircles" slotName="productId" valueToBeParsed="9412"/>
+        <changeSlotValue class="Root::ExampleModel_ModelCircles::product1" package="Root::ExampleModel_ModelCircles" slotName="productName" valueToBeParsed="[83,116,97,110,100,105,110,103,32,68,101,115,107,32,88,70,56,52,50].asString()"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="order" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_ModelCircles::Customer" classTarget="Root::ExampleModel_ModelCircles::Order" fwName="places" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_ModelCircles" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="product" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_ModelCircles::Customer" classTarget="Root::ExampleModel_ModelCircles::Product" fwName="orders" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_ModelCircles" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="order" accessTargetFromSourceName="orderItem" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_ModelCircles::Order" classTarget="Root::ExampleModel_ModelCircles::OrderItem" fwName="contains" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_ModelCircles" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="orderItem" accessTargetFromSourceName="product" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_ModelCircles::OrderItem" classTarget="Root::ExampleModel_ModelCircles::Product" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_ModelCircles" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="superiorEmployee" accessTargetFromSourceName="employee" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_ModelCircles::Employee" classTarget="Root::ExampleModel_ModelCircles::Employee" fwName="is_superior_of" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_ModelCircles" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::customer1" classTarget="Root::ExampleModel_ModelCircles::order1" name="order" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::customer2" classTarget="Root::ExampleModel_ModelCircles::product1" name="product" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::employee1" classTarget="Root::ExampleModel_ModelCircles::employee1" name="employee" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::employee2" classTarget="Root::ExampleModel_ModelCircles::employee3" name="employee" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::employee3" classTarget="Root::ExampleModel_ModelCircles::employee2" name="employee" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::order1" classTarget="Root::ExampleModel_ModelCircles::orderItem1" name="orderItem" package="Root::ExampleModel_ModelCircles"/>
+        <addLink classSource="Root::ExampleModel_ModelCircles::orderItem1" classTarget="Root::ExampleModel_ModelCircles::product1" name="product" package="Root::ExampleModel_ModelCircles"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::Customer" xCoordinate="290" yCoordinate="135"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::OrderItem" xCoordinate="849" yCoordinate="223"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::employee2" xCoordinate="1473" yCoordinate="534"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::employee3" xCoordinate="1730" yCoordinate="537"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::employee1" xCoordinate="1603" yCoordinate="304"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::Order" xCoordinate="596" yCoordinate="86"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::orderItem1" xCoordinate="730" yCoordinate="875"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::Product" xCoordinate="559" yCoordinate="395"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::customer1" xCoordinate="104" yCoordinate="853"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::order1" xCoordinate="456" yCoordinate="784"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::product1" xCoordinate="474" yCoordinate="1020"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::Employee" xCoordinate="1541" yCoordinate="95"/>
+                <Instance hidden="false" path="Root::ExampleModel_ModelCircles::customer2" xCoordinate="105" yCoordinate="1081"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationMapping: Root::ExampleModel_ModelCircles::Order::orderItem" sourcePort="EAST" targetPort="NORTH" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="797.79395" yCoordinate="121.43164"/>
+                        <IntermediatePoint xCoordinate="797.79395" yCoordinate="142.85715"/>
+                        <IntermediatePoint xCoordinate="924.29395" yCoordinate="142.85715"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_ModelCircles::Order::orderItem" xCoordinate="2.857143" yCoordinate="-90.78878"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_ModelCircles::Customer::product" sourcePort="SOUTH" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="368.6709" yCoordinate="291.86328"/>
+                        <IntermediatePoint xCoordinate="365.7143" yCoordinate="291.86328"/>
+                        <IntermediatePoint xCoordinate="365.7143" yCoordinate="452.05273"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_ModelCircles::Customer::product" xCoordinate="-99.03898" yCoordinate="139.57472"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::orderItem1/Root::ExampleModel_ModelCircles::product1/AssociationMapping: Root::ExampleModel_ModelCircles::OrderItem::product" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="806.1416" yCoordinate="969.8633"/>
+                        <IntermediatePoint xCoordinate="595.4003" yCoordinate="969.8633"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::orderItem1/Root::ExampleModel_ModelCircles::product1/AssociationMapping: Root::ExampleModel_ModelCircles::OrderItem::product" xCoordinate="-18.285713" yCoordinate="-11.931633"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_ModelCircles::OrderItem::product" sourcePort="SOUTH" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="924.29395" yCoordinate="407.42856"/>
+                        <IntermediatePoint xCoordinate="779.29395" yCoordinate="407.42856"/>
+                        <IntermediatePoint xCoordinate="779.29395" yCoordinate="430.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_ModelCircles::OrderItem::product" xCoordinate="36.57143" yCoordinate="73.21122"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_ModelCircles::Customer::order" sourcePort="NORTH" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="369.08957" yCoordinate="82.75568"/>
+                        <IntermediatePoint xCoordinate="525.79395" yCoordinate="82.75568"/>
+                        <IntermediatePoint xCoordinate="525.79395" yCoordinate="121.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_ModelCircles::Customer::order" xCoordinate="-72.0" yCoordinate="-64.50307"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::customer2/Root::ExampleModel_ModelCircles::product1/AssociationMapping: Root::ExampleModel_ModelCircles::Customer::product" sourcePort="EAST" targetPort="SOUTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="371.53613" yCoordinate="1135.0527"/>
+                        <IntermediatePoint xCoordinate="371.53613" yCoordinate="1162.8572"/>
+                        <IntermediatePoint xCoordinate="595.4003" yCoordinate="1162.8572"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::customer2/Root::ExampleModel_ModelCircles::product1/AssociationMapping: Root::ExampleModel_ModelCircles::Customer::product" xCoordinate="-50.857143" yCoordinate="2.9255025"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::employee3/Root::ExampleModel_ModelCircles::employee2/AssociationMapping: Root::ExampleModel_ModelCircles::Employee::employee" sourcePort="SOUTH" targetPort="SOUTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="653.4844"/>
+                        <IntermediatePoint xCoordinate="1651.5" yCoordinate="653.4844"/>
+                        <IntermediatePoint xCoordinate="1651.5" yCoordinate="650.4844"/>
+                        <IntermediatePoint xCoordinate="1523.0" yCoordinate="650.4844"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::employee3/Root::ExampleModel_ModelCircles::employee2/AssociationMapping: Root::ExampleModel_ModelCircles::Employee::employee" xCoordinate="-34.285713" yCoordinate="-99.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::customer1/Root::ExampleModel_ModelCircles::order1/AssociationMapping: Root::ExampleModel_ModelCircles::Customer::order" sourcePort="NORTH" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="173.52371" yCoordinate="833.7143"/>
+                        <IntermediatePoint xCoordinate="377.39893" yCoordinate="833.7143"/>
+                        <IntermediatePoint xCoordinate="377.39893" yCoordinate="816.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::customer1/Root::ExampleModel_ModelCircles::order1/AssociationMapping: Root::ExampleModel_ModelCircles::Customer::order" xCoordinate="-37.714287" yCoordinate="-53.645927"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::employee2/Root::ExampleModel_ModelCircles::employee3/AssociationMapping: Root::ExampleModel_ModelCircles::Employee::employee" sourcePort="NORTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="504.0"/>
+                        <IntermediatePoint xCoordinate="1618.5" yCoordinate="504.0"/>
+                        <IntermediatePoint xCoordinate="1618.5" yCoordinate="507.0"/>
+                        <IntermediatePoint xCoordinate="1780.0" yCoordinate="507.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::employee2/Root::ExampleModel_ModelCircles::employee3/AssociationMapping: Root::ExampleModel_ModelCircles::Employee::employee" xCoordinate="-56.571426" yCoordinate="42.925503"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_ModelCircles::order1/Root::ExampleModel_ModelCircles::orderItem1/AssociationMapping: Root::ExampleModel_ModelCircles::Order::orderItem" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="671.7793" yCoordinate="816.43164"/>
+                        <IntermediatePoint xCoordinate="671.7793" yCoordinate="907.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_ModelCircles::order1/Root::ExampleModel_ModelCircles::orderItem1/AssociationMapping: Root::ExampleModel_ModelCircles::Order::orderItem" xCoordinate="-42.285713" yCoordinate="-66.78878"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>This example showcases an indirect model circle. The associations "places" and "orders" are conceptually redundant and threaten the integrity, as shown in the Object View.</NoteContent>
+                    <NotePosition>
+                        <XPosition>9.0</XPosition>
+                        <YPosition>68.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Here, we can see that the same product instance can be ordered by different customers.</NoteContent>
+                    <NotePosition>
+                        <XPosition>675.0</XPosition>
+                        <YPosition>1183.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Example #2: The self-referential class EMPLOYEE contains a direct circle. The association multiplicity defines that each employee must have exactly one superior and may be superior to 0 or many other employees.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1827.0</XPosition>
+                        <YPosition>106.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Problem #1: An employee might be their own superior.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1848.0</XPosition>
+                        <YPosition>300.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>4</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Problem #2: Employees can be the superior to their superior.</NoteContent>
+                    <NotePosition>
+                        <XPosition>1946.0</XPosition>
+                        <YPosition>528.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Order Class View" tx="44.048073" ty="77.95703" xx="0.99999994"/>
+                <View name="Order Object View" tx="175.42857" ty="-666.8572" xx="1.0"/>
+                <View name="Employee_Example" tx="-1214.8572" ty="28.571428" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

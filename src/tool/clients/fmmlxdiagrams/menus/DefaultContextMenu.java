@@ -11,6 +11,7 @@ import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.xmodeler.XModeler;
 import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntroductionTasks;
 
+
 public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu(DiagramCanvas view) {
@@ -31,6 +32,10 @@ public class DefaultContextMenu extends ContextMenu {
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Classes...", e -> actions.openFindClassDialog());
 		JavaFxMenuAuxiliary.addMenuItem(searchMenu, "Senders...", e -> actions.openFindSendersDialog());
 
+		
+		
+		
+		
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
 		
@@ -69,14 +74,11 @@ public class DefaultContextMenu extends ContextMenu {
 		if(diagram.isUMLMode()) {
 			getItems().addAll(addMenu, unhideItem);
 		} else {
-			getItems().addAll(addMenu, searchMenu, unhideItem);
+			getItems().addAll(addMenu, searchMenu, unhideItem, addAssocType);
 		}
 		
 		if (!(diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 6) {
 			getItems().addAll(enumerationMenu);			
-		}		
-		if ((!diagram.getRootPane().isInToolIntroductionMode()) || ToolIntroductionTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName()) > 3) {
-			getItems().addAll(new SeparatorMenuItem(), addAssocType);
-		}
+		}	
 	}
 }

@@ -23,18 +23,28 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
+import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
+import tool.xmodeler.ControlCenter;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
+	
+	private Boolean isInDidacticMode;
+	private String activeMode;
+	private String otherMode;
+	
+	private Boolean isInAlphaMode;
 
 	public PropertyManagerStage() {
 		VBox root = new VBox();
 		Scene scene = new Scene(root);
 		setTitle("Preferences");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
-		setWidth(450);
+		setWidth(700);
+		setHeight(350);
 		setResizable(false);
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
@@ -44,20 +54,93 @@ public class PropertyManagerStage extends Stage {
 	private void addTabs(VBox root) {
 		TabPane tabPane = new TabPane();
 		root.getChildren().add(tabPane);
-		Tab directoriesTab = new Tab("Directories");
-		Tab userInterfaceTab = new Tab("UserInterface");
-		Tab didacticMLTab = createDidacticMlTab();
-		tabPane.getTabs().addAll(directoriesTab, userInterfaceTab , didacticMLTab);
+		Tab directoriesTab = new Tab("Model Directory");
+		Tab userInterfaceTab = new Tab("Control Center Settings");
+		Tab xmlDatabaseTab = new Tab("BaseX Connection Data");
+		// debugTab not running currently
+		// Tab debugTab = new Tab("Debugging");
+		//tabPane.getTabs().addAll(directoriesTab, userInterfaceTab,xmlDatabaseTab /* ,debugTab */);
 		buildDirectoriesTab(directoriesTab);
 		buildUserInterfaceTab(userInterfaceTab);
+		buildXmlDatabaseTab(xmlDatabaseTab);
+		
+		// buildDebugGrid(debugTab);
+    
+    
+		Tab didacticMLTab = createDidacticMlTab();
+		Tab alphaModeTab = activateAlphaModeTab();
+		tabPane.getTabs().addAll(xmlDatabaseTab, directoriesTab, userInterfaceTab, didacticMLTab, alphaModeTab);
 	}
+
+	private void buildXmlDatabaseTab(Tab xmlDatabaseTab) {
+		
+		UploadConfig uc = new UploadConfig();
+		GridPane saveTabContentGrid = uc.gridPane;
+		Button okButton = JavaFxButtonAuxilary.createButton("Update BaseX Connection Data", e ->uc.setResult(this));
+		saveTabContentGrid.add(okButton, 0, 6);
+		xmlDatabaseTab.setContent(saveTabContentGrid);
+	}
+
 
 	private Tab createDidacticMlTab() {
 		Tab tab = new Tab();
-		tab.setText("DidacticMl");
-		Button button = new Button("Reset user statistics");
-		button.setOnAction(this::showDeleteStatsDialog);
-		tab.setContent(button);
+			
+		GridPane didacticModeGrid = new GridPane();
+		formatGrid(didacticModeGrid);
+		
+		isInDidacticMode = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.DIDACTIC_MODE.toString()));
+		activeMode = (isInDidacticMode) ? "UML-MX" : "XModelerML";
+		otherMode = (isInDidacticMode) ? "XModelerML" : "UML-MX";
+		tab.setText("Switch to " + otherMode + " ");
+		
+		Label currentMode = new Label("You are currently using " + activeMode);// + " (didacticMode=" + isInDidacticMode.toString() + ")");
+		
+		//Button userStatisticsBtn = new Button("Reset user statistics");
+		//userStatisticsBtn.setOnAction(this::showDeleteStatsDialog);
+		Button toggleDidacticModeBtn = new Button("Switch to " + otherMode);
+		toggleDidacticModeBtn.setOnAction(this::toggleDidacticMode);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		didacticModeGrid.add(currentMode, 0, 1);
+		didacticModeGrid.add(separator, 0, 2);
+		didacticModeGrid.add(toggleDidacticModeBtn, 0, 4);
+		GridPane.setHalignment(toggleDidacticModeBtn, HPos.CENTER);
+		
+		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
+		
+		
+		tab.setContent(didacticModeGrid);
+		return tab;
+	}
+	
+	private Tab activateAlphaModeTab() {
+		Tab tab = new Tab();
+			
+		GridPane alphaModeGrid = new GridPane();
+		formatGrid(alphaModeGrid);
+		
+		isInAlphaMode = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.ALPHA_MODE.toString()));
+		String displayText = ((isInAlphaMode) ? "Deactivate Alpha Mode" : "Activate Alpha Mode");
+		
+		tab.setText(displayText);
+		
+		Label currentMode = new Label("Alpha Mode is currently " + ((isInAlphaMode) ? "activated" : "deactivated") );
+		
+		Button toggleAlphaModeBtn = new Button(displayText);
+		toggleAlphaModeBtn.setOnAction(this::toggleAlphaMode);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		alphaModeGrid.add(currentMode, 0, 1);
+		alphaModeGrid.add(separator, 0, 2);
+		alphaModeGrid.add(toggleAlphaModeBtn, 0, 4);
+		GridPane.setHalignment(toggleAlphaModeBtn, HPos.CENTER);
+		
+		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
+		
+		
+		tab.setContent(alphaModeGrid);
 		return tab;
 	}
 	
@@ -70,6 +153,32 @@ public class PropertyManagerStage extends Stage {
 	        Optional<ButtonType> result = alert.showAndWait();
 	        if (result.isPresent() && result.get() == ButtonType.OK) {
 	        	UserDataProcessor.resetTestStatistics();
+	        }	        
+	    }
+	 
+	 private void toggleDidacticMode(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle("Change to " + otherMode);
+	        alert.setHeaderText(null);
+	        alert.setContentText("Confirm change to " + otherMode + ". Change will apply on restart");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	Boolean newModeBoolean = (isInDidacticMode)? false : true;
+	        	PropertyManager.setProperty(UserProperty.DIDACTIC_MODE.toString(), newModeBoolean.toString());
+	        }	        
+	    }
+
+	 private void toggleAlphaMode(javafx.event.ActionEvent event) {
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setTitle((isInAlphaMode) ? "Deactivate Alpha Mode" : "Activate Alpha Mode");
+	        alert.setHeaderText(null);
+	        alert.setContentText("Confirm change. Change will apply on restart");
+	        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+	        Optional<ButtonType> result = alert.showAndWait();
+	        if (result.isPresent() && result.get() == ButtonType.OK) {
+	        	Boolean newModeBoolean = (isInAlphaMode)? false : true;
+	        	PropertyManager.setProperty(UserProperty.ALPHA_MODE.toString(), newModeBoolean.toString());
 	        }	        
 	    }
 
@@ -140,14 +249,14 @@ public class PropertyManagerStage extends Stage {
 		formatGrid(userInterfaceAppearanceGrid);
 
 		Label header = new Label(
-				"User Interface appearance (confirm changes on enter)" + "\n Changes are applied on restart!");
+				"Change settings of Control Center window (confirm changes on enter)" + "\n Changes are applied on restart!");
 		header.setStyle("-fx-font-weight: bold");
 
 		Label toolX = new Label("Screen_X: ");
 		TextField toolXField = new TextField(PropertyManager.getProperty("toolX"));
 		toolXField.setMaxWidth(80);
 		toolXField.setOnAction(e -> PropertyManager.setProperty("toolX", toolXField.getCharacters().toString()));
-
+		
 		Label toolY = new Label("Screen_Y: ");
 		TextField toolYField = new TextField(PropertyManager.getProperty("toolY"));
 		toolYField.setMaxWidth(80);
@@ -190,6 +299,7 @@ public class PropertyManagerStage extends Stage {
 		userInterfaceAppearanceGrid.add(closingCheckBox, 2, 6);
 		return userInterfaceAppearanceGrid;
 	}
+
 
 	private void formatGrid(GridPane grid) {
 		grid.setPadding(new Insets(5, 5, 5, 5));

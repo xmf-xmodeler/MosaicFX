@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.fmmlxdiagram;
 
+import java.awt.print.Printable;
 import java.io.File;
 import java.util.Collections;
 import java.util.Vector;
@@ -722,6 +723,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 				}
 			}
 			if (isCenterButton(e)) {
+				System.err.println("center drag with event " + e);
 				handleCenterDragged(e);
 			}
 		}

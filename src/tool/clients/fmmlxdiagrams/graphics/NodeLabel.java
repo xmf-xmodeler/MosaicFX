@@ -224,14 +224,14 @@ public class NodeLabel extends NodeBaseElement {
 
 	private String setTextLocal(String text) {
 		String textLocal = text;
-
+		
 		if(special) {
 			int length = text.length();
 			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
 			if(neededWidth > availableWidth) {
 				textLocal = text + "     " + text;
-				int cycle = length + 5;
-				final int SPEED = 400;
+				int cycle = length + 2;
+				final int SPEED = 150;
 				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
 				textLocal = textLocal.substring(step);
 				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));

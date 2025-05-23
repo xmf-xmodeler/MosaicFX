@@ -57,7 +57,7 @@ public class XMLCreator {
 	 * @param onDocumentCreated return call, that will give back the document. Any action can be performed on the doc
 	 * @param diagram used to check if a diagram is in umlMode
 	 */
-	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated, AbstractPackageViewer diagram) {
+	public void getXmlRepresentation(String packagePath, ReturnCall<Document> onDocumentCreated) {
 		this.packagePath = packagePath;
 		Document doc = initXML();
 		// calls save operation after representation is build
@@ -72,20 +72,22 @@ public class XMLCreator {
 		if (PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString()) != null) {
 			String recentlySavedDirPath = PropertyManager.getProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString());
 			File recentlySavedFile = new File(recentlySavedDirPath);
-			chooser.setInitialDirectory(recentlySavedFile.getParentFile());
+			if (recentlySavedFile.exists()) //added by PM to catch corrupted paths
+					chooser.setInitialDirectory(recentlySavedFile.getParentFile());
 		}
 		Runnable showFileChooserStage = () -> {
-		Stage s = new Stage();
-		s.setAlwaysOnTop(true);
-		s.initModality(Modality.APPLICATION_MODAL);
-		Optional<File> saveFile = Optional.of(chooser.showSaveDialog(s));
-		//ErrorLoggin in the case the dialog is escaped
-		if (saveFile == null) {
-			System.err.println("XML Export was interrupted");
-			return; 
-		}
-		PropertyManager.setProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString(),saveFile.get().getAbsolutePath());
-		XMLUtil.saveDocumentToFile(doc, saveFile.get());		
+			Stage s = new Stage();
+			s.setAlwaysOnTop(true);
+			s.initModality(Modality.APPLICATION_MODAL);
+			Optional<File> saveFile = null;
+			saveFile = Optional.of(chooser.showSaveDialog(s));
+			//ErrorLoggin in case the dialog is escaped
+			if (saveFile == null) {
+				System.err.println("XML Export was interrupted");
+				return; 
+			}
+			PropertyManager.setProperty(UserProperty.RECENTLY_SAVED_MODEL_DIR.toString(),saveFile.get().getAbsolutePath());
+			XMLUtil.saveDocumentToFile(doc, saveFile.get());		
 		};
 		//Everything that is related to UI can not run on external Thread. Because async methods are answered with an external thread here the function must be wrapped with a Plattform.runLater() 
 		Platform.runLater(showFileChooserStage);

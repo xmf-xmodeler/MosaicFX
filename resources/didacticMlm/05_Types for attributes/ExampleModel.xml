@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_DataTypes" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_DataTypes">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Resolution" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Playlist" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Video" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="playlist1" of="Root::ExampleModel_DataTypes::Playlist" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="resolution3" of="Root::ExampleModel_DataTypes::Resolution" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="resolution2" of="Root::ExampleModel_DataTypes::Resolution" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="video3" of="Root::ExampleModel_DataTypes::Video" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="video2" of="Root::ExampleModel_DataTypes::Video" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="video1" of="Root::ExampleModel_DataTypes::Video" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="resolution1" of="Root::ExampleModel_DataTypes::Resolution" package="Root::ExampleModel_DataTypes" singleton="false"/>
+        <addEnumeration name="Genre"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="Gaming"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="Knowledge"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="MoviesAndTV"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="Music"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="News"/>
+        <addEnumerationValue enum_name="Genre" enum_value_name="Sports"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Playlist" level="0" multiplicity="Seq{1,1,true,false}" name="isPrivate" package="Root::ExampleModel_DataTypes" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Playlist" level="0" multiplicity="Seq{1,1,true,false}" name="playlistName" package="Root::ExampleModel_DataTypes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Resolution" level="0" multiplicity="Seq{1,1,true,false}" name="heightNumberOfPixels" package="Root::ExampleModel_DataTypes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Resolution" level="0" multiplicity="Seq{1,1,true,false}" name="widthNumberOfPixels" package="Root::ExampleModel_DataTypes" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Video" level="0" multiplicity="Seq{1,1,true,false}" name="mayBeDownloaded" package="Root::ExampleModel_DataTypes" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Video" level="0" multiplicity="Seq{1,1,true,false}" name="title" package="Root::ExampleModel_DataTypes" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Video" level="0" multiplicity="Seq{1,1,true,false}" name="uploadDate" package="Root::ExampleModel_DataTypes" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Video" level="0" multiplicity="Seq{1,1,true,false}" name="videoGenre" package="Root::ExampleModel_DataTypes" type="Root::ExampleModel_DataTypes::Genre"/>
+        <addAttribute class="Root::ExampleModel_DataTypes::Video" level="0" multiplicity="Seq{1,1,true,false}" name="videoResolution" package="Root::ExampleModel_DataTypes" type="Root::ExampleModel_DataTypes::Resolution"/>
+        <addOperation body="@Operation displayResolution[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.widthNumberOfPixels + &quot; x &quot; + self.heightNumberOfPixels&#10;end" class="Root::ExampleModel_DataTypes::Resolution" level="0" monitored="true" name="displayResolution" package="Root::ExampleModel_DataTypes" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getDisplayResolution[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.videoResolution.displayResolution()&#10;end" class="Root::ExampleModel_DataTypes::Video" level="0" monitored="true" name="getDisplayResolution" package="Root::ExampleModel_DataTypes" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::playlist1" package="Root::ExampleModel_DataTypes" slotName="isPrivate" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::playlist1" package="Root::ExampleModel_DataTypes" slotName="playlistName" valueToBeParsed="[77,121,32,70,97,118,111,114,105,116,101,32,86,105,100,101,111,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution1" package="Root::ExampleModel_DataTypes" slotName="heightNumberOfPixels" valueToBeParsed="1080"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution1" package="Root::ExampleModel_DataTypes" slotName="widthNumberOfPixels" valueToBeParsed="1920"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution2" package="Root::ExampleModel_DataTypes" slotName="heightNumberOfPixels" valueToBeParsed="768"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution2" package="Root::ExampleModel_DataTypes" slotName="widthNumberOfPixels" valueToBeParsed="1024"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution3" package="Root::ExampleModel_DataTypes" slotName="heightNumberOfPixels" valueToBeParsed="2160"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::resolution3" package="Root::ExampleModel_DataTypes" slotName="widthNumberOfPixels" valueToBeParsed="3840"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video1" package="Root::ExampleModel_DataTypes" slotName="mayBeDownloaded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video1" package="Root::ExampleModel_DataTypes" slotName="title" valueToBeParsed="[72,111,119,32,84,111,32,77,97,107,101,32,65,32,67,80,85].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video1" package="Root::ExampleModel_DataTypes" slotName="uploadDate" valueToBeParsed="Auxiliary::Date::createDate(2021, 11, 4)"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video1" package="Root::ExampleModel_DataTypes" slotName="videoGenre" valueToBeParsed="Root::ExampleModel_DataTypes::Genre::Knowledge"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video1" package="Root::ExampleModel_DataTypes" slotName="videoResolution" valueToBeParsed="Root::ExampleModel_DataTypes::resolution1"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video2" package="Root::ExampleModel_DataTypes" slotName="mayBeDownloaded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video2" package="Root::ExampleModel_DataTypes" slotName="title" valueToBeParsed="[87,104,97,109,33,32,45,32,76,97,115,116,32,67,104,114,105,115,116,109,97,115,32,40,79,102,102,105,99,105,97,108,32,86,105,100,101,111,41].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video2" package="Root::ExampleModel_DataTypes" slotName="uploadDate" valueToBeParsed="Auxiliary::Date::createDate(2009, 10, 25)"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video2" package="Root::ExampleModel_DataTypes" slotName="videoGenre" valueToBeParsed="Root::ExampleModel_DataTypes::Genre::Music"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video2" package="Root::ExampleModel_DataTypes" slotName="videoResolution" valueToBeParsed="Root::ExampleModel_DataTypes::resolution2"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video3" package="Root::ExampleModel_DataTypes" slotName="mayBeDownloaded" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video3" package="Root::ExampleModel_DataTypes" slotName="title" valueToBeParsed="[71,114,97,110,100,32,84,104,101,102,116,32,65,117,116,111,32,86,73,32,84,114,97,105,108,101,114,32,49].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video3" package="Root::ExampleModel_DataTypes" slotName="uploadDate" valueToBeParsed="Auxiliary::Date::createDate(2023, 12, 5)"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video3" package="Root::ExampleModel_DataTypes" slotName="videoGenre" valueToBeParsed="Root::ExampleModel_DataTypes::Genre::Gaming"/>
+        <changeSlotValue class="Root::ExampleModel_DataTypes::video3" package="Root::ExampleModel_DataTypes" slotName="videoResolution" valueToBeParsed="Root::ExampleModel_DataTypes::resolution3"/>
+        <addAssociation accessSourceFromTargetName="playlist" accessTargetFromSourceName="video" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DataTypes::Playlist" classTarget="Root::ExampleModel_DataTypes::Video" fwName="contains" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_DataTypes" reverseName="-1" sourceVisibleFromTarget="false" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_DataTypes::playlist1" classTarget="Root::ExampleModel_DataTypes::video2" name="video" package="Root::ExampleModel_DataTypes"/>
+        <addLink classSource="Root::ExampleModel_DataTypes::playlist1" classTarget="Root::ExampleModel_DataTypes::video3" name="video" package="Root::ExampleModel_DataTypes"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::Playlist" xCoordinate="768" yCoordinate="245"/>
+                <Instance hidden="true" path="Root::ExampleModel_DataTypes::Genre" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::Video" xCoordinate="362" yCoordinate="109"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::video3" xCoordinate="401" yCoordinate="817"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::Resolution" xCoordinate="67" yCoordinate="108"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::video2" xCoordinate="407" yCoordinate="560"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::playlist1" xCoordinate="1047" yCoordinate="593"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::video1" xCoordinate="349" yCoordinate="348"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::resolution2" xCoordinate="59" yCoordinate="602"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::resolution1" xCoordinate="53" yCoordinate="410"/>
+                <Instance hidden="false" path="Root::ExampleModel_DataTypes::resolution3" xCoordinate="70" yCoordinate="824"/>
+            </Instances>
+            <Edges>
+                <Edge path="InheritanceMapping: Root::ExampleModel_DataTypes::ISBN13/Root::ExampleModel_DataTypes::Abstract_ISBN" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="549.1903" yCoordinate="810.2857"/>
+                        <IntermediatePoint xCoordinate="319.85025" yCoordinate="810.2857"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="InheritanceMapping: Root::ExampleModel_DataTypes::ISBN10/Root::ExampleModel_DataTypes::Abstract_ISBN" sourcePort="NORTH" targetPort="SOUTH" type="Inheritance">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="114.76172" yCoordinate="821.3633"/>
+                        <IntermediatePoint xCoordinate="278.6377" yCoordinate="821.3633"/>
+                    </IntermediatePoints>
+                    <Labels/>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DataTypes::playlist1/Root::ExampleModel_DataTypes::video2/AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" sourcePort="NORTH" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="0.0" yCoordinate="563.0"/>
+                        <IntermediatePoint xCoordinate="856.35425" yCoordinate="563.0"/>
+                        <IntermediatePoint xCoordinate="856.35425" yCoordinate="635.6738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DataTypes::playlist1/Root::ExampleModel_DataTypes::video2/AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" xCoordinate="-73.53911" yCoordinate="-27.93164"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DataTypes::playlist1/Root::ExampleModel_DataTypes::video3/AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" sourcePort="SOUTH" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1159.6045" yCoordinate="834.1635"/>
+                        <IntermediatePoint xCoordinate="851.39746" yCoordinate="834.1635"/>
+                        <IntermediatePoint xCoordinate="851.39746" yCoordinate="892.6738"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DataTypes::playlist1/Root::ExampleModel_DataTypes::video3/AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" xCoordinate="234.3554" yCoordinate="35.10188"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="724.5714" yCoordinate="291.2422"/>
+                        <IntermediatePoint xCoordinate="724.5714" yCoordinate="166.05273"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DataTypes::Playlist::video" xCoordinate="-10.285714" yCoordinate="-90.217354"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>"videoResolution: Resolution" uses the domain-specific type Resolution. You could also hide the RESOLUTION class either by right-clicking on it or going to View-&gt;Hide/Unhide Elements</NoteContent>
+                    <NotePosition>
+                        <XPosition>67.0</XPosition>
+                        <YPosition>-21.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Important difference between attributes and associations: attribute values (here: the object resolution1 for the attribute "videoResolution") should be considered encapsulated and not accessed by other objects. UML-MX does not enforce encapsulation; all VIDEO objects could use the same RESOLUTION object.</NoteContent>
+                    <NotePosition>
+                        <XPosition>-236.0</XPosition>
+                        <YPosition>287.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>2</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>"isPrivate: Boolean" only allows to discriminate two values: private and not private. You should only use Boolean if this is a time-invariant abstraction and there is no reasonable assumption that, in future, more options (e.g., "semi-private" - available only to subscribers) will be added. If the slot specifies one of multiple values, an enumeration should be specified.</NoteContent>
+                    <NotePosition>
+                        <XPosition>887.0</XPosition>
+                        <YPosition>101.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>3</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>"videoGenre: Genre" uses the type Genre, which is an enumeration. You can look at this enumeration by right-clicking on the canvas and selecting Enumerations -&gt; Edit Enumeration.</NoteContent>
+                    <NotePosition>
+                        <XPosition>570.0</XPosition>
+                        <YPosition>-31.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Main View" tx="214.62833" ty="85.07838" xx="0.64841974"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XModelerPackage path="Root::ExampleModel_DeficientClasses" version="4" xModelerVersion="@@VERSION@@">
+    <Imports/>
+    <Model name="Root::ExampleModel_DeficientClasses">
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Customer" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="BookCopy" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="BookEdition" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Book" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="Author" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="ISBN_13" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="false" isControlClass="false" level="1" maxLevel="1" name="ISBN_10" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addMetaClass abstract="true" isControlClass="false" level="1" maxLevel="1" name="AbstractISBN" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="iSBN_132" of="Root::ExampleModel_DeficientClasses::ISBN_13" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="iSBN_131" of="Root::ExampleModel_DeficientClasses::ISBN_13" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="customer1" of="Root::ExampleModel_DeficientClasses::Customer" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookCopy4" of="Root::ExampleModel_DeficientClasses::BookCopy" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookCopy3" of="Root::ExampleModel_DeficientClasses::BookCopy" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookCopy2" of="Root::ExampleModel_DeficientClasses::BookCopy" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookCopy1" of="Root::ExampleModel_DeficientClasses::BookCopy" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookEdition2" of="Root::ExampleModel_DeficientClasses::BookEdition" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="bookEdition1" of="Root::ExampleModel_DeficientClasses::BookEdition" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="book2" of="Root::ExampleModel_DeficientClasses::Book" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="book1" of="Root::ExampleModel_DeficientClasses::Book" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="author2" of="Root::ExampleModel_DeficientClasses::Author" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <addInstance abstract="false" level="0" maxLevel="0" name="author1" of="Root::ExampleModel_DeficientClasses::Author" package="Root::ExampleModel_DeficientClasses" singleton="false"/>
+        <changeParent class="Root::ExampleModel_DeficientClasses::ISBN_10" new="Root::ExampleModel_DeficientClasses::AbstractISBN" old="" package="Root::ExampleModel_DeficientClasses"/>
+        <changeParent class="Root::ExampleModel_DeficientClasses::ISBN_13" new="Root::ExampleModel_DeficientClasses::AbstractISBN" old="" package="Root::ExampleModel_DeficientClasses"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::AbstractISBN" level="0" multiplicity="Seq{1,1,true,false}" name="checkDigit" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::AbstractISBN" level="0" multiplicity="Seq{1,1,true,false}" name="publicationElement" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::AbstractISBN" level="0" multiplicity="Seq{1,1,true,false}" name="registrantElement" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::AbstractISBN" level="0" multiplicity="Seq{1,1,true,false}" name="registrationGroupElement" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Author" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Author" level="0" multiplicity="Seq{1,1,true,false}" name="isPseudonym" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Author" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Book" level="0" multiplicity="Seq{1,1,true,false}" name="title" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookCopy" level="0" multiplicity="Seq{1,1,true,false}" name="discountPercentage" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Float"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookCopy" level="0" multiplicity="Seq{1,1,true,false}" name="isUsed" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Boolean"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{0,1,true,false}" name="editionName" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{1,1,true,false}" name="basePrice" package="Root::ExampleModel_DeficientClasses" type="Root::Auxiliary::MonetaryValue"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{1,1,true,false}" name="editionNumber" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{1,1,true,false}" name="isbn" package="Root::ExampleModel_DeficientClasses" type="Root::ExampleModel_DeficientClasses::AbstractISBN"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{1,1,true,false}" name="numOfPages" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" multiplicity="Seq{1,1,true,false}" name="releaseDate" package="Root::ExampleModel_DeficientClasses" type="Root::Auxiliary::Date"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="customerID" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="firstName" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::Customer" level="0" multiplicity="Seq{1,1,true,false}" name="lastName" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::String"/>
+        <addAttribute class="Root::ExampleModel_DeficientClasses::ISBN_13" level="0" multiplicity="Seq{1,1,true,false}" name="prefix" package="Root::ExampleModel_DeficientClasses" type="Root::XCore::Integer"/>
+        <addOperation body="@Operation getBookTitle[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.bookEdition.book.getTitle()&#10;end" class="Root::ExampleModel_DeficientClasses::BookCopy" level="0" monitored="true" name="getBookTitle" package="Root::ExampleModel_DeficientClasses" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getPrettyISBN[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.isbn.prettyISBN()&#10;end" class="Root::ExampleModel_DeficientClasses::BookEdition" level="0" monitored="true" name="getPrettyISBN" package="Root::ExampleModel_DeficientClasses" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation getTitle[monitor=false,getterKey=&quot;title&quot;]():String&#10;  self.title&#10;end" class="Root::ExampleModel_DeficientClasses::Book" level="0" monitored="false" name="getTitle" package="Root::ExampleModel_DeficientClasses" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation prettyISBN[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.prefix + &quot;-&quot; + self.registrationGroupElement + &quot;-&quot; + self.registrantElement + &quot;-&quot; + self.publicationElement + &quot;-&quot; + self.checkDigit&#10;end" class="Root::ExampleModel_DeficientClasses::ISBN_13" level="0" monitored="true" name="prettyISBN" package="Root::ExampleModel_DeficientClasses" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <addOperation body="@Operation prettyISBN[monitor=true,delToClassAllowed=false]():XCore::String&#10;  self.registrationGroupElement + &quot;-&quot; + self.registrantElement + &quot;-&quot; + self.publicationElement + &quot;-&quot; + self.checkDigit&#10;end" class="Root::ExampleModel_DeficientClasses::AbstractISBN" level="0" monitored="true" name="prettyISBN" package="Root::ExampleModel_DeficientClasses" paramNames="" paramTypes="" type="Root::XCore::String"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author1" package="Root::ExampleModel_DeficientClasses" slotName="firstName" valueToBeParsed="[77,97,114,118,105,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author1" package="Root::ExampleModel_DeficientClasses" slotName="isPseudonym" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author1" package="Root::ExampleModel_DeficientClasses" slotName="lastName" valueToBeParsed="[77,105,110,115,107,121].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author2" package="Root::ExampleModel_DeficientClasses" slotName="firstName" valueToBeParsed="[83,101,121,109,111,117,114].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author2" package="Root::ExampleModel_DeficientClasses" slotName="isPseudonym" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::author2" package="Root::ExampleModel_DeficientClasses" slotName="lastName" valueToBeParsed="[80,97,112,101,114,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::book1" package="Root::ExampleModel_DeficientClasses" slotName="title" valueToBeParsed="[80,101,114,99,101,112,116,114,111,110,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::book2" package="Root::ExampleModel_DeficientClasses" slotName="title" valueToBeParsed="[84,104,101,32,83,111,99,105,101,116,121,32,111,102,32,77,105,110,100].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy1" package="Root::ExampleModel_DeficientClasses" slotName="discountPercentage" valueToBeParsed="0.2"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy1" package="Root::ExampleModel_DeficientClasses" slotName="isUsed" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy2" package="Root::ExampleModel_DeficientClasses" slotName="discountPercentage" valueToBeParsed="0.5"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy2" package="Root::ExampleModel_DeficientClasses" slotName="isUsed" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy3" package="Root::ExampleModel_DeficientClasses" slotName="discountPercentage" valueToBeParsed="0.0"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy3" package="Root::ExampleModel_DeficientClasses" slotName="isUsed" valueToBeParsed="false"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy4" package="Root::ExampleModel_DeficientClasses" slotName="discountPercentage" valueToBeParsed="0.15"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookCopy4" package="Root::ExampleModel_DeficientClasses" slotName="isUsed" valueToBeParsed="true"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="basePrice" valueToBeParsed="Auxiliary::MonetaryValue(15, Auxiliary::Currency(&quot;USD&quot;, &quot;USD&quot;, 1.0))"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="editionName" valueToBeParsed="null"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="editionNumber" valueToBeParsed="1"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="isbn" valueToBeParsed="Root::ExampleModel_DeficientClasses::iSBN_132"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="numOfPages" valueToBeParsed="338"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition1" package="Root::ExampleModel_DeficientClasses" slotName="releaseDate" valueToBeParsed="Auxiliary::Date::createDate(1985, 11, 12)"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="basePrice" valueToBeParsed="Auxiliary::MonetaryValue(40, Auxiliary::Currency(&quot;USD&quot;, &quot;USD&quot;, 1.0))"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="editionName" valueToBeParsed="[82,101,105,115,115,117,101,32,111,102,32,116,104,101,32,49,57,56,56,32,69,120,112,97,110,100,101,100,32,69,100,105,116,105,111,110].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="editionNumber" valueToBeParsed="3"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="isbn" valueToBeParsed="Root::ExampleModel_DeficientClasses::iSBN_131"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="numOfPages" valueToBeParsed="287"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::bookEdition2" package="Root::ExampleModel_DeficientClasses" slotName="releaseDate" valueToBeParsed="Auxiliary::Date::createDate(2017, 8, 6)"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::customer1" package="Root::ExampleModel_DeficientClasses" slotName="customerID" valueToBeParsed="542"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::customer1" package="Root::ExampleModel_DeficientClasses" slotName="firstName" valueToBeParsed="[77,97,114,103,101,114,101,116].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::customer1" package="Root::ExampleModel_DeficientClasses" slotName="lastName" valueToBeParsed="[76,101,119,105,115].asString()"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_131" package="Root::ExampleModel_DeficientClasses" slotName="checkDigit" valueToBeParsed="2"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_131" package="Root::ExampleModel_DeficientClasses" slotName="prefix" valueToBeParsed="978"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_131" package="Root::ExampleModel_DeficientClasses" slotName="publicationElement" valueToBeParsed="53477"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_131" package="Root::ExampleModel_DeficientClasses" slotName="registrantElement" valueToBeParsed="262"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_131" package="Root::ExampleModel_DeficientClasses" slotName="registrationGroupElement" valueToBeParsed="0"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_132" package="Root::ExampleModel_DeficientClasses" slotName="checkDigit" valueToBeParsed="1"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_132" package="Root::ExampleModel_DeficientClasses" slotName="prefix" valueToBeParsed="978"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_132" package="Root::ExampleModel_DeficientClasses" slotName="publicationElement" valueToBeParsed="60740"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_132" package="Root::ExampleModel_DeficientClasses" slotName="registrantElement" valueToBeParsed="671"/>
+        <changeSlotValue class="Root::ExampleModel_DeficientClasses::iSBN_132" package="Root::ExampleModel_DeficientClasses" slotName="registrationGroupElement" valueToBeParsed="0"/>
+        <addAssociation accessSourceFromTargetName="author" accessTargetFromSourceName="book" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DeficientClasses::Author" classTarget="Root::ExampleModel_DeficientClasses::Book" fwName="writes" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{1,-1,false,false}" package="Root::ExampleModel_DeficientClasses" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="book" accessTargetFromSourceName="bookEdition" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DeficientClasses::Book" classTarget="Root::ExampleModel_DeficientClasses::BookEdition" fwName="released_as" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,-1,false,false}" multTargetToSource="Seq{1,1,true,false}" package="Root::ExampleModel_DeficientClasses" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="bookCopy" accessTargetFromSourceName="bookEdition" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DeficientClasses::BookCopy" classTarget="Root::ExampleModel_DeficientClasses::BookEdition" fwName="refers_to" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{1,1,true,false}" multTargetToSource="Seq{0,-1,false,false}" package="Root::ExampleModel_DeficientClasses" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addAssociation accessSourceFromTargetName="customer" accessTargetFromSourceName="bookCopy" associationType="Root::Associations::DefaultAssociation" classSource="Root::ExampleModel_DeficientClasses::Customer" classTarget="Root::ExampleModel_DeficientClasses::BookCopy" fwName="buys" instLevelSource="0" instLevelTarget="0" multSourceToTarget="Seq{0,-1,false,false}" multTargetToSource="Seq{0,1,true,false}" package="Root::ExampleModel_DeficientClasses" reverseName="-1" sourceVisibleFromTarget="true" targetVisibleFromSource="true"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::author1" classTarget="Root::ExampleModel_DeficientClasses::book1" name="book" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::author1" classTarget="Root::ExampleModel_DeficientClasses::book2" name="book" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::author2" classTarget="Root::ExampleModel_DeficientClasses::book1" name="book" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::book1" classTarget="Root::ExampleModel_DeficientClasses::bookEdition2" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::book2" classTarget="Root::ExampleModel_DeficientClasses::bookEdition1" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::bookCopy1" classTarget="Root::ExampleModel_DeficientClasses::bookEdition1" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::bookCopy2" classTarget="Root::ExampleModel_DeficientClasses::bookEdition2" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::bookCopy3" classTarget="Root::ExampleModel_DeficientClasses::bookEdition2" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::bookCopy4" classTarget="Root::ExampleModel_DeficientClasses::bookEdition2" name="bookEdition" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::customer1" classTarget="Root::ExampleModel_DeficientClasses::bookCopy1" name="bookCopy" package="Root::ExampleModel_DeficientClasses"/>
+        <addLink classSource="Root::ExampleModel_DeficientClasses::customer1" classTarget="Root::ExampleModel_DeficientClasses::bookCopy3" name="bookCopy" package="Root::ExampleModel_DeficientClasses"/>
+    </Model>
+    <Diagrams>
+        <Diagram name="ExampleDiagram" umlMode="true">
+            <Instances>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::Customer" xCoordinate="1083" yCoordinate="377"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookEdition1" xCoordinate="343" yCoordinate="877"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::ISBN_13" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::AbstractISBN" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookCopy3" xCoordinate="909" yCoordinate="1604"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookCopy4" xCoordinate="865" yCoordinate="1857"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::ISBN_10" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookCopy1" xCoordinate="871" yCoordinate="971"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::Book" xCoordinate="295" yCoordinate="302"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookCopy2" xCoordinate="931" yCoordinate="1394"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::author1" xCoordinate="-403" yCoordinate="1145"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::BookCopy" xCoordinate="802" yCoordinate="339"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::iSBN_131" xCoordinate="-240" yCoordinate="1582"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::customer1" xCoordinate="1423" yCoordinate="1126"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::author2" xCoordinate="-118" yCoordinate="1245"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::iSBN_132" xCoordinate="42" yCoordinate="1654"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::book2" xCoordinate="-4" yCoordinate="969"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::Author" xCoordinate="51" yCoordinate="117"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::book1" xCoordinate="77" yCoordinate="1470"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::BookEdition" xCoordinate="498" yCoordinate="426"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::bookEdition2" xCoordinate="373" yCoordinate="1530"/>
+            </Instances>
+            <Edges>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author1/Root::ExampleModel_DeficientClasses::book1/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" sourcePort="SOUTH" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="-334.51807" yCoordinate="1440.0"/>
+                        <IntermediatePoint xCoordinate="127.0" yCoordinate="1440.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author1/Root::ExampleModel_DeficientClasses::book1/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" xCoordinate="-179.71158" yCoordinate="42.223145"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author1/Root::ExampleModel_DeficientClasses::book2/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="-42.265625" yCoordinate="1199.0527"/>
+                        <IntermediatePoint xCoordinate="-42.265625" yCoordinate="1001.1978"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author1/Root::ExampleModel_DeficientClasses::book2/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" xCoordinate="-120.12806" yCoordinate="58.560562"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::customer1/Root::ExampleModel_DeficientClasses::bookCopy3/AssociationMapping: Root::ExampleModel_DeficientClasses::Customer::bookCopy" sourcePort="WEST" targetPort="EAST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1284.5798" yCoordinate="1198.0703"/>
+                        <IntermediatePoint xCoordinate="1284.5798" yCoordinate="1659.5527"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::customer1/Root::ExampleModel_DeficientClasses::bookCopy3/AssociationMapping: Root::ExampleModel_DeficientClasses::Customer::bookCopy" xCoordinate="73.03786" yCoordinate="-198.03297"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::book2/Root::ExampleModel_DeficientClasses::bookEdition1/AssociationMapping: Root::ExampleModel_DeficientClasses::Book::bookEdition" sourcePort="EAST" targetPort="WEST" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="356.89648" yCoordinate="1001.1978"/>
+                        <IntermediatePoint xCoordinate="356.89648" yCoordinate="988.10547"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::book2/Root::ExampleModel_DeficientClasses::bookEdition1/AssociationMapping: Root::ExampleModel_DeficientClasses::Book::bookEdition" xCoordinate="-89.375275" yCoordinate="-23.126518"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DeficientClasses::BookCopy::bookEdition" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="730.03595" yCoordinate="385.2422"/>
+                        <IntermediatePoint xCoordinate="730.03595" yCoordinate="461.18533"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DeficientClasses::BookCopy::bookEdition" xCoordinate="-28.664774" yCoordinate="-105.201904"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="266.85715" yCoordinate="152.71736"/>
+                        <IntermediatePoint xCoordinate="266.85715" yCoordinate="337.43164"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" xCoordinate="-15.428572" yCoordinate="-114.78878"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author2/Root::ExampleModel_DeficientClasses::book1/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" sourcePort="EAST" targetPort="NORTH" type="AssociationLink">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="205.34929" yCoordinate="1297.8969"/>
+                        <IntermediatePoint xCoordinate="205.34929" yCoordinate="1440.0"/>
+                        <IntermediatePoint xCoordinate="143.66667" yCoordinate="1440.0"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationLinkMapping: Root::ExampleModel_DeficientClasses::author2/Root::ExampleModel_DeficientClasses::book1/AssociationMapping: Root::ExampleModel_DeficientClasses::Author::book" xCoordinate="67.27171" yCoordinate="-91.35925"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DeficientClasses::Customer::bookCopy" sourcePort="WEST" targetPort="EAST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="1045.73" yCoordinate="434.05273"/>
+                        <IntermediatePoint xCoordinate="1045.73" yCoordinate="384.88016"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DeficientClasses::Customer::bookCopy" xCoordinate="-10.593504" yCoordinate="-54.726974"/>
+                    </Labels>
+                </Edge>
+                <Edge path="AssociationMapping: Root::ExampleModel_DeficientClasses::Book::bookEdition" sourcePort="EAST" targetPort="WEST" type="Association">
+                    <IntermediatePoints>
+                        <IntermediatePoint xCoordinate="473.92242" yCoordinate="337.43164"/>
+                        <IntermediatePoint xCoordinate="473.92242" yCoordinate="461.18533"/>
+                    </IntermediatePoints>
+                    <Labels>
+                        <Label localID="0" ownerID="AssociationMapping: Root::ExampleModel_DeficientClasses::Book::bookEdition" xCoordinate="-21.869442" yCoordinate="-116.69985"/>
+                    </Labels>
+                </Edge>
+            </Edges>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes>
+                <Note>
+                    <NoteId>0</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Attribute "isbn: AbstractISBN" uses a domain-specific type and serves as a further example for LU5: Types for Attributes. The classes ABSTRACT_ISBN, ISBN_10, and ISBN_13 are shown in a separate diagram that can be accessed from the Control Center. The objects "iSBN_131" and "iSBN_132" that are used in the BOOKEDITION objects are hidden in this diagram. You can show them in View-&gt;Hide/Unhide Elements.</NoteContent>
+                    <NotePosition>
+                        <XPosition>154.0</XPosition>
+                        <YPosition>444.0</YPosition>
+                    </NotePosition>
+                </Note>
+                <Note>
+                    <NoteId>1</NoteId>
+                    <NoteColor>0xf9ec72ff</NoteColor>
+                    <NoteContent>Multiple copies for the same book edition: If all attributes were specified in a single class BOOK, many values need to specified redundantly (e.g., title). The operation "getBookTitle()" in BOOKCOPY shows that we can access attributes of the linked BOOK object without needing to redefine them.</NoteContent>
+                    <NotePosition>
+                        <XPosition>440.0</XPosition>
+                        <YPosition>1342.0</YPosition>
+                    </NotePosition>
+                </Note>
+            </Notes>
+            <Views>
+                <View name="Class View" tx="64.8398" ty="40.21747" xx="0.91700405"/>
+                <View name="Object View" tx="296.7557" ty="-476.0056" xx="0.59460354"/>
+            </Views>
+        </Diagram>
+        <Diagram name="DomainTypes" umlMode="true">
+            <Instances>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::Customer" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookEdition1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::ISBN_13" xCoordinate="591" yCoordinate="341"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::AbstractISBN" xCoordinate="301" yCoordinate="127"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookCopy3" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookCopy4" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="false" path="Root::ExampleModel_DeficientClasses::ISBN_10" xCoordinate="113" yCoordinate="358"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookCopy1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::Book" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookCopy2" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::author1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::BookCopy" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::iSBN_131" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::customer1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::author2" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::iSBN_132" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::book2" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::Author" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::book1" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::BookEdition" xCoordinate="0" yCoordinate="0"/>
+                <Instance hidden="true" path="Root::ExampleModel_DeficientClasses::bookEdition2" xCoordinate="0" yCoordinate="0"/>
+            </Instances>
+            <Edges/>
+            <DiagramDisplayProperties>
+                <SLOTS>true</SLOTS>
+                <CONCRETESYNTAX>true</CONCRETESYNTAX>
+                <METACLASSNAME>false</METACLASSNAME>
+                <ISSUETABLE>false</ISSUETABLE>
+                <OPERATIONS>true</OPERATIONS>
+                <DERIVEDATTRIBUTES>true</DERIVEDATTRIBUTES>
+                <CONSTRAINTS>true</CONSTRAINTS>
+                <CONSTRAINTREPORTS>true</CONSTRAINTREPORTS>
+                <DERIVEDOPERATIONS>true</DERIVEDOPERATIONS>
+                <OPERATIONVALUES>true</OPERATIONVALUES>
+                <GETTERSANDSETTERS>true</GETTERSANDSETTERS>
+            </DiagramDisplayProperties>
+            <Notes/>
+            <Views>
+                <View name="Main View" tx="0.0" ty="0.0" xx="1.0"/>
+            </Views>
+        </Diagram>
+    </Diagrams>
+</XModelerPackage>

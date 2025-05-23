@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.fmmlxdiagram.diagramViewComponents;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -193,7 +194,7 @@ public class DiagramViewPane extends SplitPane {
 			if (keyEvent.isControlDown()) {
 				FmmlxDiagramControlKeyHandler handler = new FmmlxDiagramControlKeyHandler(
 						FmmlxDiagramCommunicator.getDiagram(diagram.getID()));
-				handler.handle(keyEvent.getCode());
+				handler.handle(keyEvent);
 			}
 
 			if (keyEvent.getCode() == javafx.scene.input.KeyCode.F5) {
@@ -216,15 +217,18 @@ public class DiagramViewPane extends SplitPane {
 				pressedKeys.add(e.getCode());
 				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.A)) {
 					diagram.selectAll();
-				}
-				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S)) {
-					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
-				}
+					}
+				/*
+				 * added !getPressedKeys().contains(KeyCode.SHIFT)
+				 */
+////				if (getPressedKeys().contains(KeyCode.CONTROL) && getPressedKeys().contains(KeyCode.S) && !getPressedKeys().contains(KeyCode.SHIFT)) {
+////					new XMLCreator().createAndSaveXMLRepresentation(diagram.getPackagePath(), diagram);
+////				}
 				if (getPressedKeys().contains(KeyCode.F5)) {
 					diagram.getComm().triggerUpdate();
 				}
 			}
-		});
+	});
 		tabPane.getSelectionModel().selectedItemProperty().addListener((foo, goo, newTabItem) -> {
 			if (newTabItem.getContent() == null) {
 				// pane with star selected
@@ -434,10 +438,12 @@ public class DiagramViewPane extends SplitPane {
 	/**
 	 * This function gets called by a learning unit manager. The function is used to
 	 * prepare the gui and the model for the next task.
+	 * @return 
 	 */
-	public void loadNextStage() {
+	public String[][] loadNextStage() {
+		String[][] attributeList = null;
 		if (SelfAssesmentTestManager.getInstance().needsPreparationActions()) {
-			SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
+		attributeList =	SelfAssesmentTestManager.getInstance().getPreperationActions().prepair(diagram);
 		}
 		int nextTaskPrecedencePrecedence = SelfAssessmentTestTasks.getNextPrecedence(taskName);
 		// only in tool intro the gui is adapted
@@ -447,6 +453,7 @@ public class DiagramViewPane extends SplitPane {
 			buildViewComponents(100);
 		}
 		taskName = SelfAssessmentTestTasks.getTaskName(nextTaskPrecedencePrecedence);
+		return attributeList;
 	}
 
 	public DiagramCanvas getActiveDiagramViewPane() {

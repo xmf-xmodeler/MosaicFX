@@ -37,6 +37,8 @@ import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 import tool.helper.auxilaryFX.JavaFxMenuAuxiliary;
 import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
+import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 
@@ -68,7 +70,7 @@ public class DiagramViewHeadToolBar extends VBox {
 		Menu refactorMenu = new Menu("Refactor");
 		Menu autoMlmMenu = new Menu("AutoMLM");
 		Menu helpMenu = new Menu("Help");
-		if (!fmmlxDiagram.isUMLMode())
+		if (Boolean.parseBoolean((PropertyManager.getProperty(UserProperty.ALPHA_MODE.toString()))))
 		{
 			menuBar.getMenus().addAll(modelMenu, viewMenu, refactorMenu, autoMlmMenu, helpMenu);
 
@@ -83,11 +85,9 @@ public class DiagramViewHeadToolBar extends VBox {
 		buildModelMenu(modelMenu);
 		buildViewMenu(viewMenu);
 		// buildRefactorMenu(refactorMenu);
-		if (!fmmlxDiagram.isUMLMode())
-		{
-			buildAutoMlmMenu(autoMlmMenu);
 
-		}
+		buildAutoMlmMenu(autoMlmMenu);
+
 		buildHelpMenu(helpMenu);
 
 		toolBar = buildToolBar();
@@ -216,6 +216,8 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildViewMenu(Menu viewMenu) {
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Hide/Unhide Elements...",
 				e -> diagramActions.showUnhideElementsDialog());
+		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Diagram Statistics", e -> diagramActions.showDiagramStatistics());
+		
 		viewMenu.getItems().add(new SeparatorMenuItem());
 
 		class ToggleMenuItem extends MenuItem {
@@ -395,6 +397,9 @@ public class DiagramViewHeadToolBar extends VBox {
 	private void buildModelMenu(Menu modelMenu) {
 		 JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save...", e -> new
 		 XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram));
+		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Save to Database", e -> diagramActions.exportToDB());
+//		JavaFxMenuAuxiliary.addMenuItem(modelMenu, "Rename Project", e -> diagramActions.renameProjekt());
+
 		modelMenu.getItems().add(new SeparatorMenuItem());
 
 		addEnumMenue(modelMenu);

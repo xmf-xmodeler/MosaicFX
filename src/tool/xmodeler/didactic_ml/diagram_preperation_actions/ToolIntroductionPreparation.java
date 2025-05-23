@@ -1,5 +1,6 @@
 package tool.xmodeler.didactic_ml.diagram_preperation_actions;
 
+import java.util.List;
 import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -10,20 +11,20 @@ import tool.xmodeler.didactic_ml.self_assessment_test_tasks.tool_intro.ToolIntro
 
 public class ToolIntroductionPreparation extends DiagramPreparationActions {
 
-	public void prepair(FmmlxDiagram diagram) {
+	public String[][] prepair(FmmlxDiagram diagram) {
 		switch (SelfAssessmentTestTasks.getPrecedence(diagram.getViewPane().getCurrentTaskName())) {
 		case 5:
 			addCustomerAndTicket(diagram);
-			return;
+			return null;
 		case 8:
 			addReturnAgeForRatingFun(diagram);
-			return;
+			return null;
 		case 9:
 			addTicketConstrain(diagram);
-			return;
+			return null;
 
 		default:
-			return;
+			return null;
 		}
 
 	}
@@ -53,8 +54,8 @@ public class ToolIntroductionPreparation extends DiagramPreparationActions {
 				"Root::ToolIntroductionABC::Ticket",
 				"mayWatchMovie",
 				0,
-				"self."+ diagram.getAssociations().get(findBuysAssoc(diagram)).getAccessNameEndToStart() +".getAge() >= self."+ diagram.getAssociations().get(findValidForAssoc(diagram)).getAccessNameStartToEnd() +".movieshown_in.requiredAgeToWatch()",//dynamically gets the name of the identifier
-				"\"Customer not allowed to watch the movie.\"");	
+				"self."+ diagram.getAssociations().get(findBuysAssoc(diagram)).getAccessNameEndToStart() +".getAge() >= self."+ diagram.getAssociations().get(findValidForAssoc(diagram)).getAccessNameStartToEnd() +".movie.requiredAgeToWatch()",//dynamically gets the name of the identifier
+				"\"Customer is too young to watch the movie.\"");	
 	}
 
 	private static void addReturnAgeForRatingFun(FmmlxDiagram diagram) {

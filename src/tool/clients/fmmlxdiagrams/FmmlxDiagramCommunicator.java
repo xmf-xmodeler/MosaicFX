@@ -27,6 +27,8 @@ import javafx.stage.WindowEvent;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.xmldatabase.BranchManager;
+import tool.clients.fmmlxdiagrams.xmldatabase.DefaultBranchManager;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
 import tool.helper.persistence.XMLInstanceStub;
@@ -38,6 +40,7 @@ import xos.Value;
 
 public class FmmlxDiagramCommunicator {
 	
+	public static final boolean USERLOGGINGONLY = true;
 	private static final boolean DEBUG = false; // while setting debug-modus you will receive logs, that help with error detection
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FmmlxDiagramCommunicator.class);
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>(); // old response map (to be removed)
@@ -210,6 +213,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(packagePath),
 				new Value(diagramName)
 		};
+		//clear Default Branch
+		DefaultBranchManager defaultBranchmanager = DefaultBranchManager.getInstance();
+		defaultBranchmanager.clearDefaultBranch();
 		sendMessage("showDiagram", message);
 	}
 
@@ -343,7 +349,11 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) System.err.println(": Sending synchron request " + xmfFunctionName + "(" + currentRequestID + ") handle " + targetHandle);
 		RequestLog log = new  RequestLog(currentRequestID, true, System.currentTimeMillis(), xmfFunctionName, targetHandle, newParameterList);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Send synchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Send synchron request {}", log);
+		}
+		
 		//copy all elements starting by parameterList[0] to new parameterList[1] 
 		System.arraycopy(parameterList, 0, newParameterList, 1, parameterList.length);
 		//add at position [0] of new parameterList a combined value of diagramID and requestID
@@ -380,7 +390,11 @@ public class FmmlxDiagramCommunicator {
 		returnMap.put(currentRequestID, returnCall);
 		RequestLog log = new RequestLog(currentRequestID, false, System.currentTimeMillis(), message, targetHandle, args2);
 		RequestLogManager.getInstance().addLog(log);
-		logger.debug("Start asynchron request {}", log);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Start asynchron request {}", log);
+		}
+		
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 	}
 	
@@ -390,10 +404,25 @@ public class FmmlxDiagramCommunicator {
 				int n = message[0].values[1].intValue;
 				System.err.println(": Sending command" + n + ": " + command);
 				timeMap.put(n, System.currentTimeMillis());
+				
 			} catch (Exception e) {
 				
 			}
 		}
+
+		String messageContent = "";
+		for (Value value : message)
+		{
+			if(value != null)
+			{
+				messageContent += value.toString() + ", ";
+			}
+			
+		}
+		logger.debug(": Sending command: " + command + ": "+messageContent);
+
+		
+		
 		WorkbenchClient.theClient().send(handle, command, message);
 	}
 
@@ -1456,13 +1485,14 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAttributeOwner", message);
 	}
 
-	public void changeAttributeType(int diagramID, String objectName, String attributeName, String oldType, String newType) {
+	public void changeAttributeType(int diagramID, String objectName, String attributeName, String oldType, String newType, String converter) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attributeName),
 				new Value(oldType),
-				new Value(newType)};
+				new Value(newType),
+				new Value(converter)};
 		sendMessage("changeAttributeType", message);
 	}
 
@@ -2466,7 +2496,7 @@ public class FmmlxDiagramCommunicator {
 				return diagram;
 			}
 		}
-		System.err.println("Diagram " + id + "not found.");
+		//System.err.println("Diagram " + id + " not found.");
 		return null;
 	}
 	// -------------------- merge package ---------------------------- //
@@ -2743,13 +2773,21 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Try to wait for request " + requestID);
 		}
-		logger.debug("Try to wait for request " + requestID);
+		if(!USERLOGGINGONLY)
+		{
+			logger.debug("Try to wait for request " + requestID);
+		}
+		
 		long requestTime = System.currentTimeMillis();
 		while (!RequestLogManager.getInstance().getLog(requestID).isReturned()) {
 			if (requestTime + 2500 < System.currentTimeMillis()) {
 				//TODO TS add logging, maybe throw exception
 				System.err.println("While waiting for the request \"" + requestID + "\", there was no answer");
-				logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				if (!USERLOGGINGONLY)
+				{
+					logger.error("While waiting for the request \"" + requestID + "\", there was no answer");
+				}
+				
 				return;
 			} else {
 				try {
@@ -2763,7 +2801,10 @@ public class FmmlxDiagramCommunicator {
 		if (DEBUG) {
 			System.err.println("Request " + requestID + " is returned");
 		}
+		if(!USERLOGGINGONLY)
+		{
 		logger.debug("Try to wait for request " + requestID);
+		}
 	}
 	
 	public void waitForNextRequestReturn() {

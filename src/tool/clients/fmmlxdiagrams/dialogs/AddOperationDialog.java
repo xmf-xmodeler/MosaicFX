@@ -4,10 +4,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -15,6 +19,8 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.helper.IconGenerator;
+import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
 
 public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
@@ -25,6 +31,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 	private TextField classTextField; 
 	private TextField umlFunctionSignature;	//only for umlMode
+	private Text definitionHint; //only for UMLmode
 	private ComboBox<Integer> levelComboBox;
 	private VBox mainBox;
 
@@ -47,6 +54,8 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		layoutContent(oldOp);
 		setResizable(true);
 
@@ -114,14 +123,14 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 		GridPane theGrid = new GridPane();
 		if(!diagram.isUMLMode()) {
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
-		theGrid.add(classTextField, 1, 0);
-		theGrid.add(levelComboBox, 1, 1);
-		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
+			theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
+			theGrid.add(classTextField, 1, 0);
+			theGrid.add(levelComboBox, 1, 1);
+			theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
 		}
 		theGrid.setHgap(5);
 		theGrid.setVgap(5);
-		theGrid.add(new Label("Operation body"), 0, 2);
+		//theGrid.add(new Label("Operation body"), 0, 2);
 		//theGrid.add(defaultOperationButton, 1, 2);
 		
 
@@ -149,35 +158,86 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	}
 	
 	private void createSignature() {
-		String[] codeBody;
-		codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
-		codeBody = codeBody[0].split("");
-		 String signature = "";
-		 boolean bracket = false;
-		for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
-			if(codeBody[i].equals("[")) {
-				bracket = true;
+		String[] codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\\r?\\n");
+		//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
+		String originalSignature = codeBody[0];
+		String umlSignature = "";
+		boolean inBracket = false;
+		char currentCharacter;
+		for (int i = 1; i<originalSignature.length(); i++) { //i=1 jumps @ sign
+			currentCharacter = originalSignature.charAt(i);
+			if(currentCharacter == '[') {
+				inBracket = true;
 			}
-			if(!bracket) {
-			signature = signature + codeBody[i];
+			if(!inBracket) {
+				umlSignature = umlSignature + currentCharacter;
 			}
-			if(codeBody[i].equals("]")) {
-				bracket = false;
-			}
+			if(currentCharacter == ']') {
+				inBracket = false;
+			}	
 		}
-	
-		if(umlFunctionSignature != null) umlFunctionSignature.setText(signature);
+		if (umlSignature.startsWith("Operation ")) umlSignature = umlSignature.substring("Operation ".length());
+		
+		if(umlFunctionSignature != null) umlFunctionSignature.setText(umlSignature);
 	}
 	
+	
 	private void layoutUML(Button defaultOperationButton, GridPane theGrid, FmmlxOperation oldOp) {
+		final int signatureLength = 430;
+		final int signatureHeight = 30;
+		
 		umlFunctionSignature = new TextField();
-		umlFunctionSignature.setPrefWidth(200);
+		definitionHint = new Text();
+		umlFunctionSignature.setFont(new Font(14));
+		umlFunctionSignature.setPrefHeight(signatureHeight);
+		umlFunctionSignature.setPrefWidth(signatureLength);
 		AddOperationDialog.this.codeBoxPair.setBodyText(
 				"@Operation " + "methodName[monitor=true,delToClassAllowed=false]():XCore::Element" + "\n" +
 				"null" + "\n" + "end");
 		
-		GridPane theGrid2 = new GridPane();
-		theGrid2.add(umlFunctionSignature, 0, 0);
+		GridPane normalMode = new GridPane();
+		normalMode.setVgap(15);
+		
+		definitionHint.setText("In this normal mode, you can only edit the operation's signature. "
+				+ "A signature must conform to the following format: "
+				+ "<operation name>(<optional input parameters>):<return type>."
+				+ "\n\n"
+				+ "If you enter a signature that violates this syntax, you cannot add/edit an operation (the OK button will be deactivated). "
+				+ "Note that since you do not adjust the operation body, no actual return value will be calcuated. "
+				+ "Per default, new operations return null. "
+				//+ "\n\n"
+				+ "Types must be sepcified in the following way:\n\n"
+				+ "Default Types (Boolean, Float, Integer, String) must be preceded with 'XCore::', e.g. XCore::Integer\n\n"
+				+ "Custom Types (Enumerations, Domain-Specific Types) must be referenced as Root::<name of model/project>::<name of custom type>\n\n"
+				+ "XCore::Element is the most generic type available, it includes all values objects. "
+				+ "If any entered type contains errors, XCore::Element will be set as the return type."
+				+ "\n\n"
+				+ "Per default, all operations without input parameters are made visible in objects. "
+				+ "Operations with input parameters are hidden.");
+		definitionHint.setWrappingWidth(signatureLength + 40);
+		definitionHint.setVisible(false);
+		
+		
+		/*Button showHint = new Button("Show Signature Definition Help");
+		showHint.addEventFilter(ActionEvent.ACTION, e -> {
+			if(definitionHint.isVisible()) {
+				definitionHint.setVisible(false);
+				showHint.setText("Show Signature Definition Help");
+			} else {
+				definitionHint.setVisible(true);
+				showHint.setText("Hide Signature Definition Help");
+			}
+		});
+		
+		normalMode.add(showHint, 0, 2);*/
+		
+		Button infoButton = JavaFxButtonAuxilary.createButtonWithPicture("", this::showSignatureInfo, "resources/gif/img/about.gif");
+		infoButton.setPrefHeight(signatureHeight);
+		
+		normalMode.setHgap(10);
+		normalMode.add(definitionHint, 0, 2, 2, 1);
+		normalMode.add(infoButton, 1, 1, 1, 1);
+		normalMode.add(umlFunctionSignature, 0, 1, 1, 1);
 		
 		VBox expertBox = new VBox(5,  
 				codeBoxPair.getBodyScrollPane(),
@@ -187,7 +247,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				);
 		
 		Tab expertTab = new Tab("Expert Mode",expertBox);
-		Tab normalModeTab = new Tab("Normal Mode",theGrid2);
+		Tab normalModeTab = new Tab("Normal Mode",normalMode);
 		
 		codeBoxPair.getBodyScrollPane().setOnKeyReleased(e -> {
 			createSignature();
@@ -200,7 +260,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 			String nextLine = "";
 			for(int i = 0; i < codeBody.length;i++){
 				if(i==0) {
-					nextLine = "@Operation " + umlFunctionSignature.getText() +"\n";
+					nextLine = "@Operation " + getXoclSignature(umlFunctionSignature.getText()) +"\n";
 				}
 				else if (!codeBody[i].equals("end")) {
 					nextLine = nextLine + codeBody[i] + "\n";
@@ -216,17 +276,10 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 
 		if(oldOp!=null) {							//editing an existing operation
 			AddOperationDialog.this.codeBoxPair.setBodyText(oldOp.getBody());
-			String[] codeBody=oldOp.getBody().split("/n");
-			codeBody = AddOperationDialog.this.codeBoxPair.getBodyText().split("\n");	//split on line breaks should result in: [@Operation methodsiganture, body, body, body, etc., end]
-			codeBody = codeBody[0].split(" ");
-			 String signature = "";
-			for(int i = 1;i<codeBody.length;i++) {			//recreates signature. Yes this important. No you cannot just do signature = codeBody[0]. the i = 1 skips @Operation
-				signature = signature + codeBody[i];
-			}
-			umlFunctionSignature.setText(signature);	//cannot just use old name because rest of signature would be missing then
+			createSignature();
 		}
 		else {
-			umlFunctionSignature.setText("methodName" + "(parameter:String):Integer");		//default values for creating a new operation
+			umlFunctionSignature.setText("methodName()" + ":XCore::Element");		//default values for creating a new operation
 		}
 		
 		
@@ -239,6 +292,23 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	tabPane.setMinHeight(400);
 	tabPane.setMinWidth(450);
 	VBox.setVgrow(tabPane, Priority.ALWAYS);
+	}
+	
+	private void showSignatureInfo(ActionEvent actionEvent) {
+		if(definitionHint.isVisible()) {
+			definitionHint.setVisible(false);
+		} else {
+			definitionHint.setVisible(true);
+		}
+	}
+	
+	private String getXoclSignature(String umlSignature) {
+		int parameterIndex = umlSignature.indexOf("():") - 1; //returns -1 if not found or index of "("
+		if (parameterIndex < 1) {
+			return umlSignature; //return uncompilable string
+		} else {
+			return umlSignature.substring(0, parameterIndex + 1) + "[monitor=true, delToClassAllowed=false]" + umlSignature.substring(parameterIndex+1);
+		}
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {
@@ -282,7 +352,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 		String name = "get" + attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1);
 		
 		codeBoxPair.setBodyText(
-				"@Operation "+name+"[monitor=false, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
+				"@Operation "+name+"[monitor=true, getterKey=\""+attribute.getName()+"\"]()"+":"+attribute.getType()+"\n" +
 				"  self."+attribute.getName()+"\n" +
 				"end");
 		
@@ -303,7 +373,7 @@ public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 				("Set("+typeName+")");
 
 		codeBoxPair.setBodyText(
-				"@Operation "+name+"[monitor=false]()"+":"+type+"\n" +
+				"@Operation "+name+"[monitor=true]()"+":"+type+"\n" +
 				"  self."+endName+"\n" +
 				"end");
 		createSignature();

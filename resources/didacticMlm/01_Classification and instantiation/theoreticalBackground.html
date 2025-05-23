@@ -18,26 +18,61 @@
 		<p>Each class has a unique name and specifies different properties. 
 			Properties of classes are <i>attributes</i>, <i>associations</i>, <i>operations</i>, and 
 			<i>constraints</i>. In this learning unit, we focus on attributes only. 
-			Associations are discussed in <lu>LU2</lu>, operations in <lu>LU9</lu>, and constraints 
-			in <lu>LU10</lu>. Classes may contain an arbitrary number of attributes. Each 
-			attribute consists of a name, a <i>type</i>, and a <i>multiplicity</i> (discussed in <lu>LU3</lu>). 
+			Associations are discussed in <lu>2</lu>, operations in <lu>9</lu>, and constraints 
+			in <lu>10</lu>. Classes may contain an arbitrary number of attributes that, in UML-MX, are automatically sorted in alphabetical order. 
+			Each attribute consists of a name, a <i>type</i>, and a <i>multiplicity</i> (discussed in <lu>3</lu>). 
 			The type of an attribute determines its range of allowed values and permitted operations. Some data types are included 
 			as part of UML++. These include: String (for any textual input), 
-			integer (for integers), float (for floating-point numbers), and 
+			Integer (for integers), Float (for floating-point numbers), and 
 			Boolean (for Boolean values). More advanced, custom types for 
-			attributes are discussed in <lu>LU4</lu>. </p>
+			attributes are discussed in <lu>4</lu>. </p>
 			
 			<p>The term <i>initialization</i> refers to 
 			the initial assignment of attribute values to objects. Initialization 
 			can only succeed the instantiation of an object. The value of an 
-			attribute in a given object is called the <i>slot</i> of an object.</p>
+			attribute in a given object is called the <i>slot</i> of an object. 
+			Some slots are automatically initialized in UML-MX, as shown in the table below. 
+			Attributes that use data types not included in the table will not be initialized automatically. 
+			Then, the initial slot is null, which might violate the multiplicity of an attribute (see <lu>4</lu>).</p>
+				<table>
+					<tr>
+						<th>Data Type</th>
+						<th>Initial slot value</th>
+					</tr>
+					<tr>
+						<td>String</td>
+						<td> (empty string)</td>
+					</tr>
+					<tr>
+						<td>Integer</td>
+						<td>0</td>
+					</tr>
+					<tr>
+						<td>Float</td>
+						<td>0.0</td>
+					</tr>
+					<tr>
+						<td>Boolean</td>
+						<td>False</td>
+					</tr>
+				</table>
+				
+			<p>
+			Classes should be <i>encapsulated</i>. Objects should only be accessed and manipulated via respective operations. 
+			Programming languages like Java allow to violate this principle of encapsulation if, e.g., a users marks an attribute as public. 
+			Similarly, the UML allows to specify the <i>visibility</i> of attributes and operations. 
+			By marking an attribute as public (preceding it with a '+'), this, too, allows to violate the encapsulation principle. 
+			UML++ does also not enforce encapsulation - all properties of a class can be publicly accessed. 
+			Visibility of attributes and operations in UML++ cannot be modified. 
+			All attributes are preceded with a minus sign ('-') indicating that they should be considered private and not directly accessed 
+			by other objects. All operations are preceded with a plus sign ('+') showing that they may be called by other objects. 
+			</p>
 			
-			<p>The example model includes a class representing the concept Student with 
+			<p>The example model includes a class representing the concept of a student with 
 			two instantiated objects representing particular students. Changes to the class will reflect 
 			in its instances. You can also add more classes or change the current values. 
-			If you require help using UML-MX, revisit the UML++ introduction or look at our online tutorials.</p>
+			If you require help using UML-MX, revisit the UML++ introduction (see <lu>0</lu>) or look at our online tutorials.</p>
 
-		</p>
 
 
 
