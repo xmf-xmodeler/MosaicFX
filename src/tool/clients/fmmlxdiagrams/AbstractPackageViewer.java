@@ -218,6 +218,13 @@ public abstract class AbstractPackageViewer {
 		
 		ReturnCall<Vector<Issue>> allIssuesReturn = fetchedIssues -> {	
 			issues.addAll(fetchedIssues);
+			for(Issue i : issues) {
+				for(FmmlxObject o : objects.values()) {
+					if(i.isAffected(o)) {
+						o.addIssue(i);
+					}
+				}
+			}
 			Collections.sort(issues);
 			if(TIMER) System.err.println((extendedConstraintCheck?"Extended":"User Defined")+" Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
 			comm.getAllAssociations(this, allAssociationsReturn);

@@ -23,6 +23,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final String ownPath;
 	final String ofPath;
 	private final Vector<String> parentsPaths;
+	private transient Vector<Issue> issues = new Vector<>();
 
 	private final boolean isAbstract;
 	private final boolean isSingleton;
@@ -616,10 +617,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 	}
 	
-	private transient Vector<Issue> cachedIssues = null;
+	public void addIssue(Issue i) {
+		issues.add(i);
+	}	
+	
 	public Vector<Issue> getIssues() {
-		if(cachedIssues == null) cachedIssues = diagram.getIssues(this);
-		return cachedIssues;
+		return issues;
 	}
 	
 	public static String getRelativePath(String fullPathNameSource, String fullPathNameTarget) { 
