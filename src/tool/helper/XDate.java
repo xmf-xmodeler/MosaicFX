@@ -61,6 +61,25 @@ public class XDate {
 		}
 	}
 	
+	public Integer getDifferenceInDays(String timeA, String timeB) {
+		try {
+			long timeStart = Long.parseLong(timeA);
+			long timeEnd = Long.parseLong(timeB);
+			
+			long diff = timeEnd - timeStart;
+			diff += 500; diff /= 1000; // rounding milliseconds
+			long s = diff % 60; diff /= 60;
+			long m = diff % 60; diff /= 60;
+			long h = diff % 030; diff /= 030;
+			long d = diff;
+			
+			return (int) d;
+
+		} catch (Exception any) {
+			return null;
+		}
+	}
+	
 	private Integer get(String timeString, int FIELD) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(new Date(Long.parseLong(timeString)));
