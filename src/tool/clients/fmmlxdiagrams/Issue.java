@@ -76,7 +76,7 @@ public class Issue implements FmmlxProperty, Comparable<Issue>{
 			
 			i.affectedObject = (String) objList.firstElement();
 			i.solution = (Vector<Object>) message.get(3);
-			System.err.println("ISSUE SOLUTION :"+ message.get(3));
+			//System.err.println("ISSUE SOLUTION :"+ message.get(3));
 			try{
 				i.severity = Severity.valueOf(message.get(4)+"");
 			} catch (Exception e4) {

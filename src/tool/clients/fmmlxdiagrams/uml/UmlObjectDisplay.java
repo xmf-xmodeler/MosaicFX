@@ -237,7 +237,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 					opsY += lineHeight;
@@ -260,7 +260,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}			
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
@@ -414,7 +414,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}	
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
@@ -423,7 +423,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
@@ -489,14 +489,14 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegatedOperations()) {
+		for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+		for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;

@@ -82,6 +82,10 @@ public class ObjectContextMenu extends ContextMenu {
 			changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 //			changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 			getItems().add(changeOfItem);
+			
+			MenuItem mergeProperties = new MenuItem("Merge Properties");
+			mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
+			getItems().add(mergeProperties);
 		}
 		
 		
