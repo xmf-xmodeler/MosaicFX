@@ -93,12 +93,14 @@ public class ControlCenterClient {
 	}
 	
 	public void setDiagrams(Message message) {
+		System.err.println(message.toString());
 		Vector<String> vec = new Vector<>();
 		for (int i = 0; i<message.args[0].values.length;i++) {
 			Value value = message.args[0].values[i];
 			//int id = value.values[0].intValue;
 			String name = value.values[1].strValue();
 			String type = value.values[2].strValue();
+			System.err.println(type);
 			try {
 				if (FmmlxDiagramCommunicator.DiagramType.valueOf(type)==FmmlxDiagramCommunicator.DiagramType.ClassDiagram) {
 					vec.add(name);

@@ -439,11 +439,15 @@ public class ControlCenter extends Stage {
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 		
+		//open model browser with double-click on model IFF not in alpha mode
+		projectLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
+		
 		modelLV.setPrefSize(250, 150);	//added Later because of DidacticMode check
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		
 		diagramLV.setOnMouseClicked(me -> handleClickOnDiagramListView(me));
+		
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 
@@ -516,14 +520,63 @@ public class ControlCenter extends Stage {
 	}
 
 	private void handleClickOnDiagramListView(MouseEvent me) {
+		String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
+		String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
-			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
 			if(selectedDiagramString != null) {
-				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 				if(selectedModelString != null) {
 					FmmlxDiagramCommunicator.getCommunicator().openDiagram(selectedModelString, selectedDiagramString);
 		        }
 		    }
+		}
+		if(me.getButton() == MouseButton.SECONDARY) {
+			if(selectedDiagramString != null) {
+				MenuItem deleteDiagram = new MenuItem("Delete Diagram");
+				deleteDiagram.setOnAction((event) -> showDeleteDiagramDialog(event, selectedModelString, selectedDiagramString));
+				
+				MenuItem renameDiagram = new MenuItem("Rename Diagram");
+				renameDiagram.setOnAction((event) -> showRenameDiagramDialog(event, selectedModelString, selectedDiagramString));
+				Boolean isUmlMode = false; //TODO: implement XMF request
+				MenuItem switchDiagramType = new MenuItem(isUmlMode? "Make FMMLx Diagram" : "Make UML++ Diagram");
+				diagramLV.setContextMenu(new ContextMenu(renameDiagram, switchDiagramType, deleteDiagram));
+			}
+		}
+	}
+	
+	private void showDeleteDiagramDialog(Event event, String modelName, String diagramName) {
+		String completeName = modelName + "::" + diagramName;
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Delete Diagram");
+		alert.setHeaderText("Deleting Diagram " + completeName);
+		alert.setContentText("Do you want to delete the diagram <" + completeName +">? This cannot be undone.");
+		
+		alert.setHeight(400);
+		
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().add(buttonTypeCancel);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK){
+			//TODO remove
+			//Runtime.getRuntime().halt(0);
+		} else {
+			event.consume(); 
+		}
+	}
+	
+	private void showRenameDiagramDialog(Event event, String modelName, String diagramName) {
+		String completeName = modelName + "::" + diagramName;
+		TextInputDialog dialog = new TextInputDialog(diagramName);
+		dialog.setTitle("Rename Diagram");
+		dialog.setContentText("Enter new diagram name:");
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			if(InputChecker.isValidIdentifier(result.get())) {
+//TODO change diagram name
+			}  else {
+				new Alert(AlertType.ERROR, 
+					"\"" + result.get() + "\" is not a valid identifier.", 
+					new ButtonType("Ok", ButtonData.YES)).showAndWait();
+			};
 		}
 	}
 
@@ -549,7 +602,7 @@ public class ControlCenter extends Stage {
 			}  else {
 				new Alert(AlertType.ERROR, 
 					"\"" + result.get() + "\" is not a valid identifier.", 
-					new ButtonType("Damned", ButtonData.YES)).showAndWait();
+					new ButtonType("Ok", ButtonData.YES)).showAndWait();
 			};
 		}
 	}
