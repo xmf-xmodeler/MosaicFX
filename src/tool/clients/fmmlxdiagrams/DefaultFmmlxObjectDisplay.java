@@ -24,7 +24,7 @@ import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
 import tool.clients.fmmlxdiagrams.graphics.SVGReader;
-import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.control_center.ControlCenterClient;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	

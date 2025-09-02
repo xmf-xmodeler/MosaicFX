@@ -39,8 +39,8 @@ import tool.helper.auxilaryFX.JavaFxTooltipAuxilary;
 import tool.helper.persistence.XMLCreator;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
+import tool.xmodeler.control_center.ControlCenterClient;
 
 public class DiagramViewHeadToolBar extends VBox {
 

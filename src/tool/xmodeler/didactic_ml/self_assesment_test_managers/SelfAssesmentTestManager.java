@@ -5,7 +5,7 @@ import java.util.List;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.fmmlxdiagram.FmmlxDiagram;
 import tool.clients.workbench.WorkbenchClient;
-import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.control_center.ControlCenterClient;
 import tool.xmodeler.didactic_ml.diagram_preperation_actions.DiagramPreparationActions;
 import tool.xmodeler.didactic_ml.frontend.ResourceLoader;
 import tool.xmodeler.didactic_ml.frontend.task_description_viewer.TaskDescriptionViewer;

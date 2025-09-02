@@ -32,7 +32,7 @@ import tool.helper.auxilaryFX.JavaFxAlertAuxilary;
 import tool.helper.persistence.modelActionParser.ModelActionParser;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
-import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.control_center.ControlCenterClient;
 
 /**
  * This class is used to send data that is contained in a XML-representation of an model to the backend. So later the model and its diagrams could be displayed in the java-frontend

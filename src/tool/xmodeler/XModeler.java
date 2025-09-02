@@ -33,6 +33,7 @@ import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.UserProperty;
+import tool.xmodeler.control_center.ControlCenter;
 import xos.OperatingSystem;
 
 import javax.xml.parsers.DocumentBuilder;

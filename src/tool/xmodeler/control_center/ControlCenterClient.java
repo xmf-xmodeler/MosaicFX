@@ -1,4 +1,4 @@
-package tool.xmodeler;
+package tool.xmodeler.control_center;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -94,16 +94,16 @@ public class ControlCenterClient {
 	
 	public void setDiagrams(Message message) {
 		System.err.println(message.toString());
-		Vector<String> vec = new Vector<>();
+		Vector<Diagram> vec = new Vector<>();
 		for (int i = 0; i<message.args[0].values.length;i++) {
 			Value value = message.args[0].values[i];
 			//int id = value.values[0].intValue;
 			String name = value.values[1].strValue();
 			String type = value.values[2].strValue();
-			System.err.println(type);
+			Boolean umlMode = value.values[3].boolValue;
 			try {
 				if (FmmlxDiagramCommunicator.DiagramType.valueOf(type)==FmmlxDiagramCommunicator.DiagramType.ClassDiagram) {
-					vec.add(name);
+					vec.add(new Diagram(name, umlMode));
 				}
 			}
 			catch(NullPointerException|ArrayIndexOutOfBoundsException|IllegalArgumentException exception) {

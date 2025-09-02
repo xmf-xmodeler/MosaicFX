@@ -19,7 +19,7 @@ import javafx.scene.layout.GridPane;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.helper.user_properties.PropertyManager;
 import tool.helper.user_properties.PropertyManagerStage;
-import tool.xmodeler.ControlCenter;
+import tool.xmodeler.control_center.ControlCenter;
 
 /**
  * 
