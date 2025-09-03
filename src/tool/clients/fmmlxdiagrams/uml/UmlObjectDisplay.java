@@ -36,12 +36,17 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 	 int MIN_BOX_HEIGHT = 4;
 	 int EXTRA_Y_PER_LINE = 3;
 	int heightOffset = 0;	//needed to correct for the label position at a different headerBox height because of the missing parent names for classes
+	boolean displayMetaInformation;
 
 	
 	public UmlObjectDisplay(FmmlxDiagram diagram, FmmlxObject object) {
 		super(diagram, object);
+		displayMetaInformation = true;
 		if(object.getLevel().getMinLevel()>0) {	//differences between level 0 and 1
-			heightOffset = 17;	//17 seems to be pretty perfectly in the middle
+			heightOffset = displayMetaInformation? 0:17;	//17 seems to be pretty perfectly in the middle
+		}
+		if(object.getLevel().getMinLevel()>1) {
+			object.hidden=true;
 		}
 	}
 
@@ -87,8 +92,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		
 		double textHeight = FmmlxDiagram.calculateTextHeight();
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
-		double currentY = 0;	
-		int headerLines = 1;	//We do not care about parents so this is hard coded now
+		double currentY = 0;
+		int headerLines = displayMetaInformation? 2 : 1;
 		if(object.getLevel().getMinLevel()<1) {
 			headerLines = 2;
 		}
@@ -107,9 +112,13 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		group.addNodeElement(header);
 		
 		String ofName = "^" + FmmlxObject.getRelativePath(object.getPath(), object.getOfPath()) + "^";
-		if(ofName.equals("^FMMLx::MetaClass^")) ofName = "";	//We only want this for objects so classes should remain empty
+		if(!displayMetaInformation) {
+			if(ofName.equals("^FMMLx::MetaClass^")) ofName = "";	//We only want this for objects so classes should remain empty
+		} else {
+			if(ofName.equals("^FMMLx::MetaClass^")) ofName = "Class";
+		}
 		
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(1., diagram), null, object, NO_ACTION, ofName, FontPosture.REGULAR, FontWeight.BOLD) ;
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2 - heightOffset, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.getRelativeName(), object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 
 		if(object.isControlClass() == FmmlxObject.ControlClass.EXPLICIT
@@ -300,7 +309,9 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Slot);
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.SLOTS) && slotSize > 0) {
 			yAfterSlotBox = currentY + slotBoxHeight;
-			group.addNodeElement(slotsBox);
+			
+			// add slots only if metainformation should be displayed
+			if(displayMetaInformation) group.addNodeElement(slotsBox);
 			for (FmmlxSlot s : object.getSlots()) {
 				slotsY += lineHeight;
 				NodeLabel.Action changeSlotValueAction = () -> diagram.getActions().changeSlotValue(object, s);
@@ -320,7 +331,8 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.OperationValue);
 		if (diagramDisplayProperties.get(DiagramDisplayProperty.OPERATIONVALUES) && opvSize > 0) {
 			yAfterOPVBox = currentY + opvBoxHeight;
-			group.addNodeElement(opvBox);
+			
+			if(displayMetaInformation) group.addNodeElement(opvBox);
 			for (FmmlxOperationValue opv : object.getOperationValues()) {
 				opvY += lineHeight;
 				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
