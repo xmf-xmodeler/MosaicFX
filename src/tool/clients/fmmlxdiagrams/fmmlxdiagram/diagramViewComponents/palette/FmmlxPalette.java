@@ -192,8 +192,7 @@ public class FmmlxPalette {
 				if(!fmmlxDiagram.isUMLMode())
 					levelList.add(o.getLevel().getMinLevel());
 				else
-					if((o.getLevel().getMinLevel()==2 || o.getLevel().getMinLevel()==1 || o.getLevel().getMinLevel()==0)) {
-						System.out.println(o.getLevel().getMinLevel());
+					if(o.getLevel().getMinLevel()==1 || o.getLevel().getMinLevel()==0) {
 						levelList.add(o.getLevel().getMinLevel());
 					}
 			}
@@ -205,26 +204,22 @@ public class FmmlxPalette {
 				if(i>0) {
 					if(!fmmlxDiagram.isUMLMode() || i!=-1) {
 						TreeItem<AbstractTreeType> levelGroup = null;
-							if(!fmmlxDiagram.isUMLMode()) {
-					levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
-					}
-					else {
-						if (i==2)
-							levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("MetaClasses"));
-						if (i==1)
-							levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Classes"));
-					}
-					if(!fmmlxDiagram.isUMLMode()) {
+						if(!fmmlxDiagram.isUMLMode()) {
+							levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
+						}
+						else {
+							//if (i==2)
+							//	levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("MetaClasses"));
+							if (i==1)
+								levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Classes"));
+						}
 						levels.put(i, levelGroup);
-					} else {
-//						if (i<=3)
-							levels.put(i, levelGroup);
-					}
-					levelGroup.setExpanded(true);
-					elements.getChildren().add(levelGroup);
+						levelGroup.setExpanded(true);
+						elements.getChildren().add(levelGroup);
 					}
 				}
 			}
+			
 			Collections.sort(objects);
 			for(final FmmlxObject o : objects) {
 				if (o.getLevel().getMinLevel() > 0 && !o.isAbstract()) {
@@ -235,7 +230,8 @@ public class FmmlxPalette {
 					if(!fmmlxDiagram.isUMLMode())
 						levelGroup.getChildren().add(classItem);
 					else
-						if (o.getLevel().getMinLevel()==1 || o.getLevel().getMinLevel()==2)
+						// levelgroup may be null in uml mode if diagram includes objects > 1 (because "levels" only consists of UML-levels)
+						if (levelGroup != null)
 							levelGroup.getChildren().add(classItem);
 				}
 			}

@@ -13,5 +13,6 @@ public class DefaultUserProperties extends Properties {
 		put(UserProperty.APPLICATION_CLOSING_WARNING.toString(), "true");
 		put(UserProperty.DIDACTIC_MODE.toString(), "false");
 		put(UserProperty.ALPHA_MODE.toString(), "false");
+		put(UserProperty.UML_META_DISPLAY.toString(), "false");
 	}
 }

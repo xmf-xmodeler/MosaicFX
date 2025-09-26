@@ -1502,6 +1502,7 @@ public class DiagramActions {
 			note.unhide(diagram);
 		}
 	}
+	
 
 	public void removeAssociationDependency(FmmlxAssociation association) {
 		diagram.getComm().removeAssociationDependency(diagram.getID(), association);

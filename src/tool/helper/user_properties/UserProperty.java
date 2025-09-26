@@ -11,6 +11,7 @@ public enum UserProperty {
 	APPLICATION_CLOSING_WARNING("applicationClosingWarning"),
 	RECENTLY_SAVED_MODEL_DIR("recentlySavedModelDir"),
 	DIDACTIC_MODE("didacticMode"),
+	UML_META_DISPLAY("umlMetaDisplay"),
 	ALPHA_MODE("alphaMode");
 	
 	private String saveName; 
