@@ -39,6 +39,9 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
 		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog());		
 		
+		MenuItem toggleUmlMeta = new MenuItem("Toggle UML Meta Information");
+		toggleUmlMeta.setOnAction(e -> actions.toggleUmlMetaInfo());
+		
 		Menu enumerationMenu = new Menu("Enumerations");
 		MenuItem createEnumeration = new MenuItem("Create Enumeration...");
 		createEnumeration.setOnAction(e -> actions.addEnumerationDialog());
@@ -52,7 +55,7 @@ public class DefaultContextMenu extends ContextMenu {
 
 		MenuItem addAssocType = new MenuItem("Add Association Type...");
 		addAssocType.setOnAction(e -> actions.associationTypeDialog(null));
-		addMenues(diagram, addMenu, searchMenu, unhideItem, enumerationMenu, addAssocType);
+		addMenues(diagram, addMenu, searchMenu, unhideItem, enumerationMenu, addAssocType, toggleUmlMeta);
 	}
 
 	private Menu buildAddMenu(DiagramCanvas view, FmmlxDiagram diagram, DiagramActions actions) {
@@ -70,9 +73,9 @@ public class DefaultContextMenu extends ContextMenu {
 	}
 
 	private void addMenues(FmmlxDiagram diagram, Menu addMenu, Menu searchMenu, MenuItem unhideItem,
-			Menu enumerationMenu, MenuItem addAssocType) {
+			Menu enumerationMenu, MenuItem addAssocType, MenuItem umlMeta) {
 		if(diagram.isUMLMode()) {
-			getItems().addAll(addMenu, unhideItem);
+			getItems().addAll(addMenu, umlMeta, unhideItem);
 		} else {
 			getItems().addAll(addMenu, searchMenu, unhideItem, addAssocType);
 		}

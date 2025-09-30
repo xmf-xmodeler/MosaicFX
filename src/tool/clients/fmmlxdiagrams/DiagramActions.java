@@ -77,6 +77,7 @@ import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancewizard.InstanceWizard;
 import tool.helper.persistence.SerializerConstant;
 import tool.helper.user_properties.PropertyManager;
+import tool.helper.user_properties.UserProperty;
 import tool.xmodeler.XModeler;
 
 public class DiagramActions {
@@ -1503,6 +1504,14 @@ public class DiagramActions {
 		}
 	}
 	
+	public void toggleUmlMetaInfo() {
+		if (PropertyManager.umlMetaDisplay()) {
+			PropertyManager.setProperty(UserProperty.UML_META_DISPLAY.toString(),"false");
+		} else {
+			PropertyManager.setProperty(UserProperty.UML_META_DISPLAY.toString(),"true");
+		}
+		diagram.updateDiagram();
+	}
 
 	public void removeAssociationDependency(FmmlxAssociation association) {
 		diagram.getComm().removeAssociationDependency(diagram.getID(), association);

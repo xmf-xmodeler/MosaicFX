@@ -188,15 +188,15 @@ public class DiagramViewHeadToolBar extends VBox {
 		extendedConstraintButton
 				.setOnAction(e -> fmmlxDiagram.extendedConstraintCheck = extendedConstraintButton.isSelected());
 
-		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model(F5)");
+		JavaFxTooltipAuxilary.addTooltip(updateButton, "Update Model (F5)");
 		Button centerViewButton = JavaFxButtonAuxilary.createButtonWithPicture(null,
 				e -> diagramActions.centerViewOnObject(), "resources/png/target.24.png");
-		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F");
+		JavaFxTooltipAuxilary.addTooltip(centerViewButton, "Center View on Object (Strg + F)");
 		 Button saveButton = JavaFxButtonAuxilary.createButtonWithPicture(null, e ->
 		 new
 		 XMLCreator().createAndSaveXMLRepresentation(fmmlxDiagram.getPackagePath(),fmmlxDiagram),
 		 "resources/png/save.24.png");
-		 JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model(Strg + S)");
+		 JavaFxTooltipAuxilary.addTooltip(saveButton, "Save Model (Strg + S)");
 
 		addMenues(toolBar, undoButton, redoButton, zoomInButton, zoomOneButton, zoomOutButton, extendedConstraintButton,
 				centerViewButton, saveButton);
@@ -217,7 +217,9 @@ public class DiagramViewHeadToolBar extends VBox {
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Hide/Unhide Elements...",
 				e -> diagramActions.showUnhideElementsDialog());
 		
-		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "my Test", e -> System.err.println(e.toString()));
+		if (fmmlxDiagram.isUMLMode()) { //Option to toggle UML Meta Mode only available in UML mode
+			JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Toggle UML Meta Information", e -> diagramActions.toggleUmlMetaInfo());
+		}
 		
 		JavaFxMenuAuxiliary.addMenuItem(viewMenu, "Diagram Statistics", e -> diagramActions.showDiagramStatistics());
 		

@@ -127,7 +127,7 @@ public class UmlObjectDisplay extends AbstractFmmlxObjectDisplay {
 		if(!displayMetaInformation) {
 			if(ofName.equals("^FMMLx::MetaClass^")) ofName = "";	//We only want this for objects so classes should remain empty
 		} else {
-			if(ofName.equals("^FMMLx::MetaClass^")) ofName = "Class";
+			if(ofName.equals("^FMMLx::MetaClass^")) ofName = "^MetaClass^";
 		}
 		
 		if(displayMetaInformation || object.getLevel().getMinLevel()<1) {
