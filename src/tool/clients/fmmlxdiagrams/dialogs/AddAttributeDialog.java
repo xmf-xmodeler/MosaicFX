@@ -110,15 +110,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 
 				String datatype = typeComboBox.getConverter().fromString(typeComboBox.getEditor().getText()).getName();
+				
+				Level instLevel = diagram.isUMLMode() ? new Level (0,0) : levelComboBox.getLevel();
+				
+				return new Result(selectedObject.getPath(), nameTextField.getText(), instLevel, datatype,
+							multiplicity, isIntrinsicBox.isSelected(), false, false);
 
-				if (!diagram.isUMLMode()) {
-					return new Result(selectedObject.getPath(), nameTextField.getText(), levelComboBox.getLevel(),
-							datatype, multiplicity,true, false, false); //set all checkboxes to false per default 
-							//isIntrinsicBox.isSelected(), isIncompleteBox.isSelected(),	isOptionalBox.isSelected());
-				} else {
-					return new Result(selectedObject.getPath(), nameTextField.getText(), new Level(0, 0), datatype,
-							multiplicity, true, false, false);
-				}
 			}
 			return null;
 		});
@@ -222,7 +219,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
 		showNonPrimitive = new CheckBox("Show all types");
-		isIntrinsicLabel = new Label("intrinsic");
+		isIntrinsicLabel = new Label("non-intrinsic Attribute");
 		isIncompleteLabel = new Label("incomplete");
 		isOptionalLabel = new Label("optional");
 
@@ -310,8 +307,17 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		displayMultiplicityLabel = new Label(multiplicity.toString());
 		
 
-		isIntrinsicBox = new CheckBox();
-		isIntrinsicBox.setSelected(true);
+		isIntrinsicBox = new CheckBox("is non-intrinsic"); 
+		isIntrinsicBox.setSelected(false);
+		
+		isIntrinsicBox.setOnAction(e -> {
+			if (isIntrinsicBox.isSelected()) {
+				levelComboBox.setDisable(true);
+			} else {
+				levelComboBox.setDisable(false);
+			}
+		});
+		
 		isIncompleteBox = new CheckBox();
 		isOptionalBox = new CheckBox();
 		
@@ -333,7 +339,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			grid.add(nameTextField, 1, 0, 3, 1);
 			
 			grid.add(levelLabel, 0, 1, 1, 1);
-			grid.add(levelComboBox, 1, 1, 3, 1);
+			grid.add(levelComboBox, 1, 1, 2, 1);
+			grid.add(isIntrinsicBox, 3, 1, 1, 1);
+			//grid.add(isIntrinsicLabel, 3, 1, 1, 1); // separate label not required
+			
 			
 			grid.add(classLabel, 0, 2, 1, 1);
 			grid.add(classTextField, 1, 2, 3, 1);
@@ -459,7 +468,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 			this.level = level;
 			this.type = type;
 			this.multi = multi;
-			this.isIntrinsic = isIntrinsic;
+			this.isIntrinsic = !isIntrinsic; //PM: added non-intrinsic attributes, switched checkbox label therefore reversed value taken here
 			this.isIncomplete = isIncomplete;
 			this.isOptional = isOptional;
 

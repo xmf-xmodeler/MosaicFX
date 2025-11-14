@@ -52,8 +52,18 @@ public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 		}
 
 		for (FmmlxAttribute attribute : allAttributes) {
-			if (attribute.getName().equals(getName()) && owner.level.isEqual(attribute.level)) {
-				return attribute.getType();
+			
+			// IMPORTANT TODO check getType function in CLCs!!!!! only workaround implemented for now
+			
+			if (attribute.level == -1) {
+				if (attribute.getName().equals(getName())) {
+					return attribute.getType();
+				}
+			} else {
+			
+				if (attribute.getName().equals(getName()) && owner.level.isEqual(attribute.level)) {
+					return attribute.getType();
+				}
 			}
 		}
 		
