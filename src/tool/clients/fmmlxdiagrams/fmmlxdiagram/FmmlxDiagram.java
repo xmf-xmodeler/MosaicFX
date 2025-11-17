@@ -723,7 +723,7 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 				}
 			}
 			if (isCenterButton(e)) {
-				System.err.println("center drag with event " + e);
+				//System.err.println("center drag with event " + e);
 				handleCenterDragged(e);
 			}
 		}

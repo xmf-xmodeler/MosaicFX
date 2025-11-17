@@ -62,7 +62,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		}
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
-		levelBox = new LevelBox(selectedClass.getLevel().minusOne());
+		levelBox = new LevelBox(selectedClass.getLevel().minusOne().flatten());
 		levelBox.levelTextField.setEditable(selectedClass.getLevel().isContingentLevelClass());
 
 		ofComboBox = (ComboBox<FmmlxObject>) initializeComboBox(ofList);
@@ -74,7 +74,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 		});
 
 		ofComboBox.getSelectionModel().selectedItemProperty().addListener((a,b,newClass) -> {
-			levelBox.levelTextField.setText(newClass.getLevel().minusOne().toString());
+			levelBox.levelTextField.setText(newClass.getLevel().minusOne().flatten().toString());
 			levelBox.levelTextField.setEditable(newClass.getLevel().isContingentLevelClass());
 //			if(level.isContingentLevelClass()) {
 //				levelBox.getItems().clear();
