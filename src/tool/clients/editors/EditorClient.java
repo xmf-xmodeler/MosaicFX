@@ -874,7 +874,7 @@ public void sendMessage(final Message message) {
     browsers.put(id, browser);
     
     //LM, 11.11.21, removed as getBrowserVBox causes a dump under unix.
-    System.err.println("Error creating new Browser");
+    //System.err.println("Error creating new Browser");
     return;
     
 	/*

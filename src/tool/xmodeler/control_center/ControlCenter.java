@@ -485,7 +485,7 @@ public class ControlCenter extends Stage {
 			}
 			
 			projectTree.setOnMouseClicked(e->{
-				if(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0) {//
+				if(projectTree.getSelectionModel().getSelectedItem() != null &&	(!projectTree.getSelectionModel().getSelectedItem().isLeaf() || projectTree.getSelectionModel().selectedIndexProperty().get()==0)) {//
 				newDiagram2.setDisable(true);
 				newDiagram.setDisable(true);
 				} else {
@@ -530,7 +530,7 @@ public class ControlCenter extends Stage {
 	}
 
 	private void handleClickOnDiagramListView(MouseEvent me) {
-		String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem().getName();
+		String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem() == null ? null : diagramLV.getSelectionModel().getSelectedItem().getName();
 		String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
 		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
 			if(selectedDiagramString != null) {

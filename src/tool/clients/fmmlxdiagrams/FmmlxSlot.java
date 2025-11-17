@@ -55,6 +55,8 @@ public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 			
 			// IMPORTANT TODO check getType function in CLCs!!!!! only workaround implemented for now
 			
+			//work around doesnot work, must be checked
+			
 			if (attribute.level == -1) {
 				if (attribute.getName().equals(getName())) {
 					return attribute.getType();
@@ -65,6 +67,7 @@ public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 					return attribute.getType();
 				}
 			}
+			
 		}
 		
 		throw new RuntimeException("Slot type not found");
