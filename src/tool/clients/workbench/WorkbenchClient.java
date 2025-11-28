@@ -2,8 +2,8 @@ package tool.clients.workbench;
 
 import tool.clients.Client;
 import tool.console.ConsoleClient;
-import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
+import tool.xmodeler.control_center.ControlCenterClient;
 import xos.Message;
 import xos.Value;
 

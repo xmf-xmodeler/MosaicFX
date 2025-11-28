@@ -16,7 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
-import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.control_center.ControlCenterClient;
 
 public class LearningUnitChooser extends Dialog<Void> {
 

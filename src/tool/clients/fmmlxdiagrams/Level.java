@@ -97,4 +97,9 @@ public class Level{
 	public Level minusOne() {
 		return new Level(this.minLevel-1, this.maxLevel == null?null:(this.maxLevel-1));
 	}
+	
+	// flatten used for text display in Add Instance dialogue
+	public Level flatten() {
+		return new Level(this.minLevel, this.minLevel);
+	}
 }

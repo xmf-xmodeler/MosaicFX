@@ -62,6 +62,10 @@ public class PropertyManager {
 	public static Boolean isInDidacticMode() {
 		return properties.getProperty(UserProperty.DIDACTIC_MODE.toString()).equalsIgnoreCase("true") ? true : false;
 	}
+	
+	public static Boolean umlMetaDisplay() {
+		return properties.getProperty(UserProperty.UML_META_DISPLAY.toString()).equalsIgnoreCase("true") ? true : false;
+	}
 
 	private void loadProperties() {
 		try {

@@ -24,7 +24,7 @@ import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
 import tool.clients.fmmlxdiagrams.graphics.SVGReader;
-import tool.xmodeler.ControlCenterClient;
+import tool.xmodeler.control_center.ControlCenterClient;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
@@ -172,7 +172,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]");
 			attBox.addNodeElement(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(object, PropertyType.Attribute);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level == -1 ? " " : att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level == -1 ? "c" : att.level + ""); //PM "c" used for now for non-intrinsic attributes
 			attBox.addNodeElement(attLevelLabel);
 		}
 		for (FmmlxAttribute att : object.getOtherAttributes()) {
@@ -245,7 +245,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 					opsY += lineHeight;
@@ -271,7 +271,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}			
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						opsY += lineHeight;
@@ -436,14 +436,14 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegatedOperations()) {
+		for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter() ){
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
 				}
 			}
 		}		
-		for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+		for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 			if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 				counter++;
@@ -502,7 +502,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}	
-			for (FmmlxOperation o : object.getDelegatedOperations()) {
+			for (FmmlxOperation o : object.getDelegatedOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();
@@ -511,7 +511,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 					}
 				}
 			}
-			for (FmmlxOperation o : object.getDelegateToClassOperations()) {
+			for (FmmlxOperation o : object.getDelegateToClassOperations(new Vector<>())) {
 				if(diagramDisplayProperties.get(DiagramDisplayProperty.GETTERSANDSETTERS) || !o.isGetterOrSetter()){
 					if(diagramDisplayProperties.get(DiagramDisplayProperty.DERIVEDOPERATIONS)) {
 						String owner = o.getOwner();

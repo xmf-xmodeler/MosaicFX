@@ -27,12 +27,13 @@ import tool.clients.fmmlxdiagrams.xmldatabase.UploadConfig;
 import tool.clients.fmmlxdiagrams.xmldatabase.XMLDatabase;
 import tool.helper.IconGenerator;
 import tool.helper.auxilaryFX.JavaFxButtonAuxilary;
-import tool.xmodeler.ControlCenter;
+import tool.xmodeler.control_center.ControlCenter;
 import tool.xmodeler.didactic_ml.UserDataProcessor;
 
 public class PropertyManagerStage extends Stage {
 	
 	private Boolean isInDidacticMode;
+	private Boolean isInUmlMeta;
 	private String activeMode;
 	private String otherMode;
 	
@@ -69,7 +70,8 @@ public class PropertyManagerStage extends Stage {
     
 		Tab didacticMLTab = createDidacticMlTab();
 		Tab alphaModeTab = activateAlphaModeTab();
-		tabPane.getTabs().addAll(xmlDatabaseTab, directoriesTab, userInterfaceTab, didacticMLTab, alphaModeTab);
+		Tab umlMetaTab = toggleUmlMetaDisplayTab();
+		tabPane.getTabs().addAll(xmlDatabaseTab, umlMetaTab, directoriesTab, userInterfaceTab, didacticMLTab, alphaModeTab);
 	}
 
 	private void buildXmlDatabaseTab(Tab xmlDatabaseTab) {
@@ -136,11 +138,39 @@ public class PropertyManagerStage extends Stage {
 		alphaModeGrid.add(separator, 0, 2);
 		alphaModeGrid.add(toggleAlphaModeBtn, 0, 4);
 		GridPane.setHalignment(toggleAlphaModeBtn, HPos.CENTER);
-		
-		// didacticModeGrid.add(userStatisticsBtn, 0, 6);
-		
+				
 		
 		tab.setContent(alphaModeGrid);
+		return tab;
+	}
+	
+	private Tab toggleUmlMetaDisplayTab() {
+		Tab tab = new Tab();
+			
+		GridPane umlMetaGrid = new GridPane();
+		formatGrid(umlMetaGrid);
+		
+		isInUmlMeta = Boolean.parseBoolean(PropertyManager.getProperty(UserProperty.UML_META_DISPLAY.toString()));
+		String displayText = "UML++ Preferences";
+		
+		String btnText = ((isInUmlMeta) ? "Hide UML Meta Information" : "Display UML Meta Information");
+		
+		tab.setText(displayText);
+		
+		Label currentMode = new Label("UML meta information are currently " + ((isInUmlMeta) ? "visible" : "hidden") );
+		
+		Button toggleUmlMetaBtn = new Button(btnText);
+		toggleUmlMetaBtn.setOnAction(this::toggleUmlMetaInfo);
+		Separator separator = new Separator();
+		separator.setOrientation(Orientation.HORIZONTAL);
+		
+		umlMetaGrid.add(currentMode, 0, 1);
+		umlMetaGrid.add(separator, 0, 2);
+		umlMetaGrid.add(toggleUmlMetaBtn, 0, 4);
+		GridPane.setHalignment(toggleUmlMetaBtn, HPos.CENTER);
+				
+		
+		tab.setContent(umlMetaGrid);
 		return tab;
 	}
 	
@@ -180,6 +210,12 @@ public class PropertyManagerStage extends Stage {
 	        	Boolean newModeBoolean = (isInAlphaMode)? false : true;
 	        	PropertyManager.setProperty(UserProperty.ALPHA_MODE.toString(), newModeBoolean.toString());
 	        }	        
+	    }
+	 
+	 private void toggleUmlMetaInfo(javafx.event.ActionEvent event) {
+	        Boolean newModeBoolean = (isInUmlMeta)? false : true;
+	        PropertyManager.setProperty(UserProperty.UML_META_DISPLAY.toString(), newModeBoolean.toString());
+	        this.close();
 	    }
 
 	private void buildDirectoriesTab(Tab directoriesTab) {

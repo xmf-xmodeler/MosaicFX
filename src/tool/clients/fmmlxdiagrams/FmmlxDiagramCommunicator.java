@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.Vector;
 
@@ -218,6 +219,35 @@ public class FmmlxDiagramCommunicator {
 		defaultBranchmanager.clearDefaultBranch();
 		sendMessage("showDiagram", message);
 	}
+	
+	public void deleteDiagram(String modelName, String diagramName) {
+		// TODO Auto-generated method stub
+		Value[] message = new Value[] {
+			new Value(modelName),
+			new Value(diagramName)
+		};
+		sendMessage("deleteDiagram", message);
+	}
+	
+	public void changeDiagramName(String modelName, String oldDiagramName, String newDiagramName) {
+		Value[] message = new Value[] {
+				new Value(modelName),
+				new Value(oldDiagramName),
+				new Value(newDiagramName)
+		};
+		sendMessage("changeDiagramName", message);
+		
+	}
+	
+	public void toggleUmlMode(String modelName, String diagramName) {
+		Value[] message = new Value[] {
+				new Value(modelName),
+				new Value(diagramName)
+		};
+		sendMessage("toggleUmlMode", message);
+		
+	}
+
 
 	public void close(AbstractPackageViewer diagram, boolean keepDiagram) {
 		diagrams.remove(diagram);
@@ -2932,4 +2962,5 @@ public class FmmlxDiagramCommunicator {
 		}
 		return null;
 	}
+
 }
