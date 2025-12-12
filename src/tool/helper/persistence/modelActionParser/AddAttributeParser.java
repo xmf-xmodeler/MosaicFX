@@ -31,6 +31,6 @@ public class AddAttributeParser extends ModelActionParser {
 
 		String[] typePathArray = typePath.split("::");
 		String typeName = typePathArray[typePathArray.length - 1];
-		communicator.addAttribute(diagramId, classPath, name, new Level(level), typeName, multiplicity, true, false, false);
+		communicator.addAttribute(diagramId, classPath, name, new Level(level), typeName, multiplicity, level != -1, false, false);
 	}
 }
