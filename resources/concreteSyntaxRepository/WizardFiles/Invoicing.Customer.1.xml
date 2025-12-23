@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConcreteSyntax classPath="Root::Invoicing::Customer" level="1">
+  <SVG id="svg0" path="../InvoiceExample/business-women-icon.svg" tx="0.0" ty="0.0" xx="0.25" xy="0.0" yx="0.0" yy="0.25"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x4d4d4dff" default="typeLabel" id="MaxLabel" tx="126.5" ty="74.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x000000ff" default="nameLabel" id="nameLabel" tx="114.0" ty="30.0" xx="1.3" xy="0.0" yx="0.0" yy="1.3"/>
+  <Label align="LEFT" bgColor="0x00000000" color="0x4d4d4dff" default="maxInvoiceVolume:" id="maxInvoiceVolume:" tx="117.0" ty="59.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Modification>
+    <Condition opName="getInvoiceTotalMaximum" type="ReadFromOpValCondition"/>
+    <Affected id="typeLabel" localId="typeLabel"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition opName="getCustomerTypeString" type="ReadFromOpValCondition"/>
+    <Affected id="nameLabel" localId="nameLabel"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition opName="getInvoiceTotalMaximum" type="ReadFromOpValCondition"/>
+    <Affected id="MaxLabel" localId="MaxLabel"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

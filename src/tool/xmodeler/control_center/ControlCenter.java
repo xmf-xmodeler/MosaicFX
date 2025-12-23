@@ -165,19 +165,40 @@ public class ControlCenter extends Stage {
 		
 		Menu helpMenu;
 		Menu DatabaseMenu;
+		Menu EducationCenterMenu;
 		
 		public ControlCenterMenuBar() {
 			helpMenu = new Menu("Help");
 			getMenus().add(helpMenu);
 			buildHelpMenu(helpMenu);
 			
+			EducationCenterMenu = new Menu("Education Center");
+			getMenus().add(EducationCenterMenu);
+			buildEducationCenterMenu(EducationCenterMenu);
+			
 			DatabaseMenu = new Menu("Database");
 			getMenus().add(DatabaseMenu);
 			buildDatabaseMenu(DatabaseMenu);
 			
+			
 			//only show DB Menu item when connection is entered, removed on 2025-03-28
 			
 			//toggleDbMenu();
+		}
+		
+		private void buildEducationCenterMenu(Menu eduMenu) {
+			MenuItem getOnlineTutorial = new MenuItem("Open UML++ Screencast");
+			getOnlineTutorial.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
+			
+			MenuItem onlineLearning = new MenuItem("Open Online Learning Resources");
+			onlineLearning.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/educational-material/"));
+			
+			
+			MenuItem umlLearningUnits = new MenuItem("Open UML Learning Units");
+			umlLearningUnits.setOnAction(a -> new LearningUnitChooser().show());
+			
+			
+			eduMenu.getItems().addAll(getOnlineTutorial, onlineLearning, umlLearningUnits);
 		}
 		
 		public void toggleDbMenu() {
@@ -215,9 +236,6 @@ public class ControlCenter extends Stage {
 			MenuItem getUMLInformationItem = new MenuItem("Get Information on UML-MX");
 			getUMLInformationItem.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx/"));
 			
-			MenuItem getOnlineTutorial = new MenuItem("Open Online Tutorial");
-			getOnlineTutorial.setOnAction(e->openWebpage("https://www.wi-inf.uni-due.de/LE4MM/uml-mx-tutorials/"));
-			
 			MenuItem getSourceCodeItem = new MenuItem("Get Source Code");
 			getSourceCodeItem.setOnAction(e->openWebpage("https://github.com/xmf-xmodeler"));
 			
@@ -227,7 +245,7 @@ public class ControlCenter extends Stage {
 			MenuItem aboutItem = new MenuItem("About");
 			aboutItem.setOnAction(e-> callAboutStage());
 							
-			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem, getOnlineTutorial,getSourceCodeItem, getBluebook, aboutItem);
+			helpMenu.getItems().addAll(getProjectInformationItem,getUMLInformationItem,getSourceCodeItem, getBluebook, aboutItem);
 		}
 		
 		private void checkDBconnection() {
