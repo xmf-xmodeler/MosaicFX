@@ -17,9 +17,7 @@ LE4MM is an international research cooperation between University of Duisburg-Es
 
 
 [web]: https://www.wi-inf.uni-duisburg-essen.de/LE4MM/
-[kanban]: https://github.com/xmf-xmodeler/MosaicFX/projects/2
 [issues]: https://github.com/xmf-xmodeler/MosaicFX/issues
-[markdown]: https://markdown-it.github.io
 [wiki]: https://www.wi-inf.uni-duisburg-essen.de/xmodeler-wiki/index.php/Main_Page
 
 ## Installation
@@ -38,7 +36,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 **XModeler - Language Engineering for Multilevel Modelling**  
-[Wiki][wiki] | [LE4MM Website][web] | [Kanban Board][kanban] | [Markdown Cheatsheet][markdown]  
+[Wiki][wiki] | [LE4MM Website][web]
 
 <!--## License
 [MIT](https://choosealicense.com/licenses/mit/)-->
