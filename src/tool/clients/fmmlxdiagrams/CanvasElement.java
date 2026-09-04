@@ -23,10 +23,7 @@ public interface CanvasElement {
 	boolean isHidden();
 
 	Double getLeftX();
-
 	Double getRightX();
-
 	Double getTopY();
-
 	Double getBottomY();
 }
